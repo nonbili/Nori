@@ -1,0 +1,49 @@
+# dependencies
+node_modules/
+vendor/
+.bundle/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+/android
+/ios
+assets/scripts/
+modules/*/android/.*
+modules/*/android/build/
+
+*-env.d.ts
+
+# Maestro
+.maestro/screenshots-output/
+
+# Fastlane
+fastlane/metadata/android/screenshots.html
+fastlane/screenshots/**/en-US/*
+!fastlane/screenshots/**/en-US/Framefile.json
+fastlane/screenshots/**/fonts/

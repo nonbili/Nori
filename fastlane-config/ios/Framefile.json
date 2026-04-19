@@ -1,0 +1,43 @@
+{
+  "device_frame_version": "latest",
+  "default": {
+    "font": "./Regular.ttf",
+    "background": "./background.jpg",
+    "padding": 45,
+    "stack_title": true,
+    "show_complete_frame": false,
+    "title_below_image": false,
+    "keyword": {
+      "font": "./Regular.ttf",
+      "color": "#10B981",
+      "font_size": 140
+    },
+    "title": {
+      "font": "./Regular.ttf",
+      "color": "#FAFAF9",
+      "font_size": 120
+    }
+  },
+  "data": [
+    {
+      "filter": "01_home",
+      "keyword": { "text": "Collect" },
+      "title": { "text": "Your bookmarks, beautifully organized" }
+    },
+    {
+      "filter": "02_manage_lists",
+      "keyword": { "text": "Organize" },
+      "title": { "text": "Stay focused with custom lists" }
+    },
+    {
+      "filter": "03_history",
+      "keyword": { "text": "Retrieve" },
+      "title": { "text": "Quickly jump back to recent links" }
+    },
+    {
+      "filter": "04_edit_mode",
+      "keyword": { "text": "Manage" },
+      "title": { "text": "Effortless bookmark management" }
+    }
+  ]
+}

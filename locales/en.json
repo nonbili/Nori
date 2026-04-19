@@ -1,0 +1,104 @@
+{
+  "bookmarks": {
+    "add": "Add bookmark",
+    "edit": "Edit bookmark",
+    "url": "URL",
+    "titleOptional": "Title (optional)",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "updated": "Bookmark updated",
+    "saved": "Bookmark saved",
+    "invalidUrl": "Enter a valid http or https URL"
+  },
+  "lists": {
+    "new": "New list",
+    "rename": "Rename list",
+    "name": "List name",
+    "enterName": "Enter a list name",
+    "created": "List created",
+    "updated": "List updated",
+    "cancel": "Cancel",
+    "save": "Save",
+    "manage": "Manage lists",
+    "deleteTitle": "Delete list?",
+    "deleteBody": "Delete {{name}} and its bookmarks?",
+    "delete": "Delete",
+    "deleted": "List deleted",
+    "renameAction": "Rename",
+    "hide": "Hide",
+    "show": "Show",
+    "hidden": "Hidden lists",
+    "unknown": "Unknown list"
+  },
+  "history": {
+    "used": "Recently used",
+    "added": "Recently added",
+    "clearTitle": "Clear history?",
+    "clearBody": "Remove all recently used entries from Nori?",
+    "clear": "Clear",
+    "clearAction": "Clear history",
+    "reopen": "Reopen",
+    "noRecent": "No recent tabs",
+    "noRecentHint": "Links you launch from Nori will show up here so they are easy to reopen later.",
+    "noBookmarks": "No bookmarks yet",
+    "noBookmarksHint": "Bookmarks you add will appear here, newest first."
+  },
+  "sharing": {
+    "title": "Save shared link",
+    "pickList": "Pick a list to save this bookmark.",
+    "savedToList": "Saved to {{name}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "sync": {
+      "label": "Sync",
+      "signIn": "Sign in",
+      "signOut": "Sign out",
+      "syncNow": "Sync now",
+      "working": "Working…",
+      "noriUser": "Nori User",
+      "plan": "Plan: {{plan}}",
+      "upgradeHint": "Upgrade to sync lists and bookmarks across devices.",
+      "syncHint": "Sync lists and bookmarks across devices.",
+      "lastSynced": "Last synced {{date}}",
+      "confirmTitle": "Confirm account",
+      "confirmBody": "Bind this purchase to {{email}}?",
+      "errorSignInBuy": "Sign in to buy Nori Sync",
+      "errorSignInRestore": "Sign in to restore purchases",
+      "errorNoPurchase": "No Nori Sync purchase found to restore"
+    },
+    "plan": {
+      "label": "Current plan",
+      "activeAppStore": "Active via App Store",
+      "manage": "Manage plan",
+      "free": "Free",
+      "sync": "Sync"
+    },
+    "ios": {
+      "expires": "Expires {{date}}",
+      "manage": "Manage subscription",
+      "restore": "Restore purchase",
+      "loadingPrice": "Loading price…",
+      "productUnavailable": "Product unavailable",
+      "managing": "Managing…",
+      "restoring": "Restoring…",
+      "buyPrice": "Buy sync {{price}}",
+      "buy": "Buy sync",
+      "purchasing": "Purchasing…",
+      "legalHint": "Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period.",
+      "termsOfUse": "Terms of Use",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "experience": {
+      "label": "Experience",
+      "defaultBrowser": "Open links in default browser",
+      "defaultBrowserHint": "Turn this on to leave Nori and open links in your phone's browser app.",
+      "theme": "Theme",
+      "themeHint": "Switch between system, light, and dark appearance.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    }
+  }
+}

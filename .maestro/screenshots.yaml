@@ -1,0 +1,67 @@
+appId: jp.nonbili.nori
+---
+- launchApp:
+    clearState: false
+
+# Wait for React Native JS bundle to load and render
+- extendedWaitUntil:
+    visible: "SNS"
+    timeout: 15000
+
+- waitForAnimationToEnd
+
+# Ensure we start on the SNS tab
+- tapOn: "SNS"
+- waitForAnimationToEnd
+
+- takeScreenshot: 01_home
+
+# Open overflow menu
+- tapOn: "More options"
+- extendedWaitUntil:
+    visible: "Manage lists"
+    timeout: 5000
+- tapOn: "Manage lists"
+- extendedWaitUntil:
+    visible: "Close"
+    timeout: 5000
+- waitForAnimationToEnd
+
+- takeScreenshot: 02_manage_lists
+
+# Close manage lists sheet
+- tapOn: "Close"
+- waitForAnimationToEnd
+
+# Switch to AI list
+- extendedWaitUntil:
+    visible: "AI"
+    timeout: 5000
+- tapOn: "AI"
+- waitForAnimationToEnd
+
+# Open history sheet (header is still visible)
+- tapOn: "Open history"
+- extendedWaitUntil:
+    visible: "Recently used"
+    timeout: 5000
+- waitForAnimationToEnd
+
+- takeScreenshot: 03_history
+
+# Close history sheet (tap on backdrop)
+- tapOn:
+    point: "50%, 10%"
+- waitForAnimationToEnd
+# Open overflow menu and enter edit mode
+- tapOn: "More options"
+- extendedWaitUntil:
+    visible: "Edit bookmarks"
+    timeout: 5000
+- tapOn: "Edit bookmarks"
+- extendedWaitUntil:
+    visible: "Editing bookmarks"
+    timeout: 5000
+- waitForAnimationToEnd
+
+- takeScreenshot: 04_edit_mode

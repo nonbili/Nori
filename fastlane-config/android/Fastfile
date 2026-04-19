@@ -1,0 +1,15 @@
+default_platform(:android)
+
+platform :android do
+  desc "Upload screenshots to Google Play Store"
+  lane :upload_screenshots do
+    upload_to_play_store(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: false,
+      metadata_path: "../fastlane/metadata/android"
+    )
+  end
+end
