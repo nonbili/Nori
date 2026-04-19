@@ -1,0 +1,13 @@
+<h2>Features</h2>
+<ul>
+  <li>Organize bookmarks into multiple lists</li>
+  <li>Open saved bookmarks in the system browser</li>
+  <li>Receive shared links from other apps</li>
+  <li>Pick the destination list before saving a shared link</li>
+</ul>
+
+<h2>How it works</h2>
+<ul>
+  <li>Nori helps you save interesting links from any app and organize them into lists.</li>
+  <li>When you're ready to read, Nori opens the link in your system browser for the best experience.</li>
+</ul>
