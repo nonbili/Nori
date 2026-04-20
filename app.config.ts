@@ -60,6 +60,7 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       ],
       ['expo-share-intent', { iosAppGroupIdentifier: 'group.jp.nonbili.nori' }],
       'expo-web-browser',
+      'expo-font',
     ],
     experiments: {
       typedRoutes: true,
