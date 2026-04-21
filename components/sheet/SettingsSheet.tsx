@@ -6,7 +6,7 @@ import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import NoriBilling from '@/modules/nori-billing'
 import { prepareIosPurchase, syncIosTransaction } from '@/lib/nori-api'
-import { openManagePlan, signOut, startHostedSignIn } from '@/lib/supabase/auth'
+import { openDeleteAccount, openManagePlan, signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import { syncSupabase } from '@/lib/supabase/sync'
 import { settings$ } from '@/states/settings'
 import { auth$, refreshEntitlement } from '@/states/auth'
@@ -51,6 +51,7 @@ export const SettingsSheet: React.FC = () => {
   const [productPrice, setProductPrice] = useState<string>()
   const [actionError, setActionError] = useState<string>()
   const [busyAction, setBusyAction] = useState<'buy' | 'restore' | 'manage' | 'sync' | null>(null)
+  const [pendingExternalAction, setPendingExternalAction] = useState<'delete-account' | null>(null)
 
   useEffect(() => {
     if (!isIos) {
@@ -80,6 +81,20 @@ export const SettingsSheet: React.FC = () => {
       active = false
     }
   }, [])
+
+  useEffect(() => {
+    if (pendingExternalAction !== 'delete-account') {
+      return
+    }
+    setPendingExternalAction(null)
+    if (!accessToken) {
+      setActionError(t('settings.sync.signIn'))
+      return
+    }
+    void openDeleteAccount(accessToken).catch((error) => {
+      setActionError(error instanceof Error ? error.message : String(error))
+    })
+  }, [accessToken, pendingExternalAction, t])
 
   const runAction = async (name: 'buy' | 'restore' | 'manage' | 'sync', fn: () => Promise<void>) => {
     setBusyAction(name)
@@ -169,11 +184,14 @@ export const SettingsSheet: React.FC = () => {
 
   const accountMenuItems: NouMenuItem[] = [
     ...(isIos && source === 'app_store' && plan === 'sync'
-      ? [{ label: t('settings.ios.manage'), handler: () => void onManage() }]
+      ? [{ id: 'manage-subscription', label: t('settings.ios.manage'), handler: () => void onManage() }]
       : []),
-    ...(isIos ? [{ label: t('settings.ios.restore'), handler: () => void onRestore() }] : []),
-    { label: t('settings.sync.syncNow'), icon: 'cloud-sync' as const, handler: () => void onManualSync() },
-    { label: t('settings.sync.signOut'), handler: () => void signOut() },
+    ...(isIos ? [{ id: 'restore-purchase', label: t('settings.ios.restore'), handler: () => void onRestore() }] : []),
+    { id: 'sync-now', label: t('settings.sync.syncNow'), icon: 'cloud-sync' as const, handler: () => void onManualSync() },
+    ...(isIos
+      ? [{ id: 'delete-account', label: t('settings.sync.deleteAccount'), icon: 'delete-outline' as const }]
+      : []),
+    { id: 'sign-out', label: t('settings.sync.signOut'), handler: () => void signOut() },
   ]
 
   return (
@@ -219,6 +237,13 @@ export const SettingsSheet: React.FC = () => {
                   <NouMenu
                     trigger={<MaterialIcons name="more-vert" size={20} color={themeColors.iconMuted} />}
                     items={accountMenuItems}
+                    onSelectItem={(item) => {
+                      if (item.id === 'delete-account') {
+                        setPendingExternalAction('delete-account')
+                        return
+                      }
+                      item.handler?.()
+                    }}
                   />
                 </View>
               </View>

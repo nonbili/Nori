@@ -25,6 +25,10 @@ export interface SyncIosTransactionResponse {
   entitlement: NoriEntitlement
 }
 
+export interface WebAuthLinkResponse {
+  token?: string | null
+}
+
 export const defaultEntitlement: NoriEntitlement = {
   plan: 'free',
   source: 'none',
@@ -71,6 +75,7 @@ async function callNoriApi<T>(path: string, init?: RequestInit, authorization?: 
 }
 
 export const fetchNoriMe = (accessToken: string) => callNoriApi<NoriEntitlement>('nori.me', undefined, accessToken)
+export const fetchWebAuthLink = (accessToken: string) => callNoriApi<WebAuthLinkResponse>('users.link', undefined, accessToken)
 export const prepareIosPurchase = (accessToken: string) =>
   callNoriApi<PrepareIosPurchaseResponse>('nori.prepareIosPurchase', { method: 'POST' }, accessToken)
 export const syncIosTransaction = (accessToken: string, signedTransactionInfo: string) =>

@@ -1,12 +1,13 @@
-import { ReactNode, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { Modal, Pressable as NativePressable, Text, useWindowDimensions, View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
 
 export interface NouMenuItem {
+  id?: string
   label: string
-  handler: () => void
+  handler?: () => void
   selected?: boolean
   icon?: keyof typeof MaterialIcons.glyphMap
 }
@@ -14,11 +15,13 @@ export interface NouMenuItem {
 export const NouMenu: React.FC<{
   trigger: ReactNode
   items: NouMenuItem[]
+  onSelectItem?: (item: NouMenuItem) => void
   testID?: string
   accessibilityLabel?: string
-}> = ({ trigger, items, testID, accessibilityLabel }) => {
+}> = ({ trigger, items, onSelectItem, testID, accessibilityLabel }) => {
   const [open, setOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
+  const pendingItem = useRef<NouMenuItem | null>(null)
   const themeColors = useThemeColors()
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const insets = useSafeAreaInsets()
@@ -35,6 +38,22 @@ export const NouMenu: React.FC<{
   }
 
   const closeMenu = () => setOpen(false)
+
+  useEffect(() => {
+    if (open || !pendingItem.current) {
+      return
+    }
+    const item = pendingItem.current
+    pendingItem.current = null
+    const timer = setTimeout(() => {
+      if (onSelectItem) {
+        onSelectItem(item)
+        return
+      }
+      item.handler?.()
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [onSelectItem, open])
 
   const horizontalPadding = 8
   const verticalPadding = 8
@@ -94,8 +113,8 @@ export const NouMenu: React.FC<{
                   className="flex-row items-center px-4"
                   style={{ minHeight: itemHeight }}
                   onPress={() => {
+                    pendingItem.current = item
                     closeMenu()
-                    item.handler()
                   }}
                 >
                   <View className="mr-3 w-5 items-center" accessible={false} importantForAccessibility="no-hide-descendants">

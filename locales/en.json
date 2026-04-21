@@ -56,6 +56,7 @@
       "signIn": "Sign in",
       "signOut": "Sign out",
       "syncNow": "Sync now",
+      "deleteAccount": "Delete account",
       "working": "Working…",
       "noriUser": "Nori User",
       "plan": "Plan: {{plan}}",
