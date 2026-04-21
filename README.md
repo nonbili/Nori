@@ -2,6 +2,19 @@
 
 Nori is a bookmark manager and launcher.
 
+Install from App Store, Google Play, or download APK from GitHub.
+
+[<img src="https://img.shields.io/badge/App_Store-0D96F6?style=for-the-badge&logo=app-store&logoColor=white"
+      alt="Get it on App Store"
+      height="50">](https://apps.apple.com/us/app/nori-bookmark-manager/id6761264972)
+[<img src="https://img.shields.io/badge/Google_Play-01875f?style=for-the-badge&logo=google-play"
+      alt="Get it on Google Play"
+      hspace="16"
+      height="50">](https://play.google.com/store/apps/details?id=jp.nonbili.nori)
+[<img src="https://img.shields.io/badge/GitHub%20Releases-100000?style=for-the-badge&logo=github"
+      alt="Get it on GitHub"
+      height="50">](https://github.com/nonbili/Nori/releases/latest)
+
 ## Features
 
 - Organize bookmarks into multiple lists
