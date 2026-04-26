@@ -17,10 +17,17 @@ import { isIos } from '@/lib/utils'
 import { SegmentedOption } from '@/components/common/Common'
 import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { Sheet } from '@/components/modal/BaseModal'
+import { version as appVersion } from '@/package.json'
 
 const IOS_SYNC_PRODUCT_ID = process.env.EXPO_PUBLIC_NORI_IOS_SYNC_PRODUCT_ID || 'jp.nonbili.nori.sync'
 const TERMS_OF_USE_URL = 'https://www.apple.com/legal/macapps/stdeula/'
 const PRIVACY_POLICY_URL = 'https://inks.page/p/privacy'
+const REPO_URL = 'https://github.com/nonbili/Nori'
+const DONATE_LINKS = [
+  { label: 'GitHub Sponsors', detail: 'github.com/sponsors/rnons', url: 'https://github.com/sponsors/rnons' },
+  { label: 'Liberapay', detail: 'liberapay.com/rnons', url: 'https://liberapay.com/rnons' },
+  { label: 'PayPal', detail: 'paypal.me/rnons', url: 'https://paypal.me/rnons' },
+]
 
 const SettingsBadge: React.FC<{ label: string }> = ({ label }) => (
   <View className="rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-950 px-3 py-1">
@@ -194,8 +201,81 @@ export const SettingsSheet: React.FC = () => {
     { id: 'sign-out', label: t('settings.sync.signOut'), handler: () => void signOut() },
   ]
 
+  const [page, setPage] = useState<'home' | 'about'>('home')
+  const onClose = () => {
+    ui$.settingsSheetOpen.set(false)
+    setPage('home')
+  }
+  const headerLeft =
+    page === 'home' ? undefined : (
+      <Pressable
+        onPress={() => setPage('home')}
+        accessibilityLabel="Back"
+        accessibilityRole="button"
+        className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
+      >
+        <MaterialIcons name="arrow-back" color={themeColors.iconMuted} size={20} />
+      </Pressable>
+    )
+
+  if (page === 'about') {
+    return (
+      <Sheet
+        visible={visible}
+        title={t('settings.about.label')}
+        height={windowHeight * 0.85}
+        onClose={() => setPage('home')}
+        headerLeft={headerLeft}
+        showCloseButton={false}
+      >
+        <ScrollView showsVerticalScrollIndicator={false} className="flex-1" contentContainerClassName="gap-6 pb-4">
+          <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
+            <AboutRow
+              icon="info-outline"
+              title={t('settings.about.version')}
+              detail={`v${appVersion}`}
+              themeColors={themeColors}
+              isLast
+            />
+          </View>
+
+          <View className="gap-3">
+            <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.about.code')}</Text>
+            <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
+              <AboutRow
+                icon="code"
+                title="GitHub"
+                detail="github.com/nonbili/Nori"
+                onPress={() => void Linking.openURL(REPO_URL)}
+                themeColors={themeColors}
+                isLast
+              />
+            </View>
+          </View>
+
+          <View className="gap-3">
+            <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.about.donate')}</Text>
+            <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
+              {DONATE_LINKS.map((item, index) => (
+                <AboutRow
+                  key={item.url}
+                  icon="favorite-outline"
+                  title={item.label}
+                  detail={item.detail}
+                  onPress={() => void Linking.openURL(item.url)}
+                  isLast={index === DONATE_LINKS.length - 1}
+                  themeColors={themeColors}
+                />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </Sheet>
+    )
+  }
+
   return (
-    <Sheet visible={visible} title={t('settings.title')} height={windowHeight * 0.85} onClose={() => ui$.settingsSheetOpen.set(false)}>
+    <Sheet visible={visible} title={t('settings.title')} height={windowHeight * 0.85} onClose={onClose}>
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1" contentContainerClassName="gap-8 pb-4">
         {!userId ? (
           <View className="gap-3">
@@ -383,7 +463,53 @@ export const SettingsSheet: React.FC = () => {
             </View>
           </View>
         </View>
+
+        <View className="gap-3">
+          <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.about.label')}</Text>
+          <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
+            <AboutRow
+              icon="info-outline"
+              title={t('settings.about.label')}
+              detail={`v${appVersion}`}
+              onPress={() => setPage('about')}
+              themeColors={themeColors}
+              isLast
+            />
+          </View>
+        </View>
       </ScrollView>
     </Sheet>
+  )
+}
+
+const AboutRow: React.FC<{
+  icon: keyof typeof MaterialIcons.glyphMap
+  title: string
+  detail: string
+  onPress?: () => void
+  isLast?: boolean
+  themeColors: ReturnType<typeof useThemeColors>
+}> = ({ icon, title, detail, onPress, isLast = false, themeColors }) => {
+  const content = (
+    <View
+      className={`flex-row items-center gap-3 px-4 py-4 ${isLast ? '' : 'border-b border-stone-200 dark:border-stone-800'}`}
+    >
+      <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
+        <MaterialIcons name={icon} color={themeColors.iconMuted} size={18} />
+      </View>
+      <View className="flex-1">
+        <Text className="font-medium text-stone-900 dark:text-stone-100">{title}</Text>
+        <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{detail}</Text>
+      </View>
+      {onPress ? <MaterialIcons name="chevron-right" color={themeColors.iconMuted} size={20} /> : null}
+    </View>
+  )
+  if (!onPress) {
+    return content
+  }
+  return (
+    <Pressable onPress={onPress} className="active:opacity-70">
+      {content}
+    </Pressable>
   )
 }
