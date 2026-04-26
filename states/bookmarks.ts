@@ -27,7 +27,7 @@ interface Store {
   bookmarks: BookmarkRecord[]
   add: (draft: BookmarkDraft) => string | null
   update: (id: string, draft: Partial<BookmarkDraft>) => void
-  delete: (id: string) => void
+  remove: (id: string) => void
   setVisible: (id: string, visible: boolean) => void
   move: (id: string, delta: -1 | 1) => void
   reorder: (listId: string, orderedIds: string[]) => void
@@ -94,7 +94,7 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       updatedAt: new Date().toISOString(),
     })
   },
-  delete: (id) => {
+  remove: (id) => {
     const items = bookmarks$.bookmarks.get()
     const index = items.findIndex((item) => item.id === id)
     if (index === -1) {

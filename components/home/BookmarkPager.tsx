@@ -120,9 +120,26 @@ export const BookmarkPager: React.FC = () => {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
-          bookmarks$.delete(selectedBookmark.id)
+          bookmarks$.remove(selectedBookmark.id)
           showToast('Bookmark deleted')
           ui$.selectedBookmarkId.set(null)
+        },
+      },
+    ])
+  }
+
+  const promptDeleteBookmark = (bookmark: { id: string; title: string }) => {
+    Alert.alert('Delete bookmark?', `Remove ${bookmark.title}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          bookmarks$.remove(bookmark.id)
+          showToast('Bookmark deleted')
+          if (selectedBookmarkId === bookmark.id) {
+            ui$.selectedBookmarkId.set(null)
+          }
         },
       },
     ])
@@ -269,6 +286,7 @@ export const BookmarkPager: React.FC = () => {
                         onShare={() => {
                           void Share.share({ url: bookmark.url, message: bookmark.url })
                         }}
+                        onDelete={() => promptDeleteBookmark(bookmark)}
                         isDragging={isDragging}
                       />
                     )}

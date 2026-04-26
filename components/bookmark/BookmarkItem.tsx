@@ -92,6 +92,7 @@ export const BookmarkTile = memo(({
   onEdit,
   onCopyUrl,
   onShare,
+  onDelete,
   isDragging,
 }: {
   bookmark: { id: string; url: string; title: string; icon?: string }
@@ -103,6 +104,7 @@ export const BookmarkTile = memo(({
   onEdit?: () => void
   onCopyUrl?: () => void
   onShare?: () => void
+  onDelete?: () => void
   isDragging?: boolean
 }) => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -134,6 +136,7 @@ export const BookmarkTile = memo(({
     { label: 'Edit', icon: 'edit', handler: () => onEdit?.() },
     { label: 'Copy URL', icon: 'content-copy', handler: () => onCopyUrl?.() },
     { label: 'Share', icon: 'share', handler: () => onShare?.() },
+    { label: 'Delete', icon: 'delete', handler: () => onDelete?.() },
   ]
 
   return (

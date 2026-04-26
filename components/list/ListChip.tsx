@@ -1,8 +1,6 @@
-import { Pressable, Text, View } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { Pressable, View } from 'react-native'
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
 import { useColorScheme } from 'nativewind'
-import { useThemeColors } from '@/lib/theme'
 
 export interface ListChipProps {
   name: string
@@ -22,7 +20,6 @@ export const ListChip: React.FC<ListChipProps> = ({
   index = 0,
   pageWidth = 0,
 }) => {
-  const themeColors = useThemeColors()
   const { colorScheme } = useColorScheme()
   const isDark = colorScheme === 'dark'
 

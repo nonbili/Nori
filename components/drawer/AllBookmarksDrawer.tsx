@@ -226,7 +226,7 @@ export function AllBookmarksDrawer() {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
-          bookmarks$.delete(bookmark.id)
+          bookmarks$.remove(bookmark.id)
           showToast('Bookmark deleted')
         },
       },
