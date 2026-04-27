@@ -1,0 +1,2 @@
+- Added About section to settings
+- Support deleting preset bookmarks
