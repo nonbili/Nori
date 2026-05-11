@@ -99,4 +99,23 @@ describe('normalizeBookmarks', () => {
 
     expect(getDeletedAt(deleted)).toBe('2026-04-09T00:00:00.000Z')
   })
+
+  // Legend State's persist layer revives ISO-8601 strings to Date on load.
+  it('treats a Date in json.deleted_at as deleted (persist round-trip)', () => {
+    const lists = normalizeLists([{ id: 'custom', name: 'Custom', json: { visible: true } }])
+    const date = new Date('2026-04-09T00:00:00.000Z')
+    const bookmarks = normalizeBookmarks(lists, [
+      {
+        id: 'a',
+        listId: 'custom',
+        url: 'https://a.com',
+        title: 'A',
+        json: { visible: false, deleted_at: date as unknown as string },
+      },
+    ])
+
+    expect(getDeletedAt(bookmarks[0])).toBe('2026-04-09T00:00:00.000Z')
+    expect(getVisibleBookmarks(bookmarks, 'custom')).toHaveLength(0)
+    expect(getAvailableBookmarks(bookmarks, 'custom')).toHaveLength(0)
+  })
 })

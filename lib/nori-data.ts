@@ -220,12 +220,19 @@ export function isoNow() {
   return new Date().toISOString()
 }
 
+// Legend State's persist layer auto-revives ISO-8601 strings into Date objects on load,
+// so any field that may have been persisted needs to tolerate Date as well as string.
+export function toIsoString(value: unknown): string | null {
+  if (value instanceof Date) return value.toISOString()
+  return typeof value === 'string' ? value : null
+}
+
 export function createRowJsonState(state?: Partial<RowJsonState>): RowJsonState {
   return {
+    ...state,
     visible: state?.visible !== false,
     sort_index: typeof state?.sort_index === 'number' && Number.isFinite(state.sort_index) ? state.sort_index : 0,
-    deleted_at: typeof state?.deleted_at === 'string' ? state.deleted_at : null,
-    ...state,
+    deleted_at: toIsoString(state?.deleted_at),
   }
 }
 
@@ -256,7 +263,7 @@ export function getSortIndex(row: { json?: RowJsonState | null }) {
 }
 
 export function getDeletedAt(row: { json?: RowJsonState | null }) {
-  return typeof row.json?.deleted_at === 'string' ? row.json.deleted_at : null
+  return toIsoString(row.json?.deleted_at)
 }
 
 export function isDeleted(row: { json?: RowJsonState | null }) {
@@ -323,8 +330,8 @@ export function normalizeLists(lists?: (Partial<BookmarkListData> | null | undef
         ...(item.json || {}),
         sort_index: normalizeSortIndex(item.json?.sort_index, index),
       }),
-      createdAt: typeof item.createdAt === 'string' ? item.createdAt : isoNow(),
-      updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : typeof item.createdAt === 'string' ? item.createdAt : isoNow(),
+      createdAt: toIsoString(item.createdAt) ?? isoNow(),
+      updatedAt: toIsoString(item.updatedAt) ?? toIsoString(item.createdAt) ?? isoNow(),
     })),
   )
 }
@@ -351,8 +358,8 @@ export function normalizeBookmarks(
       title: item.title?.trim() || item.url?.trim() || starter?.title || '',
       icon: item.icon?.trim() || starter?.icon || '',
       json: createRowJsonState(item.json || {}),
-      createdAt: typeof item.createdAt === 'string' ? item.createdAt : isoNow(),
-      updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : typeof item.createdAt === 'string' ? item.createdAt : isoNow(),
+      createdAt: toIsoString(item.createdAt) ?? isoNow(),
+      updatedAt: toIsoString(item.updatedAt) ?? toIsoString(item.createdAt) ?? isoNow(),
     })
   }
 
