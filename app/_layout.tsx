@@ -1,13 +1,14 @@
 import '@/lib/i18n'
 import './global.css'
 
-import { Appearance, Linking, LogBox, View, useColorScheme } from 'react-native'
+import { Appearance, Linking, LogBox, View } from 'react-native'
 import { Slot } from 'expo-router'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
-import { useObserveEffect, useValue } from '@legendapp/state/react'
+import { useValue } from '@legendapp/state/react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useEffect } from 'react'
+import { colorScheme as nativeWindColorScheme, useColorScheme } from 'nativewind'
 import { onReceiveAuthUrl } from '@/lib/supabase/auth'
 import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
 import { auth$, bootstrapAuth } from '@/states/auth'
@@ -16,13 +17,15 @@ import { settings$ } from '@/states/settings'
 LogBox.ignoreAllLogs()
 
 function LayoutContent() {
-  const colorScheme = useColorScheme()
+  const { colorScheme } = useColorScheme()
   const userId = useValue(auth$.userId)
   const plan = useValue(auth$.plan)
+  const theme = useValue(settings$.theme)
 
-  useObserveEffect(settings$.theme, ({ value }) => {
-    Appearance.setColorScheme(value ?? ('unspecified' as never))
-  })
+  useEffect(() => {
+    nativeWindColorScheme.set(theme ?? 'system')
+    Appearance.setColorScheme(theme ?? 'unspecified')
+  }, [theme])
 
   useEffect(() => {
     startSupabaseSyncWatchers()
