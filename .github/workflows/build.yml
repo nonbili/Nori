@@ -54,5 +54,5 @@ jobs:
       - uses: softprops/action-gh-release@v2
         name: upload apk
         with:
-          body_path: metadata/en-US/changelogs/${{ env.VERSION_CODE }}04.txt
+          body_path: fastlane/metadata/android/en-US/changelogs/${{ env.VERSION_CODE }}04.txt
           files: android/app/build/outputs/apk/release/*-release.apk

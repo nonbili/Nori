@@ -1,0 +1,1 @@
+- Prevent deleted bookmark shown as hidden on restart
