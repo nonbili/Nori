@@ -63,10 +63,13 @@ export const lists$: Observable<Store> = observable<Store>({
       return
     }
 
-    lists$.lists[index].assign({
+    const nextItems = [...items]
+    nextItems[index] = {
+      ...items[index],
       name: trimmed,
       updatedAt: new Date().toISOString(),
-    })
+    }
+    lists$.lists.set(nextItems)
   },
   deleteList: (id) => {
     const items = lists$.lists.get()
@@ -76,10 +79,12 @@ export const lists$: Observable<Store> = observable<Store>({
     }
 
     const next = patchRowState(items[index], { deleted_at: new Date().toISOString(), visible: false })
-    lists$.lists[index].set({
+    const nextItems = [...items]
+    nextItems[index] = {
       ...next,
       updatedAt: new Date().toISOString(),
-    })
+    }
+    lists$.lists.set(nextItems)
     ensureSelectedList()
     return true
   },
@@ -90,11 +95,13 @@ export const lists$: Observable<Store> = observable<Store>({
       return
     }
 
-    lists$.lists[index].json.set({
-      ...createRowJsonState(items[index].json),
-      visible,
-    })
-    lists$.lists[index].updatedAt.set(new Date().toISOString())
+    const next = patchRowState(items[index], { visible })
+    const nextItems = [...items]
+    nextItems[index] = {
+      ...next,
+      updatedAt: new Date().toISOString(),
+    }
+    lists$.lists.set(nextItems)
     ensureSelectedList()
   },
   reorder: (orderedIds) => {

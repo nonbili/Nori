@@ -1,29 +1,46 @@
 import '@/lib/i18n'
 import './global.css'
 
-import { Linking, LogBox, View } from 'react-native'
+import { Appearance, Linking, LogBox, View } from 'react-native'
 import { Slot } from 'expo-router'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import { useValue } from '@legendapp/state/react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useEffect } from 'react'
-import { colorScheme as nativeWindColorScheme, useColorScheme } from 'nativewind'
+import { colorScheme as nativeWindColorScheme } from 'nativewind'
 import { onReceiveAuthUrl } from '@/lib/supabase/auth'
 import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
+import { useAppColorScheme } from '@/lib/theme'
 import { auth$, bootstrapAuth } from '@/states/auth'
 import { settings$ } from '@/states/settings'
 
 LogBox.ignoreAllLogs()
 
 function LayoutContent() {
-  const { colorScheme } = useColorScheme()
+  const appColorScheme = useAppColorScheme()
   const userId = useValue(auth$.userId)
   const plan = useValue(auth$.plan)
   const theme = useValue(settings$.theme)
 
+  const colorScheme = theme || appColorScheme
+
   useEffect(() => {
-    nativeWindColorScheme.set(theme ?? 'system')
+    if (theme) {
+      nativeWindColorScheme.set(theme)
+      return
+    }
+
+    const updateSystemTheme = () => {
+      nativeWindColorScheme.set(Appearance.getColorScheme() ?? 'light')
+    }
+
+    updateSystemTheme()
+    const subscription = Appearance.addChangeListener(updateSystemTheme)
+
+    return () => {
+      subscription.remove()
+    }
   }, [theme])
 
   useEffect(() => {

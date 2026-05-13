@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native'
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
-import { useColorScheme } from 'nativewind'
+import { useAppColorScheme } from '@/lib/theme'
 
 export interface ListChipProps {
   name: string
@@ -20,7 +20,7 @@ export const ListChip: React.FC<ListChipProps> = ({
   index = 0,
   pageWidth = 0,
 }) => {
-  const { colorScheme } = useColorScheme()
+  const colorScheme = useAppColorScheme()
   const isDark = colorScheme === 'dark'
 
   // Colors matching original: bg-stone-900 / dark:bg-stone-100 (active), border-stone-200 / dark:border-stone-800 (inactive)

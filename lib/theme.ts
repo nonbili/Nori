@@ -1,4 +1,5 @@
 import { useColorScheme } from 'nativewind'
+import { Appearance, useColorScheme as useRNColorScheme } from 'react-native'
 
 const lightColors = {
   icon: '#292524',
@@ -30,10 +31,18 @@ const darkColors = {
 
 export type ThemeColors = typeof lightColors
 
-export const getThemeColors = (colorScheme: 'dark' | 'light' | null | undefined): ThemeColors =>
-  colorScheme === 'dark' ? darkColors : lightColors
+export const useAppColorScheme = (): 'light' | 'dark' => {
+  const { colorScheme: nativeWindScheme } = useColorScheme()
+  const rnScheme = useRNColorScheme()
+  return nativeWindScheme ?? rnScheme ?? 'light'
+}
+
+export const getThemeColors = (colorScheme: 'dark' | 'light' | null | undefined): ThemeColors => {
+  const scheme = colorScheme ?? Appearance.getColorScheme()
+  return scheme === 'dark' ? darkColors : lightColors
+}
 
 export const useThemeColors = (): ThemeColors => {
-  const { colorScheme } = useColorScheme()
+  const colorScheme = useAppColorScheme()
   return getThemeColors(colorScheme)
 }

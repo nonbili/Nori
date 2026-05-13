@@ -321,19 +321,34 @@ export function createStarterBookmarks() {
 export function normalizeLists(lists?: (Partial<BookmarkListData> | null | undefined)[]) {
   const rawInput = asRowArray<Partial<BookmarkListData> | null | undefined>(lists)
   const raw = rawInput.filter((item): item is Partial<BookmarkListData> => item != null && typeof item.id === 'string')
+  const next: BookmarkListData[] = []
+  const processedIds = new Set<string>()
 
-  return reindexBySort(
-    raw.map((item, index) => ({
+  for (const item of raw) {
+    next.push({
       id: item.id!,
       name: item.name?.trim() || starterListById.get(item.id!)?.name || 'List',
-      json: createRowJsonState({
-        ...(item.json || {}),
-        sort_index: normalizeSortIndex(item.json?.sort_index, index),
-      }),
+      json: createRowJsonState(item.json || {}),
       createdAt: toIsoString(item.createdAt) ?? isoNow(),
       updatedAt: toIsoString(item.updatedAt) ?? toIsoString(item.createdAt) ?? isoNow(),
-    })),
-  )
+    })
+    processedIds.add(item.id!)
+  }
+
+  // Ensure all starter lists are present
+  for (const starter of STARTER_LISTS) {
+    if (!processedIds.has(starter.id)) {
+      next.push({
+        id: starter.id,
+        name: starter.name,
+        json: createRowJsonState({ visible: true, sort_index: 0, deleted_at: null }),
+        createdAt: isoNow(),
+        updatedAt: isoNow(),
+      })
+    }
+  }
+
+  return reindexBySort(next)
 }
 
 export function normalizeBookmarks(
@@ -344,6 +359,7 @@ export function normalizeBookmarks(
   const raw = rawInput.filter((item): item is Partial<BookmarkRecordData> => item != null && typeof item.id === 'string')
   const listIds = new Set(lists.map((item) => item.id))
   const next: BookmarkRecordData[] = []
+  const processedIds = new Set<string>()
 
   for (const item of raw) {
     const listId = typeof item.listId === 'string' ? item.listId : ''
@@ -361,6 +377,19 @@ export function normalizeBookmarks(
       createdAt: toIsoString(item.createdAt) ?? isoNow(),
       updatedAt: toIsoString(item.updatedAt) ?? toIsoString(item.createdAt) ?? isoNow(),
     })
+    processedIds.add(item.id!)
+  }
+
+  // Ensure all starter bookmarks are present
+  for (const starter of STARTER_BOOKMARKS) {
+    if (!processedIds.has(starter.id)) {
+      next.push({
+        ...starter,
+        json: createRowJsonState({ visible: true, sort_index: 0, deleted_at: null }),
+        createdAt: isoNow(),
+        updatedAt: isoNow(),
+      })
+    }
   }
 
   const grouped = new Map<string, BookmarkRecordData[]>()

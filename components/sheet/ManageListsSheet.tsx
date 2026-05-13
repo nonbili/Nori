@@ -8,8 +8,7 @@ import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { getInactiveLists, getVisibleLists } from '@/lib/nori-data'
 import { showToast } from '@/lib/toast'
-import { useThemeColors } from '@/lib/theme'
-import { useColorScheme } from 'nativewind'
+import { useAppColorScheme, useThemeColors } from '@/lib/theme'
 import { ManageRow, SectionLabel } from '@/components/common/Common'
 import { Sheet } from '@/components/modal/BaseModal'
 import { SortableList } from '@/components/common/SortableList'
@@ -19,7 +18,7 @@ import { GestureDetector } from 'react-native-gesture-handler'
 export const ManageListsSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
-  const { colorScheme } = useColorScheme()
+  const colorScheme = useAppColorScheme()
   const isDark = colorScheme === 'dark'
   const lists = useValue(lists$.lists)
   const visible = useValue(ui$.listManagerOpen)

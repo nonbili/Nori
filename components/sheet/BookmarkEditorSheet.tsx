@@ -1,10 +1,9 @@
 import { useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { ScrollView, Text, TextInput, Pressable, View } from 'react-native'
-import { useColorScheme } from 'nativewind'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
-import { useThemeColors } from '@/lib/theme'
+import { useAppColorScheme, useThemeColors } from '@/lib/theme'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
@@ -25,7 +24,7 @@ const getHostLabel = (url: string) => {
 export const BookmarkEditorSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
-  const { colorScheme } = useColorScheme()
+  const colorScheme = useAppColorScheme()
   const isDark = colorScheme === 'dark'
   const lists = useValue(lists$.lists)
   const editor = useValue(ui$.bookmarkEditor)

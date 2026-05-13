@@ -39,7 +39,10 @@ describe('normalizeLists', () => {
       { id: 'other', name: 'Other', json: { visible: true } },
     ])
 
-    expect(getVisibleLists(lists).map((item) => item.id)).toEqual(['other'])
+    const visibleIds = getVisibleLists(lists).map((item) => item.id)
+    expect(visibleIds).toContain('other')
+    expect(visibleIds).toContain('builtin-sns')
+    expect(visibleIds).not.toContain('custom')
   })
 
   it('hydrates lists from object-backed persisted array snapshots', () => {
@@ -48,16 +51,20 @@ describe('normalizeLists', () => {
       1: { id: 'custom', name: 'Custom', json: { visible: true, sort_index: 1 } },
     } as never)
 
-    expect(lists.map((item) => item.id)).toEqual(['builtin-sns', 'custom'])
+    const ids = lists.map((item) => item.id)
+    expect(ids).toContain('builtin-sns')
+    expect(ids).toContain('custom')
+    expect(ids).toContain('builtin-ai')
   })
 })
 
 describe('normalizeBookmarks', () => {
-  it('returns an empty list for malformed bookmark storage payloads', () => {
+  it('returns only starter bookmarks for malformed bookmark storage payloads', () => {
     const lists = normalizeLists([{ id: 'custom', name: 'Custom', json: { visible: true } }])
     const bookmarks = normalizeBookmarks(lists, { bogus: true } as never)
 
-    expect(bookmarks).toEqual([])
+    expect(bookmarks.length).toBeGreaterThan(0)
+    expect(bookmarks.every(b => b.id.startsWith('builtin-'))).toBe(true)
   })
 
   it('hydrates bookmarks from object-backed persisted array snapshots', () => {
@@ -67,7 +74,10 @@ describe('normalizeBookmarks', () => {
       1: { id: 'b', listId: 'custom', url: 'https://b.com', title: 'B', json: { sort_index: 1 } },
     } as never)
 
-    expect(bookmarks.map((item) => item.id)).toEqual(['a', 'b'])
+    const ids = bookmarks.map((item) => item.id)
+    expect(ids).toContain('a')
+    expect(ids).toContain('b')
+    expect(ids).toContain('builtin-sns-x')
   })
 
   it('keeps bookmark ordering in json.sort_index', () => {

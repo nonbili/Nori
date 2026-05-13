@@ -86,13 +86,16 @@ export const bookmarks$: Observable<Store> = observable<Store>({
 
     const previous = items[index]
     const nextListId = draft.listId ? resolveListId(draft.listId) || previous.listId : previous.listId
-    bookmarks$.bookmarks[index].assign({
+    const nextItems = [...items]
+    nextItems[index] = {
+      ...previous,
       url: draft.url != null ? normalizeUrlInput(draft.url) || previous.url : previous.url,
       title: draft.title?.trim() || previous.title,
       icon: draft.icon?.trim() ?? previous.icon,
       listId: nextListId,
       updatedAt: new Date().toISOString(),
-    })
+    }
+    bookmarks$.bookmarks.set(nextItems)
   },
   remove: (id) => {
     const items = bookmarks$.bookmarks.get()
@@ -102,10 +105,12 @@ export const bookmarks$: Observable<Store> = observable<Store>({
     }
 
     const next = patchRowState(items[index], { deleted_at: new Date().toISOString(), visible: false })
-    bookmarks$.bookmarks[index].set({
+    const nextItems = [...items]
+    nextItems[index] = {
       ...next,
       updatedAt: new Date().toISOString(),
-    })
+    }
+    bookmarks$.bookmarks.set(nextItems)
   },
   setVisible: (id, visible) => {
     const items = bookmarks$.bookmarks.get()
@@ -114,11 +119,13 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       return
     }
 
-    bookmarks$.bookmarks[index].json.set({
-      ...createRowJsonState(items[index].json),
-      visible,
-    })
-    bookmarks$.bookmarks[index].updatedAt.set(new Date().toISOString())
+    const next = patchRowState(items[index], { visible })
+    const nextItems = [...items]
+    nextItems[index] = {
+      ...next,
+      updatedAt: new Date().toISOString(),
+    }
+    bookmarks$.bookmarks.set(nextItems)
   },
   move: (id, delta) => {
     const items = bookmarks$.bookmarks.get()
