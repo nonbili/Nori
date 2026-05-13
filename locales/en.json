@@ -91,6 +91,22 @@
       "termsOfUse": "Terms of Use",
       "privacyPolicy": "Privacy Policy"
     },
+    "transfer": {
+      "label": "Bookmarks",
+      "import": "Import bookmarks",
+      "importHint": "Open HTML or plain text bookmark files.",
+      "importing": "Importing…",
+      "imported": "Imported {{count}} bookmarks",
+      "importEmpty": "No new bookmarks found",
+      "exportTitle": "Export bookmarks",
+      "exportHtml": "Export HTML",
+      "exportHtmlHint": "Save a browser-compatible bookmark file.",
+      "exportPlain": "Export plain text",
+      "exportPlainHint": "Save a readable title and URL list.",
+      "exporting": "Exporting…",
+      "exported": "Bookmarks exported",
+      "shareUnavailable": "Sharing is unavailable on this device"
+    },
     "experience": {
       "label": "Experience",
       "defaultBrowser": "Open links in default browser",

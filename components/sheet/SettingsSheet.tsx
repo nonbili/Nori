@@ -1,19 +1,33 @@
 import { Alert, Linking, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { Image } from 'expo-image'
+import * as DocumentPicker from 'expo-document-picker'
+import * as FileSystem from 'expo-file-system/legacy'
+import * as Sharing from 'expo-sharing'
 import { useEffect, useMemo, useState } from 'react'
+import { batch } from '@legendapp/state'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import NoriBilling from '@/modules/nori-billing'
+import {
+  exportBookmarksToHtml,
+  exportBookmarksToPlainText,
+  mergeImportedBookmarks,
+  parseBookmarksForImport,
+  type BookmarkTransferFormat,
+} from '@/lib/bookmark-transfer'
 import { prepareIosPurchase, syncIosTransaction } from '@/lib/nori-api'
 import { openDeleteAccount, openManagePlan, signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import { syncSupabase } from '@/lib/supabase/sync'
+import { bookmarks$ } from '@/states/bookmarks'
+import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { auth$, refreshEntitlement } from '@/states/auth'
 import { syncMeta$ } from '@/states/sync-meta'
 import { ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
-import { isIos } from '@/lib/utils'
+import { isIos, isWeb } from '@/lib/utils'
+import { showToast } from '@/lib/toast'
 import { SegmentedOption } from '@/components/common/Common'
 import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { Sheet } from '@/components/modal/BaseModal'
@@ -29,6 +43,16 @@ const DONATE_LINKS = [
   { label: 'PayPal', detail: 'paypal.me/rnons', url: 'https://paypal.me/rnons' },
 ]
 
+const TRANSFER_MIME = {
+  html: 'text/html',
+  plain: 'text/plain',
+} as const
+
+const TRANSFER_EXTENSION = {
+  html: 'html',
+  plain: 'txt',
+} as const
+
 const SettingsBadge: React.FC<{ label: string }> = ({ label }) => (
   <View className="rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-950 px-3 py-1">
     <Text className="text-xs text-stone-700 dark:text-stone-300">{label}</Text>
@@ -41,6 +65,8 @@ export const SettingsSheet: React.FC = () => {
   const { height: windowHeight } = useWindowDimensions()
   const theme = useValue(settings$.theme)
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
+  const lists = useValue(lists$.lists)
+  const bookmarks = useValue(bookmarks$.bookmarks)
   const visible = useValue(ui$.settingsSheetOpen)
   const userId = useValue(auth$.userId)
   const userEmail = useValue(auth$.userEmail)
@@ -57,7 +83,7 @@ export const SettingsSheet: React.FC = () => {
   const [loadingProduct, setLoadingProduct] = useState(isIos)
   const [productPrice, setProductPrice] = useState<string>()
   const [actionError, setActionError] = useState<string>()
-  const [busyAction, setBusyAction] = useState<'buy' | 'restore' | 'manage' | 'sync' | null>(null)
+  const [busyAction, setBusyAction] = useState<'buy' | 'restore' | 'manage' | 'sync' | 'import' | 'export-html' | 'export-plain' | null>(null)
   const [pendingExternalAction, setPendingExternalAction] = useState<'delete-account' | null>(null)
 
   useEffect(() => {
@@ -103,7 +129,10 @@ export const SettingsSheet: React.FC = () => {
     })
   }, [accessToken, pendingExternalAction, t])
 
-  const runAction = async (name: 'buy' | 'restore' | 'manage' | 'sync', fn: () => Promise<void>) => {
+  const runAction = async (
+    name: 'buy' | 'restore' | 'manage' | 'sync' | 'import' | 'export-html' | 'export-plain',
+    fn: () => Promise<void>,
+  ) => {
     setBusyAction(name)
     setActionError(undefined)
     try {
@@ -174,6 +203,92 @@ export const SettingsSheet: React.FC = () => {
     runAction('sync', async () => {
       await syncSupabase()
       await refreshEntitlement()
+    })
+
+  const inferImportFormat = (asset: DocumentPicker.DocumentPickerAsset, content: string): BookmarkTransferFormat => {
+    const name = asset.name.toLowerCase()
+    const mimeType = asset.mimeType?.toLowerCase() || ''
+    if (mimeType.includes('html') || name.endsWith('.html') || name.endsWith('.htm')) {
+      return 'html'
+    }
+    if (/<!doctype\s+netscape-bookmark/i.test(content) || /<dl\b/i.test(content)) {
+      return 'html'
+    }
+    return 'plain'
+  }
+
+  const readPickedText = async (asset: DocumentPicker.DocumentPickerAsset) => {
+    if (asset.base64) {
+      const bytes = Uint8Array.from(globalThis.atob(asset.base64), (c) => c.charCodeAt(0))
+      return new TextDecoder('utf-8').decode(bytes)
+    }
+    return FileSystem.readAsStringAsync(asset.uri)
+  }
+
+  const downloadOnWeb = (filename: string, content: string, mimeType: string) => {
+    const blob = new Blob([content], { type: `${mimeType};charset=utf-8` })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const onImportBookmarks = () =>
+    runAction('import', async () => {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['text/html', 'text/plain', 'text/*', 'application/octet-stream'],
+        copyToCacheDirectory: true,
+        base64: isWeb,
+      })
+      if (result.canceled) {
+        return
+      }
+
+      const asset = result.assets[0]
+      const content = await readPickedText(asset)
+      const imported = parseBookmarksForImport(content, inferImportFormat(asset, content))
+      const merged = mergeImportedBookmarks(lists$.lists.get(), bookmarks$.bookmarks.get(), imported)
+      if (!merged.importedCount) {
+        showToast(t('settings.transfer.importEmpty'))
+        return
+      }
+
+      batch(() => {
+        lists$.lists.set(merged.lists)
+        bookmarks$.bookmarks.set(merged.bookmarks)
+      })
+      showToast(t('settings.transfer.imported', { count: merged.importedCount }))
+    })
+
+  const onExportBookmarks = (format: BookmarkTransferFormat) =>
+    runAction(format === 'html' ? 'export-html' : 'export-plain', async () => {
+      const content = format === 'html' ? exportBookmarksToHtml(lists, bookmarks) : exportBookmarksToPlainText(lists, bookmarks)
+      const date = new Date().toISOString().slice(0, 10)
+      const filename = `nori-bookmarks-${date}.${TRANSFER_EXTENSION[format]}`
+      const mimeType = TRANSFER_MIME[format]
+
+      if (isWeb) {
+        downloadOnWeb(filename, content, mimeType)
+        showToast(t('settings.transfer.exported'))
+        return
+      }
+
+      const cacheDirectory = FileSystem.cacheDirectory
+      if (!cacheDirectory) {
+        throw new Error(t('settings.transfer.shareUnavailable'))
+      }
+      const uri = `${cacheDirectory}${filename}`
+      await FileSystem.writeAsStringAsync(uri, content)
+      if (!(await Sharing.isAvailableAsync())) {
+        throw new Error(t('settings.transfer.shareUnavailable'))
+      }
+      await Sharing.shareAsync(uri, {
+        mimeType,
+        UTI: format === 'html' ? 'public.html' : 'public.plain-text',
+        dialogTitle: t('settings.transfer.exportTitle'),
+      })
     })
 
   const planLabel = plan === 'sync' ? t('settings.plan.sync') : t('settings.plan.free')
@@ -461,6 +576,34 @@ export const SettingsSheet: React.FC = () => {
                 <SegmentedOption label={t('settings.experience.dark')} active={theme === 'dark'} onPress={() => settings$.theme.set('dark')} />
               </View>
             </View>
+          </View>
+        </View>
+
+        <View className="gap-3">
+          <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.transfer.label')}</Text>
+          <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
+            <AboutRow
+              icon="file-upload"
+              title={t('settings.transfer.import')}
+              detail={busyAction === 'import' ? t('settings.transfer.importing') : t('settings.transfer.importHint')}
+              onPress={() => void onImportBookmarks()}
+              themeColors={themeColors}
+            />
+            <AboutRow
+              icon="html"
+              title={t('settings.transfer.exportHtml')}
+              detail={busyAction === 'export-html' ? t('settings.transfer.exporting') : t('settings.transfer.exportHtmlHint')}
+              onPress={() => void onExportBookmarks('html')}
+              themeColors={themeColors}
+            />
+            <AboutRow
+              icon="subject"
+              title={t('settings.transfer.exportPlain')}
+              detail={busyAction === 'export-plain' ? t('settings.transfer.exporting') : t('settings.transfer.exportPlainHint')}
+              onPress={() => void onExportBookmarks('plain')}
+              themeColors={themeColors}
+              isLast
+            />
           </View>
         </View>
 

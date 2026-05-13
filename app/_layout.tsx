@@ -1,7 +1,7 @@
 import '@/lib/i18n'
 import './global.css'
 
-import { Appearance, Linking, LogBox, View } from 'react-native'
+import { Linking, LogBox, View } from 'react-native'
 import { Slot } from 'expo-router'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
@@ -24,7 +24,6 @@ function LayoutContent() {
 
   useEffect(() => {
     nativeWindColorScheme.set(theme ?? 'system')
-    Appearance.setColorScheme(theme ?? 'unspecified')
   }, [theme])
 
   useEffect(() => {
