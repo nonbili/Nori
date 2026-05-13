@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Pressable, ScrollView as NativeScrollView, Share, Text, TextInput, View, useWindowDimensions } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FlashList } from '@shopify/flash-list'
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { Directions, Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler'
 import { useValue } from '@legendapp/state/react'
 
@@ -102,23 +102,34 @@ export function AllBookmarksDrawer() {
   const visibleLists = getVisibleLists(lists)
 
   useEffect(() => {
-    drawerTranslateY.value = withSpring(drawerOpen ? 0 : windowHeight, {
-      damping: 20,
-      stiffness: 90,
-      overshootClamping: true,
-    })
+    if (drawerOpen) {
+      drawerTranslateY.value = withSpring(0, {
+        damping: 20,
+        stiffness: 90,
+        overshootClamping: true,
+      })
+    } else {
+      drawerTranslateY.value = withTiming(windowHeight, { duration: 220 })
+    }
     if (!drawerOpen) {
       setSearchQuery('')
     } else {
       scrollOffset.value = 0
     }
-  }, [drawerOpen, drawerTranslateY, windowHeight])
+  }, [drawerOpen, drawerTranslateY, scrollOffset, windowHeight])
 
   const drawerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: drawerTranslateY.value }],
   }))
 
   const closeDrawer = () => ui$.drawerOpen.set(false)
+  const closeDrawerWithAnimation = () => {
+    drawerTranslateY.value = withTiming(windowHeight, { duration: 220 }, (finished) => {
+      if (finished) {
+        runOnJS(closeDrawer)()
+      }
+    })
+  }
 
   // Fling-down on the tab row dismisses the drawer (does not block child presses)
   const closeDrawerGesture = Gesture.Fling()
@@ -126,7 +137,7 @@ export function AllBookmarksDrawer() {
     .onStart(() => {
       'worklet'
       if (scrollOffset.value <= 0) {
-        runOnJS(closeDrawer)()
+        runOnJS(closeDrawerWithAnimation)()
       }
     })
 
@@ -154,7 +165,11 @@ export function AllBookmarksDrawer() {
       'worklet'
       if (drawerTranslateY.value > 0) {
         if (event.translationY > 100 || event.velocityY > 500) {
-          runOnJS(closeDrawer)()
+          drawerTranslateY.value = withTiming(windowHeight, { duration: 180 }, (finished) => {
+            if (finished) {
+              runOnJS(closeDrawer)()
+            }
+          })
         } else {
           drawerTranslateY.value = withSpring(0, {
             damping: 18,
@@ -260,7 +275,7 @@ export function AllBookmarksDrawer() {
         <View className="flex-1" style={{ paddingTop: HEADER_TOP_OFFSET }}>
           <View className="mb-6 flex-row items-center gap-3">
             <Pressable
-              onPress={() => ui$.drawerOpen.set(false)}
+              onPress={closeDrawerWithAnimation}
               className="h-10 w-10 items-center justify-center rounded-full border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900"
             >
               <MaterialIcons name="arrow-back" size={20} color={themeColors.iconMuted} />

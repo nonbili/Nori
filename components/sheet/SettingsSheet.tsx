@@ -1,10 +1,12 @@
-import { Alert, Linking, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native'
+import { Alert, Linking, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
+import { useSharedValue } from 'react-native-reanimated'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { Image } from 'expo-image'
 import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system/legacy'
 import * as Sharing from 'expo-sharing'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { batch } from '@legendapp/state'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
@@ -80,11 +82,18 @@ export const SettingsSheet: React.FC = () => {
   const syncError = useValue(syncMeta$.lastError)
   const lastSyncAt = useValue(syncMeta$.lastSyncAt)
   const accessToken = useValue(auth$.accessToken)
+  const scrollOffset = useSharedValue(0)
+  const scrollRef = useRef(null)
   const [loadingProduct, setLoadingProduct] = useState(isIos)
   const [productPrice, setProductPrice] = useState<string>()
   const [actionError, setActionError] = useState<string>()
   const [busyAction, setBusyAction] = useState<'buy' | 'restore' | 'manage' | 'sync' | 'import' | 'export-html' | 'export-plain' | null>(null)
   const [pendingExternalAction, setPendingExternalAction] = useState<'delete-account' | null>(null)
+  const [page, setPage] = useState<'home' | 'about'>('home')
+
+  useEffect(() => {
+    scrollOffset.value = 0
+  }, [page, scrollOffset])
 
   useEffect(() => {
     if (!isIos) {
@@ -316,10 +325,13 @@ export const SettingsSheet: React.FC = () => {
     { id: 'sign-out', label: t('settings.sync.signOut'), handler: () => void signOut() },
   ]
 
-  const [page, setPage] = useState<'home' | 'about'>('home')
+  const handleScroll = (event: any) => {
+    scrollOffset.value = event.nativeEvent.contentOffset.y
+  }
   const onClose = () => {
     ui$.settingsSheetOpen.set(false)
     setPage('home')
+    scrollOffset.value = 0
   }
   const headerLeft =
     page === 'home' ? undefined : (
@@ -342,8 +354,17 @@ export const SettingsSheet: React.FC = () => {
         onClose={() => setPage('home')}
         headerLeft={headerLeft}
         showCloseButton={false}
+        contentScrollRef={scrollRef}
+        contentScrollOffset={scrollOffset}
       >
-        <ScrollView showsVerticalScrollIndicator={false} className="flex-1" contentContainerClassName="gap-6 pb-4">
+        <ScrollView
+          ref={scrollRef}
+          showsVerticalScrollIndicator={false}
+          className="flex-1"
+          contentContainerClassName="gap-6 pb-4"
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        >
           <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
             <AboutRow
               icon="info-outline"
@@ -390,8 +411,22 @@ export const SettingsSheet: React.FC = () => {
   }
 
   return (
-    <Sheet visible={visible} title={t('settings.title')} height={windowHeight * 0.85} onClose={onClose}>
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1" contentContainerClassName="gap-8 pb-4">
+    <Sheet
+      visible={visible}
+      title={t('settings.title')}
+      height={windowHeight * 0.85}
+      onClose={onClose}
+      contentScrollRef={scrollRef}
+      contentScrollOffset={scrollOffset}
+    >
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        className="flex-1"
+        contentContainerClassName="gap-8 pb-4"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
         {!userId ? (
           <View className="gap-3">
             <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.sync.label')}</Text>
