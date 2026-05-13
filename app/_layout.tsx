@@ -26,21 +26,7 @@ function LayoutContent() {
   const colorScheme = theme || appColorScheme
 
   useEffect(() => {
-    if (theme) {
-      nativeWindColorScheme.set(theme)
-      return
-    }
-
-    const updateSystemTheme = () => {
-      nativeWindColorScheme.set(Appearance.getColorScheme() ?? 'light')
-    }
-
-    updateSystemTheme()
-    const subscription = Appearance.addChangeListener(updateSystemTheme)
-
-    return () => {
-      subscription.remove()
-    }
+    nativeWindColorScheme.set(theme || 'system')
   }, [theme])
 
   useEffect(() => {

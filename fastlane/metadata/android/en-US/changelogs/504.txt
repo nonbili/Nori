@@ -1,0 +1,3 @@
+- Support importing/exporting bookmarks
+- Pull down to close SettingsSheet
+- Various bug fixes and improvements
