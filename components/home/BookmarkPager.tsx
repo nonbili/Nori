@@ -25,6 +25,7 @@ const PAGE_RENDER_RADIUS = 1
 const INITIAL_BOOKMARKS_TO_RENDER = 6
 const BOOKMARKS_RENDER_BATCH = 4
 const BOTTOM_EDGE_THRESHOLD = 24
+const LARGE_EDIT_LIST_THRESHOLD = 120
 
 type BookmarkGroups = Map<string, {
   visible: BookmarkRecord[]
@@ -108,7 +109,13 @@ const EmptyBookmarksState = memo(({
 ))
 EmptyBookmarksState.displayName = 'EmptyBookmarksState'
 
-const EditModeHint = memo(({ iconColor }: { iconColor: string }) => (
+const EditModeHint = memo(({
+  iconColor,
+  canReorder = true,
+}: {
+  iconColor: string
+  canReorder?: boolean
+}) => (
   <View className="mb-4 rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-900/50 dark:bg-emerald-950/20">
     <View className="flex-row items-center gap-3">
       <View className="h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/30">
@@ -117,7 +124,7 @@ const EditModeHint = memo(({ iconColor }: { iconColor: string }) => (
       <View className="flex-1">
         <Text className="text-xs font-semibold text-emerald-950 dark:text-emerald-100">Editing bookmarks</Text>
         <Text className="mt-0.5 text-[11px] leading-4 text-emerald-900 dark:text-emerald-50">
-          Drag to reorder. Tap a bookmark for quick actions.
+          {canReorder ? 'Drag to reorder. Tap a bookmark for quick actions.' : 'Tap a bookmark for quick actions.'}
         </Text>
       </View>
     </View>
@@ -238,6 +245,30 @@ const BookmarkListPage = memo(({
     selectedBookmarkId,
   ])
 
+  const renderEditFlatListItem = useCallback(({ item: bookmark }: { item: BookmarkRecord }) => (
+    <View style={{ width: itemWidth }}>
+      <BookmarkTile
+        bookmark={bookmark}
+        editMode={true}
+        selected={selectedBookmarkId === bookmark.id}
+        onSelect={() => onSelectBookmark(bookmark)}
+        onOpen={() => onSelectBookmark(bookmark)}
+        onEdit={() => onEditBookmark(bookmark)}
+        onCopyUrl={() => onCopyBookmarkUrl(bookmark)}
+        onShare={() => onShareBookmark(bookmark)}
+        onDelete={() => onDeleteBookmark(bookmark)}
+      />
+    </View>
+  ), [
+    itemWidth,
+    onCopyBookmarkUrl,
+    onDeleteBookmark,
+    onEditBookmark,
+    onSelectBookmark,
+    onShareBookmark,
+    selectedBookmarkId,
+  ])
+
   const getItemLayout = useCallback((_: ArrayLike<BookmarkRecord> | null | undefined, index: number) => {
     const rowHeight = TILE_HEIGHT + GRID_GAP
     const rowIndex = Math.floor(index / GRID_COLUMNS)
@@ -279,6 +310,56 @@ const BookmarkListPage = memo(({
           initialNumToRender={INITIAL_BOOKMARKS_TO_RENDER}
           maxToRenderPerBatch={BOOKMARKS_RENDER_BATCH}
           windowSize={3}
+          removeClippedSubviews
+        />
+      </View>
+    )
+  }
+
+  if (listBookmarks.length > LARGE_EDIT_LIST_THRESHOLD) {
+    return (
+      <View className="flex-1" style={{ width }}>
+        <FlatList
+          data={listBookmarks}
+          renderItem={renderEditFlatListItem}
+          keyExtractor={(item) => item.id}
+          numColumns={GRID_COLUMNS}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            paddingHorizontal: PAGE_HORIZONTAL_PADDING,
+            paddingVertical: 16,
+          }}
+          columnWrapperStyle={{ gap: GRID_GAP, marginBottom: GRID_GAP }}
+          ListHeaderComponent={<EditModeHint iconColor={iconAccentColor} canReorder={false} />}
+          ListFooterComponent={availableBookmarks.length ? (
+            <View className="gap-4 pt-4">
+              <SectionLabel title="Hidden in this list" subtitle="Tap a bookmark to bring it back." />
+              <SortableGrid
+                items={availableBookmarks}
+                itemHeight={TILE_HEIGHT}
+                editMode={false}
+                scrollViewRef={scrollViewRef}
+                renderItem={(bookmark) => (
+                  <BookmarkTile
+                    key={bookmark.id}
+                    bookmark={bookmark}
+                    editMode={true}
+                    onSelect={() => bookmarks$.setVisible(bookmark.id, true)}
+                    onOpen={() => {}}
+                  />
+                )}
+                onReorder={() => {}}
+              />
+            </View>
+          ) : null}
+          onLayout={onVerticalLayout}
+          onContentSizeChange={onVerticalContentSizeChange}
+          onScroll={onVerticalScroll}
+          initialNumToRender={INITIAL_BOOKMARKS_TO_RENDER}
+          maxToRenderPerBatch={BOOKMARKS_RENDER_BATCH}
+          windowSize={5}
           removeClippedSubviews
         />
       </View>
@@ -473,7 +554,7 @@ export const BookmarkPager: React.FC = () => {
   const onChipRowLayout = useCallback((event: LayoutChangeEvent) => {
     chipViewportWidthRef.current = event.nativeEvent.layout.width
     if (!didInitialChipScrollRef.current) {
-      didInitialChipScrollRef.current = scrollSelectedChipIntoView(initialSelectedListIdRef.current, false, false)
+      didInitialChipScrollRef.current = scrollSelectedChipIntoView(initialSelectedListIdRef.current ?? undefined, false, false)
     }
   }, [scrollSelectedChipIntoView])
 
@@ -711,58 +792,78 @@ export const BookmarkPager: React.FC = () => {
         })}
       </Animated.ScrollView>
 
-      <View className="absolute bottom-16 right-6 left-6 z-10 flex-row items-center justify-between">
-        {bookmarkEditMode && selectedBookmark ? (
-          <View className="flex-row items-center gap-4">
-            <Pressable
-              onPress={() => {
-                bookmarks$.setVisible(selectedBookmark.id, false)
-                ui$.selectedBookmarkId.set(null)
-              }}
-              className="h-10 items-center justify-center rounded-full bg-stone-200 px-4 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
-            >
-              <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">Hide</Text>
-            </Pressable>
-            <Pressable
-              onPress={removeSelectedBookmark}
-              className="h-10 w-10 items-center justify-center rounded-full bg-rose-100 active:bg-rose-200 dark:bg-rose-900/40 dark:active:bg-rose-900/60"
-            >
-              <MaterialIcons name="delete" size={18} color={themeColors.iconDanger} />
-            </Pressable>
-          </View>
-        ) : (
-          <View />
-        )}
-        <Pressable
-          onPress={() => {
-            if (bookmarkEditMode) {
-              ui$.bookmarkEditMode.set(false)
-              ui$.selectedBookmarkId.set(null)
-            } else {
-              ui$.bookmarkEditMode.set(true)
-            }
+      <View className="absolute bottom-4 right-6 left-6 z-10">
+        <View
+          className="flex-row items-center justify-between rounded-full border border-white/70 bg-white/70 px-3 py-2 shadow-lg dark:border-white/10 dark:bg-stone-950/70"
+          style={{
+            shadowColor: '#000',
+            shadowOpacity: 0.16,
+            shadowRadius: 20,
+            shadowOffset: { width: 0, height: 10 },
+            elevation: 16,
           }}
-          className={`h-10 w-10 items-center justify-center rounded-full ${
-            bookmarkEditMode
-              ? 'bg-emerald-600 active:bg-emerald-700'
-              : 'bg-stone-200 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700'
-          }`}
         >
-          <MaterialIcons
-            name={bookmarkEditMode ? 'check' : 'edit'}
-            size={18}
-            color={bookmarkEditMode ? '#ffffff' : themeColors.iconMuted}
-          />
-        </Pressable>
-      </View>
-      {!bookmarkEditMode ? (
-        <View className="items-center py-4">
-          <Pressable onPress={() => ui$.drawerOpen.set(true)} className="items-center">
-            <View className="h-1 w-12 rounded-full bg-stone-300 dark:bg-stone-800" />
-            <MaterialIcons name="keyboard-arrow-up" size={24} color={themeColors.iconMuted} />
+          {bookmarkEditMode ? (
+            selectedBookmark ? (
+              <View className="flex-row items-center gap-3">
+                <Pressable
+                  onPress={() => {
+                    bookmarks$.setVisible(selectedBookmark.id, false)
+                    ui$.selectedBookmarkId.set(null)
+                  }}
+                  className="h-10 items-center justify-center rounded-full bg-stone-200 px-4 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
+                >
+                  <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">Hide</Text>
+                </Pressable>
+                <Pressable
+                  onPress={removeSelectedBookmark}
+                  className="h-10 w-10 items-center justify-center rounded-full bg-rose-100 active:bg-rose-200 dark:bg-rose-900/40 dark:active:bg-rose-900/60"
+                >
+                  <MaterialIcons name="delete" size={18} color={themeColors.iconDanger} />
+                </Pressable>
+              </View>
+            ) : (
+              <View className="h-10 w-10" />
+            )
+          ) : (
+            <Pressable
+              onPress={openNewBookmark}
+              className="h-10 w-10 items-center justify-center rounded-full bg-white/80 active:bg-white dark:bg-white/10 dark:active:bg-white/15"
+            >
+              <MaterialIcons name="add" size={20} color={themeColors.iconMuted} />
+            </Pressable>
+          )}
+          {!bookmarkEditMode ? (
+            <Pressable onPress={() => ui$.drawerOpen.set(true)} className="h-10 items-center justify-center px-4">
+              <View className="h-1 w-12 rounded-full bg-stone-300/90 dark:bg-white/20" />
+              <MaterialIcons name="keyboard-arrow-up" size={24} color={themeColors.iconMuted} />
+            </Pressable>
+          ) : (
+            <View className="h-10 w-20" />
+          )}
+          <Pressable
+            onPress={() => {
+              if (bookmarkEditMode) {
+                ui$.bookmarkEditMode.set(false)
+                ui$.selectedBookmarkId.set(null)
+              } else {
+                ui$.bookmarkEditMode.set(true)
+              }
+            }}
+            className={`h-10 w-10 items-center justify-center rounded-full ${
+              bookmarkEditMode
+                ? 'bg-emerald-600 active:bg-emerald-700'
+                : 'bg-white/80 active:bg-white dark:bg-white/10 dark:active:bg-white/15'
+            }`}
+          >
+            <MaterialIcons
+              name={bookmarkEditMode ? 'check' : 'edit'}
+              size={18}
+              color={bookmarkEditMode ? '#ffffff' : themeColors.iconMuted}
+            />
           </Pressable>
         </View>
-      ) : null}
+      </View>
     </View>
   )
 }
