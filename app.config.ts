@@ -58,7 +58,25 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
           supportedLocales: ['en'],
         },
       ],
-      ['expo-share-intent', { iosAppGroupIdentifier: 'group.jp.nonbili.nori' }],
+      [
+        'expo-sharing',
+        {
+          ios: {
+            enabled: true,
+            extensionBundleIdentifier: 'jp.nonbili.nori.ShareExtension',
+            appGroupId: 'group.jp.nonbili.nori',
+            activationRule: {
+              supportsWebUrlWithMaxCount: 1,
+              supportsFileWithMaxCount: 1,
+              supportsText: true,
+            },
+          },
+          android: {
+            enabled: true,
+            singleShareMimeTypes: ['text/*', '*/*'],
+          },
+        },
+      ],
       'expo-web-browser',
       'expo-font',
     ],

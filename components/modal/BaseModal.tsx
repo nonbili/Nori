@@ -87,13 +87,13 @@ export const Sheet: React.FC<{
   }, [backdropOpacity, finishClose, translateY, windowHeight])
 
   useEffect(() => {
-    if (visible) {
+    if (visible && !rendered) {
       setRendered(true)
       translateY.value = windowHeight
       backdropOpacity.value = 0
       translateY.value = withTiming(0, { duration: 240 })
       backdropOpacity.value = withTiming(1, { duration: 180 })
-    } else if (rendered) {
+    } else if (!visible && rendered) {
       closeWithAnimation()
     }
   }, [backdropOpacity, closeWithAnimation, rendered, translateY, visible, windowHeight])

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { useShareIntent } from 'expo-share-intent'
+import { useIncomingShare, type ResolvedSharePayload, type SharePayload } from 'expo-sharing'
 import { ui$ } from '@/states/ui'
 import { getFallbackIcon } from '@/lib/bookmark'
-import { importBookmarksFromText, readBookmarkImportText } from '@/lib/bookmark-import'
+import { countBookmarksInImportText, readBookmarkImportText } from '@/lib/bookmark-import'
 import { prefetchBookmarkMeta } from '@/lib/bookmark-meta-cache'
 import { htmlLooksLikeBookmarkExport, parseSharedUrl } from '@/lib/share-intent'
 import { showToast } from '@/lib/toast'
@@ -15,23 +15,77 @@ const getHostLabel = (url: string) => {
   }
 }
 
-const isHtmlFile = (file: { fileName?: string | null; mimeType?: string | null }) => {
-  const name = file.fileName?.toLowerCase() || ''
-  const mimeType = file.mimeType?.toLowerCase() || ''
+const isHtmlPayload = (payload: ResolvedSharePayload) => {
+  const name = payload.originalName?.toLowerCase() || ''
+  const mimeType = payload.contentMimeType?.toLowerCase() || ''
   return mimeType.includes('html') || name.endsWith('.html') || name.endsWith('.htm')
 }
 
+const isFileUri = (uri: string | null | undefined) =>
+  !!uri && !/^https?:\/\//i.test(uri)
+
+const getPayloadKey = (payload: ResolvedSharePayload) =>
+  `${payload.contentType ?? 'text'}:${payload.contentUri ?? ''}:${payload.value}`
+
+const looksLikeFilePayload = (payload: SharePayload) =>
+  payload.shareType === 'audio'
+  || payload.shareType === 'image'
+  || payload.shareType === 'video'
+  || payload.shareType === 'file'
+
+const fileNameFromValue = (value: string) => {
+  try {
+    const decoded = decodeURIComponent(value)
+    const last = decoded.split(/[/\\]/).pop() || ''
+    return last || null
+  } catch {
+    return null
+  }
+}
+
 export const usePendingShareIntent = () => {
-  const { hasShareIntent, shareIntent, resetShareIntent } = useShareIntent()
-  const handledShareKey = useRef<string | null>(null)
+  const { sharedPayloads, resolvedSharedPayloads, clearSharedPayloads, isResolving } = useIncomingShare()
+  const handledPayloadKey = useRef<string | null>(null)
+  const placeholderShownRef = useRef(false)
 
   useEffect(() => {
-    if (!hasShareIntent) {
-      handledShareKey.current = null
+    if (placeholderShownRef.current) {
+      return
+    }
+    const raw = sharedPayloads[0]
+    if (!raw || !looksLikeFilePayload(raw)) {
+      return
+    }
+    placeholderShownRef.current = true
+    ui$.pendingShare.set(null)
+    ui$.pendingBookmarkImport.set({
+      content: '',
+      name: fileNameFromValue(raw.value),
+      mimeType: raw.mimeType ?? null,
+      count: 0,
+      isParsing: true,
+    })
+  }, [sharedPayloads])
+
+  useEffect(() => {
+    if (isResolving) {
+      return
+    }
+    if (resolvedSharedPayloads.length === 0) {
+      handledPayloadKey.current = null
+      placeholderShownRef.current = false
       return
     }
 
-    const setPendingSharedUrl = (url: string) => {
+    const payload = resolvedSharedPayloads[0]
+    const key = getPayloadKey(payload)
+    if (handledPayloadKey.current === key) {
+      return
+    }
+    handledPayloadKey.current = key
+
+    const handleUrl = (url: string) => {
+      ui$.pendingBookmarkImport.set(null)
       void prefetchBookmarkMeta(url)
       ui$.pendingShare.set({
         url,
@@ -40,61 +94,72 @@ export const usePendingShareIntent = () => {
       })
     }
 
-    const handleUrlShare = (url: string) => {
-      const shareKey = `url:${url}`
-      if (handledShareKey.current === shareKey) {
-        return
-      }
-      handledShareKey.current = shareKey
-      setPendingSharedUrl(url)
-    }
+    const handleFile = (uri: string) => {
+      ui$.pendingShare.set(null)
+      ui$.pendingBookmarkImport.set({
+        content: '',
+        name: payload.originalName,
+        mimeType: payload.contentMimeType,
+        count: 0,
+        isParsing: true,
+      })
 
-    const sharedFile = shareIntent.files?.[0]
-    if (sharedFile) {
-      const shareKey = `file:${sharedFile.path}:${sharedFile.fileName || ''}`
-      if (handledShareKey.current === shareKey) {
-        return
-      }
-      handledShareKey.current = shareKey
       void readBookmarkImportText({
-        uri: sharedFile.path,
-        name: sharedFile.fileName,
-        mimeType: sharedFile.mimeType,
+        uri,
+        name: payload.originalName,
+        mimeType: payload.contentMimeType,
       })
         .then((content) => {
-          if (isHtmlFile(sharedFile) && !htmlLooksLikeBookmarkExport(content)) {
-            showToast('No new bookmarks found')
-            return
-          }
+          const count = isHtmlPayload(payload) && !htmlLooksLikeBookmarkExport(content)
+            ? 0
+            : countBookmarksInImportText(content, {
+                name: payload.originalName,
+                mimeType: payload.contentMimeType,
+              })
 
-          const count = importBookmarksFromText(content, {
-            name: sharedFile.fileName,
-            mimeType: sharedFile.mimeType,
+          ui$.pendingBookmarkImport.set({
+            content,
+            name: payload.originalName,
+            mimeType: payload.contentMimeType,
+            count,
+            isParsing: false,
           })
-          showToast(count ? `Imported ${count} bookmarks` : 'No new bookmarks found')
         })
         .catch((error) => {
-          showToast(error instanceof Error ? error.message : String(error))
+          console.warn('Failed to read shared bookmark file', {
+            contentUri: uri,
+            originalName: payload.originalName,
+            contentMimeType: payload.contentMimeType,
+            error,
+          })
+          ui$.pendingBookmarkImport.set(null)
+          showToast('Could not read shared file')
         })
         .finally(() => {
-          handledShareKey.current = null
-          resetShareIntent()
+          handledPayloadKey.current = null
+          clearSharedPayloads()
         })
+    }
+
+    if (payload.contentUri && isFileUri(payload.contentUri)) {
+      handleFile(payload.contentUri)
       return
     }
 
-    const url = parseSharedUrl({
-      webUrl: shareIntent.webUrl || undefined,
-      text: shareIntent.text || undefined,
-    })
-
-    if (!url) {
-      showToast('Shared content did not contain a valid link')
-      handledShareKey.current = null
-      resetShareIntent()
+    if (payload.contentType === 'website' && payload.contentUri) {
+      handleUrl(payload.contentUri)
       return
     }
 
-    handleUrlShare(url)
-  }, [hasShareIntent, shareIntent.files, shareIntent.text, shareIntent.webUrl, resetShareIntent])
+    const url = parseSharedUrl({ text: payload.value })
+    if (url) {
+      handleUrl(url)
+      return
+    }
+
+    ui$.pendingBookmarkImport.set(null)
+    showToast('Shared content did not contain a valid link')
+    handledPayloadKey.current = null
+    clearSharedPayloads()
+  }, [resolvedSharedPayloads, isResolving, clearSharedPayloads])
 }

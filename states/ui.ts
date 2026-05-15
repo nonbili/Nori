@@ -19,6 +19,14 @@ export interface PendingShareState {
   icon: string
 }
 
+export interface PendingBookmarkImportState {
+  content: string
+  name?: string | null
+  mimeType?: string | null
+  count: number
+  isParsing?: boolean
+}
+
 interface UIStore {
   bookmarkEditMode: boolean
   bookmarkEditor: BookmarkEditorState | null
@@ -26,6 +34,7 @@ interface UIStore {
   drawerOpen: boolean
   listEditor: ListEditorState | null
   listManagerOpen: boolean
+  pendingBookmarkImport: PendingBookmarkImportState | null
   pendingShare: PendingShareState | null
   recentSheetOpen: boolean
   selectedBookmarkId: string | null
@@ -39,6 +48,7 @@ export const ui$ = observable<UIStore>({
   drawerOpen: false,
   listEditor: null,
   listManagerOpen: false,
+  pendingBookmarkImport: null,
   pendingShare: null,
   recentSheetOpen: false,
   selectedBookmarkId: null,

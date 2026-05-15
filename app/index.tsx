@@ -5,6 +5,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import { ui$ } from '@/states/ui'
 import { AllBookmarksDrawer } from '@/components/drawer/AllBookmarksDrawer'
+import { BookmarkImportSheet } from '@/components/sheet/BookmarkImportSheet'
 import { AppHeader } from '@/components/header/AppHeader'
 import { BookmarkPager } from '@/components/home/BookmarkPager'
 import { BookmarkEditorSheet } from '@/components/sheet/BookmarkEditorSheet'
@@ -39,6 +40,10 @@ export default function HomeScreen() {
       }
       if (ui$.pendingShare.get()) {
         ui$.pendingShare.set(null)
+        return true
+      }
+      if (ui$.pendingBookmarkImport.get()) {
+        ui$.pendingBookmarkImport.set(null)
         return true
       }
       if (ui$.bookmarkEditor.get()) {
@@ -89,6 +94,7 @@ export default function HomeScreen() {
       <ListEditorSheet />
 
       <SaveSharedLinkSheet />
+      <BookmarkImportSheet />
     </View>
   )
 }
