@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useShareIntent } from 'expo-share-intent'
 import { ui$ } from '@/states/ui'
 import { getFallbackIcon, getMeta } from '@/lib/bookmark'
+import { importBookmarksFromAsset } from '@/lib/bookmark-import'
 import { parseSharedUrl } from '@/lib/share-intent'
 import { showToast } from '@/lib/toast'
 
@@ -15,9 +16,36 @@ const getHostLabel = (url: string) => {
 
 export const usePendingShareIntent = () => {
   const { hasShareIntent, shareIntent, resetShareIntent } = useShareIntent()
+  const handledShareKey = useRef<string | null>(null)
 
   useEffect(() => {
     if (!hasShareIntent) {
+      handledShareKey.current = null
+      return
+    }
+
+    const sharedFile = shareIntent.files?.[0]
+    if (sharedFile) {
+      const shareKey = `file:${sharedFile.path}:${sharedFile.fileName || ''}`
+      if (handledShareKey.current === shareKey) {
+        return
+      }
+      handledShareKey.current = shareKey
+      void importBookmarksFromAsset({
+        uri: sharedFile.path,
+        name: sharedFile.fileName,
+        mimeType: sharedFile.mimeType,
+      })
+        .then((count) => {
+          showToast(count ? `Imported ${count} bookmarks` : 'No new bookmarks found')
+        })
+        .catch((error) => {
+          showToast(error instanceof Error ? error.message : String(error))
+        })
+        .finally(() => {
+          handledShareKey.current = null
+          resetShareIntent()
+        })
       return
     }
 
@@ -28,9 +56,16 @@ export const usePendingShareIntent = () => {
 
     if (!url) {
       showToast('Shared content did not contain a valid link')
+      handledShareKey.current = null
       resetShareIntent()
       return
     }
+
+    const shareKey = `url:${url}`
+    if (handledShareKey.current === shareKey) {
+      return
+    }
+    handledShareKey.current = shareKey
 
     ui$.pendingShare.set({
       url,
@@ -59,5 +94,5 @@ export const usePendingShareIntent = () => {
     return () => {
       active = false
     }
-  }, [hasShareIntent, shareIntent.text, shareIntent.webUrl, resetShareIntent])
+  }, [hasShareIntent, shareIntent.files, shareIntent.text, shareIntent.webUrl, resetShareIntent])
 }
