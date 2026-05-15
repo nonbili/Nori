@@ -1,0 +1,4 @@
+- Support importing bookmarks from HTML files
+- New bottom dock for quick access to adding, drawer, and editing
+- Improved bookmark menu consistency
+- Bug fixes and UI improvements
