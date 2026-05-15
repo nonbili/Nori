@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useRef } from 'react'
-import { FlatList, Pressable, ScrollView, Text, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
+import { FlatList, ScrollView, Text, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useValue } from '@legendapp/state/react'
 import Animated, { type AnimatedRef } from 'react-native-reanimated'
@@ -14,9 +14,11 @@ const TILE_HEIGHT = 46
 const GRID_COLUMNS = 2
 const GRID_GAP = 16
 const PAGE_HORIZONTAL_PADDING = 24
+const PAGE_BOTTOM_PADDING = 96
 const INITIAL_BOOKMARKS_TO_RENDER = 6
 const BOOKMARKS_RENDER_BATCH = 4
 const BOTTOM_EDGE_THRESHOLD = 24
+const BOTTOM_OVERSCROLL_OPEN_THRESHOLD = 12
 const LARGE_EDIT_LIST_THRESHOLD = 120
 
 export interface BookmarkPagerActions {
@@ -34,19 +36,6 @@ export interface BookmarkPagerActions {
   onBottomStateChange: (atBottom: boolean) => void
   onRemoveSelectedBookmark: () => void
 }
-
-const AddLinkButton = memo(({ actions }: { actions: BookmarkPagerActions }) => (
-  <Pressable
-    onPress={actions.onOpenNewBookmark}
-    className="flex-row items-center gap-2 rounded-full border border-dashed border-stone-300 bg-transparent px-3 py-2.5 active:opacity-70 dark:border-stone-700"
-  >
-    <View className="h-6 w-6 items-center justify-center rounded-full bg-stone-200 dark:bg-stone-900">
-      <MaterialIcons name="add" size={16} color={actions.iconSubtleColor} />
-    </View>
-    <Text className="text-sm font-medium text-stone-600 dark:text-stone-400">Add link</Text>
-  </Pressable>
-))
-AddLinkButton.displayName = 'AddLinkButton'
 
 const EmptyBookmarksState = memo(({ listName, iconColor }: { listName: string; iconColor: string }) => (
   <View className="mb-8 items-center gap-4 rounded-[28px] border border-stone-200 bg-white/90 px-6 py-8 dark:border-stone-800 dark:bg-stone-900/60">
@@ -139,7 +128,16 @@ export const BookmarkListPage = memo(({
     viewportHeightRef.current = layoutMeasurement.height
     contentHeightRef.current = contentSize.height
     updateBottomState(contentOffset.y)
-  }, [updateBottomState])
+    const maxOffsetY = Math.max(0, contentSize.height - layoutMeasurement.height)
+    if (
+      isActive
+      && !bookmarkEditMode
+      && !ui$.drawerOpen.peek()
+      && contentOffset.y > maxOffsetY + BOTTOM_OVERSCROLL_OPEN_THRESHOLD
+    ) {
+      ui$.drawerOpen.set(true)
+    }
+  }, [bookmarkEditMode, isActive, updateBottomState])
 
   const renderTile = useCallback(({ item: bookmark }: { item: BookmarkRecord }) => (
     <View style={{ width: itemWidth }}>
@@ -171,7 +169,13 @@ export const BookmarkListPage = memo(({
           keyExtractor={(item) => item.id}
           numColumns={GRID_COLUMNS}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingVertical: 16 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            paddingHorizontal: PAGE_HORIZONTAL_PADDING,
+            paddingTop: 16,
+            paddingBottom: PAGE_BOTTOM_PADDING,
+          }}
           columnWrapperStyle={{ gap: GRID_GAP, marginBottom: GRID_GAP }}
           ListHeaderComponent={
             bookmarkEditMode
@@ -185,10 +189,6 @@ export const BookmarkListPage = memo(({
               <View className="gap-4 pt-4">
                 <SectionLabel title="Hidden in this list" subtitle="Tap a bookmark to bring it back." />
                 <HiddenBookmarksGrid items={availableBookmarks} scrollViewRef={actions.scrollViewRef} />
-              </View>
-            ) : !bookmarkEditMode ? (
-              <View className="mb-4" style={{ width: itemWidth }}>
-                <AddLinkButton actions={actions} />
               </View>
             ) : null
           }
@@ -214,7 +214,7 @@ export const BookmarkListPage = memo(({
         onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}
         scrollEventThrottle={16}
-        contentContainerClassName="grow justify-center px-6 py-4"
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16, paddingBottom: PAGE_BOTTOM_PADDING }}
         className="flex-1"
       >
         <View className="gap-8">
