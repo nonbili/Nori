@@ -3,11 +3,13 @@ import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
 import { lists$ } from './lists'
 import { genId } from '@/lib/utils'
-import { normalizeUrlInput } from '@/lib/url'
+import { normalizeUrlInput, parseHttpUrl } from '@/lib/url'
 import {
   createRowJsonState,
   createStarterBookmarks,
   getVisibleBookmarks,
+  isDeleted,
+  isVisible,
   moveItemWithinVisibleSubset,
   normalizeBookmarks,
   patchRowState,
@@ -49,6 +51,14 @@ const resolveListId = (listId: string) => {
   return list?.id || ''
 }
 
+const getBookmarkUrlKey = (url: string) => {
+  try {
+    return parseHttpUrl(url).toString()
+  } catch {
+    return normalizeUrlInput(url)
+  }
+}
+
 export const bookmarks$: Observable<Store> = observable<Store>({
   bookmarks: createStarterBookmarks(),
   add: (draft) => {
@@ -64,7 +74,28 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       return null
     }
 
-    const nextSortIndex = bookmarks$.bookmarks.get().filter((item) => item.listId === listId).length
+    const items = bookmarks$.bookmarks.get()
+    const urlKey = getBookmarkUrlKey(url)
+    const existingIndex = items.findIndex((item) => (
+      item.listId === listId
+      && !isDeleted(item)
+      && getBookmarkUrlKey(item.url) === urlKey
+    ))
+
+    if (existingIndex !== -1) {
+      const existing = items[existingIndex]
+      if (!isVisible(existing)) {
+        const nextItems = [...items]
+        nextItems[existingIndex] = {
+          ...patchRowState(existing, { visible: true }),
+          updatedAt: now,
+        }
+        bookmarks$.bookmarks.set(nextItems)
+      }
+      return existing.id
+    }
+
+    const nextSortIndex = items.filter((item) => item.listId === listId).length
     bookmarks$.bookmarks.push({
       id,
       listId,
@@ -86,10 +117,22 @@ export const bookmarks$: Observable<Store> = observable<Store>({
 
     const previous = items[index]
     const nextListId = draft.listId ? resolveListId(draft.listId) || previous.listId : previous.listId
+    const nextUrl = draft.url != null ? normalizeUrlInput(draft.url) || previous.url : previous.url
+    const nextUrlKey = getBookmarkUrlKey(nextUrl)
+    const duplicate = items.find((item) => (
+      item.id !== id
+      && item.listId === nextListId
+      && !isDeleted(item)
+      && getBookmarkUrlKey(item.url) === nextUrlKey
+    ))
+    if (duplicate) {
+      return
+    }
+
     const nextItems = [...items]
     nextItems[index] = {
       ...previous,
-      url: draft.url != null ? normalizeUrlInput(draft.url) || previous.url : previous.url,
+      url: nextUrl,
       title: draft.title?.trim() || previous.title,
       icon: draft.icon?.trim() ?? previous.icon,
       listId: nextListId,

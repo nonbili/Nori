@@ -222,7 +222,13 @@ export const Sheet: React.FC<{
                 ) : null}
               </View>
             </GestureDetector>
-            {contentDragGesture ? <GestureDetector gesture={contentDragGesture}>{children}</GestureDetector> : children}
+            {contentDragGesture ? (
+              <GestureDetector gesture={contentDragGesture}>
+                <View className="flex-1" collapsable={false}>
+                  {children}
+                </View>
+              </GestureDetector>
+            ) : children}
           </Animated.View>
         </View>
       </GestureHandlerRootView>

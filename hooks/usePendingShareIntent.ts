@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { useShareIntent } from 'expo-share-intent'
 import { ui$ } from '@/states/ui'
-import { getFallbackIcon, getMeta } from '@/lib/bookmark'
-import { importBookmarksFromAsset } from '@/lib/bookmark-import'
-import { parseSharedUrl } from '@/lib/share-intent'
+import { getFallbackIcon } from '@/lib/bookmark'
+import { importBookmarksFromText, readBookmarkImportText } from '@/lib/bookmark-import'
+import { prefetchBookmarkMeta } from '@/lib/bookmark-meta-cache'
+import { htmlLooksLikeBookmarkExport, parseSharedUrl } from '@/lib/share-intent'
 import { showToast } from '@/lib/toast'
 
 const getHostLabel = (url: string) => {
@@ -12,6 +13,12 @@ const getHostLabel = (url: string) => {
   } catch {
     return url
   }
+}
+
+const isHtmlFile = (file: { fileName?: string | null; mimeType?: string | null }) => {
+  const name = file.fileName?.toLowerCase() || ''
+  const mimeType = file.mimeType?.toLowerCase() || ''
+  return mimeType.includes('html') || name.endsWith('.html') || name.endsWith('.htm')
 }
 
 export const usePendingShareIntent = () => {
@@ -24,6 +31,24 @@ export const usePendingShareIntent = () => {
       return
     }
 
+    const setPendingSharedUrl = (url: string) => {
+      void prefetchBookmarkMeta(url)
+      ui$.pendingShare.set({
+        url,
+        title: getHostLabel(url),
+        icon: getFallbackIcon(url),
+      })
+    }
+
+    const handleUrlShare = (url: string) => {
+      const shareKey = `url:${url}`
+      if (handledShareKey.current === shareKey) {
+        return
+      }
+      handledShareKey.current = shareKey
+      setPendingSharedUrl(url)
+    }
+
     const sharedFile = shareIntent.files?.[0]
     if (sharedFile) {
       const shareKey = `file:${sharedFile.path}:${sharedFile.fileName || ''}`
@@ -31,12 +56,21 @@ export const usePendingShareIntent = () => {
         return
       }
       handledShareKey.current = shareKey
-      void importBookmarksFromAsset({
+      void readBookmarkImportText({
         uri: sharedFile.path,
         name: sharedFile.fileName,
         mimeType: sharedFile.mimeType,
       })
-        .then((count) => {
+        .then((content) => {
+          if (isHtmlFile(sharedFile) && !htmlLooksLikeBookmarkExport(content)) {
+            showToast('No new bookmarks found')
+            return
+          }
+
+          const count = importBookmarksFromText(content, {
+            name: sharedFile.fileName,
+            mimeType: sharedFile.mimeType,
+          })
           showToast(count ? `Imported ${count} bookmarks` : 'No new bookmarks found')
         })
         .catch((error) => {
@@ -61,38 +95,6 @@ export const usePendingShareIntent = () => {
       return
     }
 
-    const shareKey = `url:${url}`
-    if (handledShareKey.current === shareKey) {
-      return
-    }
-    handledShareKey.current = shareKey
-
-    ui$.pendingShare.set({
-      url,
-      title: getHostLabel(url),
-      icon: getFallbackIcon(url),
-    })
-
-    let active = true
-    void getMeta(url).then((meta) => {
-      if (!active) {
-        return
-      }
-
-      const current = ui$.pendingShare.get()
-      if (!current || current.url !== url) {
-        return
-      }
-
-      ui$.pendingShare.set({
-        ...current,
-        title: meta.title || current.title,
-        icon: meta.icon || current.icon,
-      })
-    })
-
-    return () => {
-      active = false
-    }
+    handleUrlShare(url)
   }, [hasShareIntent, shareIntent.files, shareIntent.text, shareIntent.webUrl, resetShareIntent])
 }

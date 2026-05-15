@@ -37,6 +37,10 @@ export const readBookmarkImportText = async (asset: BookmarkImportAsset) => {
 
 export const importBookmarksFromAsset = async (asset: BookmarkImportAsset) => {
   const content = await readBookmarkImportText(asset)
+  return importBookmarksFromText(content, asset)
+}
+
+export const importBookmarksFromText = (content: string, asset: Pick<BookmarkImportAsset, 'name' | 'mimeType'>) => {
   const imported = parseBookmarksForImport(content, inferBookmarkImportFormat(asset, content))
   const merged = mergeImportedBookmarks(lists$.lists.get(), bookmarks$.bookmarks.get(), imported)
   if (merged.importedCount) {

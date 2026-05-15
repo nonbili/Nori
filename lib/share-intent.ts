@@ -32,3 +32,7 @@ function isValidUrl(value: string) {
     return false
   }
 }
+
+export function htmlLooksLikeBookmarkExport(content: string) {
+  return /<!doctype\s+netscape-bookmark/i.test(content) || /<h1\b[^>]*>\s*bookmarks?\s*<\/h1>/i.test(content)
+}
