@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import { BackHandler, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
-import { Directions, Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import { ui$ } from '@/states/ui'
 import { AllBookmarksDrawer } from '@/components/drawer/AllBookmarksDrawer'
@@ -17,17 +17,18 @@ import { usePendingShareIntent } from '@/hooks/usePendingShareIntent'
 
 export default function HomeScreen() {
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
+  const bookmarkListAtBottom = useValue(ui$.bookmarkListAtBottom)
   const toggleDrawer = useCallback((open: boolean) => {
     ui$.drawerOpen.set(open)
   }, [])
 
-  const openDrawerGesture = Gesture.Fling()
-    .direction(Directions.UP)
+  const openDrawerGesture = Gesture.Pan()
+    .enabled(!bookmarkEditMode && bookmarkListAtBottom)
+    .activeOffsetY([-18, 10000])
+    .failOffsetX([-80, 80])
     .runOnJS(true)
     .onStart(() => {
-      if (!bookmarkEditMode) {
-        toggleDrawer(true)
-      }
+      toggleDrawer(true)
     })
 
   useEffect(() => {

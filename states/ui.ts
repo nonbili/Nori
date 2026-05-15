@@ -22,6 +22,7 @@ export interface PendingShareState {
 interface UIStore {
   bookmarkEditMode: boolean
   bookmarkEditor: BookmarkEditorState | null
+  bookmarkListAtBottom: boolean
   drawerOpen: boolean
   listEditor: ListEditorState | null
   listManagerOpen: boolean
@@ -34,6 +35,7 @@ interface UIStore {
 export const ui$ = observable<UIStore>({
   bookmarkEditMode: false,
   bookmarkEditor: null,
+  bookmarkListAtBottom: true,
   drawerOpen: false,
   listEditor: null,
   listManagerOpen: false,
