@@ -1,308 +1,51 @@
-import { Alert, Linking, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { Pressable, useWindowDimensions } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { Image } from 'expo-image'
-import * as DocumentPicker from 'expo-document-picker'
-import * as FileSystem from 'expo-file-system/legacy'
-import * as Sharing from 'expo-sharing'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
-import NoriBilling from '@/modules/nori-billing'
-import {
-  exportBookmarksToHtml,
-  exportBookmarksToPlainText,
-  type BookmarkTransferFormat,
-} from '@/lib/bookmark-transfer'
-import { importBookmarksFromAsset } from '@/lib/bookmark-import'
-import { prepareIosPurchase, syncIosTransaction } from '@/lib/nori-api'
-import { openDeleteAccount, openManagePlan, signOut, startHostedSignIn } from '@/lib/supabase/auth'
-import { syncSupabase } from '@/lib/supabase/sync'
-import { bookmarks$ } from '@/states/bookmarks'
-import { lists$ } from '@/states/lists'
-import { settings$ } from '@/states/settings'
-import { auth$, refreshEntitlement } from '@/states/auth'
-import { syncMeta$ } from '@/states/sync-meta'
 import { ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
-import { isIos, isWeb } from '@/lib/utils'
-import { showToast } from '@/lib/toast'
-import { SegmentedOption } from '@/components/common/Common'
-import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { Sheet } from '@/components/modal/BaseModal'
+import {
+  ExperienceSection,
+  SyncSettingsSections,
+  TransferSection,
+} from '@/components/sheet/SettingsSheetSections'
+import { AboutSettingsSection, SettingsAboutPage } from '@/components/sheet/SettingsSheetAbout'
+import { useSettingsSheetActions } from '@/components/sheet/useSettingsSheetActions'
 import { version as appVersion } from '@/package.json'
-
-const IOS_SYNC_PRODUCT_ID = process.env.EXPO_PUBLIC_NORI_IOS_SYNC_PRODUCT_ID || 'jp.nonbili.nori.sync'
-const TERMS_OF_USE_URL = 'https://www.apple.com/legal/macapps/stdeula/'
-const PRIVACY_POLICY_URL = 'https://inks.page/p/privacy'
-const REPO_URL = 'https://github.com/nonbili/Nori'
-const DONATE_LINKS = [
-  { label: 'GitHub Sponsors', detail: 'github.com/sponsors/rnons', url: 'https://github.com/sponsors/rnons' },
-  { label: 'Liberapay', detail: 'liberapay.com/rnons', url: 'https://liberapay.com/rnons' },
-  { label: 'PayPal', detail: 'paypal.me/rnons', url: 'https://paypal.me/rnons' },
-]
-
-const TRANSFER_MIME = {
-  html: 'text/html',
-  plain: 'text/plain',
-} as const
-
-const TRANSFER_EXTENSION = {
-  html: 'html',
-  plain: 'txt',
-} as const
-
-const SettingsBadge: React.FC<{ label: string }> = ({ label }) => (
-  <View className="rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-950 px-3 py-1">
-    <Text className="text-xs text-stone-700 dark:text-stone-300">{label}</Text>
-  </View>
-)
 
 export const SettingsSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const { height: windowHeight } = useWindowDimensions()
-  const theme = useValue(settings$.theme)
-  const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
-  const lists = useValue(lists$.lists)
-  const bookmarks = useValue(bookmarks$.bookmarks)
   const visible = useValue(ui$.settingsSheetOpen)
-  const userId = useValue(auth$.userId)
-  const userEmail = useValue(auth$.userEmail)
-  const user = useValue(auth$.user)
-  const plan = useValue(auth$.plan)
-  const source = useValue(auth$.source)
-  const ios = useValue(auth$.ios)
-  const authRefreshing = useValue(auth$.refreshing)
-  const authError = useValue(auth$.lastError)
-  const syncInFlight = useValue(syncMeta$.inFlight)
-  const syncError = useValue(syncMeta$.lastError)
-  const lastSyncAt = useValue(syncMeta$.lastSyncAt)
-  const accessToken = useValue(auth$.accessToken)
   const scrollOffset = useSharedValue(0)
   const scrollRef = useRef(null)
-  const [loadingProduct, setLoadingProduct] = useState(isIos)
-  const [productPrice, setProductPrice] = useState<string>()
-  const [actionError, setActionError] = useState<string>()
-  const [busyAction, setBusyAction] = useState<'buy' | 'restore' | 'manage' | 'sync' | 'import' | 'export-html' | 'export-plain' | null>(null)
-  const [pendingExternalAction, setPendingExternalAction] = useState<'delete-account' | null>(null)
   const [page, setPage] = useState<'home' | 'about'>('home')
+  const settingsActions = useSettingsSheetActions()
 
   useEffect(() => {
     scrollOffset.value = 0
   }, [page, scrollOffset])
 
-  useEffect(() => {
-    if (!isIos) {
-      return
-    }
-
-    let active = true
-    const loadProduct = async () => {
-      try {
-        const products = await NoriBilling.getProducts([IOS_SYNC_PRODUCT_ID])
-        if (active) {
-          setProductPrice(products[0]?.displayPrice)
-        }
-      } catch (error) {
-        if (active) {
-          setActionError(error instanceof Error ? error.message : String(error))
-        }
-      } finally {
-        if (active) {
-          setLoadingProduct(false)
-        }
-      }
-    }
-
-    void loadProduct()
-    return () => {
-      active = false
-    }
-  }, [])
-
-  useEffect(() => {
-    if (pendingExternalAction !== 'delete-account') {
-      return
-    }
-    setPendingExternalAction(null)
-    if (!accessToken) {
-      setActionError(t('settings.sync.signIn'))
-      return
-    }
-    void openDeleteAccount(accessToken).catch((error) => {
-      setActionError(error instanceof Error ? error.message : String(error))
-    })
-  }, [accessToken, pendingExternalAction, t])
-
-  const runAction = async (
-    name: 'buy' | 'restore' | 'manage' | 'sync' | 'import' | 'export-html' | 'export-plain',
-    fn: () => Promise<void>,
-  ) => {
-    setBusyAction(name)
-    setActionError(undefined)
-    try {
-      await fn()
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : String(error))
-    } finally {
-      setBusyAction(null)
-    }
-  }
-
-  const confirmAccountBinding = () =>
-    new Promise<boolean>((resolve) => {
-      Alert.alert(
-        t('settings.sync.confirmTitle'),
-        t('settings.sync.confirmBody', { email: userEmail || 'your Nori account' }),
-        [
-          { text: t('lists.cancel'), style: 'cancel', onPress: () => resolve(false) },
-          { text: t('bookmarks.save'), onPress: () => resolve(true) }, // Using save for Confirm/Confirm
-        ],
-      )
-    })
-
-  const onPurchase = () =>
-    runAction('buy', async () => {
-      if (!accessToken || !userEmail) {
-        throw new Error(t('settings.sync.errorSignInBuy'))
-      }
-      if (!(await confirmAccountBinding())) {
-        return
-      }
-      const prepared = await prepareIosPurchase(accessToken)
-      const result = await NoriBilling.purchase(IOS_SYNC_PRODUCT_ID, prepared.appAccountToken)
-      await syncIosTransaction(accessToken, result.signedTransactionInfo)
-      await refreshEntitlement()
-      await syncSupabase()
-    })
-
-  const onRestore = () =>
-    runAction('restore', async () => {
-      if (!accessToken || !userEmail) {
-        throw new Error(t('settings.sync.errorSignInRestore'))
-      }
-      if (!(await confirmAccountBinding())) {
-        return
-      }
-      await prepareIosPurchase(accessToken)
-      const entitlements = await NoriBilling.restore()
-      const restored = entitlements.find((entry) => entry.productId === IOS_SYNC_PRODUCT_ID)
-      if (!restored) {
-        throw new Error(t('settings.sync.errorNoPurchase'))
-      }
-      await syncIosTransaction(accessToken, restored.signedTransactionInfo)
-      await refreshEntitlement()
-      await syncSupabase()
-    })
-
-  const onManage = () =>
-    runAction('manage', async () => {
-      if (isIos) {
-        await NoriBilling.manageSubscriptions()
-        return
-      }
-      await openManagePlan()
-    })
-
-  const onManualSync = () =>
-    runAction('sync', async () => {
-      await syncSupabase()
-      await refreshEntitlement()
-    })
-
-  const downloadOnWeb = (filename: string, content: string, mimeType: string) => {
-    const blob = new Blob([content], { type: `${mimeType};charset=utf-8` })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = filename
-    anchor.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const onImportBookmarks = () =>
-    runAction('import', async () => {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: ['text/html', 'text/plain', 'text/*', 'application/octet-stream'],
-        copyToCacheDirectory: true,
-        base64: isWeb,
-      })
-      if (result.canceled) {
-        return
-      }
-
-      const importedCount = await importBookmarksFromAsset(result.assets[0])
-      if (!importedCount) {
-        showToast(t('settings.transfer.importEmpty'))
-        return
-      }
-      showToast(t('settings.transfer.imported', { count: importedCount }))
-    })
-
-  const onExportBookmarks = (format: BookmarkTransferFormat) =>
-    runAction(format === 'html' ? 'export-html' : 'export-plain', async () => {
-      const content = format === 'html' ? exportBookmarksToHtml(lists, bookmarks) : exportBookmarksToPlainText(lists, bookmarks)
-      const date = new Date().toISOString().slice(0, 10)
-      const filename = `nori-bookmarks-${date}.${TRANSFER_EXTENSION[format]}`
-      const mimeType = TRANSFER_MIME[format]
-
-      if (isWeb) {
-        downloadOnWeb(filename, content, mimeType)
-        showToast(t('settings.transfer.exported'))
-        return
-      }
-
-      const cacheDirectory = FileSystem.cacheDirectory
-      if (!cacheDirectory) {
-        throw new Error(t('settings.transfer.shareUnavailable'))
-      }
-      const uri = `${cacheDirectory}${filename}`
-      await FileSystem.writeAsStringAsync(uri, content)
-      if (!(await Sharing.isAvailableAsync())) {
-        throw new Error(t('settings.transfer.shareUnavailable'))
-      }
-      await Sharing.shareAsync(uri, {
-        mimeType,
-        UTI: format === 'html' ? 'public.html' : 'public.plain-text',
-        dialogTitle: t('settings.transfer.exportTitle'),
-      })
-    })
-
-  const planLabel = plan === 'sync' ? t('settings.plan.sync') : t('settings.plan.free')
-  const syncHint =
-    userId && (!plan || plan === 'free')
-      ? t('settings.sync.upgradeHint')
-      : t('settings.sync.syncHint')
-
-  const iosStatusText = useMemo(() => {
-    if (!ios?.expiresAt) {
-      return null
-    }
-    return t('settings.ios.expires', { date: new Date(ios.expiresAt).toLocaleString() })
-  }, [ios?.expiresAt, t])
-
-  const accountMenuItems: NouMenuItem[] = [
-    ...(isIos && source === 'app_store' && plan === 'sync'
-      ? [{ id: 'manage-subscription', label: t('settings.ios.manage'), handler: () => void onManage() }]
-      : []),
-    ...(isIos ? [{ id: 'restore-purchase', label: t('settings.ios.restore'), handler: () => void onRestore() }] : []),
-    { id: 'sync-now', label: t('settings.sync.syncNow'), icon: 'cloud-sync' as const, handler: () => void onManualSync() },
-    ...(isIos
-      ? [{ id: 'delete-account', label: t('settings.sync.deleteAccount'), icon: 'delete-outline' as const }]
-      : []),
-    { id: 'sign-out', label: t('settings.sync.signOut'), handler: () => void signOut() },
-  ]
-
   const handleScroll = (event: any) => {
     scrollOffset.value = event.nativeEvent.contentOffset.y
   }
+
   const onClose = () => {
     ui$.settingsSheetOpen.set(false)
     setPage('home')
     scrollOffset.value = 0
   }
+
+  const actions = {
+    ...settingsActions,
+    onOpenAbout: () => setPage('about'),
+  }
+
   const headerLeft =
     page === 'home' ? undefined : (
       <Pressable
@@ -315,77 +58,14 @@ export const SettingsSheet: React.FC = () => {
       </Pressable>
     )
 
-  if (page === 'about') {
-    return (
-      <Sheet
-        visible={visible}
-        title={t('settings.about.label')}
-        height={windowHeight * 0.85}
-        onClose={() => setPage('home')}
-        headerLeft={headerLeft}
-        showCloseButton={false}
-        contentScrollRef={scrollRef}
-        contentScrollOffset={scrollOffset}
-      >
-        <ScrollView
-          ref={scrollRef}
-          showsVerticalScrollIndicator={false}
-          className="flex-1"
-          contentContainerClassName="gap-6 pb-4"
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-        >
-          <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-            <AboutRow
-              icon="info-outline"
-              title={t('settings.about.version')}
-              detail={`v${appVersion}`}
-              themeColors={themeColors}
-              isLast
-            />
-          </View>
-
-          <View className="gap-3">
-            <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.about.code')}</Text>
-            <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-              <AboutRow
-                icon="code"
-                title="GitHub"
-                detail="github.com/nonbili/Nori"
-                onPress={() => void Linking.openURL(REPO_URL)}
-                themeColors={themeColors}
-                isLast
-              />
-            </View>
-          </View>
-
-          <View className="gap-3">
-            <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.about.donate')}</Text>
-            <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-              {DONATE_LINKS.map((item, index) => (
-                <AboutRow
-                  key={item.url}
-                  icon="favorite-outline"
-                  title={item.label}
-                  detail={item.detail}
-                  onPress={() => void Linking.openURL(item.url)}
-                  isLast={index === DONATE_LINKS.length - 1}
-                  themeColors={themeColors}
-                />
-              ))}
-            </View>
-          </View>
-        </ScrollView>
-      </Sheet>
-    )
-  }
-
   return (
     <Sheet
       visible={visible}
-      title={t('settings.title')}
+      title={page === 'about' ? t('settings.about.label') : t('settings.title')}
       height={windowHeight * 0.85}
-      onClose={onClose}
+      onClose={page === 'about' ? () => setPage('home') : onClose}
+      headerLeft={headerLeft}
+      showCloseButton={page === 'home'}
       contentScrollRef={scrollRef}
       contentScrollOffset={scrollOffset}
     >
@@ -393,271 +73,21 @@ export const SettingsSheet: React.FC = () => {
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
         className="flex-1"
-        contentContainerClassName="gap-8 pb-4"
+        contentContainerClassName={`${page === 'about' ? 'gap-6' : 'gap-8'} pb-4`}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-        {!userId ? (
-          <View className="gap-3">
-            <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.sync.label')}</Text>
-            <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-              <View className="px-5 py-5">
-                <Text className="text-lg font-semibold text-stone-900 dark:text-stone-100">{t('settings.sync.label')}</Text>
-                <Text className="mt-2 text-sm leading-6 text-stone-600 dark:text-stone-400">{syncHint}</Text>
-                <View className="mt-5">
-                  <Pressable
-                    onPress={() => void startHostedSignIn()}
-                    className="items-center rounded-full bg-stone-900 px-5 py-2.5 active:opacity-80 dark:bg-stone-100"
-                  >
-                    <Text className="text-sm font-medium text-stone-50 dark:text-stone-950">{t('settings.sync.signIn')}</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </View>
+        {page === 'about' ? (
+          <SettingsAboutPage appVersion={appVersion} />
         ) : (
           <>
-            <View className="gap-3">
-              <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.sync.label')}</Text>
-              <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-                <View className="flex-row items-center gap-3 px-4 py-4">
-                  <Image
-                    style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: '#18181b' }}
-                    source={user?.picture}
-                    contentFit="cover"
-                  />
-                  <View className="flex-1">
-                    <Text className="font-medium text-stone-900 dark:text-stone-100">
-                      {userEmail || user?.email || t('settings.sync.noriUser')}
-                    </Text>
-                    <Text className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-                      {t('settings.sync.plan', { plan: planLabel })}
-                    </Text>
-                  </View>
-                  <NouMenu
-                    trigger={<MaterialIcons name="more-vert" size={20} color={themeColors.iconMuted} />}
-                    items={accountMenuItems}
-                    onSelectItem={(item) => {
-                      if (item.id === 'delete-account') {
-                        setPendingExternalAction('delete-account')
-                        return
-                      }
-                      item.handler?.()
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-
-            <View className="gap-3">
-              <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.plan.label')}</Text>
-              <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-                <View className="px-5 py-5">
-                  <View className="flex-row flex-wrap gap-2">
-                    <SettingsBadge label={planLabel} />
-                    {source === 'app_store' ? <SettingsBadge label={t('settings.plan.activeAppStore')} /> : null}
-                  </View>
-                  <Text className="mt-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{syncHint}</Text>
-                  {iosStatusText ? (
-                    <Text className="mt-3 text-xs text-stone-500 dark:text-stone-500">{iosStatusText}</Text>
-                  ) : null}
-                  {lastSyncAt ? (
-                    <Text className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-                      {t('settings.sync.lastSynced', { date: new Date(lastSyncAt).toLocaleString() })}
-                    </Text>
-                  ) : null}
-                  {authRefreshing || syncInFlight ? (
-                    <Text className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('settings.sync.working')}</Text>
-                  ) : null}
-                  {authError || syncError || actionError ? (
-                    <Text className="mt-3 text-sm text-rose-600 dark:text-rose-400">{authError || syncError || actionError}</Text>
-                  ) : null}
-                  {isIos ? (
-                    <View className="mt-5 gap-3">
-                      {loadingProduct ? (
-                        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.loadingPrice')}</Text>
-                      ) : null}
-                      {!loadingProduct && !productPrice ? (
-                        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.productUnavailable')}</Text>
-                      ) : null}
-                      {source === 'app_store' && plan === 'sync' ? (
-                        busyAction === 'manage' || busyAction === 'restore' ? (
-                          <Text className="text-sm text-stone-400">
-                            {busyAction === 'manage' ? t('settings.ios.managing') : t('settings.ios.restoring')}
-                          </Text>
-                        ) : null
-                      ) : (
-                        <Pressable
-                          onPress={() => void onPurchase()}
-                          disabled={loadingProduct || !productPrice}
-                          className="items-center rounded-2xl bg-emerald-600 px-4 py-3 active:opacity-80 disabled:opacity-50"
-                        >
-                          <Text className="font-medium text-white">
-                            {busyAction === 'buy'
-                              ? t('settings.ios.purchasing')
-                              : productPrice
-                                ? t('settings.ios.buyPrice', { price: productPrice })
-                                : t('settings.ios.buy')}
-                          </Text>
-                        </Pressable>
-                      )}
-                      <View className="gap-2 rounded-2xl border border-stone-300 dark:border-stone-800 bg-stone-100/80 dark:bg-stone-950/70 px-4 py-3">
-                        <Text className="text-xs leading-5 text-stone-600 dark:text-stone-400">
-                          {t('settings.ios.legalHint')}
-                        </Text>
-                        <View className="flex-row flex-wrap gap-3">
-                          <Text
-                            className="text-xs text-stone-900 dark:text-stone-100 underline"
-                            onPress={() => void Linking.openURL(TERMS_OF_USE_URL)}
-                          >
-                            {t('settings.ios.termsOfUse')}
-                          </Text>
-                          <Text
-                            className="text-xs text-stone-900 dark:text-stone-100 underline"
-                            onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
-                          >
-                            {t('settings.ios.privacyPolicy')}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  ) : (
-                    <View className="mt-5">
-                      {source === 'app_store' ? (
-                        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.plan.activeAppStore')}</Text>
-                      ) : (
-                        <Pressable
-                          onPress={() => void onManage()}
-                          className="items-center rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-950 px-5 py-2.5 active:opacity-80"
-                        >
-                          <Text className="text-sm text-stone-900 dark:text-stone-100">{t('settings.plan.manage')}</Text>
-                        </Pressable>
-                      )}
-                    </View>
-                  )}
-                </View>
-              </View>
-            </View>
+            <SyncSettingsSections actions={actions} />
+            <ExperienceSection />
+            <TransferSection actions={actions} />
+            <AboutSettingsSection appVersion={appVersion} actions={actions} />
           </>
         )}
-
-        <View className="gap-3">
-          <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.experience.label')}</Text>
-          <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-            <View className="border-b border-stone-200 px-4 py-4 dark:border-stone-800">
-              <View className="flex-row items-center gap-3">
-                <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
-                  <MaterialIcons name="open-in-browser" color={themeColors.iconMuted} size={18} />
-                </View>
-                <View className="flex-1">
-                  <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.defaultBrowser')}</Text>
-                  <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
-                    {t('settings.experience.defaultBrowserHint')}
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={() => settings$.setOpenInSystemBrowser(!openInSystemBrowser)}
-                  className={`h-8 w-14 rounded-full p-1 ${openInSystemBrowser ? 'bg-emerald-500' : 'bg-stone-700'}`}
-                >
-                  <View className={`h-6 w-6 rounded-full bg-white ${openInSystemBrowser ? 'ml-auto' : ''}`} />
-                </Pressable>
-              </View>
-            </View>
-            <View className="px-4 py-4">
-              <View className="mb-3 flex-row items-center gap-3">
-                <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
-                  <MaterialIcons name="palette" color={themeColors.iconMuted} size={18} />
-                </View>
-                <View className="flex-1">
-                  <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.theme')}</Text>
-                  <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
-                    {t('settings.experience.themeHint')}
-                  </Text>
-                </View>
-              </View>
-              <View className="flex-row justify-end gap-2">
-                <SegmentedOption label={t('settings.experience.system')} active={theme === null} onPress={() => settings$.theme.set(null)} />
-                <SegmentedOption label={t('settings.experience.light')} active={theme === 'light'} onPress={() => settings$.theme.set('light')} />
-                <SegmentedOption label={t('settings.experience.dark')} active={theme === 'dark'} onPress={() => settings$.theme.set('dark')} />
-              </View>
-            </View>
-          </View>
-        </View>
-
-        <View className="gap-3">
-          <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.transfer.label')}</Text>
-          <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-            <AboutRow
-              icon="file-upload"
-              title={t('settings.transfer.import')}
-              detail={busyAction === 'import' ? t('settings.transfer.importing') : t('settings.transfer.importHint')}
-              onPress={() => void onImportBookmarks()}
-              themeColors={themeColors}
-            />
-            <AboutRow
-              icon="html"
-              title={t('settings.transfer.exportHtml')}
-              detail={busyAction === 'export-html' ? t('settings.transfer.exporting') : t('settings.transfer.exportHtmlHint')}
-              onPress={() => void onExportBookmarks('html')}
-              themeColors={themeColors}
-            />
-            <AboutRow
-              icon="subject"
-              title={t('settings.transfer.exportPlain')}
-              detail={busyAction === 'export-plain' ? t('settings.transfer.exporting') : t('settings.transfer.exportPlainHint')}
-              onPress={() => void onExportBookmarks('plain')}
-              themeColors={themeColors}
-              isLast
-            />
-          </View>
-        </View>
-
-        <View className="gap-3">
-          <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{t('settings.about.label')}</Text>
-          <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-            <AboutRow
-              icon="info-outline"
-              title={t('settings.about.label')}
-              detail={`v${appVersion}`}
-              onPress={() => setPage('about')}
-              themeColors={themeColors}
-              isLast
-            />
-          </View>
-        </View>
       </ScrollView>
     </Sheet>
-  )
-}
-
-const AboutRow: React.FC<{
-  icon: keyof typeof MaterialIcons.glyphMap
-  title: string
-  detail: string
-  onPress?: () => void
-  isLast?: boolean
-  themeColors: ReturnType<typeof useThemeColors>
-}> = ({ icon, title, detail, onPress, isLast = false, themeColors }) => {
-  const content = (
-    <View
-      className={`flex-row items-center gap-3 px-4 py-4 ${isLast ? '' : 'border-b border-stone-200 dark:border-stone-800'}`}
-    >
-      <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
-        <MaterialIcons name={icon} color={themeColors.iconMuted} size={18} />
-      </View>
-      <View className="flex-1">
-        <Text className="font-medium text-stone-900 dark:text-stone-100">{title}</Text>
-        <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{detail}</Text>
-      </View>
-      {onPress ? <MaterialIcons name="chevron-right" color={themeColors.iconMuted} size={20} /> : null}
-    </View>
-  )
-  if (!onPress) {
-    return content
-  }
-  return (
-    <Pressable onPress={onPress} className="active:opacity-70">
-      {content}
-    </Pressable>
   )
 }
