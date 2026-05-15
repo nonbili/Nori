@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Pressable, ScrollView as NativeScrollView, Share, Text, TextInput, View, useWindowDimensions } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FlashList } from '@shopify/flash-list'
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
@@ -11,6 +12,7 @@ import { lists$ } from '@/states/lists'
 import { ui$ } from '@/states/ui'
 import { type NouMenuItem, NouMenu } from '@/components/menu/NouMenu'
 import { ManageRow } from '@/components/common/Common'
+import { BookmarkActionsMenu } from '@/components/bookmark/BookmarkActionsMenu'
 import { Favicon } from '@/components/bookmark/Favicon'
 import { ListChip } from '@/components/list/ListChip'
 import { type ThemeColors, useThemeColors } from '@/lib/theme'
@@ -36,12 +38,16 @@ const BookmarkItem = memo(({
   bookmark,
   themeColors,
   onOpen,
+  onEdit,
+  onCopyUrl,
   onShare,
   onDelete,
 }: {
   bookmark: BookmarkRecord
   themeColors: ThemeColors
   onOpen: (b: BookmarkRecord) => void
+  onEdit: (b: BookmarkRecord) => void
+  onCopyUrl: (b: BookmarkRecord) => void
   onShare: (b: BookmarkRecord) => void
   onDelete: (b: BookmarkRecord) => void
 }) => (
@@ -60,19 +66,11 @@ const BookmarkItem = memo(({
     }
     onPress={() => onOpen(bookmark)}
     actions={
-      <NouMenu
-        items={[
-          {
-            label: 'Share',
-            icon: 'share' as const,
-            handler: () => onShare(bookmark),
-          },
-          {
-            label: 'Delete',
-            icon: 'delete' as const,
-            handler: () => onDelete(bookmark),
-          },
-        ]}
+      <BookmarkActionsMenu
+        onEdit={() => onEdit(bookmark)}
+        onCopyUrl={() => onCopyUrl(bookmark)}
+        onShare={() => onShare(bookmark)}
+        onDelete={() => onDelete(bookmark)}
         trigger={
           <View className="h-8 w-8 items-center justify-center rounded-full bg-stone-100 dark:bg-stone-800">
             <MaterialIcons name="more-vert" size={18} color={themeColors.iconMuted} />
@@ -224,6 +222,22 @@ export function AllBookmarksDrawer() {
     { label: 'Name Z-A', handler: () => setSortType('za'), selected: sortType === 'za' },
   ], [sortType])
 
+  const editBookmark = useCallback((bookmark: BookmarkRecord) => {
+    ui$.drawerOpen.set(false)
+    ui$.bookmarkEditor.set({
+      id: bookmark.id,
+      url: bookmark.url,
+      title: bookmark.title,
+      icon: bookmark.icon || '',
+      listId: bookmark.listId,
+    })
+  }, [])
+
+  const copyBookmarkUrl = useCallback((bookmark: BookmarkRecord) => {
+    void Clipboard.setStringAsync(bookmark.url)
+    showToast('URL copied')
+  }, [])
+
   const shareBookmark = useCallback(async (bookmark: { title: string; url: string }) => {
     try {
       await Share.share({
@@ -256,10 +270,12 @@ export function AllBookmarksDrawer() {
       bookmark={bookmark}
       themeColors={themeColors}
       onOpen={handleOpenBookmark}
+      onEdit={editBookmark}
+      onCopyUrl={copyBookmarkUrl}
       onShare={shareBookmark}
       onDelete={deleteBookmark}
     />
-  ), [themeColors, handleOpenBookmark, shareBookmark, deleteBookmark])
+  ), [themeColors, handleOpenBookmark, editBookmark, copyBookmarkUrl, shareBookmark, deleteBookmark])
 
   const handleScroll = useCallback((event: any) => {
     scrollOffset.value = event.nativeEvent.contentOffset.y

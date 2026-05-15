@@ -3,15 +3,15 @@ import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
+import { getBookmarkActionMenuItems } from '@/components/bookmark/BookmarkActionsMenu'
+import { type NouMenuItem } from '@/components/menu/NouMenu'
 import { Favicon } from './Favicon'
-
-type MenuAction = { label: string; icon: string; handler: () => void }
 
 const AnchorMenu: React.FC<{
   visible: boolean
   anchor: { x: number; y: number; width: number; height: number } | null
   onClose: () => void
-  actions: MenuAction[]
+  actions: NouMenuItem[]
 }> = ({ visible, anchor, onClose, actions }) => {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const insets = useSafeAreaInsets()
@@ -67,11 +67,11 @@ const AnchorMenu: React.FC<{
               android_ripple={{ color: themeColors.surfaceBorder }}
               onPress={() => {
                 onClose()
-                action.handler()
+                action.handler?.()
               }}
             >
               <View accessible={false} importantForAccessibility="no-hide-descendants">
-                <MaterialIcons name={action.icon as any} size={18} color={themeColors.iconMuted} />
+                {action.icon ? <MaterialIcons name={action.icon} size={18} color={themeColors.iconMuted} /> : null}
               </View>
               <Text className="flex-1 text-sm" style={{ color: themeColors.textPrimary }}>{action.label}</Text>
             </Pressable>
@@ -132,12 +132,12 @@ export const BookmarkTile = memo(({
     })
   }
 
-  const actions: MenuAction[] = [
-    { label: 'Edit', icon: 'edit', handler: () => onEdit?.() },
-    { label: 'Copy URL', icon: 'content-copy', handler: () => onCopyUrl?.() },
-    { label: 'Share', icon: 'share', handler: () => onShare?.() },
-    { label: 'Delete', icon: 'delete', handler: () => onDelete?.() },
-  ]
+  const actions = getBookmarkActionMenuItems({
+    onEdit,
+    onCopyUrl,
+    onShare,
+    onDelete,
+  })
 
   return (
     <View className="w-full gap-2">
