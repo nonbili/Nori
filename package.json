@@ -2,8 +2,8 @@
   "name": "nori",
   "private": true,
   "main": "expo-router/entry",
-  "version": "0.1.5",
-  "versionCode": 6,
+  "version": "0.1.6",
+  "versionCode": 7,
   "buildNumber": "6",
   "scripts": {
     "start": "expo start",

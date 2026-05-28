@@ -1,0 +1,1 @@
+- add icon.png to fastlane metadata
