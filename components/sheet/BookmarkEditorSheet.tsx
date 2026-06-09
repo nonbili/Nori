@@ -9,7 +9,8 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { getMeta } from '@/lib/bookmark'
-import { getVisibleLists } from '@/lib/nori-data'
+import { getAllTags, getVisibleLists } from '@/lib/nori-data'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { showToast } from '@/lib/toast'
 import { parseHttpUrl } from '@/lib/url'
 
@@ -30,6 +31,52 @@ export const BookmarkEditorSheet: React.FC = () => {
   const editor = useValue(ui$.bookmarkEditor)
   const visibleLists = getVisibleLists(lists)
   const [metadataLoading, setMetadataLoading] = useState(false)
+  const [tagInput, setTagInput] = useState('')
+  const bookmarks = useValue(bookmarks$.bookmarks)
+  const editorTags = editor?.tags ?? []
+  const tagSuggestions = getAllTags(bookmarks).filter((tag) => {
+    const query = tagInput.trim().toLowerCase()
+    if (editorTags.some((existing) => existing.toLowerCase() === tag.toLowerCase())) {
+      return false
+    }
+    return query ? tag.toLowerCase().includes(query) : true
+  }).slice(0, 8)
+
+  const addTag = (raw: string) => {
+    const tag = raw.trim()
+    if (!editor || !tag) {
+      return
+    }
+    if (editor.tags.some((existing) => existing.toLowerCase() === tag.toLowerCase())) {
+      return
+    }
+    ui$.bookmarkEditor.set({ ...editor, tags: [...editor.tags, tag] })
+  }
+
+  // Commit tokens as they are separated by comma or whitespace; keep any trailing partial.
+  const onChangeTagInput = (value: string) => {
+    if (/[,\s]/.test(value)) {
+      const parts = value.split(/[,\s]+/)
+      const remainder = parts.pop() ?? ''
+      parts.forEach(addTag)
+      setTagInput(remainder)
+    } else {
+      setTagInput(value)
+    }
+  }
+
+  const commitTagInput = () => {
+    addTag(tagInput)
+    setTagInput('')
+  }
+
+  const removeTag = (tag: string) => {
+    if (!editor) {
+      return
+    }
+    ui$.bookmarkEditor.set({ ...editor, tags: editor.tags.filter((item) => item !== tag) })
+  }
+
   const listScrollRef = useRef<ScrollView>(null)
   const listItemXRef = useRef<Record<string, number>>({})
   const didInitialScrollRef = useRef(false)
@@ -81,6 +128,7 @@ export const BookmarkEditorSheet: React.FC = () => {
       url: url.toString(),
       title,
       icon,
+      tags: editor.tags,
     }
 
     if (editor.id) {
@@ -124,6 +172,49 @@ export const BookmarkEditorSheet: React.FC = () => {
             placeholderTextColor={themeColors.placeholder}
             className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-stone-900 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-50"
           />
+        </View>
+        <View className="gap-2">
+          {editor.tags.length > 0 && (
+            <View className="flex-row flex-wrap gap-2">
+              {editor.tags.map((tag) => (
+                <Pressable
+                  key={tag}
+                  onPress={() => removeTag(tag)}
+                  className="h-[32px] flex-row items-center gap-1 rounded-full bg-stone-200 px-3 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
+                >
+                  <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">{tag}</Text>
+                  <MaterialIcons name="close" size={14} color={themeColors.iconMuted} />
+                </Pressable>
+              ))}
+            </View>
+          )}
+          <TextInput
+            value={tagInput}
+            onChangeText={onChangeTagInput}
+            onSubmitEditing={commitTagInput}
+            blurOnSubmit={false}
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder={t('bookmarks.addTag')}
+            placeholderTextColor={themeColors.placeholder}
+            className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-stone-900 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-50"
+          />
+          {tagSuggestions.length > 0 && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2" keyboardShouldPersistTaps="handled">
+              {tagSuggestions.map((tag) => (
+                <Pressable
+                  key={tag}
+                  onPress={() => {
+                    addTag(tag)
+                    setTagInput('')
+                  }}
+                  className="h-[28px] items-center justify-center rounded-full border border-stone-200 px-3 active:bg-stone-100 dark:border-stone-800 dark:active:bg-stone-800"
+                >
+                  <Text className="text-sm text-stone-500 dark:text-stone-400">{tag}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          )}
         </View>
         <ScrollView
           ref={listScrollRef}

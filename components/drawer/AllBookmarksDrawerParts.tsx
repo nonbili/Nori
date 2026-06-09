@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, type RefObject } from 'react'
+import { memo, useCallback, useEffect, useMemo, type RefObject } from 'react'
 import { Pressable, ScrollView as NativeScrollView, Text, TextInput, View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FlashList } from '@shopify/flash-list'
@@ -13,7 +13,7 @@ import { BookmarkActionsMenu } from '@/components/bookmark/BookmarkActionsMenu'
 import { Favicon } from '@/components/bookmark/Favicon'
 import { ListChip } from '@/components/list/ListChip'
 import { type ThemeColors } from '@/lib/theme'
-import { getLiveBookmarks, getVisibleLists } from '@/lib/nori-data'
+import { getAllTags, getLiveBookmarks, getTags, getVisibleLists } from '@/lib/nori-data'
 
 const getHostLabel = (url: string) => {
   try {
@@ -37,6 +37,8 @@ export interface DrawerPartsState {
   setSortType: (value: SortType) => void
   filterListId: string
   setFilterListId: (value: string) => void
+  filterTags: string[]
+  setFilterTags: (value: string[]) => void
   themeColors: ThemeColors
   closeDrawerWithAnimation: () => void
   closeDrawerGesture: any
@@ -152,13 +154,79 @@ export const DrawerFilterChips: React.FC<{ drawer: DrawerPartsState }> = ({ draw
   )
 }
 
+export const DrawerTagChips: React.FC<{ drawer: DrawerPartsState }> = ({ drawer }) => {
+  const bookmarks = useValue(bookmarks$.bookmarks)
+  // Only surface tags that exist within the current list filter — selecting a tag absent
+  // from the filtered list would otherwise (AND logic) always yield an empty result.
+  const tags = useMemo(() => {
+    const live = getLiveBookmarks(bookmarks)
+    const scoped = drawer.filterListId === 'all'
+      ? live
+      : live.filter((bookmark) => bookmark.listId === drawer.filterListId)
+    return getAllTags(scoped)
+  }, [bookmarks, drawer.filterListId])
+
+  // Drop any active tag filters that are no longer available in the current scope.
+  useEffect(() => {
+    const available = new Set(tags.map((tag) => tag.toLowerCase()))
+    const next = drawer.filterTags.filter((tag) => available.has(tag.toLowerCase()))
+    if (next.length !== drawer.filterTags.length) {
+      drawer.setFilterTags(next)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tags])
+
+  const toggleTag = useCallback((tag: string) => {
+    drawer.setFilterTags(
+      drawer.filterTags.includes(tag)
+        ? drawer.filterTags.filter((item) => item !== tag)
+        : [...drawer.filterTags, tag],
+    )
+  }, [drawer])
+
+  if (tags.length === 0) {
+    return null
+  }
+
+  return (
+    <View className="mb-6">
+      <GestureDetector gesture={drawer.closeDrawerGesture}>
+        <NativeScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
+          {tags.map((tag) => {
+            const isActive = drawer.filterTags.includes(tag)
+            return (
+              <Pressable
+                key={tag}
+                onPress={() => toggleTag(tag)}
+                className={`h-[32px] flex-row items-center gap-1 rounded-full border px-3.5 ${
+                  isActive
+                    ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-800/60 dark:bg-emerald-950/40'
+                    : 'border-stone-200 dark:border-stone-800'
+                }`}
+              >
+                <Text className={`text-xs font-bold ${isActive ? 'text-emerald-500 dark:text-emerald-500' : 'text-stone-400 dark:text-stone-500'}`}>#</Text>
+                <Text className={`text-sm font-medium ${isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-stone-500 dark:text-stone-400'}`}>{tag}</Text>
+              </Pressable>
+            )
+          })}
+        </NativeScrollView>
+      </GestureDetector>
+    </View>
+  )
+}
+
 export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ drawer }) => {
   const insets = useSafeAreaInsets()
   const bookmarks = useValue(bookmarks$.bookmarks)
   const filteredBookmarks = useMemo(() => {
     const query = drawer.searchQuery.trim().toLowerCase()
+    const filterTags = drawer.filterTags.map((tag) => tag.toLowerCase())
     const result = getLiveBookmarks(bookmarks).filter((bookmark) => {
       if (drawer.filterListId !== 'all' && bookmark.listId !== drawer.filterListId) return false
+      if (filterTags.length) {
+        const bookmarkTags = getTags(bookmark).map((tag) => tag.toLowerCase())
+        if (!filterTags.every((tag) => bookmarkTags.includes(tag))) return false
+      }
       if (!query) return true
       return bookmark.title.toLowerCase().includes(query) || bookmark.url.toLowerCase().includes(query)
     })

@@ -4,6 +4,7 @@ export interface RowJsonState {
   visible?: boolean
   sort_index?: number
   deleted_at?: string | null
+  tags?: string[]
   [key: string]: unknown
 }
 
@@ -227,13 +228,39 @@ export function toIsoString(value: unknown): string | null {
   return typeof value === 'string' ? value : null
 }
 
+export function normalizeTags(value: unknown): string[] {
+  const raw = asRowArray<unknown>(value)
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const entry of raw) {
+    const tag = typeof entry === 'string' ? entry.trim() : ''
+    if (!tag) {
+      continue
+    }
+    const key = tag.toLowerCase()
+    if (seen.has(key)) {
+      continue
+    }
+    seen.add(key)
+    result.push(tag)
+  }
+  return result
+}
+
 export function createRowJsonState(state?: Partial<RowJsonState>): RowJsonState {
-  return {
+  const next: RowJsonState = {
     ...state,
     visible: state?.visible !== false,
     sort_index: typeof state?.sort_index === 'number' && Number.isFinite(state.sort_index) ? state.sort_index : 0,
     deleted_at: toIsoString(state?.deleted_at),
   }
+  const tags = normalizeTags(state?.tags)
+  if (tags.length > 0) {
+    next.tags = tags
+  } else {
+    delete next.tags
+  }
+  return next
 }
 
 function normalizeSortIndex(value: unknown, fallback: number) {
@@ -268,6 +295,26 @@ export function getDeletedAt(row: { json?: RowJsonState | null }) {
 
 export function isDeleted(row: { json?: RowJsonState | null }) {
   return Boolean(getDeletedAt(row))
+}
+
+export function getTags(row: { json?: RowJsonState | null }): string[] {
+  return normalizeTags(row.json?.tags)
+}
+
+export function getAllTags(bookmarks: BookmarkRecordData[]): string[] {
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const bookmark of getLiveBookmarks(bookmarks)) {
+    for (const tag of getTags(bookmark)) {
+      const key = tag.toLowerCase()
+      if (seen.has(key)) {
+        continue
+      }
+      seen.add(key)
+      result.push(tag)
+    }
+  }
+  return result.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 }
 
 export function patchRowState<T extends { json: RowJsonState }>(row: T, patch: Partial<RowJsonState>): T {

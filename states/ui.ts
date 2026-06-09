@@ -6,6 +6,7 @@ export interface BookmarkEditorState {
   title: string
   icon: string
   listId: string
+  tags: string[]
 }
 
 export interface ListEditorState {

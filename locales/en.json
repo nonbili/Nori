@@ -4,6 +4,8 @@
     "edit": "Edit bookmark",
     "url": "URL",
     "titleOptional": "Title (optional)",
+    "tags": "Tags",
+    "addTag": "Add a tag",
     "cancel": "Cancel",
     "save": "Save",
     "saving": "Saving...",

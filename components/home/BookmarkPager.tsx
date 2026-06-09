@@ -7,7 +7,7 @@ import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
-import { getSortIndex, getVisibleLists, isDeleted, isVisible } from '@/lib/nori-data'
+import { getSortIndex, getTags, getVisibleLists, isDeleted, isVisible } from '@/lib/nori-data'
 import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { useThemeColors } from '@/lib/theme'
 import { showToast } from '@/lib/toast'
@@ -111,6 +111,7 @@ export const BookmarkPager: React.FC = () => {
       title: '',
       icon: '',
       listId: selectedList.id,
+      tags: [],
     })
   }, [selectedList])
 
@@ -121,6 +122,7 @@ export const BookmarkPager: React.FC = () => {
       title: bookmark.title,
       icon: bookmark.icon || '',
       listId: bookmark.listId || selectedList?.id || '',
+      tags: getTags(bookmark),
     })
   }, [selectedList?.id])
 

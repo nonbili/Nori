@@ -23,6 +23,7 @@ export interface BookmarkDraft {
   url: string
   title?: string
   icon?: string
+  tags?: string[]
 }
 
 interface Store {
@@ -84,10 +85,14 @@ export const bookmarks$: Observable<Store> = observable<Store>({
 
     if (existingIndex !== -1) {
       const existing = items[existingIndex]
-      if (!isVisible(existing)) {
+      const needsReveal = !isVisible(existing)
+      if (needsReveal || draft.tags) {
         const nextItems = [...items]
         nextItems[existingIndex] = {
-          ...patchRowState(existing, { visible: true }),
+          ...patchRowState(existing, {
+            ...(needsReveal ? { visible: true } : {}),
+            ...(draft.tags ? { tags: draft.tags } : {}),
+          }),
           updatedAt: now,
         }
         bookmarks$.bookmarks.set(nextItems)
@@ -102,7 +107,7 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       url,
       title: draft.title?.trim() || url,
       icon: draft.icon?.trim() || '',
-      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null }),
+      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null, tags: draft.tags }),
       createdAt: now,
       updatedAt: now,
     })
@@ -129,9 +134,10 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       return
     }
 
+    const withTags = draft.tags ? patchRowState(previous, { tags: draft.tags }) : previous
     const nextItems = [...items]
     nextItems[index] = {
-      ...previous,
+      ...withTags,
       url: nextUrl,
       title: draft.title?.trim() || previous.title,
       icon: draft.icon?.trim() ?? previous.icon,

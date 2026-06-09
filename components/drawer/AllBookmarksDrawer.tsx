@@ -10,11 +10,13 @@ import { ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
 import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { showToast } from '@/lib/toast'
+import { getTags } from '@/lib/nori-data'
 import { HEADER_TOP_OFFSET } from '@/components/header/headerLayout'
 import {
   DrawerBookmarkResults,
   DrawerFilterChips,
   DrawerHeader,
+  DrawerTagChips,
 } from '@/components/drawer/AllBookmarksDrawerParts'
 
 type SortType = 'newest' | 'oldest' | 'az' | 'za'
@@ -26,6 +28,7 @@ export function AllBookmarksDrawer() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortType, setSortType] = useState<SortType>('newest')
   const [filterListId, setFilterListId] = useState<string>('all')
+  const [filterTags, setFilterTags] = useState<string[]>([])
   const scrollOffset = useSharedValue(0)
   const scrollRef = useRef(null)
   const { height: windowHeight } = useWindowDimensions()
@@ -43,6 +46,7 @@ export function AllBookmarksDrawer() {
     }
     if (!drawerOpen) {
       setSearchQuery('')
+      setFilterTags([])
     } else {
       scrollOffset.value = 0
     }
@@ -114,6 +118,7 @@ export function AllBookmarksDrawer() {
       title: bookmark.title,
       icon: bookmark.icon || '',
       listId: bookmark.listId,
+      tags: getTags(bookmark),
     })
   }, [])
 
@@ -161,6 +166,8 @@ export function AllBookmarksDrawer() {
     setSortType,
     filterListId,
     setFilterListId,
+    filterTags,
+    setFilterTags,
     themeColors,
     closeDrawerWithAnimation,
     closeDrawerGesture,
@@ -180,6 +187,7 @@ export function AllBookmarksDrawer() {
           <View className="flex-1" style={{ paddingTop: insets.top + HEADER_TOP_OFFSET }}>
             <DrawerHeader drawer={drawerParts} />
             <DrawerFilterChips drawer={drawerParts} />
+            <DrawerTagChips drawer={drawerParts} />
             <DrawerBookmarkResults drawer={drawerParts} />
           </View>
         </View>
