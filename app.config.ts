@@ -79,6 +79,7 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       ],
       'expo-web-browser',
       'expo-font',
+      'expo-status-bar',
     ],
     experiments: {
       typedRoutes: true,
