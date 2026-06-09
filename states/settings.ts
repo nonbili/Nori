@@ -9,6 +9,7 @@ export interface Settings {
   selectedSearchProviderId: string
   customSearchProviders: any[]
   openInSystemBrowser: boolean
+  showFavicon: boolean
 }
 
 interface Store extends Settings {
@@ -16,9 +17,10 @@ interface Store extends Settings {
   setLastSelectedListId: (id: string) => void
   setSelectedSearchProvider: (id: string) => void
   setOpenInSystemBrowser: (enabled: boolean) => void
+  setShowFavicon: (enabled: boolean) => void
 }
 
-const themes: Array<Settings['theme']> = [null, 'light', 'dark']
+const themes: Settings['theme'][] = [null, 'light', 'dark']
 
 export const settings$: Observable<Store> = observable<Store>({
   theme: null,
@@ -27,6 +29,7 @@ export const settings$: Observable<Store> = observable<Store>({
   selectedSearchProviderId: 'google',
   customSearchProviders: [],
   openInSystemBrowser: false,
+  showFavicon: true,
   cycleTheme: () => {
     const current = settings$.theme.get()
     const index = themes.indexOf(current)
@@ -40,6 +43,9 @@ export const settings$: Observable<Store> = observable<Store>({
   },
   setOpenInSystemBrowser: (enabled) => {
     settings$.openInSystemBrowser.set(enabled)
+  },
+  setShowFavicon: (enabled) => {
+    settings$.showFavicon.set(enabled)
   },
 })
 

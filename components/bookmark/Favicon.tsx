@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { View } from 'react-native'
 import { Image } from 'expo-image'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useValue } from '@legendapp/state/react'
 import { useThemeColors } from '@/lib/theme'
 import { getRuntimeFaviconCandidates } from '@/lib/bookmark'
+import { settings$ } from '@/states/settings'
 
 export const Favicon: React.FC<{
   iconUrl?: string
@@ -14,27 +16,37 @@ export const Favicon: React.FC<{
   wrapperClassName?: string
 }> = ({ iconUrl, pageUrl, slotSize, iconSize, fallbackIconSize = 14, wrapperClassName }) => {
   const themeColors = useThemeColors()
+  const showFavicon = useValue(settings$.showFavicon)
   const candidates = useMemo(() => getRuntimeFaviconCandidates(pageUrl, iconUrl), [pageUrl, iconUrl])
-  const [candidateIndex, setCandidateIndex] = useState(0)
+  const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set())
 
-  useEffect(() => {
-    setCandidateIndex(0)
-  }, [candidates])
-
-  const activeUrl = candidates[candidateIndex]
+  const activeUrl = candidates.find((candidate) => !failedUrls.has(candidate))
+  const className = showFavicon === false
+    ? 'items-center justify-center overflow-hidden'
+    : wrapperClassName || 'items-center justify-center overflow-hidden rounded-sm bg-stone-100 dark:bg-stone-800'
 
   return (
     <View
-      className={wrapperClassName || 'items-center justify-center overflow-hidden rounded-sm bg-stone-100 dark:bg-stone-800'}
+      className={className}
       style={{ width: slotSize, height: slotSize }}
     >
-      {activeUrl ? (
+      {showFavicon === false ? (
+        <Image
+          source={require('../../assets/images/icon.png')}
+          style={{ width: iconSize, height: iconSize }}
+          contentFit="contain"
+        />
+      ) : activeUrl ? (
         <Image
           source={activeUrl}
           style={{ width: iconSize, height: iconSize }}
           contentFit="contain"
           onError={() => {
-            setCandidateIndex((current) => (current < candidates.length - 1 ? current + 1 : current))
+            setFailedUrls((current) => {
+              const next = new Set(current)
+              next.add(activeUrl)
+              return next
+            })
           }}
         />
       ) : (

@@ -261,6 +261,7 @@ export const ExperienceSection: React.FC = () => {
   const themeColors = useThemeColors()
   const theme = useValue(settings$.theme)
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
+  const showFavicon = useValue(settings$.showFavicon)
 
   return (
     <SectionCard title={t('settings.experience.label')}>
@@ -278,6 +279,23 @@ export const ExperienceSection: React.FC = () => {
             className={`h-8 w-14 rounded-full p-1 ${openInSystemBrowser ? 'bg-emerald-500' : 'bg-stone-700'}`}
           >
             <View className={`h-6 w-6 rounded-full bg-white ${openInSystemBrowser ? 'ml-auto' : ''}`} />
+          </Pressable>
+        </View>
+      </View>
+      <View className="border-b border-stone-200 px-4 py-4 dark:border-stone-800">
+        <View className="flex-row items-center gap-3">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
+            <MaterialIcons name="image" color={themeColors.iconMuted} size={18} />
+          </View>
+          <View className="flex-1">
+            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.showFavicon')}</Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.showFaviconHint')}</Text>
+          </View>
+          <Pressable
+            onPress={() => settings$.setShowFavicon(showFavicon === false)}
+            className={`h-8 w-14 rounded-full p-1 ${showFavicon !== false ? 'bg-emerald-500' : 'bg-stone-700'}`}
+          >
+            <View className={`h-6 w-6 rounded-full bg-white ${showFavicon !== false ? 'ml-auto' : ''}`} />
           </Pressable>
         </View>
       </View>

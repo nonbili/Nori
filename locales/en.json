@@ -113,6 +113,8 @@
       "label": "Experience",
       "defaultBrowser": "Open links in default browser",
       "defaultBrowserHint": "Turn this on to leave Nori and open links in your phone's browser app.",
+      "showFavicon": "Show favicon",
+      "showFaviconHint": "Use each bookmark's site icon. Turn this off to show the Nori logo instead.",
       "theme": "Theme",
       "themeHint": "Switch between system, light, and dark appearance.",
       "system": "System",

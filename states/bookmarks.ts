@@ -101,7 +101,7 @@ export const bookmarks$: Observable<Store> = observable<Store>({
     }
 
     const nextSortIndex = items.filter((item) => item.listId === listId).length
-    bookmarks$.bookmarks.push({
+    bookmarks$.bookmarks.set([...items, {
       id,
       listId,
       url,
@@ -110,7 +110,7 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null, tags: draft.tags }),
       createdAt: now,
       updatedAt: now,
-    })
+    }])
     return id
   },
   update: (id, draft) => {
