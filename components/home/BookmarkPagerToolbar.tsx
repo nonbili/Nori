@@ -2,6 +2,7 @@ import { Pressable, Text, View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useValue } from '@legendapp/state/react'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { ui$ } from '@/states/ui'
 import type { BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
@@ -11,6 +12,7 @@ export const BookmarkPagerToolbar: React.FC<{
   actions: BookmarkPagerActions
 }> = ({ selectedBookmark, actions }) => {
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
+  const insets = useSafeAreaInsets()
   const { themeColors } = actions
   const openDrawerGesture = Gesture.Pan()
     .enabled(!bookmarkEditMode)
@@ -22,7 +24,7 @@ export const BookmarkPagerToolbar: React.FC<{
     })
 
   return (
-    <View className="absolute bottom-4 left-6 right-6 z-10">
+    <View className="absolute left-6 right-6 z-10" style={{ bottom: insets.bottom + 16 }}>
       <GestureDetector gesture={openDrawerGesture}>
         <View
           className="flex-row items-center justify-between rounded-full border border-white/70 bg-white/70 px-3 py-2 shadow-lg dark:border-white/10 dark:bg-stone-950/70"

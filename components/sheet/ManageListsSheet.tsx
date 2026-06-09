@@ -1,4 +1,5 @@
 import { Alert, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
 import { useRef } from 'react'
@@ -22,6 +23,7 @@ export const ManageListsSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const { height: windowHeight } = useWindowDimensions()
+  const insets = useSafeAreaInsets()
   const colorScheme = useAppColorScheme()
   const isDark = colorScheme === 'dark'
   const lists = useValue(lists$.lists)
@@ -75,6 +77,7 @@ export const ManageListsSheet: React.FC = () => {
       height={windowHeight * 0.85}
       contentScrollRef={scrollRef}
       contentScrollOffset={scrollOffset}
+      edgeToEdgeBottom
       headerLeft={
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
@@ -91,7 +94,8 @@ export const ManageListsSheet: React.FC = () => {
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
         className="flex-1"
-        contentContainerClassName="gap-8 pb-4"
+        contentContainerClassName="gap-8"
+        contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >

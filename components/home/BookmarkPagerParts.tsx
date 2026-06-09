@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useRef } from 'react'
 import { FlatList, ScrollView, Text, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useValue } from '@legendapp/state/react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated, { type AnimatedRef } from 'react-native-reanimated'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { ui$ } from '@/states/ui'
@@ -92,6 +93,8 @@ export const BookmarkListPage = memo(({
 }) => {
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const selectedBookmarkId = useValue(ui$.selectedBookmarkId)
+  const insets = useSafeAreaInsets()
+  const bottomPadding = PAGE_BOTTOM_PADDING + insets.bottom
   const itemWidth = (width - PAGE_HORIZONTAL_PADDING * 2 - (GRID_COLUMNS - 1) * GRID_GAP) / GRID_COLUMNS
   const viewportHeightRef = useRef(0)
   const contentHeightRef = useRef(0)
@@ -174,7 +177,7 @@ export const BookmarkListPage = memo(({
             justifyContent: 'center',
             paddingHorizontal: PAGE_HORIZONTAL_PADDING,
             paddingTop: 16,
-            paddingBottom: PAGE_BOTTOM_PADDING,
+            paddingBottom: bottomPadding,
           }}
           columnWrapperStyle={{ gap: GRID_GAP, marginBottom: GRID_GAP }}
           ListHeaderComponent={
@@ -214,7 +217,7 @@ export const BookmarkListPage = memo(({
         onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}
         scrollEventThrottle={16}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16, paddingBottom: PAGE_BOTTOM_PADDING }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16, paddingBottom: bottomPadding }}
         className="flex-1"
       >
         <View className="gap-8">

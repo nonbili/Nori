@@ -2,6 +2,7 @@ import { Pressable, View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useMemo } from 'react'
 import { useValue } from '@legendapp/state/react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { getVisibleLists } from '@/lib/nori-data'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
@@ -12,6 +13,7 @@ import { HEADER_TOP_OFFSET } from './headerLayout'
 
 export const AppHeader: React.FC = () => {
   const themeColors = useThemeColors()
+  const insets = useSafeAreaInsets()
   const lists = useValue(lists$.lists)
   const selectedListId = useValue(settings$.lastSelectedListId)
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
@@ -38,7 +40,7 @@ export const AppHeader: React.FC = () => {
   ]
 
   return (
-    <View testID="app_header" className="flex-row items-center justify-between px-6 pb-2" style={{ paddingTop: HEADER_TOP_OFFSET }}>
+    <View testID="app_header" className="flex-row items-center justify-between px-6 pb-2" style={{ paddingTop: insets.top + HEADER_TOP_OFFSET }}>
       <View className="flex-row gap-2">
         <Pressable
           onPress={() => ui$.drawerOpen.set(true)}

@@ -62,7 +62,8 @@ export const Sheet: React.FC<{
   height?: number
   contentScrollRef?: any
   contentScrollOffset?: SharedValue<number>
-}> = ({ visible, title, onClose, children, headerLeft, headerRight, showCloseButton = true, height, contentScrollRef, contentScrollOffset }) => {
+  edgeToEdgeBottom?: boolean
+}> = ({ visible, title, onClose, children, headerLeft, headerRight, showCloseButton = true, height, contentScrollRef, contentScrollOffset, edgeToEdgeBottom }) => {
   const insets = useSafeAreaInsets()
   const { height: windowHeight } = useWindowDimensions()
   const themeColors = useThemeColors()
@@ -177,17 +178,17 @@ export const Sheet: React.FC<{
   }
 
   return (
-    <Modal visible={rendered} animationType="none" transparent onRequestClose={closeWithAnimation}>
+    <Modal visible={rendered} animationType="none" transparent statusBarTranslucent navigationBarTranslucent onRequestClose={closeWithAnimation}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View className="flex-1">
           <Animated.View className="absolute inset-0 bg-black/60" style={backdropAnimatedStyle} />
           <Pressable className="flex-1" onPress={closeWithAnimation} testID="sheet_backdrop" accessibilityLabel="Dismiss" />
           <Animated.View
-            className="rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 pb-6 dark:border-stone-800 dark:bg-stone-950"
+            className="rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 dark:border-stone-800 dark:bg-stone-950"
             accessibilityViewIsModal={true}
             style={[
               {
-                paddingBottom: Math.max(insets.bottom + 16, 24),
+                paddingBottom: edgeToEdgeBottom ? 0 : Math.max(insets.bottom + 16, 24),
                 height,
                 maxHeight: windowHeight * 0.9,
               },

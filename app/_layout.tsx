@@ -3,7 +3,7 @@ import './global.css'
 
 import { Appearance, Linking, LogBox, View } from 'react-native'
 import { Slot } from 'expo-router'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import { useValue } from '@legendapp/state/react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -63,12 +63,10 @@ function LayoutContent() {
   }, [plan, userId])
 
   return (
-    <SafeAreaView className="flex-1 bg-stone-50 dark:bg-stone-950">
+    <View className="flex-1 bg-stone-50 dark:bg-stone-950">
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <View className="flex-1 bg-stone-50 dark:bg-stone-950">
-        <Slot />
-      </View>
-    </SafeAreaView>
+      <Slot />
+    </View>
   )
 }
 

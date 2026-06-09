@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, Text, View, type LayoutChangeEvent } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated from 'react-native-reanimated'
 import { ui$ } from '@/states/ui'
 import { settings$ } from '@/states/settings'
@@ -30,8 +31,12 @@ export interface BookmarkPagerViewModel {
   onMomentumSettled: (event: any) => void
 }
 
-export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({ pager }) => (
-  <View className="mb-8 mt-4 px-6">
+export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({ pager }) => {
+  const insets = useSafeAreaInsets()
+  // The AppHeader (which provides the top inset) is hidden in edit mode, so the
+  // chips row becomes the topmost element and must clear the status bar itself.
+  return (
+  <View className="mb-8 mt-4 px-6" style={pager.bookmarkEditMode ? { paddingTop: insets.top } : undefined}>
     <ScrollView
       ref={pager.chipScrollViewRef}
       horizontal
@@ -63,7 +68,8 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
       ) : null}
     </ScrollView>
   </View>
-)
+  )
+}
 
 export const BookmarkPagerPages: React.FC<{
   pager: BookmarkPagerViewModel

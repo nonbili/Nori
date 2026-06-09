@@ -4,6 +4,7 @@ import * as Clipboard from 'expo-clipboard'
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { Directions, Gesture } from 'react-native-gesture-handler'
 import { useValue } from '@legendapp/state/react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
@@ -20,6 +21,7 @@ type SortType = 'newest' | 'oldest' | 'az' | 'za'
 
 export function AllBookmarksDrawer() {
   const themeColors = useThemeColors()
+  const insets = useSafeAreaInsets()
   const drawerOpen = useValue(ui$.drawerOpen)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortType, setSortType] = useState<SortType>('newest')
@@ -175,7 +177,7 @@ export function AllBookmarksDrawer() {
   return (
     <Animated.View className="absolute inset-0 z-[100] bg-stone-50 dark:bg-stone-950" style={drawerAnimatedStyle}>
         <View className="flex-1 px-6">
-          <View className="flex-1" style={{ paddingTop: HEADER_TOP_OFFSET }}>
+          <View className="flex-1" style={{ paddingTop: insets.top + HEADER_TOP_OFFSET }}>
             <DrawerHeader drawer={drawerParts} />
             <DrawerFilterChips drawer={drawerParts} />
             <DrawerBookmarkResults drawer={drawerParts} />

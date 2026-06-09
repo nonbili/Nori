@@ -3,6 +3,7 @@ import { Pressable, ScrollView as NativeScrollView, Text, TextInput, View } from
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FlashList } from '@shopify/flash-list'
 import { GestureDetector, ScrollView } from 'react-native-gesture-handler'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useValue } from '@legendapp/state/react'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -152,6 +153,7 @@ export const DrawerFilterChips: React.FC<{ drawer: DrawerPartsState }> = ({ draw
 }
 
 export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ drawer }) => {
+  const insets = useSafeAreaInsets()
   const bookmarks = useValue(bookmarks$.bookmarks)
   const filteredBookmarks = useMemo(() => {
     const query = drawer.searchQuery.trim().toLowerCase()
@@ -194,7 +196,7 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
             data={filteredBookmarks}
             renderItem={renderBookmarkRow}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingBottom: 48 }}
+            contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}
             ItemSeparatorComponent={ListSeparator}
             showsVerticalScrollIndicator={false}
             onScroll={drawer.onScroll}
