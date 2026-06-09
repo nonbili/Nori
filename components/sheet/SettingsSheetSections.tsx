@@ -14,6 +14,8 @@ import { isIos } from '@/lib/utils'
 import { signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
 import { AboutRow } from '@/components/sheet/SettingsSheetAbout'
+import { useLocales } from 'expo-localization'
+import { resolveI18nLanguageFromExpoLocale, supportedI18nLanguages } from '@/lib/i18n'
 
 const TERMS_OF_USE_URL = 'https://www.apple.com/legal/macapps/stdeula/'
 const PRIVACY_POLICY_URL = 'https://inks.page/p/privacy'
@@ -256,12 +258,50 @@ const WebPlanActions: React.FC<{ source: string; onManage: () => void }> = ({ so
   )
 }
 
+const languageNativeNames: Record<string, string> = {
+  ar: 'العربية',
+  el: 'Ελληνικά',
+  en: 'English',
+  es: 'Español',
+  fr: 'Français',
+  it: 'Italiano',
+  pl: 'Polski',
+  pt_BR: 'Português (Brasil)',
+  sv: 'Svenska',
+  tr: 'Türkçe',
+  zh_Hans: '简体中文',
+  zh_Hant: '繁體中文',
+}
+
 export const ExperienceSection: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const theme = useValue(settings$.theme)
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
   const showFavicon = useValue(settings$.showFavicon)
+  const selectedLanguage = useValue(settings$.language)
+  const locales = useLocales()
+
+  const systemLanguage = resolveI18nLanguageFromExpoLocale(locales[0]) || 'en'
+  const effectiveLanguage = selectedLanguage || systemLanguage
+
+  const toLanguageLabel = (code: string) => languageNativeNames[code] || code
+  const currentLanguageLabel = selectedLanguage
+    ? toLanguageLabel(selectedLanguage)
+    : `${t('settings.experience.languageSystem')} (${toLanguageLabel(effectiveLanguage)})`
+
+  const languageMenuItems: NouMenuItem[] = [
+    {
+      label: `${t('settings.experience.languageSystem')} (${toLanguageLabel(systemLanguage)})`,
+      selected: selectedLanguage === null,
+      handler: () => settings$.setLanguage(null),
+    },
+    ...supportedI18nLanguages.map((lang) => ({
+      label: toLanguageLabel(lang),
+      selected: selectedLanguage === lang,
+      handler: () => settings$.setLanguage(lang),
+    })),
+  ]
 
   return (
     <SectionCard title={t('settings.experience.label')}>
@@ -297,6 +337,28 @@ export const ExperienceSection: React.FC = () => {
           >
             <View className={`h-6 w-6 rounded-full bg-white ${showFavicon !== false ? 'ml-auto' : ''}`} />
           </Pressable>
+        </View>
+      </View>
+      <View className="border-b border-stone-200 px-4 py-4 dark:border-stone-800">
+        <View className="flex-row items-center gap-3">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
+            <MaterialIcons name="translate" color={themeColors.iconMuted} size={18} />
+          </View>
+          <View className="flex-1">
+            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.language')}</Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.languageHint')}</Text>
+          </View>
+          <NouMenu
+            trigger={
+              <View className="flex-row items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1.5 dark:border-stone-700 dark:bg-stone-950">
+                <Text className="text-sm font-medium text-stone-750 dark:text-stone-350">
+                  {currentLanguageLabel}
+                </Text>
+                <MaterialIcons name="keyboard-arrow-down" size={16} color={themeColors.iconMuted} />
+              </View>
+            }
+            items={languageMenuItems}
+          />
         </View>
       </View>
       <View className="px-4 py-4">

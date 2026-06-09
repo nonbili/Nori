@@ -55,7 +55,20 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       [
         'expo-localization',
         {
-          supportedLocales: ['en'],
+          supportedLocales: [
+            'ar',
+            'el',
+            'en',
+            'es',
+            'fr',
+            'it',
+            'pl',
+            'pt-BR',
+            'sv',
+            'tr',
+            'zh-Hans',
+            'zh-Hant',
+          ],
         },
       ],
       [

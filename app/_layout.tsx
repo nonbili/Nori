@@ -8,12 +8,15 @@ import { StatusBar } from 'expo-status-bar'
 import { useValue } from '@legendapp/state/react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useEffect } from 'react'
+import { useLocales } from 'expo-localization'
+import i18n from 'i18next'
 import { colorScheme as nativeWindColorScheme } from 'nativewind'
 import { onReceiveAuthUrl } from '@/lib/supabase/auth'
 import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
 import { useAppColorScheme } from '@/lib/theme'
 import { auth$, bootstrapAuth } from '@/states/auth'
 import { settings$ } from '@/states/settings'
+import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 
 LogBox.ignoreAllLogs()
 
@@ -22,8 +25,18 @@ function LayoutContent() {
   const userId = useValue(auth$.userId)
   const plan = useValue(auth$.plan)
   const theme = useValue(settings$.theme)
+  const selectedLanguage = useValue(settings$.language)
+  const locales = useLocales()
 
   const colorScheme = theme || appColorScheme
+
+  useEffect(() => {
+    const systemLanguage = resolveI18nLanguageFromExpoLocale(locales[0]) || 'en'
+    const language = selectedLanguage || systemLanguage
+    if (i18n.language !== language) {
+      void i18n.changeLanguage(language)
+    }
+  }, [locales, selectedLanguage])
 
   useEffect(() => {
     nativeWindColorScheme.set(theme || 'system')

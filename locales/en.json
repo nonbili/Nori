@@ -119,7 +119,10 @@
       "themeHint": "Switch between system, light, and dark appearance.",
       "system": "System",
       "light": "Light",
-      "dark": "Dark"
+      "dark": "Dark",
+      "language": "Language",
+      "languageHint": "Choose a language or follow system language.",
+      "languageSystem": "System"
     },
     "about": {
       "label": "About",
