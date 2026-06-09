@@ -1,4 +1,7 @@
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
+import { useSharedValue } from 'react-native-reanimated'
+import { useRef } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -18,12 +21,19 @@ import { GestureDetector } from 'react-native-gesture-handler'
 export const ManageListsSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
+  const { height: windowHeight } = useWindowDimensions()
   const colorScheme = useAppColorScheme()
   const isDark = colorScheme === 'dark'
   const lists = useValue(lists$.lists)
   const visible = useValue(ui$.listManagerOpen)
   const visibleLists = getVisibleLists(lists)
   const inactiveLists = getInactiveLists(lists)
+  const scrollOffset = useSharedValue(0)
+  const scrollRef = useRef(null)
+
+  const handleScroll = (event: any) => {
+    scrollOffset.value = event.nativeEvent.contentOffset.y
+  }
 
   const toggleList = (list: BookmarkList, visible: boolean) => {
     lists$.setVisible(list.id, visible)
@@ -62,6 +72,9 @@ export const ManageListsSheet: React.FC = () => {
       visible={visible}
       title={t('lists.manage')}
       onClose={() => ui$.listManagerOpen.set(false)}
+      height={windowHeight * 0.85}
+      contentScrollRef={scrollRef}
+      contentScrollOffset={scrollOffset}
       headerLeft={
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
@@ -74,7 +87,14 @@ export const ManageListsSheet: React.FC = () => {
         </Pressable>
       }
     >
-      <View className="gap-8">
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        className="flex-1"
+        contentContainerClassName="gap-8 pb-4"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
         <View className="gap-4">
           <SortableList
             items={visibleLists}
@@ -163,7 +183,7 @@ export const ManageListsSheet: React.FC = () => {
             </View>
           </View>
         ) : null}
-      </View>
+      </ScrollView>
     </Sheet>
   )
 }
