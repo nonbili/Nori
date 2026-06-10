@@ -43,7 +43,7 @@ export const AppHeader: React.FC = () => {
     <View testID="app_header" className="flex-row items-center justify-between px-6 pb-2" style={{ paddingTop: insets.top + HEADER_TOP_OFFSET }}>
       <View className="flex-row gap-2">
         <Pressable
-          onPress={() => ui$.drawerOpen.set(true)}
+          onPress={() => ui$.openBookmarksDrawer()}
           testID="drawer_button"
           accessibilityLabel="Open bookmarks drawer"
           className="h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-stone-100 dark:border-stone-700 dark:bg-stone-800"

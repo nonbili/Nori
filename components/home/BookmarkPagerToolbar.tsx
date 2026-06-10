@@ -20,7 +20,7 @@ export const BookmarkPagerToolbar: React.FC<{
     .failOffsetX([-80, 80])
     .runOnJS(true)
     .onStart(() => {
-      ui$.drawerOpen.set(true)
+      ui$.openBookmarksDrawer()
     })
 
   return (
@@ -56,7 +56,7 @@ export const BookmarkPagerToolbar: React.FC<{
             </Pressable>
           )}
           {!bookmarkEditMode ? (
-            <Pressable onPress={() => ui$.drawerOpen.set(true)} className="h-10 items-center justify-center px-4">
+            <Pressable onPress={() => ui$.openBookmarksDrawer()} className="h-10 items-center justify-center px-4">
               <View className="h-1 w-12 rounded-full bg-stone-300/90 dark:bg-white/20" />
               <MaterialIcons name="keyboard-arrow-up" size={24} color={themeColors.iconMuted} />
             </Pressable>

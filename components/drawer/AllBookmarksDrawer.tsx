@@ -25,9 +25,9 @@ export function AllBookmarksDrawer() {
   const themeColors = useThemeColors()
   const insets = useSafeAreaInsets()
   const drawerOpen = useValue(ui$.drawerOpen)
+  const filterListId = useValue(ui$.drawerFilterListId)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortType, setSortType] = useState<SortType>('newest')
-  const [filterListId, setFilterListId] = useState<string>('all')
   const [filterTags, setFilterTags] = useState<string[]>([])
   const scrollOffset = useSharedValue(0)
   const scrollRef = useRef(null)
@@ -158,6 +158,9 @@ export function AllBookmarksDrawer() {
   const handleScroll = useCallback((event: any) => {
     scrollOffset.value = event.nativeEvent.contentOffset.y
   }, [scrollOffset])
+  const setFilterListId = useCallback((value: string) => {
+    ui$.drawerFilterListId.set(value)
+  }, [])
 
   const drawerParts = {
     searchQuery,

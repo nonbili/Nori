@@ -138,7 +138,7 @@ export const BookmarkListPage = memo(({
       && !ui$.drawerOpen.peek()
       && contentOffset.y > maxOffsetY + BOTTOM_OVERSCROLL_OPEN_THRESHOLD
     ) {
-      ui$.drawerOpen.set(true)
+      ui$.openBookmarksDrawer()
     }
   }, [bookmarkEditMode, isActive, updateBottomState])
 

@@ -1,4 +1,7 @@
 import { observable } from '@legendapp/state'
+import { getVisibleLists } from '@/lib/nori-data'
+import { lists$ } from '@/states/lists'
+import { settings$ } from '@/states/settings'
 
 export interface BookmarkEditorState {
   id?: string
@@ -31,6 +34,7 @@ export interface PendingBookmarkImportState {
 interface UIStore {
   bookmarkEditMode: boolean
   bookmarkEditor: BookmarkEditorState | null
+  drawerFilterListId: string
   bookmarkListAtBottom: boolean
   drawerOpen: boolean
   listEditor: ListEditorState | null
@@ -40,11 +44,13 @@ interface UIStore {
   recentSheetOpen: boolean
   selectedBookmarkId: string | null
   settingsSheetOpen: boolean
+  openBookmarksDrawer: () => void
 }
 
 export const ui$ = observable<UIStore>({
   bookmarkEditMode: false,
   bookmarkEditor: null,
+  drawerFilterListId: 'all',
   bookmarkListAtBottom: true,
   drawerOpen: false,
   listEditor: null,
@@ -54,4 +60,10 @@ export const ui$ = observable<UIStore>({
   recentSheetOpen: false,
   selectedBookmarkId: null,
   settingsSheetOpen: false,
+  openBookmarksDrawer: () => {
+    const selectedListId = settings$.lastSelectedListId.get()
+    const visibleLists = getVisibleLists(lists$.lists.get())
+    ui$.drawerFilterListId.set(visibleLists.some((list) => list.id === selectedListId) ? selectedListId : 'all')
+    ui$.drawerOpen.set(true)
+  },
 })

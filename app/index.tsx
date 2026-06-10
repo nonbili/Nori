@@ -20,7 +20,11 @@ export default function HomeScreen() {
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const bookmarkListAtBottom = useValue(ui$.bookmarkListAtBottom)
   const toggleDrawer = useCallback((open: boolean) => {
-    ui$.drawerOpen.set(open)
+    if (open) {
+      ui$.openBookmarksDrawer()
+    } else {
+      ui$.drawerOpen.set(false)
+    }
   }, [])
 
   const openDrawerGesture = Gesture.Pan()
