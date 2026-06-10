@@ -1,0 +1,13 @@
+<h2>Caratteristiche</h2>
+<ul>
+  <li>Organizza i segnalibri in più liste</li>
+  <li>Apri i segnalibri salvati nel browser di sistema</li>
+  <li>Ricevi link condivisi da altre app</li>
+  <li>Scegli la lista di destinazione prima di salvare un link condiviso</li>
+</ul>
+
+<h2>Come funziona</h2>
+<ul>
+  <li>Nori ti aiuta a salvare link interessanti da qualsiasi app e a organizzarli in liste.</li>
+  <li>Quando sei pronto per leggere, Nori apre il link nel browser di sistema per offrirti la migliore esperienza.</li>
+</ul>

@@ -1,0 +1,1 @@
+Gestionnaire et lanceur de favoris.

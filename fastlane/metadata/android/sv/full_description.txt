@@ -1,0 +1,13 @@
+<h2>Funktioner</h2>
+<ul>
+  <li>Organisera bokmärken i flera listor</li>
+  <li>Öppna sparade bokmärken i systemwebbläsaren</li>
+  <li>Ta emot delade länkar från andra appar</li>
+  <li>Välj destinationslista innan du sparar en delad länk</li>
+</ul>
+
+<h2>Så fungerar det</h2>
+<ul>
+  <li>Nori hjälper dig att spara intressanta länkar från valfri app och organisera dem i listor.</li>
+  <li>När du är redo att läsa öppnar Nori länken i din systemwebbläsare för bästa upplevelse.</li>
+</ul>

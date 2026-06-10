@@ -1,0 +1,13 @@
+<h2>Funkcje</h2>
+<ul>
+  <li>Organizowanie zakładek w wiele list</li>
+  <li>Otwieranie zapisanych zakładek w przeglądarce systemowej</li>
+  <li>Odbieranie udostępnionych linków z innych aplikacji</li>
+  <li>Wybór listy docelowej przed zapisaniem udostępnionego linku</li>
+</ul>
+
+<h2>Jak to działa</h2>
+<ul>
+  <li>Nori pomaga zapisywać interesujące linki z dowolnej aplikacji i organizować je w listy.</li>
+  <li>Gdy chcesz coś przeczytać, Nori otwiera link w przeglądarce systemowej, aby zapewnić jak najlepsze wrażenia.</li>
+</ul>

@@ -1,0 +1,1 @@
+Menedżer i program uruchamiający zakładki.

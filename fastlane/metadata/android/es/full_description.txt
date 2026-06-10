@@ -1,0 +1,13 @@
+<h2>Características</h2>
+<ul>
+  <li>Organiza marcadores en múltiples listas</li>
+  <li>Abre los marcadores guardados en el navegador del sistema</li>
+  <li>Recibe enlaces compartidos de otras aplicaciones</li>
+  <li>Elige la lista de destino antes de guardar un enlace compartido</li>
+</ul>
+
+<h2>Cómo funciona</h2>
+<ul>
+  <li>Nori te ayuda a guardar enlaces interesantes de cualquier aplicación y a organizarlos en listas.</li>
+  <li>Cuando estés listo para leer, Nori abre el enlace en el navegador de tu sistema para ofrecerte la mejor experiencia.</li>
+</ul>

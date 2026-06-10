@@ -1,0 +1,13 @@
+<h2>Recursos</h2>
+<ul>
+  <li>Organize favoritos em várias listas</li>
+  <li>Abra favoritos salvos no navegador do sistema</li>
+  <li>Receba links compartilhados de outros aplicativos</li>
+  <li>Escolha a lista de destino antes de salvar um link compartilhado</li>
+</ul>
+
+<h2>Como funciona</h2>
+<ul>
+  <li>O Nori ajuda você a salvar links interessantes de qualquer aplicativo e organizá-los em listas.</li>
+  <li>Quando estiver pronto para ler, o Nori abre o link no navegador do seu sistema para a melhor experiência.</li>
+</ul>

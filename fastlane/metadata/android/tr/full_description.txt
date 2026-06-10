@@ -1,0 +1,13 @@
+<h2>Özellikler</h2>
+<ul>
+  <li>Yer imlerini birden fazla listede düzenleyin</li>
+  <li>Kaydedilen yer imlerini sistem tarayıcısında açın</li>
+  <li>Diğer uygulamalardan paylaşılan bağlantıları alın</li>
+  <li>Paylaşılan bir bağlantıyı kaydetmeden önce hedef listeyi seçin</li>
+</ul>
+
+<h2>Nasıl çalışır</h2>
+<ul>
+  <li>Nori, herhangi bir uygulamadan ilginç bağlantıları kaydetmenize ve bunları listeler halinde düzenlemenize yardımcı olur.</li>
+  <li>Okumaya hazır olduğunuzda, Nori en iyi deneyim için bağlantıyı sistem tarayıcınızda açar.</li>
+</ul>

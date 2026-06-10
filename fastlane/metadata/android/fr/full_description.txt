@@ -1,0 +1,13 @@
+<h2>Fonctionnalités</h2>
+<ul>
+  <li>Organiser les favoris dans plusieurs listes</li>
+  <li>Ouvrir les favoris enregistrés dans le navigateur du système</li>
+  <li>Recevoir des liens partagés depuis d'autres applications</li>
+  <li>Choisir la liste de destination avant d'enregistrer un lien partagé</li>
+</ul>
+
+<h2>Comment ça marche</h2>
+<ul>
+  <li>Nori vous aide à enregistrer des liens intéressants depuis n'importe quelle application et à les organiser en listes.</li>
+  <li>Lorsque vous êtes prêt à lire, Nori ouvre le lien dans le navigateur de votre système pour une expérience optimale.</li>
+</ul>
