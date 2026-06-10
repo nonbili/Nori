@@ -1,0 +1,5 @@
+- Support tags
+- Add support for multiple languages
+- Add setting to hide bookmarked website favicons
+- Keep current list when opening all bookmarks drawer
+- Bug fixes and UI improvements

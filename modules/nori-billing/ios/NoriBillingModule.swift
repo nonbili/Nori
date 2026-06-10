@@ -113,15 +113,15 @@ public class NoriBillingModule: Module {
 
   private func collectCurrentEntitlements() async throws -> [NoriBillingEntitlementRecord] {
     var records: [NoriBillingEntitlementRecord] = []
-    for await verification in Transaction.currentEntitlements {
+    for await verification in StoreKit.Transaction.currentEntitlements {
       _ = try unwrap(verification)
       records.append(serialize(verification))
     }
     return records
   }
 
-  private func serialize(_ verification: VerificationResult<Transaction>) -> NoriBillingEntitlementRecord {
-    let transaction: Transaction
+  private func serialize(_ verification: VerificationResult<StoreKit.Transaction>) -> NoriBillingEntitlementRecord {
+    let transaction: StoreKit.Transaction
     switch verification {
     case .verified(let value):
       transaction = value
