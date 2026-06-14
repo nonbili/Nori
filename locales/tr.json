@@ -11,7 +11,25 @@
     "saving": "Kaydediliyor...",
     "updated": "Yer imi güncellendi",
     "saved": "Yer imi kaydedildi",
-    "invalidUrl": "Geçerli bir http veya https URL'si girin"
+    "invalidUrl": "Geçerli bir http veya https URL'si girin",
+    "editMultiple": "Yer imlerini düzenle",
+    "doneEditing": "Düzenlemeyi tamamla",
+    "editAction": "Düzenle",
+    "copyUrl": "URL'yi kopyala",
+    "share": "Paylaş",
+    "delete": "Sil",
+    "searchPlaceholder": "Ara...",
+    "openDrawer": "Yer imi panelini aç",
+    "sorting": {
+      "newest": "En yeni",
+      "oldest": "En eski",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "Önce en yeni",
+      "oldestFirst": "Önce en eski",
+      "nameAz": "Ad A-Z",
+      "nameZa": "Ad Z-A"
+    }
   },
   "lists": {
     "new": "Yeni liste",
@@ -44,7 +62,8 @@
     "noRecent": "Son sekme yok",
     "noRecentHint": "Nori'den açtığınız bağlantılar, daha sonra kolayca yeniden açabilmeniz için burada görünür.",
     "noBookmarks": "Henüz yer imi yok",
-    "noBookmarksHint": "Eklediğiniz yer imleri en yeniden en eskiye doğru burada görünür."
+    "noBookmarksHint": "Eklediğiniz yer imleri en yeniden en eskiye doğru burada görünür.",
+    "openHistory": "Geçmişi aç"
   },
   "sharing": {
     "title": "Paylaşılan bağlantıyı kaydet",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "Ayarlar",
+    "moreOptions": "Diğer seçenekler",
     "sync": {
       "label": "Senkronizasyon",
       "signIn": "Giriş yap",

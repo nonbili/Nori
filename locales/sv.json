@@ -11,7 +11,25 @@
     "saving": "Sparar...",
     "updated": "Bokmärke uppdaterat",
     "saved": "Bokmärke sparat",
-    "invalidUrl": "Ange en giltig http- eller https-URL"
+    "invalidUrl": "Ange en giltig http- eller https-URL",
+    "editMultiple": "Redigera bokmärken",
+    "doneEditing": "Klar med redigering",
+    "editAction": "Redigera",
+    "copyUrl": "Kopiera URL",
+    "share": "Dela",
+    "delete": "Radera",
+    "searchPlaceholder": "Sök...",
+    "openDrawer": "Öppna bokmärkespanel",
+    "sorting": {
+      "newest": "Nyaste",
+      "oldest": "Äldsta",
+      "az": "A-Ö",
+      "za": "Ö-A",
+      "newestFirst": "Nyaste först",
+      "oldestFirst": "Äldsta först",
+      "nameAz": "Namn A-Ö",
+      "nameZa": "Namn Ö-A"
+    }
   },
   "lists": {
     "new": "Ny lista",
@@ -44,7 +62,8 @@
     "noRecent": "Inga nyligen använda flikar",
     "noRecentHint": "Länkar du öppnar från Nori kommer att visas här så att de är lätta att öppna igen senare.",
     "noBookmarks": "Inga bokmärken än",
-    "noBookmarksHint": "Bokmärken du lägger till kommer att visas här, med de senaste först."
+    "noBookmarksHint": "Bokmärken du lägger till kommer att visas här, med de senaste först.",
+    "openHistory": "Öppna historik"
   },
   "sharing": {
     "title": "Spara delad länk",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "Inställningar",
+    "moreOptions": "Fler alternativ",
     "sync": {
       "label": "Synk",
       "signIn": "Logga in",

@@ -11,7 +11,25 @@
     "saving": "Salvando...",
     "updated": "Favorito atualizado",
     "saved": "Favorito salvo",
-    "invalidUrl": "Insira uma URL http ou https válida"
+    "invalidUrl": "Insira uma URL http ou https válida",
+    "editMultiple": "Editar favoritos",
+    "doneEditing": "Concluir edição",
+    "editAction": "Editar",
+    "copyUrl": "Copiar URL",
+    "share": "Compartilhar",
+    "delete": "Excluir",
+    "searchPlaceholder": "Buscar...",
+    "openDrawer": "Abrir painel de favoritos",
+    "sorting": {
+      "newest": "Mais recentes",
+      "oldest": "Mais antigos",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "Mais recentes primeiro",
+      "oldestFirst": "Mais antigos primeiro",
+      "nameAz": "Nome A-Z",
+      "nameZa": "Nome Z-A"
+    }
   },
   "lists": {
     "new": "Nova lista",
@@ -44,7 +62,8 @@
     "noRecent": "Sem abas recentes",
     "noRecentHint": "Links abertos pelo Nori aparecerão aqui para serem reabertos facilmente depois.",
     "noBookmarks": "Sem favoritos ainda",
-    "noBookmarksHint": "Os favoritos que você adicionar aparecerão aqui, do mais novo para o mais antigo."
+    "noBookmarksHint": "Os favoritos que você adicionar aparecerão aqui, do mais novo para o mais antigo.",
+    "openHistory": "Abrir histórico"
   },
   "sharing": {
     "title": "Salvar link compartilhado",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "Configurações",
+    "moreOptions": "Mais opções",
     "sync": {
       "label": "Sincronização",
       "signIn": "Entrar",

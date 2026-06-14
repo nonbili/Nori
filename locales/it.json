@@ -11,7 +11,25 @@
     "saving": "Salvataggio...",
     "updated": "Segnalibro aggiornato",
     "saved": "Segnalibro salvato",
-    "invalidUrl": "Inserisci un URL http o https valido"
+    "invalidUrl": "Inserisci un URL http o https valido",
+    "editMultiple": "Modifica segnalibri",
+    "doneEditing": "Fine modifica",
+    "editAction": "Modifica",
+    "copyUrl": "Copia URL",
+    "share": "Condividi",
+    "delete": "Elimina",
+    "searchPlaceholder": "Cerca...",
+    "openDrawer": "Apri pannello segnalibri",
+    "sorting": {
+      "newest": "Più recenti",
+      "oldest": "Più vecchi",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "Più recenti",
+      "oldestFirst": "Più vecchi",
+      "nameAz": "Nome A-Z",
+      "nameZa": "Nome Z-A"
+    }
   },
   "lists": {
     "new": "Nuova lista",
@@ -44,7 +62,8 @@
     "noRecent": "Nessuna scheda recente",
     "noRecentHint": "I link che apri da Nori appariranno qui per poterli riaprire facilmente.",
     "noBookmarks": "Nessun segnalibro",
-    "noBookmarksHint": "I segnalibri che aggiungi appariranno qui, dai più recenti."
+    "noBookmarksHint": "I segnalibri che aggiungi appariranno qui, dai più recenti.",
+    "openHistory": "Apri cronologia"
   },
   "sharing": {
     "title": "Salva link condiviso",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "Impostazioni",
+    "moreOptions": "Altre opzioni",
     "sync": {
       "label": "Sincronizzazione",
       "signIn": "Accedi",

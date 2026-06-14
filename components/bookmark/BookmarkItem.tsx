@@ -3,6 +3,7 @@ import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
+import { useTranslation } from 'react-i18next'
 import { getBookmarkActionMenuItems } from '@/components/bookmark/BookmarkActionsMenu'
 import { type NouMenuItem } from '@/components/menu/NouMenu'
 import { Favicon } from './Favicon'
@@ -107,6 +108,7 @@ export const BookmarkTile = memo(({
   onDelete?: () => void
   isDragging?: boolean
 }) => {
+  const { t } = useTranslation()
   const [menuOpen, setMenuOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
   const tileRef = useRef<View>(null)
@@ -137,7 +139,7 @@ export const BookmarkTile = memo(({
     onCopyUrl,
     onShare,
     onDelete,
-  })
+  }, t)
 
   return (
     <View className="w-full gap-2">

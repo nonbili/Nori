@@ -11,7 +11,25 @@
     "saving": "Zapisywanie...",
     "updated": "Zakładka zaktualizowana",
     "saved": "Zakładka zapisana",
-    "invalidUrl": "Podaj prawidłowy adres http lub https"
+    "invalidUrl": "Podaj prawidłowy adres http lub https",
+    "editMultiple": "Edytuj zakładki",
+    "doneEditing": "Zakończ edycję",
+    "editAction": "Edytuj",
+    "copyUrl": "Kopiuj URL",
+    "share": "Udostępnij",
+    "delete": "Usuń",
+    "searchPlaceholder": "Szukaj...",
+    "openDrawer": "Otwórz panel zakładek",
+    "sorting": {
+      "newest": "Najnowsze",
+      "oldest": "Najstarsze",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "Od najnowszych",
+      "oldestFirst": "Od najstarszych",
+      "nameAz": "Nazwa A-Z",
+      "nameZa": "Nazwa Z-A"
+    }
   },
   "lists": {
     "new": "Nowa lista",
@@ -44,7 +62,8 @@
     "noRecent": "Brak ostatnich kart",
     "noRecentHint": "Linki otwierane z Nori pojawią się tutaj, by można było łatwo je ponownie otworzyć.",
     "noBookmarks": "Brak zakładek",
-    "noBookmarksHint": "Dodane zakładki pojawią się tutaj, od najnowszych."
+    "noBookmarksHint": "Dodane zakładki pojawią się tutaj, od najnowszych.",
+    "openHistory": "Otwórz historię"
   },
   "sharing": {
     "title": "Zapisz udostępniony link",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "Ustawienia",
+    "moreOptions": "Więcej opcji",
     "sync": {
       "label": "Synchronizacja",
       "signIn": "Zaloguj się",

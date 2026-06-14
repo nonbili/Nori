@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, type RefObject } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pressable, ScrollView as NativeScrollView, Text, TextInput, View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { FlashList } from '@shopify/flash-list'
@@ -88,13 +89,19 @@ const ListSeparator = memo(() => <View style={{ height: 12 }} />)
 ListSeparator.displayName = 'ListSeparator'
 
 export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer }) => {
-  const sortLabel = { newest: 'Newest', oldest: 'Oldest', az: 'A-Z', za: 'Z-A' }[drawer.sortType]
+  const { t } = useTranslation()
+  const sortLabel = {
+    newest: t('bookmarks.sorting.newest'),
+    oldest: t('bookmarks.sorting.oldest'),
+    az: t('bookmarks.sorting.az'),
+    za: t('bookmarks.sorting.za'),
+  }[drawer.sortType]
   const sortMenuItems: NouMenuItem[] = useMemo(() => [
-    { label: 'Newest first', handler: () => drawer.setSortType('newest'), selected: drawer.sortType === 'newest' },
-    { label: 'Oldest first', handler: () => drawer.setSortType('oldest'), selected: drawer.sortType === 'oldest' },
-    { label: 'Name A-Z', handler: () => drawer.setSortType('az'), selected: drawer.sortType === 'az' },
-    { label: 'Name Z-A', handler: () => drawer.setSortType('za'), selected: drawer.sortType === 'za' },
-  ], [drawer])
+    { label: t('bookmarks.sorting.newestFirst'), handler: () => drawer.setSortType('newest'), selected: drawer.sortType === 'newest' },
+    { label: t('bookmarks.sorting.oldestFirst'), handler: () => drawer.setSortType('oldest'), selected: drawer.sortType === 'oldest' },
+    { label: t('bookmarks.sorting.nameAz'), handler: () => drawer.setSortType('az'), selected: drawer.sortType === 'az' },
+    { label: t('bookmarks.sorting.nameZa'), handler: () => drawer.setSortType('za'), selected: drawer.sortType === 'za' },
+  ], [drawer, t])
 
   return (
     <View className="mb-6 flex-row items-center gap-3">
@@ -109,7 +116,7 @@ export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer })
         <TextInput
           value={drawer.searchQuery}
           onChangeText={drawer.setSearchQuery}
-          placeholder="Search..."
+          placeholder={t('bookmarks.searchPlaceholder')}
           placeholderTextColor={drawer.themeColors.placeholder}
           className="flex-1 text-base text-stone-900 dark:text-stone-50"
           autoFocus={false}

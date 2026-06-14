@@ -11,7 +11,25 @@
     "saving": "正在保存...",
     "updated": "书签已更新",
     "saved": "书签已保存",
-    "invalidUrl": "请输入有效的 http 或 https 网址"
+    "invalidUrl": "请输入有效的 http 或 https 网址",
+    "editMultiple": "编辑书签",
+    "doneEditing": "完成编辑",
+    "editAction": "编辑",
+    "copyUrl": "复制网址",
+    "share": "分享",
+    "delete": "删除",
+    "searchPlaceholder": "搜索...",
+    "openDrawer": "打开书签抽屉",
+    "sorting": {
+      "newest": "最新",
+      "oldest": "最旧",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "最新优先",
+      "oldestFirst": "最旧优先",
+      "nameAz": "按名称 A-Z",
+      "nameZa": "按名称 Z-A"
+    }
   },
   "lists": {
     "new": "新建列表",
@@ -44,7 +62,8 @@
     "noRecent": "无最近标签页",
     "noRecentHint": "您从 Nori 启动的链接将显示在此处，以便稍后轻松重新打开。",
     "noBookmarks": "暂无书签",
-    "noBookmarksHint": "您添加的书签将显示在此处，最新的排在最前。"
+    "noBookmarksHint": "您添加的书签将显示在此处，最新的排在最前。",
+    "openHistory": "打开历史记录"
   },
   "sharing": {
     "title": "保存共享链接",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "设置",
+    "moreOptions": "更多选项",
     "sync": {
       "label": "同步",
       "signIn": "登录",

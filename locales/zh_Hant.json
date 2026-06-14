@@ -11,7 +11,25 @@
     "saving": "正在儲存...",
     "updated": "書籤已更新",
     "saved": "書籤已儲存",
-    "invalidUrl": "請輸入有效的 http 或 https 網址"
+    "invalidUrl": "請輸入有效的 http 或 https 網址",
+    "editMultiple": "編輯書籤",
+    "doneEditing": "完成編輯",
+    "editAction": "編輯",
+    "copyUrl": "複製網址",
+    "share": "分享",
+    "delete": "刪除",
+    "searchPlaceholder": "搜尋...",
+    "openDrawer": "開啟書籤抽屜",
+    "sorting": {
+      "newest": "最新",
+      "oldest": "最舊",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "最新優先",
+      "oldestFirst": "最舊優先",
+      "nameAz": "按名稱 A-Z",
+      "nameZa": "按名稱 Z-A"
+    }
   },
   "lists": {
     "new": "新增列表",
@@ -44,7 +62,8 @@
     "noRecent": "無最近分頁",
     "noRecentHint": "您從 Nori 啟動的連結將顯示在此處，以便稍後輕鬆重新開啟。",
     "noBookmarks": "暫無書籤",
-    "noBookmarksHint": "您新增的書籤將顯示在此處，最新的排在最前。"
+    "noBookmarksHint": "您新增的書籤將顯示在此處，最新的排在最前。",
+    "openHistory": "開啟歷史紀錄"
   },
   "sharing": {
     "title": "儲存共享連結",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "設定",
+    "moreOptions": "更多選項",
     "sync": {
       "label": "同步",
       "signIn": "登入",

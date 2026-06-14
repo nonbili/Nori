@@ -1,6 +1,7 @@
 import { Pressable, View } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { getVisibleLists } from '@/lib/nori-data'
@@ -12,6 +13,7 @@ import { NouMenu } from '@/components/menu/NouMenu'
 import { HEADER_TOP_OFFSET } from './headerLayout'
 
 export const AppHeader: React.FC = () => {
+  const { t } = useTranslation()
   const themeColors = useThemeColors()
   const insets = useSafeAreaInsets()
   const lists = useValue(lists$.lists)
@@ -23,12 +25,12 @@ export const AppHeader: React.FC = () => {
     [selectedListId, visibleLists],
   )
   const menuItems = [
-    { label: 'Manage lists', icon: 'view-list' as const, handler: () => ui$.listManagerOpen.set(true) },
+    { label: t('lists.manage'), icon: 'view-list' as const, handler: () => ui$.listManagerOpen.set(true) },
     ...(selectedList
       ? [
           {
-            label: bookmarkEditMode ? 'Done editing bookmarks' : 'Edit bookmarks',
-            icon: (bookmarkEditMode ? 'check' : 'edit-note') as const,
+            label: bookmarkEditMode ? t('bookmarks.doneEditing') : t('bookmarks.editMultiple'),
+            icon: bookmarkEditMode ? ('check' as const) : ('edit-note' as const),
             handler: () => {
               ui$.bookmarkEditMode.set(!bookmarkEditMode)
               ui$.selectedBookmarkId.set(null)
@@ -36,7 +38,7 @@ export const AppHeader: React.FC = () => {
           },
         ]
       : []),
-    { label: 'Settings', icon: 'settings' as const, handler: () => ui$.settingsSheetOpen.set(true) },
+    { label: t('settings.title'), icon: 'settings' as const, handler: () => ui$.settingsSheetOpen.set(true) },
   ]
 
   return (
@@ -45,7 +47,7 @@ export const AppHeader: React.FC = () => {
         <Pressable
           onPress={() => ui$.openBookmarksDrawer()}
           testID="drawer_button"
-          accessibilityLabel="Open bookmarks drawer"
+          accessibilityLabel={t('bookmarks.openDrawer')}
           className="h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-stone-100 dark:border-stone-700 dark:bg-stone-800"
         >
           <MaterialIcons name="bookmarks" size={20} color={themeColors.icon} />
@@ -55,7 +57,7 @@ export const AppHeader: React.FC = () => {
         <Pressable
           onPress={() => ui$.recentSheetOpen.set(true)}
           testID="history_button"
-          accessibilityLabel="Open history"
+          accessibilityLabel={t('history.openHistory')}
           className="h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-stone-100 dark:border-stone-700 dark:bg-stone-800"
         >
           <MaterialIcons name="history" size={20} color={themeColors.icon} />
@@ -63,7 +65,7 @@ export const AppHeader: React.FC = () => {
         <NouMenu
           items={menuItems}
           testID="header_menu_button"
-          accessibilityLabel="More options"
+          accessibilityLabel={t('settings.moreOptions')}
           trigger={
             <View className="h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-stone-100 dark:border-stone-700 dark:bg-stone-800">
               <MaterialIcons name="more-vert" size={20} color={themeColors.icon} />

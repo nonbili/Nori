@@ -11,7 +11,25 @@
     "saving": "Saving...",
     "updated": "Bookmark updated",
     "saved": "Bookmark saved",
-    "invalidUrl": "Enter a valid http or https URL"
+    "invalidUrl": "Enter a valid http or https URL",
+    "editMultiple": "Edit bookmarks",
+    "doneEditing": "Done editing bookmarks",
+    "editAction": "Edit",
+    "copyUrl": "Copy URL",
+    "share": "Share",
+    "delete": "Delete",
+    "searchPlaceholder": "Search...",
+    "openDrawer": "Open bookmarks drawer",
+    "sorting": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "Newest first",
+      "oldestFirst": "Oldest first",
+      "nameAz": "Name A-Z",
+      "nameZa": "Name Z-A"
+    }
   },
   "lists": {
     "new": "New list",
@@ -44,7 +62,8 @@
     "noRecent": "No recent tabs",
     "noRecentHint": "Links you launch from Nori will show up here so they are easy to reopen later.",
     "noBookmarks": "No bookmarks yet",
-    "noBookmarksHint": "Bookmarks you add will appear here, newest first."
+    "noBookmarksHint": "Bookmarks you add will appear here, newest first.",
+    "openHistory": "Open history"
   },
   "sharing": {
     "title": "Save shared link",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "Settings",
+    "moreOptions": "More options",
     "sync": {
       "label": "Sync",
       "signIn": "Sign in",

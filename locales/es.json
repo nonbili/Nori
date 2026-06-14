@@ -11,7 +11,25 @@
     "saving": "Guardando...",
     "updated": "Marcador actualizado",
     "saved": "Marcador guardado",
-    "invalidUrl": "Introduce una URL http o https válida"
+    "invalidUrl": "Introduce una URL http o https válida",
+    "editMultiple": "Editar marcadores",
+    "doneEditing": "Terminar edición",
+    "editAction": "Editar",
+    "copyUrl": "Copiar URL",
+    "share": "Compartir",
+    "delete": "Eliminar",
+    "searchPlaceholder": "Buscar...",
+    "openDrawer": "Abrir panel de marcadores",
+    "sorting": {
+      "newest": "Más recientes",
+      "oldest": "Más antiguos",
+      "az": "A-Z",
+      "za": "Z-A",
+      "newestFirst": "Más recientes primero",
+      "oldestFirst": "Más antiguos primero",
+      "nameAz": "Nombre A-Z",
+      "nameZa": "Nombre Z-A"
+    }
   },
   "lists": {
     "new": "Nueva lista",
@@ -44,7 +62,8 @@
     "noRecent": "No hay pestañas recientes",
     "noRecentHint": "Los enlaces que abras desde Nori aparecerán aquí para que puedas reabrirlos fácilmente.",
     "noBookmarks": "Aún no hay marcadores",
-    "noBookmarksHint": "Los marcadores que añadas aparecerán aquí, los más recientes primero."
+    "noBookmarksHint": "Los marcadores que añadas aparecerán aquí, los más recientes primero.",
+    "openHistory": "Abrir historial"
   },
   "sharing": {
     "title": "Guardar enlace compartido",
@@ -53,6 +72,7 @@
   },
   "settings": {
     "title": "Ajustes",
+    "moreOptions": "Más opciones",
     "sync": {
       "label": "Sincronización",
       "signIn": "Iniciar sesión",
