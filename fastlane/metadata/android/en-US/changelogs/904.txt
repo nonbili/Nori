@@ -1,0 +1,3 @@
+- Fix reordering list
+- UI fixes
+- Translation fixes
