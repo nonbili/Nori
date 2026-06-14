@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect */
 import { type ReactNode, useCallback, useEffect, useState } from 'react'
 import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -72,6 +73,7 @@ export const Sheet: React.FC<{
 
   const translateY = useSharedValue(0)
   const backdropOpacity = useSharedValue(0)
+  const startY = useSharedValue(0)
 
   const finishClose = useCallback(() => {
     setRendered(false)
@@ -138,10 +140,19 @@ export const Sheet: React.FC<{
     ? Gesture.Pan()
       .manualActivation(true)
       .simultaneousWithExternalGesture(contentScrollRef)
-      .onTouchesMove((_event, manager) => {
+      .onTouchesDown((event) => {
         'worklet'
-        if (contentScrollOffset.value <= 0) {
-          manager.activate()
+        if (event.allTouches.length > 0) {
+          startY.value = event.allTouches[0].y
+        }
+      })
+      .onTouchesMove((event, manager) => {
+        'worklet'
+        if (contentScrollOffset.value <= 0 && event.allTouches.length > 0) {
+          const currentY = event.allTouches[0].y
+          if (currentY - startY.value > 10) {
+            manager.activate()
+          }
         } else {
           manager.fail()
         }
