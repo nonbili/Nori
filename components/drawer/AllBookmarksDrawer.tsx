@@ -32,17 +32,19 @@ export function AllBookmarksDrawer() {
   const scrollOffset = useSharedValue(0)
   const scrollRef = useRef(null)
   const { height: windowHeight } = useWindowDimensions()
-  const drawerTranslateY = useSharedValue(windowHeight)
+  const closedTranslateY = windowHeight + 200
+  const drawerTranslateY = useSharedValue(closedTranslateY)
 
   useEffect(() => {
     if (drawerOpen) {
+      drawerTranslateY.value = windowHeight
       drawerTranslateY.value = withSpring(0, {
         damping: 20,
         stiffness: 90,
         overshootClamping: true,
       })
     } else {
-      drawerTranslateY.value = withTiming(windowHeight, { duration: 220 })
+      drawerTranslateY.value = withTiming(closedTranslateY, { duration: 220 })
     }
     if (!drawerOpen) {
       setSearchQuery('')
@@ -50,7 +52,7 @@ export function AllBookmarksDrawer() {
     } else {
       scrollOffset.value = 0
     }
-  }, [drawerOpen, drawerTranslateY, scrollOffset, windowHeight])
+  }, [drawerOpen, drawerTranslateY, scrollOffset, closedTranslateY, windowHeight])
 
   const drawerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: drawerTranslateY.value }],
@@ -58,7 +60,7 @@ export function AllBookmarksDrawer() {
 
   const closeDrawer = () => ui$.drawerOpen.set(false)
   const closeDrawerWithAnimation = () => {
-    drawerTranslateY.value = withTiming(windowHeight, { duration: 220 }, (finished) => {
+    drawerTranslateY.value = withTiming(closedTranslateY, { duration: 220 }, (finished) => {
       if (finished) {
         runOnJS(closeDrawer)()
       }
@@ -95,7 +97,7 @@ export function AllBookmarksDrawer() {
       'worklet'
       if (drawerTranslateY.value > 0) {
         if (event.translationY > 100 || event.velocityY > 500) {
-          drawerTranslateY.value = withTiming(windowHeight, { duration: 180 }, (finished) => {
+          drawerTranslateY.value = withTiming(closedTranslateY, { duration: 180 }, (finished) => {
             if (finished) {
               runOnJS(closeDrawer)()
             }
@@ -185,7 +187,11 @@ export function AllBookmarksDrawer() {
   }
 
   return (
-    <Animated.View className="absolute inset-0 z-[100] bg-stone-50 dark:bg-stone-950" style={drawerAnimatedStyle}>
+    <Animated.View
+      pointerEvents={drawerOpen ? 'auto' : 'none'}
+      className="absolute inset-0 z-[100] bg-stone-50 dark:bg-stone-950"
+      style={drawerAnimatedStyle}
+    >
         <View className="flex-1 px-6">
           <View className="flex-1" style={{ paddingTop: insets.top + HEADER_TOP_OFFSET }}>
             <DrawerHeader drawer={drawerParts} />
