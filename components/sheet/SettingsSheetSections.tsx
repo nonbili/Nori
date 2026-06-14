@@ -351,7 +351,7 @@ export const ExperienceSection: React.FC = () => {
           <NouMenu
             trigger={
               <View className="flex-row items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1.5 dark:border-stone-700 dark:bg-stone-950">
-                <Text className="text-sm font-medium text-stone-750 dark:text-stone-350">
+                <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
                   {currentLanguageLabel}
                 </Text>
                 <MaterialIcons name="keyboard-arrow-down" size={16} color={themeColors.iconMuted} />

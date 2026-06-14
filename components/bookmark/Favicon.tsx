@@ -32,8 +32,8 @@ export const Favicon: React.FC<{
     >
       {showFavicon === false ? (
         <Image
-          source={require('../../assets/images/icon.png')}
-          style={{ width: iconSize, height: iconSize }}
+          source={require('../../assets/images/adaptive-icon.png')}
+          style={{ width: iconSize * 1.4, height: iconSize * 1.4 }}
           contentFit="contain"
         />
       ) : activeUrl ? (
