@@ -43,6 +43,8 @@ modules/*/android/build/
 .maestro/screenshots-output/
 
 # Fastlane
+fastlane/README.md
+fastlane/report.xml
 fastlane/metadata/android/screenshots.html
 fastlane/screenshots/**/en-US/*
 !fastlane/screenshots/**/en-US/Framefile.json
