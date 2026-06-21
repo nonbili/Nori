@@ -29,7 +29,25 @@
       "oldestFirst": "Od najstarszych",
       "nameAz": "Nazwa A-Z",
       "nameZa": "Nazwa Z-A"
-    }
+    },
+    "noListAvailable": "Najpierw włącz lub utwórz listę",
+    "urlCopied": "Skopiowano URL",
+    "deleteTitle": "Usunąć zakładkę?",
+    "deleteBody": "Usunąć {{title}}?",
+    "deleted": "Zakładka usunięta",
+    "hide": "Ukryj",
+    "all": "Wszystkie",
+    "noSearchResults": "Nie znaleziono zakładek",
+    "noSearchResultsHint": "Spróbuj innego filtra lub wyszukiwania",
+    "emptyListTitle": "Brak linków w {{name}}",
+    "emptyListHint": "Dodaj link tutaj lub udostępnij adres URL do Nori, aby zapisać go na później.",
+    "tip": "Wskazówka",
+    "shareTip": "Użyj menu udostępniania w przeglądarce i wybierz Nori, aby szybko zapisywać linki w tej aplikacji.",
+    "editing": "Edytowanie zakładek",
+    "editHint": "Przeciągnij, aby zmienić kolejność. Dotknij zakładki, aby wykonać szybkie działania.",
+    "editHintNoReorder": "Dotknij zakładki, aby wykonać szybkie działania.",
+    "hiddenInList": "Ukryte na tej liście",
+    "hiddenInListHint": "Dotknij zakładki, aby ją przywrócić."
   },
   "lists": {
     "new": "Nowa lista",
@@ -127,7 +145,12 @@
       "exportPlainHint": "Zapisz czytelną listę tytułów i adresów URL.",
       "exporting": "Eksportowanie…",
       "exported": "Zakładki wyeksportowane",
-      "shareUnavailable": "Udostępnianie jest niedostępne na tym urządzeniu"
+      "shareUnavailable": "Udostępnianie jest niedostępne na tym urządzeniu",
+      "readingFile": "Odczytywanie pliku…",
+      "foundOne": "Znaleziono 1 zakładkę",
+      "foundCount": "Znaleziono {{count}} zakładek",
+      "close": "Zamknij",
+      "importAction": "Importuj"
     },
     "experience": {
       "label": "Wygląd i zachowanie",
@@ -152,5 +175,10 @@
       "code": "Kod źródłowy",
       "donate": "Wesprzyj"
     }
+  },
+  "common": {
+    "back": "Wstecz",
+    "close": "Zamknij",
+    "dismiss": "Zamknij"
   }
 }

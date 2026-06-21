@@ -1,4 +1,5 @@
 import { useValue } from '@legendapp/state/react'
+import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { Sheet } from '@/components/modal/BaseModal'
 import { importBookmarksFromText } from '@/lib/bookmark-import'
@@ -6,6 +7,7 @@ import { showToast } from '@/lib/toast'
 import { ui$ } from '@/states/ui'
 
 export const BookmarkImportSheet: React.FC = () => {
+  const { t } = useTranslation()
   const pendingImport = useValue(ui$.pendingBookmarkImport)
 
   const onClose = () => {
@@ -22,19 +24,19 @@ export const BookmarkImportSheet: React.FC = () => {
       mimeType: pendingImport.mimeType,
     })
     ui$.pendingBookmarkImport.set(null)
-    showToast(importedCount ? `Imported ${importedCount} bookmarks` : 'No new bookmarks found')
+    showToast(importedCount ? t('settings.transfer.imported', { count: importedCount }) : t('settings.transfer.importEmpty'))
   }
 
   const isParsing = pendingImport?.isParsing ?? false
   const count = pendingImport?.count ?? 0
   const title = isParsing
-    ? 'Reading file…'
+    ? t('settings.transfer.readingFile')
     : count === 1
-    ? 'Found 1 bookmark'
-    : `Found ${count} bookmarks`
+    ? t('settings.transfer.foundOne')
+    : t('settings.transfer.foundCount', { count })
 
   return (
-    <Sheet visible={pendingImport != null} title="Import bookmarks" onClose={onClose}>
+    <Sheet visible={pendingImport != null} title={t('settings.transfer.import')} onClose={onClose}>
       {pendingImport ? (
         <View className="gap-5">
           <View className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
@@ -55,12 +57,12 @@ export const BookmarkImportSheet: React.FC = () => {
               className="rounded-full bg-stone-200 px-5 py-3 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
             >
               <Text className="font-medium text-stone-900 dark:text-stone-100">
-                {isParsing || count > 0 ? 'Cancel' : 'Close'}
+                {isParsing || count > 0 ? t('bookmarks.cancel') : t('settings.transfer.close')}
               </Text>
             </Pressable>
             {!isParsing && count > 0 ? (
               <Pressable onPress={onImport} className="rounded-full bg-emerald-500 px-5 py-3 active:bg-emerald-600">
-                <Text className="font-medium text-white">Import</Text>
+                <Text className="font-medium text-white">{t('settings.transfer.importAction')}</Text>
               </Pressable>
             ) : null}
           </View>

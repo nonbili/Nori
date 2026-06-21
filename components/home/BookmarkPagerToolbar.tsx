@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useValue } from '@legendapp/state/react'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
@@ -11,6 +12,7 @@ export const BookmarkPagerToolbar: React.FC<{
   selectedBookmark: BookmarkRecord | null
   actions: BookmarkPagerActions
 }> = ({ selectedBookmark, actions }) => {
+  const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const insets = useSafeAreaInsets()
   const { themeColors } = actions
@@ -40,7 +42,7 @@ export const BookmarkPagerToolbar: React.FC<{
                   }}
                   className="h-10 items-center justify-center rounded-full bg-stone-200 px-4 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
                 >
-                  <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">Hide</Text>
+                  <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">{t('bookmarks.hide')}</Text>
                 </Pressable>
                 <Pressable
                   onPress={actions.onRemoveSelectedBookmark}

@@ -29,7 +29,25 @@
       "oldestFirst": "Önce en eski",
       "nameAz": "Ad A-Z",
       "nameZa": "Ad Z-A"
-    }
+    },
+    "noListAvailable": "Önce bir listeyi etkinleştirin veya oluşturun",
+    "urlCopied": "URL kopyalandı",
+    "deleteTitle": "Yer imi silinsin mi?",
+    "deleteBody": "{{title}} kaldırılsın mı?",
+    "deleted": "Yer imi silindi",
+    "hide": "Gizle",
+    "all": "Tümü",
+    "noSearchResults": "Yer imi bulunamadı",
+    "noSearchResultsHint": "Farklı bir filtre veya arama deneyin",
+    "emptyListTitle": "{{name}} içinde henüz bağlantı yok",
+    "emptyListHint": "Buraya bir bağlantı ekleyin veya daha sonra saklamak için Nori’ye bir URL paylaşın.",
+    "tip": "İpucu",
+    "shareTip": "Bağlantıları bu uygulamaya hızlıca kaydetmek için tarayıcınızın paylaş menüsünü kullanıp Nori’yi seçin.",
+    "editing": "Yer imleri düzenleniyor",
+    "editHint": "Yeniden sıralamak için sürükleyin. Hızlı işlemler için bir yer imine dokunun.",
+    "editHintNoReorder": "Hızlı işlemler için bir yer imine dokunun.",
+    "hiddenInList": "Bu listede gizli",
+    "hiddenInListHint": "Geri getirmek için bir yer imine dokunun."
   },
   "lists": {
     "new": "Yeni liste",
@@ -127,7 +145,12 @@
       "exportPlainHint": "Okunabilir bir başlık ve URL listesi kaydedin.",
       "exporting": "Dışa aktarılıyor...",
       "exported": "Yer imleri dışa aktarıldı",
-      "shareUnavailable": "Paylaşım bu cihazda kullanılamıyor"
+      "shareUnavailable": "Paylaşım bu cihazda kullanılamıyor",
+      "readingFile": "Dosya okunuyor…",
+      "foundOne": "1 yer imi bulundu",
+      "foundCount": "{{count}} yer imi bulundu",
+      "close": "Kapat",
+      "importAction": "İçe aktar"
     },
     "experience": {
       "label": "Deneyim",
@@ -152,5 +175,10 @@
       "code": "Kaynak kodu",
       "donate": "Bağış yap"
     }
+  },
+  "common": {
+    "back": "Geri",
+    "close": "Kapat",
+    "dismiss": "Kapat"
   }
 }

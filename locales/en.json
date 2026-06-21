@@ -29,7 +29,25 @@
       "oldestFirst": "Oldest first",
       "nameAz": "Name A-Z",
       "nameZa": "Name Z-A"
-    }
+    },
+    "noListAvailable": "Enable or create a list first",
+    "urlCopied": "URL copied",
+    "deleteTitle": "Delete bookmark?",
+    "deleteBody": "Remove {{title}}?",
+    "deleted": "Bookmark deleted",
+    "hide": "Hide",
+    "all": "All",
+    "noSearchResults": "No bookmarks found",
+    "noSearchResultsHint": "Try a different filter or search",
+    "emptyListTitle": "No links in {{name}} yet",
+    "emptyListHint": "Add a link here or share a URL to Nori to save it for later.",
+    "tip": "Tip",
+    "shareTip": "Use your browser's share menu and pick Nori to file links into this app quickly.",
+    "editing": "Editing bookmarks",
+    "editHint": "Drag to reorder. Tap a bookmark for quick actions.",
+    "editHintNoReorder": "Tap a bookmark for quick actions.",
+    "hiddenInList": "Hidden in this list",
+    "hiddenInListHint": "Tap a bookmark to bring it back."
   },
   "lists": {
     "new": "New list",
@@ -127,7 +145,12 @@
       "exportPlainHint": "Save a readable title and URL list.",
       "exporting": "Exporting…",
       "exported": "Bookmarks exported",
-      "shareUnavailable": "Sharing is unavailable on this device"
+      "shareUnavailable": "Sharing is unavailable on this device",
+      "readingFile": "Reading file…",
+      "foundOne": "Found 1 bookmark",
+      "foundCount": "Found {{count}} bookmarks",
+      "close": "Close",
+      "importAction": "Import"
     },
     "experience": {
       "label": "Experience",
@@ -152,5 +175,10 @@
       "code": "Code",
       "donate": "Donate"
     }
+  },
+  "common": {
+    "back": "Back",
+    "close": "Close",
+    "dismiss": "Dismiss"
   }
 }

@@ -29,7 +29,25 @@
       "oldestFirst": "Plus anciens en premier",
       "nameAz": "Nom A-Z",
       "nameZa": "Nom Z-A"
-    }
+    },
+    "noListAvailable": "Activez ou créez d’abord une liste",
+    "urlCopied": "URL copiée",
+    "deleteTitle": "Supprimer le favori ?",
+    "deleteBody": "Supprimer {{title}} ?",
+    "deleted": "Favori supprimé",
+    "hide": "Masquer",
+    "all": "Tous",
+    "noSearchResults": "Aucun favori trouvé",
+    "noSearchResultsHint": "Essayez un autre filtre ou une autre recherche",
+    "emptyListTitle": "Aucun lien dans {{name}} pour le moment",
+    "emptyListHint": "Ajoutez un lien ici ou partagez une URL vers Nori pour l’enregistrer pour plus tard.",
+    "tip": "Astuce",
+    "shareTip": "Utilisez le menu de partage de votre navigateur et choisissez Nori pour classer rapidement des liens dans cette app.",
+    "editing": "Modification des favoris",
+    "editHint": "Faites glisser pour réordonner. Touchez un favori pour des actions rapides.",
+    "editHintNoReorder": "Touchez un favori pour des actions rapides.",
+    "hiddenInList": "Masqués dans cette liste",
+    "hiddenInListHint": "Touchez un favori pour le rétablir."
   },
   "lists": {
     "new": "Nouvelle liste",
@@ -127,7 +145,12 @@
       "exportPlainHint": "Enregistrez une liste lisible de titres et d'URL.",
       "exporting": "Exportation…",
       "exported": "Favoris exportés",
-      "shareUnavailable": "Le partage n'est pas disponible sur cet appareil"
+      "shareUnavailable": "Le partage n'est pas disponible sur cet appareil",
+      "readingFile": "Lecture du fichier…",
+      "foundOne": "1 favori trouvé",
+      "foundCount": "{{count}} favoris trouvés",
+      "close": "Fermer",
+      "importAction": "Importer"
     },
     "experience": {
       "label": "Expérience",
@@ -152,5 +175,10 @@
       "code": "Code",
       "donate": "Faire un don"
     }
+  },
+  "common": {
+    "back": "Retour",
+    "close": "Fermer",
+    "dismiss": "Fermer"
   }
 }

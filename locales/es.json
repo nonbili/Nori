@@ -29,7 +29,25 @@
       "oldestFirst": "Más antiguos primero",
       "nameAz": "Nombre A-Z",
       "nameZa": "Nombre Z-A"
-    }
+    },
+    "noListAvailable": "Activa o crea una lista primero",
+    "urlCopied": "URL copiada",
+    "deleteTitle": "¿Eliminar marcador?",
+    "deleteBody": "¿Eliminar {{title}}?",
+    "deleted": "Marcador eliminado",
+    "hide": "Ocultar",
+    "all": "Todos",
+    "noSearchResults": "No se encontraron marcadores",
+    "noSearchResultsHint": "Prueba con otro filtro o búsqueda",
+    "emptyListTitle": "Aún no hay enlaces en {{name}}",
+    "emptyListHint": "Añade un enlace aquí o comparte una URL con Nori para guardarla para más tarde.",
+    "tip": "Consejo",
+    "shareTip": "Usa el menú de compartir de tu navegador y elige Nori para guardar enlaces rápidamente en esta app.",
+    "editing": "Editando marcadores",
+    "editHint": "Arrastra para reordenar. Toca un marcador para acciones rápidas.",
+    "editHintNoReorder": "Toca un marcador para acciones rápidas.",
+    "hiddenInList": "Ocultos en esta lista",
+    "hiddenInListHint": "Toca un marcador para recuperarlo."
   },
   "lists": {
     "new": "Nueva lista",
@@ -127,7 +145,12 @@
       "exportPlainHint": "Guarda una lista legible de títulos y URL.",
       "exporting": "Exportando…",
       "exported": "Marcadores exportados",
-      "shareUnavailable": "Compartir no está disponible en este dispositivo"
+      "shareUnavailable": "Compartir no está disponible en este dispositivo",
+      "readingFile": "Leyendo archivo…",
+      "foundOne": "Se encontró 1 marcador",
+      "foundCount": "Se encontraron {{count}} marcadores",
+      "close": "Cerrar",
+      "importAction": "Importar"
     },
     "experience": {
       "label": "Experiencia",
@@ -152,5 +175,10 @@
       "code": "Código",
       "donate": "Donar"
     }
+  },
+  "common": {
+    "back": "Atrás",
+    "close": "Cerrar",
+    "dismiss": "Descartar"
   }
 }

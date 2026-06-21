@@ -29,7 +29,25 @@
       "oldestFirst": "Äldsta först",
       "nameAz": "Namn A-Ö",
       "nameZa": "Namn Ö-A"
-    }
+    },
+    "noListAvailable": "Aktivera eller skapa en lista först",
+    "urlCopied": "URL kopierad",
+    "deleteTitle": "Ta bort bokmärke?",
+    "deleteBody": "Ta bort {{title}}?",
+    "deleted": "Bokmärke borttaget",
+    "hide": "Dölj",
+    "all": "Alla",
+    "noSearchResults": "Inga bokmärken hittades",
+    "noSearchResultsHint": "Prova ett annat filter eller en annan sökning",
+    "emptyListTitle": "Inga länkar i {{name}} ännu",
+    "emptyListHint": "Lägg till en länk här eller dela en URL till Nori för att spara den till senare.",
+    "tip": "Tips",
+    "shareTip": "Använd webbläsarens delningsmeny och välj Nori för att snabbt spara länkar i appen.",
+    "editing": "Redigerar bokmärken",
+    "editHint": "Dra för att ändra ordning. Tryck på ett bokmärke för snabba åtgärder.",
+    "editHintNoReorder": "Tryck på ett bokmärke för snabba åtgärder.",
+    "hiddenInList": "Dolda i den här listan",
+    "hiddenInListHint": "Tryck på ett bokmärke för att ta tillbaka det."
   },
   "lists": {
     "new": "Ny lista",
@@ -127,7 +145,12 @@
       "exportPlainHint": "Spara en läsbar lista med titlar och webbadresser.",
       "exporting": "Exporterar...",
       "exported": "Bokmärken exporterade",
-      "shareUnavailable": "Delning är inte tillgänglig på denna enhet"
+      "shareUnavailable": "Delning är inte tillgänglig på denna enhet",
+      "readingFile": "Läser fil…",
+      "foundOne": "Hittade 1 bokmärke",
+      "foundCount": "Hittade {{count}} bokmärken",
+      "close": "Stäng",
+      "importAction": "Importera"
     },
     "experience": {
       "label": "Upplevelse",
@@ -152,5 +175,10 @@
       "code": "Källkod",
       "donate": "Donera"
     }
+  },
+  "common": {
+    "back": "Tillbaka",
+    "close": "Stäng",
+    "dismiss": "Stäng"
   }
 }

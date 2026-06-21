@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect */
 import { type ReactNode, useCallback, useEffect, useState } from 'react'
 import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
@@ -15,6 +16,7 @@ export const FullScreenModal: React.FC<{
   children: ReactNode
   showCloseButton?: boolean
 }> = ({ visible, title, onClose, children, showCloseButton = true }) => {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const themeColors = useThemeColors()
   const showHeader = !!title || showCloseButton
@@ -32,7 +34,7 @@ export const FullScreenModal: React.FC<{
               {showCloseButton ? (
                 <Pressable
                   onPress={onClose}
-                  accessibilityLabel="Close"
+                  accessibilityLabel={t('common.close')}
                   accessibilityRole="button"
                   className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
                 >
@@ -65,6 +67,7 @@ export const Sheet: React.FC<{
   contentScrollOffset?: SharedValue<number>
   edgeToEdgeBottom?: boolean
 }> = ({ visible, title, onClose, children, headerLeft, headerRight, showCloseButton = true, height, contentScrollRef, contentScrollOffset, edgeToEdgeBottom }) => {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const { height: windowHeight } = useWindowDimensions()
   const themeColors = useThemeColors()
@@ -193,7 +196,7 @@ export const Sheet: React.FC<{
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View className="flex-1">
           <Animated.View className="absolute inset-0 bg-black/60" style={backdropAnimatedStyle} />
-          <Pressable className="flex-1" onPress={closeWithAnimation} testID="sheet_backdrop" accessibilityLabel="Dismiss" />
+          <Pressable className="flex-1" onPress={closeWithAnimation} testID="sheet_backdrop" accessibilityLabel={t('common.dismiss')} />
           <Animated.View
             className="rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 dark:border-stone-800 dark:bg-stone-950"
             accessibilityViewIsModal={true}
@@ -222,7 +225,7 @@ export const Sheet: React.FC<{
                       {showCloseButton ? (
                         <Pressable
                           onPress={closeWithAnimation}
-                          accessibilityLabel="Close"
+                          accessibilityLabel={t('common.close')}
                           accessibilityRole="button"
                           className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
                         >

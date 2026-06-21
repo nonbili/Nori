@@ -50,7 +50,7 @@ export const SettingsSheet: React.FC = () => {
     page === 'home' ? undefined : (
       <Pressable
         onPress={() => setPage('home')}
-        accessibilityLabel="Back"
+        accessibilityLabel={t('common.back')}
         accessibilityRole="button"
         className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
       >

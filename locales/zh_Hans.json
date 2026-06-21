@@ -29,7 +29,25 @@
       "oldestFirst": "最旧优先",
       "nameAz": "按名称 A-Z",
       "nameZa": "按名称 Z-A"
-    }
+    },
+    "noListAvailable": "请先启用或创建列表",
+    "urlCopied": "URL 已复制",
+    "deleteTitle": "删除书签？",
+    "deleteBody": "移除 {{title}}？",
+    "deleted": "书签已删除",
+    "hide": "隐藏",
+    "all": "全部",
+    "noSearchResults": "未找到书签",
+    "noSearchResultsHint": "尝试其他筛选条件或搜索",
+    "emptyListTitle": "{{name}} 中还没有链接",
+    "emptyListHint": "在这里添加链接，或将 URL 分享到 Nori 以便稍后保存。",
+    "tip": "提示",
+    "shareTip": "使用浏览器的分享菜单并选择 Nori，即可快速将链接保存到此应用。",
+    "editing": "正在编辑书签",
+    "editHint": "拖动以重新排序。点按书签可执行快速操作。",
+    "editHintNoReorder": "点按书签可执行快速操作。",
+    "hiddenInList": "此列表中隐藏的书签",
+    "hiddenInListHint": "点按书签可将其恢复。"
   },
   "lists": {
     "new": "新建列表",
@@ -127,7 +145,12 @@
       "exportPlainHint": "保存易读的标题和网址列表。",
       "exporting": "正在导出...",
       "exported": "书签已导出",
-      "shareUnavailable": "此设备上无法进行分享"
+      "shareUnavailable": "此设备上无法进行分享",
+      "readingFile": "正在读取文件…",
+      "foundOne": "找到 1 个书签",
+      "foundCount": "找到 {{count}} 个书签",
+      "close": "关闭",
+      "importAction": "导入"
     },
     "experience": {
       "label": "体验",
@@ -152,5 +175,10 @@
       "code": "源代码",
       "donate": "捐赠"
     }
+  },
+  "common": {
+    "back": "返回",
+    "close": "关闭",
+    "dismiss": "关闭"
   }
 }

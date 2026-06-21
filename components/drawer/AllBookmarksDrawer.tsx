@@ -4,6 +4,7 @@ import * as Clipboard from 'expo-clipboard'
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { Directions, Gesture } from 'react-native-gesture-handler'
 import { useValue } from '@legendapp/state/react'
+import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { ui$ } from '@/states/ui'
@@ -22,6 +23,7 @@ import {
 type SortType = 'newest' | 'oldest' | 'az' | 'za'
 
 export function AllBookmarksDrawer() {
+  const { t } = useTranslation()
   const themeColors = useThemeColors()
   const insets = useSafeAreaInsets()
   const drawerOpen = useValue(ui$.drawerOpen)
@@ -126,8 +128,8 @@ export function AllBookmarksDrawer() {
 
   const copyBookmarkUrl = useCallback((bookmark: BookmarkRecord) => {
     void Clipboard.setStringAsync(bookmark.url)
-    showToast('URL copied')
-  }, [])
+    showToast(t('bookmarks.urlCopied'))
+  }, [t])
 
   const shareBookmark = useCallback(async (bookmark: { title: string; url: string }) => {
     try {
@@ -140,18 +142,18 @@ export function AllBookmarksDrawer() {
   }, [])
 
   const deleteBookmark = useCallback((bookmark: { id: string; title: string }) => {
-    Alert.alert('Delete bookmark?', `Remove ${bookmark.title}?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('bookmarks.deleteTitle'), t('bookmarks.deleteBody', { title: bookmark.title }), [
+      { text: t('bookmarks.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('bookmarks.delete'),
         style: 'destructive',
         onPress: () => {
           bookmarks$.remove(bookmark.id)
-          showToast('Bookmark deleted')
+          showToast(t('bookmarks.deleted'))
         },
       },
     ])
-  }, [])
+  }, [t])
 
   const handleOpenBookmark = useCallback((bookmark: BookmarkRecord) => {
     void openBookmarkAction(bookmark)

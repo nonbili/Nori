@@ -29,7 +29,25 @@
       "oldestFirst": "最舊優先",
       "nameAz": "按名稱 A-Z",
       "nameZa": "按名稱 Z-A"
-    }
+    },
+    "noListAvailable": "請先啟用或建立列表",
+    "urlCopied": "URL 已複製",
+    "deleteTitle": "刪除書籤？",
+    "deleteBody": "移除 {{title}}？",
+    "deleted": "書籤已刪除",
+    "hide": "隱藏",
+    "all": "全部",
+    "noSearchResults": "找不到書籤",
+    "noSearchResultsHint": "請嘗試其他篩選條件或搜尋",
+    "emptyListTitle": "{{name}} 中還沒有連結",
+    "emptyListHint": "在這裡新增連結，或將 URL 分享到 Nori 以便稍後儲存。",
+    "tip": "提示",
+    "shareTip": "使用瀏覽器的分享選單並選擇 Nori，即可快速將連結儲存到此 App。",
+    "editing": "正在編輯書籤",
+    "editHint": "拖曳以重新排序。點一下書籤可執行快速操作。",
+    "editHintNoReorder": "點一下書籤可執行快速操作。",
+    "hiddenInList": "此列表中隱藏的書籤",
+    "hiddenInListHint": "點一下書籤可將其恢復。"
   },
   "lists": {
     "new": "新增列表",
@@ -127,7 +145,12 @@
       "exportPlainHint": "儲存易讀的標題和網址列表。",
       "exporting": "正在匯出...",
       "exported": "書籤已匯出",
-      "shareUnavailable": "此裝置上無法進行分享"
+      "shareUnavailable": "此裝置上無法進行分享",
+      "readingFile": "正在讀取檔案…",
+      "foundOne": "找到 1 個書籤",
+      "foundCount": "找到 {{count}} 個書籤",
+      "close": "關閉",
+      "importAction": "匯入"
     },
     "experience": {
       "label": "體驗",
@@ -152,5 +175,10 @@
       "code": "原始碼",
       "donate": "捐助"
     }
+  },
+  "common": {
+    "back": "返回",
+    "close": "關閉",
+    "dismiss": "關閉"
   }
 }

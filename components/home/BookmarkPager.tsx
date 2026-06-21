@@ -2,6 +2,7 @@ import { Alert, InteractionManager, ScrollView, Share, View, useWindowDimensions
 import * as Clipboard from 'expo-clipboard'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
+import { useTranslation } from 'react-i18next'
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -49,6 +50,7 @@ function groupBookmarksByList(bookmarks: BookmarkRecord[]) {
 }
 
 export const BookmarkPager: React.FC = () => {
+  const { t } = useTranslation()
   const themeColors = useThemeColors()
   const lists = useValue(lists$.lists)
   const bookmarks = useValue(bookmarks$.bookmarks)
@@ -103,7 +105,7 @@ export const BookmarkPager: React.FC = () => {
 
   const openNewBookmark = useCallback(() => {
     if (!selectedList) {
-      showToast('Enable or create a list first')
+      showToast(t('bookmarks.noListAvailable'))
       return
     }
     ui$.bookmarkEditor.set({
@@ -113,7 +115,7 @@ export const BookmarkPager: React.FC = () => {
       listId: selectedList.id,
       tags: [],
     })
-  }, [selectedList])
+  }, [selectedList, t])
 
   const editBookmark = useCallback((bookmark: BookmarkRecord) => {
     ui$.bookmarkEditor.set({
@@ -128,8 +130,8 @@ export const BookmarkPager: React.FC = () => {
 
   const copyBookmarkUrl = useCallback((bookmark: BookmarkRecord) => {
     void Clipboard.setStringAsync(bookmark.url)
-    showToast('URL copied')
-  }, [])
+    showToast(t('bookmarks.urlCopied'))
+  }, [t])
 
   const shareBookmark = useCallback((bookmark: BookmarkRecord) => {
     void Share.share({ url: bookmark.url, message: bookmark.url })
@@ -281,14 +283,14 @@ export const BookmarkPager: React.FC = () => {
       return
     }
 
-    Alert.alert('Delete bookmark?', `Remove ${selectedBookmark.title}?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('bookmarks.deleteTitle'), t('bookmarks.deleteBody', { title: selectedBookmark.title }), [
+      { text: t('bookmarks.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('bookmarks.delete'),
         style: 'destructive',
         onPress: () => {
           bookmarks$.remove(selectedBookmark.id)
-          showToast('Bookmark deleted')
+          showToast(t('bookmarks.deleted'))
           ui$.selectedBookmarkId.set(null)
         },
       },
@@ -296,21 +298,21 @@ export const BookmarkPager: React.FC = () => {
   }
 
   const promptDeleteBookmark = useCallback((bookmark: BookmarkRecord) => {
-    Alert.alert('Delete bookmark?', `Remove ${bookmark.title}?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('bookmarks.deleteTitle'), t('bookmarks.deleteBody', { title: bookmark.title }), [
+      { text: t('bookmarks.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('bookmarks.delete'),
         style: 'destructive',
         onPress: () => {
           bookmarks$.remove(bookmark.id)
-          showToast('Bookmark deleted')
+          showToast(t('bookmarks.deleted'))
           if (selectedBookmarkId === bookmark.id) {
             ui$.selectedBookmarkId.set(null)
           }
         },
       },
     ])
-  }, [selectedBookmarkId])
+  }, [selectedBookmarkId, t])
 
   const pagerActions = {
     iconSubtleColor: themeColors.iconSubtle,

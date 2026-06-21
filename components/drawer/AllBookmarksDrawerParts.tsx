@@ -139,6 +139,7 @@ export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer })
 }
 
 export const DrawerFilterChips: React.FC<{ drawer: DrawerPartsState }> = ({ drawer }) => {
+  const { t } = useTranslation()
   const lists = useValue(lists$.lists)
   const visibleLists = getVisibleLists(lists)
 
@@ -146,7 +147,7 @@ export const DrawerFilterChips: React.FC<{ drawer: DrawerPartsState }> = ({ draw
     <View className="mb-6">
       <GestureDetector gesture={drawer.closeDrawerGesture}>
         <NativeScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2">
-          <ListChip name="All" isActive={drawer.filterListId === 'all'} onPress={() => drawer.setFilterListId('all')} />
+          <ListChip name={t('bookmarks.all')} isActive={drawer.filterListId === 'all'} onPress={() => drawer.setFilterListId('all')} />
           {visibleLists.map((list) => (
             <ListChip
               key={list.id}
@@ -223,6 +224,7 @@ export const DrawerTagChips: React.FC<{ drawer: DrawerPartsState }> = ({ drawer 
 }
 
 export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ drawer }) => {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const bookmarks = useValue(bookmarks$.bookmarks)
   const filteredBookmarks = useMemo(() => {
@@ -282,8 +284,8 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
       ) : (
         <View className="flex-1 items-center py-20">
           <MaterialIcons name="search-off" size={48} color={drawer.themeColors.iconSubtle} />
-          <Text className="mt-4 text-base font-medium text-stone-500">No bookmarks found</Text>
-          <Text className="mt-1 text-sm text-stone-600 dark:text-stone-500">Try a different filter or search</Text>
+          <Text className="mt-4 text-base font-medium text-stone-500">{t('bookmarks.noSearchResults')}</Text>
+          <Text className="mt-1 text-sm text-stone-600 dark:text-stone-500">{t('bookmarks.noSearchResultsHint')}</Text>
         </View>
       )}
     </GestureDetector>

@@ -1,4 +1,5 @@
 import { Pressable, ScrollView, Text, View, type LayoutChangeEvent } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated from 'react-native-reanimated'
@@ -32,6 +33,7 @@ export interface BookmarkPagerViewModel {
 }
 
 export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({ pager }) => {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   // The AppHeader (which provides the top inset) is hidden in edit mode, so the
   // chips row becomes the topmost element and must clear the status bar itself.
@@ -63,7 +65,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
           className="h-[32px] flex-row items-center gap-1.5 rounded-full border border-dashed border-stone-300 bg-transparent px-4 dark:border-stone-700"
         >
           <MaterialIcons name="add" size={16} color={pager.themeColors.iconSubtle} />
-          <Text className="text-sm font-medium text-stone-600 dark:text-stone-300">New list</Text>
+          <Text className="text-sm font-medium text-stone-600 dark:text-stone-300">{t('lists.new')}</Text>
         </Pressable>
       ) : null}
     </ScrollView>

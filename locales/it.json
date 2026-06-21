@@ -29,7 +29,25 @@
       "oldestFirst": "Più vecchi",
       "nameAz": "Nome A-Z",
       "nameZa": "Nome Z-A"
-    }
+    },
+    "noListAvailable": "Abilita o crea prima un elenco",
+    "urlCopied": "URL copiato",
+    "deleteTitle": "Eliminare il segnalibro?",
+    "deleteBody": "Rimuovere {{title}}?",
+    "deleted": "Segnalibro eliminato",
+    "hide": "Nascondi",
+    "all": "Tutti",
+    "noSearchResults": "Nessun segnalibro trovato",
+    "noSearchResultsHint": "Prova un filtro o una ricerca diversa",
+    "emptyListTitle": "Ancora nessun link in {{name}}",
+    "emptyListHint": "Aggiungi un link qui o condividi un URL con Nori per salvarlo per dopo.",
+    "tip": "Suggerimento",
+    "shareTip": "Usa il menu di condivisione del browser e scegli Nori per archiviare rapidamente i link in questa app.",
+    "editing": "Modifica dei segnalibri",
+    "editHint": "Trascina per riordinare. Tocca un segnalibro per azioni rapide.",
+    "editHintNoReorder": "Tocca un segnalibro per azioni rapide.",
+    "hiddenInList": "Nascosti in questo elenco",
+    "hiddenInListHint": "Tocca un segnalibro per ripristinarlo."
   },
   "lists": {
     "new": "Nuova lista",
@@ -127,7 +145,12 @@
       "exportPlainHint": "Salva un elenco leggibile di titoli e URL.",
       "exporting": "Esportazione…",
       "exported": "Segnalibri esportati",
-      "shareUnavailable": "Condivisione non disponibile su questo dispositivo"
+      "shareUnavailable": "Condivisione non disponibile su questo dispositivo",
+      "readingFile": "Lettura del file…",
+      "foundOne": "Trovato 1 segnalibro",
+      "foundCount": "Trovati {{count}} segnalibri",
+      "close": "Chiudi",
+      "importAction": "Importa"
     },
     "experience": {
       "label": "Esperienza",
@@ -152,5 +175,10 @@
       "code": "Codice",
       "donate": "Dona"
     }
+  },
+  "common": {
+    "back": "Indietro",
+    "close": "Chiudi",
+    "dismiss": "Chiudi"
   }
 }
