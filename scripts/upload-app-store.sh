@@ -24,6 +24,11 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 IPA_PATH="${1:-${IPA_PATH:-$REPO_ROOT/ios/build/Nori.ipa}}"
 APP_IDENTIFIER="${IOS_APP_IDENTIFIER:-jp.nonbili.nori}"
+APP_VERSION="$(cd "$REPO_ROOT" && node -p "require('./package.json').version")"
+BUILD_NUMBER="$(cd "$REPO_ROOT" && node -p "require('./package.json').buildNumber")"
+VERSION_CODE="$(cd "$REPO_ROOT" && node -p "require('./package.json').versionCode")"
+ANDROID_CHANGELOG="${IOS_CHANGELOG_SOURCE:-$REPO_ROOT/fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}04.txt}"
+IOS_RELEASE_NOTES_PATH="${IOS_RELEASE_NOTES_PATH:-$REPO_ROOT/fastlane/metadata/ios/en-US/release_notes.txt}"
 
 if [ -z "${APP_STORE_CONNECT_API_KEY_KEY_ID:-}" ]; then
   echo "Error: APP_STORE_CONNECT_API_KEY_KEY_ID is required." >&2
@@ -50,6 +55,16 @@ if ! command -v bundle &>/dev/null; then
   exit 1
 fi
 
+if [ ! -f "$ANDROID_CHANGELOG" ]; then
+  echo "Error: Android changelog not found: $ANDROID_CHANGELOG" >&2
+  echo "       Expected the current versionCode changelog at fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}04.txt." >&2
+  exit 1
+fi
+
+mkdir -p "$(dirname "$IOS_RELEASE_NOTES_PATH")"
+cp "$ANDROID_CHANGELOG" "$IOS_RELEASE_NOTES_PATH"
+echo "Using release notes from $ANDROID_CHANGELOG"
+
 if [ "${PREBUILD:-$([ "${SKIP_BUILD:-0}" = "1" ] && echo 0 || echo 1)}" = "1" ]; then
   echo "Running clean Expo prebuild for iOS..."
   (
@@ -70,16 +85,23 @@ if [ "${SKIP_BUILD:-0}" != "1" ]; then
   )
 fi
 
-if [ "${SKIP_BUILD:-0}" = "1" ] && [ ! -f "$IPA_PATH" ]; then
+if [ "${IOS_SKIP_BINARY_UPLOAD:-0}" != "1" ] && [ "${SKIP_BUILD:-0}" = "1" ] && [ ! -f "$IPA_PATH" ]; then
   echo "Error: IPA not found: $IPA_PATH" >&2
   exit 1
 fi
 
-echo "Uploading $IPA_PATH to App Store Connect for $APP_IDENTIFIER..."
+if [ "${IOS_SKIP_BINARY_UPLOAD:-0}" = "1" ]; then
+  echo "Submitting existing App Store Connect build $APP_VERSION ($BUILD_NUMBER) for $APP_IDENTIFIER..."
+else
+  echo "Uploading $IPA_PATH to App Store Connect for $APP_IDENTIFIER..."
+fi
 (
   cd "$REPO_ROOT"
   IOS_APP_IDENTIFIER="$APP_IDENTIFIER" \
+  IOS_APP_VERSION="$APP_VERSION" \
+  IOS_BUILD_NUMBER="$BUILD_NUMBER" \
   IPA_PATH="$IPA_PATH" \
+  IOS_RELEASE_NOTES_PATH="$IOS_RELEASE_NOTES_PATH" \
   IOS_BUILD_BEFORE_UPLOAD="$([ "${SKIP_BUILD:-0}" = "1" ] && echo 0 || echo 1)" \
   bundle exec fastlane ios upload_ipa
 )

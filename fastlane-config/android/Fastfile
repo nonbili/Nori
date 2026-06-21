@@ -10,6 +10,7 @@ platform :android do
     json_key = options[:json_key] || ENV["GOOGLE_PLAY_JSON_KEY"] || ENV["SUPPLY_JSON_KEY"]
     json_key_data = options[:json_key_data] || ENV["GOOGLE_PLAY_JSON_KEY_DATA"] || ENV["SUPPLY_JSON_KEY_DATA"]
     upload_metadata = ENV["GOOGLE_PLAY_UPLOAD_METADATA"] == "1"
+    upload_changelogs = ENV["GOOGLE_PLAY_UPLOAD_CHANGELOGS"] != "0"
 
     UI.user_error!("AAB not found: #{aab_path}") unless File.exist?(aab_path)
     UI.user_error!("Set GOOGLE_PLAY_JSON_KEY or SUPPLY_JSON_KEY to the service account JSON file path") if json_key.to_s.empty? && json_key_data.to_s.empty?
@@ -23,7 +24,7 @@ platform :android do
       metadata_path: metadata_path,
       skip_upload_apk: true,
       skip_upload_metadata: !upload_metadata,
-      skip_upload_changelogs: !upload_metadata,
+      skip_upload_changelogs: !upload_changelogs,
       skip_upload_images: true,
       skip_upload_screenshots: true
     )

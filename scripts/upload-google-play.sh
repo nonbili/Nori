@@ -17,6 +17,8 @@ TRACK="${1:-${GOOGLE_PLAY_TRACK:-production}}"
 AAB_PATH="${2:-${AAB_PATH:-$REPO_ROOT/android/app/build/outputs/bundle/release/app-release.aab}}"
 PACKAGE_NAME="${ANDROID_PACKAGE_NAME:-jp.nonbili.nori}"
 JSON_KEY="${GOOGLE_PLAY_JSON_KEY:-${SUPPLY_JSON_KEY:-}}"
+VERSION_CODE="$(cd "$REPO_ROOT" && node -p "require('./package.json').versionCode")"
+ANDROID_CHANGELOG="${GOOGLE_PLAY_CHANGELOG:-$REPO_ROOT/fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}04.txt}"
 
 if [ -z "$JSON_KEY" ] && [ -z "${GOOGLE_PLAY_JSON_KEY_DATA:-${SUPPLY_JSON_KEY_DATA:-}}" ]; then
   echo "Error: set GOOGLE_PLAY_JSON_KEY or SUPPLY_JSON_KEY to your Google Play service account JSON path." >&2
@@ -32,6 +34,16 @@ fi
 if ! command -v bundle &>/dev/null; then
   echo "Error: bundle not found. Install bundler and run 'bundle install'." >&2
   exit 1
+fi
+
+if [ "${GOOGLE_PLAY_UPLOAD_CHANGELOGS:-1}" != "0" ] && [ ! -f "$ANDROID_CHANGELOG" ]; then
+  echo "Error: Android changelog not found: $ANDROID_CHANGELOG" >&2
+  echo "       Expected the current versionCode changelog at fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}04.txt." >&2
+  exit 1
+fi
+
+if [ "${GOOGLE_PLAY_UPLOAD_CHANGELOGS:-1}" != "0" ]; then
+  echo "Using Google Play changelog $ANDROID_CHANGELOG"
 fi
 
 if [ "${PREBUILD:-$([ "${SKIP_BUILD:-0}" = "1" ] && echo 0 || echo 1)}" = "1" ]; then
@@ -72,6 +84,7 @@ echo "Uploading $AAB_PATH to Google Play track '$TRACK' for $PACKAGE_NAME..."
   ANDROID_PACKAGE_NAME="$PACKAGE_NAME" \
   AAB_PATH="$AAB_PATH" \
   GOOGLE_PLAY_TRACK="$TRACK" \
+  GOOGLE_PLAY_UPLOAD_CHANGELOGS="${GOOGLE_PLAY_UPLOAD_CHANGELOGS:-1}" \
   bundle exec fastlane android upload_aab
 )
 

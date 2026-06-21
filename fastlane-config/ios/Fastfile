@@ -26,6 +26,12 @@ platform :ios do
     app_identifier = options[:app_identifier] || ENV["IOS_APP_IDENTIFIER"] || "jp.nonbili.nori"
     ipa_path = options[:ipa] || ENV["IPA_PATH"] || File.expand_path("../../ios/build/Nori.ipa", __dir__)
     build_before_upload = ENV["IOS_BUILD_BEFORE_UPLOAD"] == "1"
+    skip_binary_upload = ENV["IOS_SKIP_BINARY_UPLOAD"] == "1"
+    submit_for_review = ENV["IOS_SUBMIT_FOR_REVIEW"] != "0"
+    app_version = ENV["IOS_APP_VERSION"]
+    build_number = ENV["IOS_BUILD_NUMBER"]
+    release_notes_path = ENV["IOS_RELEASE_NOTES_PATH"] || File.expand_path("../../fastlane/metadata/ios/en-US/release_notes.txt", __dir__)
+    release_notes = File.exist?(release_notes_path) ? File.read(release_notes_path).strip : nil
 
     if build_before_upload
       build_app(
@@ -40,16 +46,36 @@ platform :ios do
       )
     end
 
-    UI.user_error!("IPA not found: #{ipa_path}") unless File.exist?(ipa_path)
+    UI.user_error!("IPA not found: #{ipa_path}") if !skip_binary_upload && !File.exist?(ipa_path)
 
-    upload_to_app_store(
+    upload_options = {
       api_key: api_key,
       app_identifier: app_identifier,
-      ipa: ipa_path,
-      skip_metadata: true,
+      app_version: app_version,
+      metadata_path: File.expand_path("../../fastlane/metadata/ios", __dir__),
+      screenshots_path: File.expand_path("../../fastlane/metadata/ios", __dir__),
+      release_notes: release_notes.to_s.empty? ? nil : { "en-US" => release_notes },
+      skip_metadata: release_notes.to_s.empty?,
+      skip_binary_upload: skip_binary_upload,
       skip_screenshots: true,
-      submit_for_review: false
-    )
+      ignore_language_directory_validation: true,
+      run_precheck_before_submit: false,
+      submit_for_review: submit_for_review,
+      automatic_release: ENV["IOS_AUTOMATIC_RELEASE"] == "1",
+      submission_information: {
+        add_id_info_uses_idfa: ENV["IOS_USES_IDFA"] == "1",
+        export_compliance_uses_encryption: ENV["IOS_USES_ENCRYPTION"] == "1",
+        export_compliance_encryption_updated: false
+      }
+    }
+
+    if skip_binary_upload
+      upload_options[:build_number] = build_number
+    else
+      upload_options[:ipa] = ipa_path
+    end
+
+    upload_to_app_store(upload_options)
   end
 
   desc "Upload screenshots to App Store Connect"
