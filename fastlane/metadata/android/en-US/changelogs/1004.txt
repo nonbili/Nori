@@ -1,0 +1,2 @@
+- Support quick share without opening Nori
+- Translate all strings
