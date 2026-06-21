@@ -1,6 +1,7 @@
 import { observable, type Observable } from '@legendapp/state'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
+import { addOpenedBookmarkRecord, removeOpenedBookmarkRecord } from '@/lib/history-mutations'
 
 export interface OpenedBookmark {
   id: string
@@ -20,16 +21,10 @@ interface Store {
 export const history$: Observable<Store> = observable<Store>({
   openedBookmarks: [],
   addOpenedBookmark: (bookmark) => {
-    const current = history$.openedBookmarks.get()
-    const filtered = current.filter((item) => item.id !== bookmark.id)
-    history$.openedBookmarks.set([
-      { ...bookmark, openedAt: Date.now() },
-      ...filtered,
-    ].slice(0, 10))
+    history$.openedBookmarks.set(addOpenedBookmarkRecord(history$.openedBookmarks.get(), bookmark))
   },
   removeOpenedBookmark: (id) => {
-    const current = history$.openedBookmarks.get()
-    history$.openedBookmarks.set(current.filter((item) => item.id !== id))
+    history$.openedBookmarks.set(removeOpenedBookmarkRecord(history$.openedBookmarks.get(), id))
   },
   clearOpenedBookmarks: () => {
     history$.openedBookmarks.set([])

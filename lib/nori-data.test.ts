@@ -7,6 +7,7 @@ import {
   getDeletedAt,
   getVisibleBookmarks,
   getVisibleLists,
+  moveItemWithinVisibleSubset,
   normalizeBookmarks,
   normalizeLists,
   patchRowState,
@@ -72,6 +73,26 @@ describe('normalizeLists', () => {
     expect(visibleIds).not.toContain('custom')
   })
 
+  it('treats a Date in list json.deleted_at as deleted (persist round-trip)', () => {
+    const lists = normalizeLists([
+      { id: 'custom', name: 'Custom', json: { visible: true, deleted_at: new Date('2026-04-09T00:00:00.000Z') as unknown as string } },
+      { id: 'other', name: 'Other', json: { visible: true } },
+    ])
+
+    expect(getDeletedAt(lists.find((item) => item.id === 'custom')!)).toBe('2026-04-09T00:00:00.000Z')
+    expect(getVisibleLists(lists).map((item) => item.id)).not.toContain('custom')
+  })
+
+  it('keeps hidden lists inactive but not visible', () => {
+    const lists = normalizeLists([
+      { id: 'hidden', name: 'Hidden', json: { visible: false } },
+      { id: 'visible', name: 'Visible', json: { visible: true } },
+    ])
+
+    expect(getVisibleLists(lists).map((item) => item.id)).toContain('visible')
+    expect(getVisibleLists(lists).map((item) => item.id)).not.toContain('hidden')
+  })
+
   it('hydrates lists from object-backed persisted array snapshots', () => {
     const lists = normalizeLists({
       0: { id: 'builtin-sns', name: 'SNS', json: { visible: true, sort_index: 0 } },
@@ -115,6 +136,31 @@ describe('normalizeBookmarks', () => {
     ])
 
     expect(getVisibleBookmarks(bookmarks, 'custom').map((item) => item.id)).toEqual(['a', 'b'])
+  })
+
+  it('moves items within the visible bookmark subset only', () => {
+    const lists = normalizeLists([{ id: 'custom', name: 'Custom', json: { visible: true } }])
+    const bookmarks = normalizeBookmarks(lists, [
+      { id: 'a', listId: 'custom', url: 'https://a.com', title: 'A', json: { visible: true, sort_index: 0 } },
+      { id: 'hidden', listId: 'custom', url: 'https://hidden.com', title: 'Hidden', json: { visible: false, sort_index: 1 } },
+      { id: 'b', listId: 'custom', url: 'https://b.com', title: 'B', json: { visible: true, sort_index: 2 } },
+    ])
+
+    const moved = moveItemWithinVisibleSubset(bookmarks, ['a', 'b'], 'b', -1)
+
+    expect(getVisibleBookmarks(moved, 'custom').map((item) => item.id)).toEqual(['b', 'a'])
+    expect(getAvailableBookmarks(moved, 'custom').map((item) => item.id)).toEqual(['hidden'])
+  })
+
+  it('does not move a bookmark past visible subset boundaries', () => {
+    const lists = normalizeLists([{ id: 'custom', name: 'Custom', json: { visible: true } }])
+    const bookmarks = normalizeBookmarks(lists, [
+      { id: 'a', listId: 'custom', url: 'https://a.com', title: 'A', json: { visible: true, sort_index: 0 } },
+      { id: 'b', listId: 'custom', url: 'https://b.com', title: 'B', json: { visible: true, sort_index: 1 } },
+    ])
+
+    expect(moveItemWithinVisibleSubset(bookmarks, ['a', 'b'], 'a', -1)).toBe(bookmarks)
+    expect(moveItemWithinVisibleSubset(bookmarks, ['a', 'b'], 'b', 1)).toBe(bookmarks)
   })
 
   it('treats hidden bookmarks as available, not deleted', () => {

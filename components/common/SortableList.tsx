@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   runOnJS,
+  type SharedValue,
 } from 'react-native-reanimated'
 
 interface SortableListProps<T extends { id: string }> {
@@ -37,7 +38,7 @@ export function SortableList<T extends { id: string }>({
       next[item.id] = index
     })
     positions.value = next
-  }, [items])
+  }, [items, positions])
 
   const handleReorder = (newPositions: Record<string, number>) => {
     const orderedIds = Object.keys(newPositions).sort((a, b) => newPositions[a] - newPositions[b])
@@ -68,7 +69,7 @@ interface DraggableRowProps<T> {
   id: string
   item: T
   initialIndex: number
-  positions: Animated.SharedValue<Record<string, number>>
+  positions: SharedValue<Record<string, number>>
   itemHeight: number
   gap: number
   renderItem: (item: T, isDragging: boolean, dragGesture: any) => React.ReactNode
@@ -123,6 +124,7 @@ function DraggableRow<T extends { id: string }>({
           }
         }
         newPositions[id] = newIndex
+        // eslint-disable-next-line react-hooks/immutability
         positions.value = newPositions
       }
     })

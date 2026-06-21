@@ -5,7 +5,7 @@ import {
   mergeImportedBookmarks,
   parseBookmarksForImport,
 } from './bookmark-transfer'
-import { createRowJsonState, normalizeBookmarks, normalizeLists } from './nori-data'
+import { createRowJsonState, normalizeBookmarks, normalizeLists, patchRowState } from './nori-data'
 
 describe('bookmark transfer', () => {
   it('exports bookmarks as Netscape bookmark HTML', () => {
@@ -29,7 +29,42 @@ describe('bookmark transfer', () => {
       { id: 'one', listId: 'read', title: 'One', url: 'https://one.example', icon: '', json: { visible: true } },
     ])
 
-    expect(exportBookmarksToPlainText(lists, bookmarks)).toBe('# Read\nOne\thttps://one.example\n')
+    const out = exportBookmarksToPlainText(lists, bookmarks)
+    expect(out).toContain('# Read\nOne\thttps://one.example')
+    expect(out).toContain('# SNS\nX\thttps://x.com')
+    expect(out.endsWith('\n')).toBe(true)
+  })
+
+  it('does not export hidden or deleted bookmark rows', () => {
+    const lists = normalizeLists([{ id: 'read', name: 'Read', json: { visible: true } }])
+    const bookmarks = normalizeBookmarks(lists, [
+      { id: 'visible', listId: 'read', title: 'Visible', url: 'https://visible.example', icon: '', json: { visible: true } },
+      { id: 'hidden', listId: 'read', title: 'Hidden', url: 'https://hidden.example', icon: '', json: { visible: false } },
+      { id: 'deleted', listId: 'read', title: 'Deleted', url: 'https://deleted.example', icon: '', json: { visible: true, deleted_at: '2026-06-21T00:00:00.000Z' } },
+    ])
+
+    const out = exportBookmarksToPlainText(lists, bookmarks)
+    expect(out).toContain('Visible\thttps://visible.example')
+    expect(out).not.toContain('Hidden\thttps://hidden.example')
+    expect(out).not.toContain('Deleted\thttps://deleted.example')
+  })
+
+  it('does not export hidden or deleted list sections', () => {
+    const lists = normalizeLists([
+      { id: 'visible', name: 'Visible', json: { visible: true } },
+      { id: 'hidden', name: 'Hidden', json: { visible: false } },
+      { id: 'deleted', name: 'Deleted', json: { visible: true, deleted_at: '2026-06-21T00:00:00.000Z' } },
+    ])
+    const bookmarks = normalizeBookmarks(lists, [
+      { id: 'visible-bookmark', listId: 'visible', title: 'Visible', url: 'https://visible.example', icon: '', json: { visible: true } },
+      { id: 'hidden-bookmark', listId: 'hidden', title: 'Hidden', url: 'https://hidden.example', icon: '', json: { visible: true } },
+      { id: 'deleted-bookmark', listId: 'deleted', title: 'Deleted', url: 'https://deleted.example', icon: '', json: { visible: true } },
+    ])
+
+    const out = exportBookmarksToHtml(lists, bookmarks)
+    expect(out).toContain('>Visible</H3>')
+    expect(out).not.toContain('>Hidden</H3>')
+    expect(out).not.toContain('>Deleted</H3>')
   })
 
   it('imports Netscape bookmark HTML folders', () => {
@@ -91,7 +126,7 @@ describe('bookmark transfer', () => {
     expect(result[0].listName).toBe('Inner')
   })
 
-  it('escapes tabs and newlines in plain export titles', () => {
+  it('escapes tabs and newlines in plain export list names and titles', () => {
     const lists = normalizeLists([{ id: 'l', name: 'My\tList', json: { visible: true } }])
     const bookmarks = normalizeBookmarks(lists, [
       { id: 'b', listId: 'l', title: 'Has\ttab\nnewline', url: 'https://example.com/', icon: '', json: { visible: true } },
@@ -102,15 +137,17 @@ describe('bookmark transfer', () => {
     expect(out).toContain('Has tab newline\thttps://example.com/')
   })
 
-  it('escapes tabs and newlines in plain export titles', () => {
-    const lists = normalizeLists([{ id: 'l', name: 'My\tList', json: { visible: true } }])
+  it('escapes html export list names, urls, icons, and titles', () => {
+    const lists = normalizeLists([{ id: 'l', name: 'My <List>', json: { visible: true } }])
     const bookmarks = normalizeBookmarks(lists, [
-      { id: 'b', listId: 'l', title: 'Has\ttab\nnewline', url: 'https://example.com/', icon: '', json: { visible: true } },
+      { id: 'b', listId: 'l', title: 'A & B', url: 'https://example.com/?a=1&b=2', icon: 'https://icon.example/?x=1&y=2', json: { visible: true } },
     ])
 
-    const out = exportBookmarksToPlainText(lists, bookmarks)
-    expect(out.split('\n')[0]).toBe('# My List')
-    expect(out).toContain('Has tab newline\thttps://example.com/')
+    const out = exportBookmarksToHtml(lists, bookmarks)
+    expect(out).toContain('>My &lt;List&gt;</H3>')
+    expect(out).toContain('HREF="https://example.com/?a=1&amp;b=2"')
+    expect(out).toContain('ICON="https://icon.example/?x=1&amp;y=2"')
+    expect(out).toContain('>A &amp; B</A>')
   })
 
   it('dedupes imports against existing urls regardless of import order normalization', () => {
@@ -141,5 +178,34 @@ describe('bookmark transfer', () => {
     expect(result.importedCount).toBe(1)
     expect(result.lists.some((item) => item.name === 'New List')).toBe(true)
     expect(result.bookmarks.some((item) => item.url === 'https://new.example/')).toBe(true)
+  })
+
+  it('keeps duplicate imports out even when an existing bookmark is hidden', () => {
+    const lists = normalizeLists([{ id: 'existing', name: 'Existing', json: createRowJsonState({ visible: true }) }])
+    const bookmarks = normalizeBookmarks(lists, [
+      { id: 'hidden', listId: 'existing', title: 'Hidden', url: 'https://hidden.example', icon: '', json: { visible: false } },
+    ])
+
+    const result = mergeImportedBookmarks(lists, bookmarks, [
+      { listName: 'Existing', title: 'Duplicate', url: 'https://hidden.example/' },
+    ])
+
+    expect(result.importedCount).toBe(0)
+    expect(result.bookmarks.filter((item) => item.url === 'https://hidden.example')).toHaveLength(1)
+  })
+
+  it('allows importing a url again after the existing bookmark was deleted', () => {
+    const lists = normalizeLists([{ id: 'existing', name: 'Existing', json: createRowJsonState({ visible: true }) }])
+    const [bookmark] = normalizeBookmarks(lists, [
+      { id: 'deleted', listId: 'existing', title: 'Deleted', url: 'https://deleted.example', icon: '', json: { visible: true } },
+    ]).filter((item) => item.id === 'deleted')
+    const bookmarks = [patchRowState(bookmark, { deleted_at: '2026-06-21T00:00:00.000Z', visible: false })]
+
+    const result = mergeImportedBookmarks(lists, bookmarks, [
+      { listName: 'Existing', title: 'Restored', url: 'https://deleted.example/' },
+    ])
+
+    expect(result.importedCount).toBe(1)
+    expect(result.bookmarks.some((item) => item.title === 'Restored')).toBe(true)
   })
 })

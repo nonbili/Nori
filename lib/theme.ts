@@ -34,7 +34,8 @@ export type ThemeColors = typeof lightColors
 export const useAppColorScheme = (): 'light' | 'dark' => {
   const { colorScheme: nativeWindScheme } = useColorScheme()
   const rnScheme = useRNColorScheme()
-  return nativeWindScheme ?? rnScheme ?? 'light'
+  const scheme = nativeWindScheme ?? rnScheme
+  return scheme === 'dark' ? 'dark' : 'light'
 }
 
 export const getThemeColors = (colorScheme: 'dark' | 'light' | null | undefined): ThemeColors => {

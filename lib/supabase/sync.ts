@@ -3,14 +3,12 @@ import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { syncMeta$ } from '@/states/sync-meta'
 import {
-  createStarterBookmarks,
-  createStarterLists,
-  getDeletedAt,
   normalizeBookmarks,
   normalizeLists,
   type BookmarkListData,
   type BookmarkRecordData,
 } from '@/lib/nori-data'
+import { dropExpiredSyncTombstones, isPristineStarterSeed, mergeSyncRows } from '@/lib/supabase/sync-merge'
 import { supabase } from './client'
 
 type RemoteListRow = {
@@ -36,8 +34,6 @@ let watchersStarted = false
 let applyingRemote = false
 let syncTimer: ReturnType<typeof setTimeout> | null = null
 
-const TOMBSTONE_RETENTION_MS = 90 * 24 * 60 * 60 * 1000
-
 function canSync() {
   const { userId, plan } = auth$.peek()
   return Boolean(userId && plan && plan !== 'free')
@@ -58,56 +54,6 @@ function snapshotLists() {
 
 function snapshotBookmarks(lists = snapshotLists()) {
   return normalizeBookmarks(lists, bookmarks$.bookmarks.peek())
-}
-
-function parseUpdatedAt(value?: string) {
-  const parsed = value ? Date.parse(value) : Number.NaN
-  return Number.isNaN(parsed) ? 0 : parsed
-}
-
-function mergeRows<T extends { id: string; updatedAt: string }>(localRows: T[], remoteRows: T[], pendingIds: Set<string>) {
-  const byId = new Map(localRows.map((item) => [item.id, item]))
-  for (const remote of remoteRows) {
-    if (pendingIds.has(remote.id)) {
-      continue
-    }
-    const local = byId.get(remote.id)
-    if (!local || parseUpdatedAt(remote.updatedAt) >= parseUpdatedAt(local.updatedAt)) {
-      byId.set(remote.id, remote)
-    }
-  }
-  return [...byId.values()]
-}
-
-function dropExpiredTombstones<T extends { json: Record<string, unknown> }>(rows: T[]) {
-  const now = Date.now()
-  return rows.filter((row) => {
-    const deletedAt = getDeletedAt(row)
-    if (!deletedAt) {
-      return true
-    }
-    return now - parseUpdatedAt(deletedAt) < TOMBSTONE_RETENTION_MS
-  })
-}
-
-function isPristineStarterSeed(localLists: BookmarkListData[], localBookmarks: BookmarkRecordData[]) {
-  const stripList = (item: BookmarkListData) => ({
-    id: item.id,
-    name: item.name,
-    json: item.json,
-  })
-  const stripBookmark = (item: BookmarkRecordData) => ({
-    id: item.id,
-    listId: item.listId,
-    url: item.url,
-    title: item.title,
-    icon: item.icon,
-    json: item.json,
-  })
-  return (
-    JSON.stringify(localLists.map(stripList)) === JSON.stringify(createStarterLists().map(stripList))
-    && JSON.stringify(localBookmarks.map(stripBookmark)) === JSON.stringify(createStarterBookmarks().map(stripBookmark))
-  )
 }
 
 function toLocalList(row: RemoteListRow): BookmarkListData {
@@ -208,8 +154,8 @@ async function pushBookmarks(userId: string, rows: BookmarkRecordData[]) {
 function applyRemoteState(nextLists: BookmarkListData[], nextBookmarks: BookmarkRecordData[]) {
   applyingRemote = true
   try {
-    const normalizedLists = normalizeLists(dropExpiredTombstones(nextLists))
-    const normalizedBookmarks = normalizeBookmarks(normalizedLists, dropExpiredTombstones(nextBookmarks))
+    const normalizedLists = normalizeLists(dropExpiredSyncTombstones(nextLists))
+    const normalizedBookmarks = normalizeBookmarks(normalizedLists, dropExpiredSyncTombstones(nextBookmarks))
     lists$.lists.set(normalizedLists)
     bookmarks$.bookmarks.set(normalizedBookmarks)
   } finally {
@@ -304,20 +250,20 @@ export async function syncSupabase() {
     const nextPendingListIds = new Set(syncMeta$.pendingListIds.peek())
     const nextPendingBookmarkIds = new Set(syncMeta$.pendingBookmarkIds.peek())
 
-    let mergedLists = mergeRows(localLists, remoteLists, nextPendingListIds)
-    let mergedBookmarks = mergeRows(localBookmarks, remoteBookmarks, nextPendingBookmarkIds)
+    let mergedLists = mergeSyncRows(localLists, remoteLists, nextPendingListIds)
+    let mergedBookmarks = mergeSyncRows(localBookmarks, remoteBookmarks, nextPendingBookmarkIds)
     applyRemoteState(mergedLists, mergedBookmarks)
 
     const pushedLists = await pushLists(userId, snapshotLists().filter((item) => nextPendingListIds.has(item.id)))
     if (pushedLists.length) {
-      mergedLists = mergeRows(snapshotLists(), pushedLists, new Set())
+      mergedLists = mergeSyncRows(snapshotLists(), pushedLists, new Set())
       syncMeta$.pendingListIds.set(syncMeta$.pendingListIds.peek().filter((id) => !nextPendingListIds.has(id)))
       applyRemoteState(mergedLists, snapshotBookmarks(mergedLists))
     }
 
     const pushedBookmarks = await pushBookmarks(userId, snapshotBookmarks(snapshotLists()).filter((item) => nextPendingBookmarkIds.has(item.id)))
     if (pushedBookmarks.length) {
-      mergedBookmarks = mergeRows(snapshotBookmarks(snapshotLists()), pushedBookmarks, new Set())
+      mergedBookmarks = mergeSyncRows(snapshotBookmarks(snapshotLists()), pushedBookmarks, new Set())
       syncMeta$.pendingBookmarkIds.set(syncMeta$.pendingBookmarkIds.peek().filter((id) => !nextPendingBookmarkIds.has(id)))
       applyRemoteState(snapshotLists(), mergedBookmarks)
     }

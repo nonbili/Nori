@@ -3,8 +3,13 @@ import { batch } from '@legendapp/state'
 import {
   mergeImportedBookmarks,
   parseBookmarksForImport,
-  type BookmarkTransferFormat,
 } from '@/lib/bookmark-transfer'
+import {
+  decodeBookmarkImportBase64,
+  getReadableBookmarkImportUriCandidates,
+  inferBookmarkImportFormat,
+  sanitizeBookmarkImportFileName,
+} from '@/lib/bookmark-import-utils'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 
@@ -15,40 +20,12 @@ export interface BookmarkImportAsset {
   base64?: string | null
 }
 
-export const inferBookmarkImportFormat = (asset: Pick<BookmarkImportAsset, 'name' | 'mimeType'>, content: string): BookmarkTransferFormat => {
-  const name = asset.name?.toLowerCase() || ''
-  const mimeType = asset.mimeType?.toLowerCase() || ''
-  if (mimeType.includes('html') || name.endsWith('.html') || name.endsWith('.htm')) {
-    return 'html'
-  }
-  if (/<!doctype\s+netscape-bookmark/i.test(content) || /<dl\b/i.test(content)) {
-    return 'html'
-  }
-  return 'plain'
-}
-
-const getReadableUriCandidates = (uri: string) => {
-  const candidates = [uri]
-  if (uri.startsWith('/')) {
-    candidates.push(`file://${uri}`)
-  }
-  if (uri.startsWith('file://')) {
-    candidates.push(uri.replace(/^file:\/\//, ''))
-  }
-  return [...new Set(candidates)]
-}
-
-const sanitizeFileName = (name?: string | null) => {
-  const safe = name?.replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '')
-  return safe || `shared-bookmarks-${Date.now()}.txt`
-}
-
 const readContentUriViaCache = async (asset: BookmarkImportAsset) => {
   if (!asset.uri.startsWith('content://') || !FileSystem.cacheDirectory) {
     return null
   }
 
-  const destination = `${FileSystem.cacheDirectory}${sanitizeFileName(asset.name)}`
+  const destination = `${FileSystem.cacheDirectory}${sanitizeBookmarkImportFileName(asset.name)}`
   await FileSystem.copyAsync({
     from: asset.uri,
     to: destination,
@@ -58,12 +35,11 @@ const readContentUriViaCache = async (asset: BookmarkImportAsset) => {
 
 export const readBookmarkImportText = async (asset: BookmarkImportAsset) => {
   if (asset.base64) {
-    const bytes = Uint8Array.from(globalThis.atob(asset.base64), (c) => c.charCodeAt(0))
-    return new TextDecoder('utf-8').decode(bytes)
+    return decodeBookmarkImportBase64(asset.base64)
   }
 
   let lastError: unknown
-  for (const uri of getReadableUriCandidates(asset.uri)) {
+  for (const uri of getReadableBookmarkImportUriCandidates(asset.uri)) {
     try {
       return await FileSystem.readAsStringAsync(uri)
     } catch (error) {

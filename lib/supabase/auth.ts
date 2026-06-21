@@ -1,11 +1,11 @@
 import * as WebBrowser from 'expo-web-browser'
 import { fetchWebAuthLink } from '@/lib/nori-api'
 import { isAuthCallbackUrl } from '@/lib/auth-callback'
+import { buildDeleteAccountUrl, getAuthCallbackToken } from '@/lib/supabase/auth-utils'
 import { supabaseAuth } from './client'
 
 const AUTH_URL = 'https://nori.inks.page/auth/app'
 const MANAGE_URL = 'https://nori.inks.page/app'
-const DELETE_ACCOUNT_URL = 'https://nori.inks.page/auth/app/delete-account'
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -18,7 +18,7 @@ export const onReceiveAuthUrl = async (url: string) => {
     return false
   }
 
-  const token = url.match(/[?&]t=([^&]+)/)?.[1]
+  const token = getAuthCallbackToken(url)
   if (!token) {
     return false
   }
@@ -49,7 +49,7 @@ export const openManagePlan = async () => {
 
 export const openDeleteAccount = async (accessToken: string) => {
   const { token } = await fetchWebAuthLink(accessToken)
-  const url = token ? `${DELETE_ACCOUNT_URL}?t=${encodeURIComponent(token)}` : DELETE_ACCOUNT_URL
+  const url = buildDeleteAccountUrl(token)
   console.log('[openDeleteAccount] url', url)
   await WebBrowser.openBrowserAsync(url)
 }

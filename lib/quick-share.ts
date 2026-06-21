@@ -3,7 +3,7 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { getFallbackIcon, getFallbackTitle } from '@/lib/bookmark'
 import { getPrefetchedBookmarkMeta } from '@/lib/bookmark-meta-cache'
-import { getVisibleLists } from '@/lib/nori-data'
+import { isValidQuickShareHttpUrl, resolveQuickShareTargetListIdFromLists } from '@/lib/quick-share-utils'
 import {
   configureQuickShare,
   getPendingAppShareLinks,
@@ -14,21 +14,8 @@ import {
 } from '@/modules/nori-quick-share'
 import { ui$ } from '@/states/ui'
 
-const isValidHttpUrl = (value: string) => {
-  try {
-    const url = new URL(value)
-    return url.protocol === 'http:' || url.protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
 export function resolveQuickShareTargetListId(preferredListId = settings$.quickSaveShareListId.peek()) {
-  const visibleLists = getVisibleLists(lists$.lists.peek())
-  if (visibleLists.some((list) => list.id === preferredListId)) {
-    return preferredListId
-  }
-  return visibleLists[0]?.id || ''
+  return resolveQuickShareTargetListIdFromLists(lists$.lists.peek(), preferredListId)
 }
 
 export async function syncQuickShareNativeConfig() {
@@ -37,7 +24,7 @@ export async function syncQuickShareNativeConfig() {
 }
 
 export function saveQuickSharedLink(url: string, targetListId = resolveQuickShareTargetListId()) {
-  if (!targetListId || !isValidHttpUrl(url)) {
+  if (!targetListId || !isValidQuickShareHttpUrl(url)) {
     return null
   }
 
@@ -86,7 +73,7 @@ export async function drainAppShareInbox() {
   const handledIds: string[] = []
   const entry = pending[0]
 
-  if (entry?.url && isValidHttpUrl(entry.url)) {
+  if (entry?.url && isValidQuickShareHttpUrl(entry.url)) {
     ui$.pendingBookmarkImport.set(null)
     ui$.pendingShare.set({
       url: entry.url,

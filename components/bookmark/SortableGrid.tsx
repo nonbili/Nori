@@ -7,6 +7,7 @@ import Animated, {
   withSpring,
   runOnJS,
   type AnimatedRef,
+  type SharedValue,
 } from 'react-native-reanimated'
 
 const COLUMNS = 2
@@ -50,7 +51,7 @@ export function SortableGrid<T extends { id: string }>({
       next[item.id] = index
     })
     positions.value = next
-  }, [items])
+  }, [items, positions])
 
   const handleReorder = (newPositions: Record<string, number>) => {
     const orderedIds = Object.keys(newPositions).sort((a, b) => newPositions[a] - newPositions[b])
@@ -111,7 +112,7 @@ interface DraggableTileProps<T> {
   id: string
   item: T
   initialIndex: number
-  positions: Animated.SharedValue<Record<string, number>>
+  positions: SharedValue<Record<string, number>>
   itemWidth: number
   itemHeight: number
   columns: number
@@ -193,6 +194,7 @@ function DraggableTile<T extends { id: string }>({
           }
         }
         newPositions[id] = newIndex
+        // eslint-disable-next-line react-hooks/immutability
         positions.value = newPositions
       }
     })

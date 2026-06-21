@@ -97,7 +97,8 @@ export const resolveI18nLanguageFromExpoLocale = (locale?: Locale): SupportedI18
 export const normalizeI18nLanguage = (value?: string | null): SupportedI18nLanguage | null =>
   value == null ? null : isSupportedLanguage(value) ? value : null
 
-i18n.use(initReactI18next).init({
+// eslint-disable-next-line import/no-named-as-default-member
+void i18n.use(initReactI18next).init({
   /* debug: true, */
   fallbackLng: 'en',
   interpolation: {

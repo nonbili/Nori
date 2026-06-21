@@ -3,13 +3,13 @@ import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
 import { lists$ } from './lists'
 import { genId } from '@/lib/utils'
-import { normalizeUrlInput, parseHttpUrl } from '@/lib/url'
+import { normalizeUrlInput } from '@/lib/url'
+import { addBookmarkRecord, getBookmarkUrlKey, resolveActiveListId } from '@/lib/bookmark-mutations'
 import {
   createRowJsonState,
   createStarterBookmarks,
   getVisibleBookmarks,
   isDeleted,
-  isVisible,
   moveItemWithinVisibleSubset,
   normalizeBookmarks,
   patchRowState,
@@ -48,16 +48,7 @@ function isArrayPatch(value: unknown): value is Record<string, unknown> {
 }
 
 const resolveListId = (listId: string) => {
-  const list = lists$.lists.get().find((item) => item.id === listId && !item.json.deleted_at)
-  return list?.id || ''
-}
-
-const getBookmarkUrlKey = (url: string) => {
-  try {
-    return parseHttpUrl(url).toString()
-  } catch {
-    return normalizeUrlInput(url)
-  }
+  return resolveActiveListId(lists$.lists.get(), listId)
 }
 
 export const bookmarks$: Observable<Store> = observable<Store>({
@@ -70,48 +61,15 @@ export const bookmarks$: Observable<Store> = observable<Store>({
 
     const now = new Date().toISOString()
     const id = genId()
-    const listId = resolveListId(draft.listId)
-    if (!listId) {
+    const currentBookmarks = bookmarks$.bookmarks.get()
+    const result = addBookmarkRecord(lists$.lists.get(), currentBookmarks, draft, id, now)
+    if (!result) {
       return null
     }
-
-    const items = bookmarks$.bookmarks.get()
-    const urlKey = getBookmarkUrlKey(url)
-    const existingIndex = items.findIndex((item) => (
-      item.listId === listId
-      && !isDeleted(item)
-      && getBookmarkUrlKey(item.url) === urlKey
-    ))
-
-    if (existingIndex !== -1) {
-      const existing = items[existingIndex]
-      const needsReveal = !isVisible(existing)
-      if (needsReveal || draft.tags) {
-        const nextItems = [...items]
-        nextItems[existingIndex] = {
-          ...patchRowState(existing, {
-            ...(needsReveal ? { visible: true } : {}),
-            ...(draft.tags ? { tags: draft.tags } : {}),
-          }),
-          updatedAt: now,
-        }
-        bookmarks$.bookmarks.set(nextItems)
-      }
-      return existing.id
+    if (result.bookmarks !== currentBookmarks) {
+      bookmarks$.bookmarks.set(result.bookmarks)
     }
-
-    const nextSortIndex = items.filter((item) => item.listId === listId).length
-    bookmarks$.bookmarks.set([...items, {
-      id,
-      listId,
-      url,
-      title: draft.title?.trim() || url,
-      icon: draft.icon?.trim() || '',
-      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null, tags: draft.tags }),
-      createdAt: now,
-      updatedAt: now,
-    }])
-    return id
+    return result.id
   },
   update: (id, draft) => {
     const items = bookmarks$.bookmarks.get()
