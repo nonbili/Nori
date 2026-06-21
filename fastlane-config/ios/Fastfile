@@ -1,6 +1,57 @@
 default_platform(:ios)
 
 platform :ios do
+  private_lane :asc_api_key do
+    key_id = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"]
+    issuer_id = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"]
+    key_filepath = ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"]
+    key_content = ENV["APP_STORE_CONNECT_API_KEY_KEY"] || ENV["APP_STORE_CONNECT_API_KEY_KEY_CONTENT"]
+
+    UI.user_error!("Set APP_STORE_CONNECT_API_KEY_KEY_ID") if key_id.to_s.empty?
+    UI.user_error!("Set APP_STORE_CONNECT_API_KEY_ISSUER_ID") if issuer_id.to_s.empty?
+    UI.user_error!("Set APP_STORE_CONNECT_API_KEY_KEY_FILEPATH or APP_STORE_CONNECT_API_KEY_KEY") if key_filepath.to_s.empty? && key_content.to_s.empty?
+
+    app_store_connect_api_key(
+      key_id: key_id,
+      issuer_id: issuer_id,
+      key_filepath: key_filepath,
+      key_content: key_content,
+      is_key_content_base64: ENV["APP_STORE_CONNECT_API_KEY_IS_BASE64"] == "1"
+    )
+  end
+
+  desc "Build and upload an IPA to App Store Connect"
+  lane :upload_ipa do |options|
+    api_key = asc_api_key
+    app_identifier = options[:app_identifier] || ENV["IOS_APP_IDENTIFIER"] || "jp.nonbili.nori"
+    ipa_path = options[:ipa] || ENV["IPA_PATH"] || File.expand_path("../../ios/build/Nori.ipa", __dir__)
+    build_before_upload = ENV["IOS_BUILD_BEFORE_UPLOAD"] == "1"
+
+    if build_before_upload
+      build_app(
+        workspace: File.expand_path("../../ios/Nori.xcworkspace", __dir__),
+        scheme: ENV["IOS_SCHEME"] || "Nori",
+        configuration: ENV["IOS_CONFIGURATION"] || "Release",
+        export_method: ENV["IOS_EXPORT_METHOD"] || "app-store",
+        output_directory: File.dirname(ipa_path),
+        output_name: File.basename(ipa_path),
+        clean: true,
+        xcargs: ENV["IOS_XCARGS"]
+      )
+    end
+
+    UI.user_error!("IPA not found: #{ipa_path}") unless File.exist?(ipa_path)
+
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: app_identifier,
+      ipa: ipa_path,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false
+    )
+  end
+
   desc "Upload screenshots to App Store Connect"
   lane :upload_screenshots do
     upload_to_app_store(
