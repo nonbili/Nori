@@ -45,6 +45,7 @@ modules/*/android/build/
 # Fastlane
 fastlane/README.md
 fastlane/report.xml
+fastlane/Preview.html
 fastlane/metadata/ios/en-US/release_notes.txt
 fastlane/metadata/android/screenshots.html
 fastlane/screenshots/**/en-US/*

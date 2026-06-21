@@ -66,17 +66,33 @@ const withAndroidSigningConfig: ConfigPlugin = (config) => {
   return withAppBuildGradle(config, (config) => {
     // https://www.reddit.com/r/expo/comments/1j4v323/comment/mit9b2a/
     let contents = config.modResults.contents
-      .replace(
+
+    if (googlePlayBuild) {
+      contents = contents.replace(
+        /versionCode (\d+)/,
+        (_, versionCode) => `versionCode ${(Number(versionCode) * 100) + 4}`,
+      )
+    } else {
+      contents = contents.replace(
         'android {',
         `ext.abiCodes = [x86_64:2, 'armeabi-v7a':3, 'arm64-v8a': 4]
 
 android {`,
       )
+    }
+
+    contents = contents
       .replace('zh-Hans', 'b+zh+Hans')
       .replace('zh-Hant', 'b+zh+Hant')
       .replace(
         /androidResources \{([\s\S]*?)}/,
-        `androidResources {$1}
+        googlePlayBuild
+          ? `androidResources {$1}
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }`
+          : `androidResources {$1}
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false

@@ -21,20 +21,22 @@ const changelogSource = process.env.IOS_CHANGELOG_SOURCE
   ?? resolve(repoRoot, `fastlane/metadata/android/en-US/changelogs/${pkg.versionCode}04.txt`)
 const releaseNotesPath = process.env.IOS_RELEASE_NOTES_PATH
   ?? resolve(repoRoot, 'fastlane/metadata/ios/en-US/release_notes.txt')
-const skipBuild = envFlag('SKIP_BUILD', false)
 const skipBinaryUpload = envFlag('IOS_SKIP_BINARY_UPLOAD', false)
+const skipBuild = envFlag('SKIP_BUILD', skipBinaryUpload)
+const submitForReview = envFlag('IOS_SUBMIT_FOR_REVIEW', true)
+const rejectIfPossible = envFlag('IOS_REJECT_IF_POSSIBLE', submitForReview)
 
-requireEnv('APP_STORE_CONNECT_API_KEY_KEY_ID')
-requireEnv('APP_STORE_CONNECT_API_KEY_ISSUER_ID')
+requireEnv('APP_STORE_KEY_ID')
+requireEnv('APP_STORE_ISSUER_ID')
 
-if (!process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH && !process.env.APP_STORE_CONNECT_API_KEY_KEY && !process.env.APP_STORE_CONNECT_API_KEY_KEY_CONTENT) {
-  fail('set APP_STORE_CONNECT_API_KEY_KEY_FILEPATH or APP_STORE_CONNECT_API_KEY_KEY.')
+if (!process.env.APP_STORE_KEY_FILEPATH && !process.env.APP_STORE_KEY && !process.env.APP_STORE_KEY_CONTENT) {
+  fail('set APP_STORE_KEY_FILEPATH or APP_STORE_KEY.')
 }
 
-if (process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH) {
+if (process.env.APP_STORE_KEY_FILEPATH) {
   await ensureFile(
-    process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH,
-    `App Store Connect API key file not found: ${process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH}`,
+    process.env.APP_STORE_KEY_FILEPATH,
+    `App Store Connect API key file not found: ${process.env.APP_STORE_KEY_FILEPATH}`,
   )
 }
 
@@ -67,8 +69,10 @@ if (!skipBinaryUpload && skipBuild) {
   await ensureFile(ipaPath, `IPA not found: ${ipaPath}`)
 }
 
-if (skipBinaryUpload) {
+if (skipBinaryUpload && submitForReview) {
   console.log(`Submitting existing App Store Connect build ${pkg.version} (${pkg.buildNumber}) for ${appIdentifier}...`)
+} else if (submitForReview) {
+  console.log(`Uploading ${ipaPath} to App Store Connect and submitting for review for ${appIdentifier}...`)
 } else {
   console.log(`Uploading ${ipaPath} to App Store Connect for ${appIdentifier}...`)
 }
@@ -81,6 +85,8 @@ await run(['bundle', 'exec', 'fastlane', 'ios', 'upload_ipa'], {
     IPA_PATH: ipaPath,
     IOS_RELEASE_NOTES_PATH: releaseNotesPath,
     IOS_BUILD_BEFORE_UPLOAD: skipBuild ? '0' : '1',
+    IOS_SUBMIT_FOR_REVIEW: submitForReview ? '1' : '0',
+    IOS_REJECT_IF_POSSIBLE: rejectIfPossible ? '1' : '0',
   },
 })
 
