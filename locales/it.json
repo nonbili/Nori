@@ -135,6 +135,8 @@
       "defaultBrowserHint": "Attiva per uscire da Nori e aprire i link nel browser del telefono.",
       "showFavicon": "Mostra favicon",
       "showFaviconHint": "Usa l'icona del sito di ogni segnalibro. Disattiva per mostrare il logo di Nori.",
+      "quickShare": "Salvataggio rapido dei link condivisi",
+      "quickShareHint": "Salva gli URL condivisi in una lista di destinazione senza scegliere una lista.",
       "theme": "Tema",
       "themeHint": "Passa tra aspetto di sistema, chiaro e scuro.",
       "system": "Sistema",

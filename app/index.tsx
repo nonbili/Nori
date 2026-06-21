@@ -14,7 +14,7 @@ import { RecentlyUsedSheet } from '@/components/sheet/RecentlyUsedSheet'
 import { SaveSharedLinkSheet } from '@/components/sheet/SaveSharedLinkSheet'
 import { SettingsSheet } from '@/components/sheet/SettingsSheet'
 import { ListEditorSheet } from '@/components/sheet/ListEditorSheet'
-import { usePendingShareIntent } from '@/hooks/usePendingShareIntent'
+import { useQuickShare } from '@/hooks/useQuickShare'
 
 export default function HomeScreen() {
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
@@ -78,7 +78,7 @@ export default function HomeScreen() {
     }
   }, [toggleDrawer])
 
-  usePendingShareIntent()
+  useQuickShare()
 
   return (
     <View className="flex-1 bg-stone-50 dark:bg-stone-950">

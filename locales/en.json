@@ -135,6 +135,8 @@
       "defaultBrowserHint": "Turn this on to leave Nori and open links in your phone's browser app.",
       "showFavicon": "Show favicon",
       "showFaviconHint": "Use each bookmark's site icon. Turn this off to show the Nori logo instead.",
+      "quickShare": "Quick save shared links",
+      "quickShareHint": "Save shared URLs to a target list without picking a list.",
       "theme": "Theme",
       "themeHint": "Switch between system, light, and dark appearance.",
       "system": "System",

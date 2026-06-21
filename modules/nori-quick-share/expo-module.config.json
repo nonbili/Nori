@@ -1,0 +1,10 @@
+{
+  "platforms": ["android", "ios"],
+  "android": {
+    "modules": ["jp.nonbili.nori.quickshare.NoriQuickShareModule"]
+  },
+  "ios": {
+    "modules": ["NoriQuickShareModule"]
+  }
+}
+

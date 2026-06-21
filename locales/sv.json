@@ -135,6 +135,8 @@
       "defaultBrowserHint": "Aktivera detta för att lämna Nori och öppna länkar i din telefons webbläsarapp.",
       "showFavicon": "Visa favicon",
       "showFaviconHint": "Använd varje bokmärkes webbplatsikon. Stäng av detta för att visa Nori-logotypen istället.",
+      "quickShare": "Snabbspara delade länkar",
+      "quickShareHint": "Spara delade URL:er i en mållista utan att välja en lista.",
       "theme": "Tema",
       "themeHint": "Växla mellan systemets, ljust och mörkt utseende.",
       "system": "System",

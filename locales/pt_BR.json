@@ -135,6 +135,8 @@
       "defaultBrowserHint": "Ative para sair do Nori e abrir links no aplicativo de navegador do seu telefone.",
       "showFavicon": "Mostrar ícone do site",
       "showFaviconHint": "Usar o ícone de cada site nos favoritos. Desative para mostrar o logotipo do Nori.",
+      "quickShare": "Salvar links compartilhados rapidamente",
+      "quickShareHint": "Salve URLs compartilhados em uma lista de destino sem escolher uma lista.",
       "theme": "Tema",
       "themeHint": "Alternar entre aparência do sistema, clara e escura.",
       "system": "Sistema",

@@ -135,6 +135,8 @@
       "defaultBrowserHint": "Nori'den çıkıp bağlantıları telefonunuzun tarayıcı uygulamasında açmak için bunu açın.",
       "showFavicon": "Site simgesini göster",
       "showFaviconHint": "Her yer iminin site simgesini kullanın. Bunun yerine Nori logosunu göstermek için bunu kapatın.",
+      "quickShare": "Paylaşılan bağlantıları hızlı kaydet",
+      "quickShareHint": "Paylaşılan URL'leri liste seçmeden hedef listeye kaydet.",
       "theme": "Tema",
       "themeHint": "Sistem, açık ve karanlık görünüm arasında geçiş yapın.",
       "system": "Sistem",

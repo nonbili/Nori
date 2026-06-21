@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio/slim'
 
-const getFallbackTitle = (url: string) => {
+export const getFallbackTitle = (url: string) => {
   try {
     return new URL(url).hostname.replace(/^www\./, '')
   } catch {

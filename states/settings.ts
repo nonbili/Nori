@@ -12,6 +12,8 @@ export interface Settings {
   customSearchProviders: any[]
   openInSystemBrowser: boolean
   showFavicon: boolean
+  quickSaveSharedLinks: boolean
+  quickSaveShareListId: string
 }
 
 interface Store extends Settings {
@@ -21,6 +23,8 @@ interface Store extends Settings {
   setSelectedSearchProvider: (id: string) => void
   setOpenInSystemBrowser: (enabled: boolean) => void
   setShowFavicon: (enabled: boolean) => void
+  setQuickSaveSharedLinks: (enabled: boolean) => void
+  setQuickSaveShareListId: (id: string) => void
 }
 
 const themes: Settings['theme'][] = [null, 'light', 'dark']
@@ -34,6 +38,8 @@ export const settings$: Observable<Store> = observable<Store>({
   customSearchProviders: [],
   openInSystemBrowser: false,
   showFavicon: true,
+  quickSaveSharedLinks: false,
+  quickSaveShareListId: '',
   cycleTheme: () => {
     const current = settings$.theme.get()
     const index = themes.indexOf(current)
@@ -53,6 +59,12 @@ export const settings$: Observable<Store> = observable<Store>({
   },
   setShowFavicon: (enabled) => {
     settings$.showFavicon.set(enabled)
+  },
+  setQuickSaveSharedLinks: (enabled) => {
+    settings$.quickSaveSharedLinks.set(enabled)
+  },
+  setQuickSaveShareListId: (id) => {
+    settings$.quickSaveShareListId.set(id)
   },
 })
 

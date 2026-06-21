@@ -135,6 +135,8 @@
       "defaultBrowserHint": "開啟此項以離開 Nori 並使用您手機的瀏覽器應用程式開啟連結。",
       "showFavicon": "顯示網站圖示",
       "showFaviconHint": "使用每個書籤的網站圖示。關閉此項以顯示 Nori 標誌。",
+      "quickShare": "快速儲存分享連結",
+      "quickShareHint": "將分享的 URL 儲存到目標列表，無需選擇列表。",
       "theme": "主題",
       "themeHint": "在系統、淺色和深色外觀之間切換。",
       "system": "系統",

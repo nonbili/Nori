@@ -1,9 +1,68 @@
 import { ConfigPlugin } from '@expo/config-plugins'
+import { withAndroidManifest } from '@expo/config-plugins'
 import { withAppBuildGradle } from '@expo/config-plugins/build/plugins/android-plugins.js'
 
 const googlePlayBuild = !!process.env.GOOGLE_PLAY_BUILD
 
 const withAndroidSigningConfig: ConfigPlugin = (config) => {
+  config = withAndroidManifest(config, (config) => {
+    const application = config.modResults.manifest.application?.[0]
+    if (!application) {
+      return config
+    }
+
+    const activities = application.activity || []
+    const mainActivity = activities.find((activity) => {
+      const name = activity.$['android:name']
+      return name === '.MainActivity' || name.endsWith('.MainActivity')
+    })
+    if (mainActivity?.['intent-filter']) {
+      mainActivity['intent-filter'] = mainActivity['intent-filter'].filter((filter) => (
+        !filter.action?.some((action) => (
+          action.$['android:name'] === 'android.intent.action.SEND'
+          || action.$['android:name'] === 'android.intent.action.SEND_MULTIPLE'
+        ))
+      ))
+    }
+
+    const receiverName = 'jp.nonbili.nori.quickshare.QuickShareReceiverActivity'
+    let receiver = activities.find((activity) => activity.$['android:name'] === receiverName)
+    if (!receiver) {
+      receiver = {
+        $: {
+          'android:name': receiverName,
+          'android:theme': '@style/AppTheme',
+          'android:exported': 'true',
+          'android:noHistory': 'true',
+          'android:excludeFromRecents': 'true',
+        },
+      }
+      activities.unshift(receiver)
+      application.activity = activities
+    }
+
+    receiver['intent-filter'] = [
+      {
+        action: [{ $: { 'android:name': 'android.intent.action.SEND' } }],
+        data: [
+          { $: { 'android:mimeType': 'text/*' } },
+          { $: { 'android:mimeType': '*/*' } },
+        ],
+        category: [{ $: { 'android:name': 'android.intent.category.DEFAULT' } }],
+      },
+      {
+        $: {
+          'android:autoVerify': 'false',
+          'nori-quick-share-intent-filters': 'true',
+        },
+        action: [{ $: { 'android:name': 'android.intent.action.SEND_MULTIPLE' } }],
+        category: [{ $: { 'android:name': 'android.intent.category.DEFAULT' } }],
+      },
+    ] as any
+
+    return config
+  })
+
   return withAppBuildGradle(config, (config) => {
     // https://www.reddit.com/r/expo/comments/1j4v323/comment/mit9b2a/
     let contents = config.modResults.contents

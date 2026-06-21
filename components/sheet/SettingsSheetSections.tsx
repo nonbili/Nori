@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { SegmentedOption } from '@/components/common/Common'
 import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { auth$ } from '@/states/auth'
+import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { syncMeta$ } from '@/states/sync-meta'
 import { useThemeColors } from '@/lib/theme'
@@ -16,6 +17,7 @@ import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
 import { AboutRow } from '@/components/sheet/SettingsSheetAbout'
 import { useLocales } from 'expo-localization'
 import { resolveI18nLanguageFromExpoLocale, supportedI18nLanguages } from '@/lib/i18n'
+import { getVisibleLists } from '@/lib/nori-data'
 
 const TERMS_OF_USE_URL = 'https://www.apple.com/legal/macapps/stdeula/'
 const PRIVACY_POLICY_URL = 'https://inks.page/p/privacy'
@@ -273,14 +275,22 @@ const languageNativeNames: Record<string, string> = {
   zh_Hant: '繁體中文',
 }
 
+const quickSaveTargetListId = (listId: string, visibleLists: { id: string }[]) =>
+  visibleLists.some((list) => list.id === listId) ? listId : ''
+
 export const ExperienceSection: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const theme = useValue(settings$.theme)
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
   const showFavicon = useValue(settings$.showFavicon)
+  const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
+  const quickSaveShareListId = useValue(settings$.quickSaveShareListId)
   const selectedLanguage = useValue(settings$.language)
+  const lists = useValue(lists$.lists)
   const locales = useLocales()
+  const visibleLists = getVisibleLists(lists)
+  const quickShareTargetList = visibleLists.find((list) => list.id === quickSaveShareListId) || visibleLists[0]
 
   const systemLanguage = resolveI18nLanguageFromExpoLocale(locales[0]) || 'en'
   const effectiveLanguage = selectedLanguage || systemLanguage
@@ -302,6 +312,18 @@ export const ExperienceSection: React.FC = () => {
       handler: () => settings$.setLanguage(lang),
     })),
   ]
+  const quickShareListMenuItems: NouMenuItem[] = visibleLists.map((list) => ({
+    label: list.name,
+    selected: quickShareTargetList?.id === list.id,
+    handler: () => settings$.setQuickSaveShareListId(list.id),
+  }))
+  const toggleQuickShare = () => {
+    const nextEnabled = !quickSaveSharedLinks
+    if (nextEnabled && !quickSaveTargetListId(quickSaveShareListId, visibleLists)) {
+      settings$.setQuickSaveShareListId(visibleLists[0]?.id || '')
+    }
+    settings$.setQuickSaveSharedLinks(nextEnabled)
+  }
 
   return (
     <SectionCard title={t('settings.experience.label')}>
@@ -321,6 +343,39 @@ export const ExperienceSection: React.FC = () => {
             <View className={`h-6 w-6 rounded-full bg-white ${openInSystemBrowser ? 'ml-auto' : ''}`} />
           </Pressable>
         </View>
+      </View>
+      <View className="border-b border-stone-200 px-4 py-4 dark:border-stone-800">
+        <View className="flex-row items-center gap-3">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
+            <MaterialIcons name="save-alt" color={themeColors.iconMuted} size={18} />
+          </View>
+          <View className="flex-1">
+            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.quickShare')}</Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.quickShareHint')}</Text>
+          </View>
+          <Pressable
+            onPress={toggleQuickShare}
+            disabled={visibleLists.length === 0}
+            className={`h-8 w-14 rounded-full p-1 ${quickSaveSharedLinks ? 'bg-emerald-500' : 'bg-stone-700'} disabled:opacity-50`}
+          >
+            <View className={`h-6 w-6 rounded-full bg-white ${quickSaveSharedLinks ? 'ml-auto' : ''}`} />
+          </Pressable>
+        </View>
+        {quickSaveSharedLinks ? (
+          <View className="mt-3 flex-row justify-end">
+            <NouMenu
+              trigger={
+                <View className="flex-row items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1.5 dark:border-stone-700 dark:bg-stone-950">
+                  <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                    {quickShareTargetList?.name || t('lists.unknown')}
+                  </Text>
+                  <MaterialIcons name="keyboard-arrow-down" size={16} color={themeColors.iconMuted} />
+                </View>
+              }
+              items={quickShareListMenuItems}
+            />
+          </View>
+        ) : null}
       </View>
       <View className="border-b border-stone-200 px-4 py-4 dark:border-stone-800">
         <View className="flex-row items-center gap-3">

@@ -40,7 +40,6 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
           },
         },
       ],
-      './plugins/withAndroidPlugin.ts',
       'expo-router',
       'expo-image',
       [
@@ -55,41 +54,10 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       [
         'expo-localization',
         {
-          supportedLocales: [
-            'ar',
-            'el',
-            'en',
-            'es',
-            'fr',
-            'it',
-            'pl',
-            'pt-BR',
-            'sv',
-            'tr',
-            'zh-Hans',
-            'zh-Hant',
-          ],
+          supportedLocales: ['ar', 'el', 'en', 'es', 'fr', 'it', 'pl', 'pt-BR', 'sv', 'tr', 'zh-Hans', 'zh-Hant'],
         },
       ],
-      [
-        'expo-sharing',
-        {
-          ios: {
-            enabled: true,
-            extensionBundleIdentifier: 'jp.nonbili.nori.ShareExtension',
-            appGroupId: 'group.jp.nonbili.nori',
-            activationRule: {
-              supportsWebUrlWithMaxCount: 1,
-              supportsFileWithMaxCount: 1,
-              supportsText: true,
-            },
-          },
-          android: {
-            enabled: true,
-            singleShareMimeTypes: ['text/*', '*/*'],
-          },
-        },
-      ],
+      './plugins/withAndroidPlugin.ts',
       'expo-web-browser',
       'expo-font',
       'expo-status-bar',

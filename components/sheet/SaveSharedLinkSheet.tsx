@@ -6,7 +6,6 @@ import { useSharedValue } from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
 import { ActionChip } from '@/components/common/Common'
 import { Sheet } from '@/components/modal/BaseModal'
-import { clearSharedPayloads } from 'expo-sharing'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
@@ -31,7 +30,6 @@ export const SaveSharedLinkSheet: React.FC = () => {
 
   const onClose = () => {
     ui$.pendingShare.set(null)
-    clearSharedPayloads()
     scrollOffset.value = 0
   }
 
@@ -42,7 +40,6 @@ export const SaveSharedLinkSheet: React.FC = () => {
 
     const share = pendingShare
     ui$.pendingShare.set(null)
-    clearSharedPayloads()
 
     const id = bookmarks$.add({
       listId,

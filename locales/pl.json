@@ -135,6 +135,8 @@
       "defaultBrowserHint": "Włącz, aby opuszczać Nori i otwierać linki w przeglądarce telefonu.",
       "showFavicon": "Pokaż favicon",
       "showFaviconHint": "Używaj ikony strony zakładki. Wyłącz, aby wyświetlać zamiast tego logo Nori.",
+      "quickShare": "Szybkie zapisywanie udostępnionych linków",
+      "quickShareHint": "Zapisuj udostępnione adresy URL na wybranej liście bez wybierania listy.",
       "theme": "Motyw",
       "themeHint": "Przełączaj między motywem systemowym, jasnym i ciemnym.",
       "system": "Systemowy",
