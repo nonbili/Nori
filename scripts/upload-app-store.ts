@@ -1,0 +1,98 @@
+#!/usr/bin/env bun
+
+import { resolve } from 'node:path'
+import {
+  commandExists,
+  copyFile,
+  ensureFile,
+  envFlag,
+  fail,
+  packageInfo,
+  repoRoot,
+  requireEnv,
+  run,
+} from './release-utils'
+
+const [ipaArg] = Bun.argv.slice(2)
+const pkg = await packageInfo()
+const ipaPath = ipaArg ?? process.env.IPA_PATH ?? resolve(repoRoot, 'ios/build/Nori.ipa')
+const appIdentifier = process.env.IOS_APP_IDENTIFIER ?? 'jp.nonbili.nori'
+const changelogSource = process.env.IOS_CHANGELOG_SOURCE
+  ?? resolve(repoRoot, `fastlane/metadata/android/en-US/changelogs/${pkg.versionCode}04.txt`)
+const releaseNotesPath = process.env.IOS_RELEASE_NOTES_PATH
+  ?? resolve(repoRoot, 'fastlane/metadata/ios/en-US/release_notes.txt')
+const skipBuild = envFlag('SKIP_BUILD', false)
+const skipBinaryUpload = envFlag('IOS_SKIP_BINARY_UPLOAD', false)
+
+requireEnv('APP_STORE_CONNECT_API_KEY_KEY_ID')
+requireEnv('APP_STORE_CONNECT_API_KEY_ISSUER_ID')
+
+if (!process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH && !process.env.APP_STORE_CONNECT_API_KEY_KEY && !process.env.APP_STORE_CONNECT_API_KEY_KEY_CONTENT) {
+  fail('set APP_STORE_CONNECT_API_KEY_KEY_FILEPATH or APP_STORE_CONNECT_API_KEY_KEY.')
+}
+
+if (process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH) {
+  await ensureFile(
+    process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH,
+    `App Store Connect API key file not found: ${process.env.APP_STORE_CONNECT_API_KEY_KEY_FILEPATH}`,
+  )
+}
+
+if (!(await commandExists('bundle'))) {
+  fail("bundle not found. Install bundler and run 'bundle install'.")
+}
+
+await ensureFile(
+  changelogSource,
+  `Android changelog not found: ${changelogSource}\n       Expected the current versionCode changelog at fastlane/metadata/android/en-US/changelogs/${pkg.versionCode}04.txt.`,
+)
+await copyFile(changelogSource, releaseNotesPath)
+console.log(`Using release notes from ${changelogSource}`)
+
+if (envFlag('PREBUILD', !skipBuild)) {
+  console.log('Running clean Expo prebuild for iOS...')
+  await run(['npx', 'expo', 'prebuild', '--platform', 'ios', '--clean', '--no-install'])
+}
+
+if (!skipBuild) {
+  console.log('Installing CocoaPods dependencies...')
+  if (await runPodThroughBundler()) {
+    await run(['bundle', 'exec', 'pod', 'install'], { cwd: resolve(repoRoot, 'ios') })
+  } else {
+    await run(['pod', 'install'], { cwd: resolve(repoRoot, 'ios') })
+  }
+}
+
+if (!skipBinaryUpload && skipBuild) {
+  await ensureFile(ipaPath, `IPA not found: ${ipaPath}`)
+}
+
+if (skipBinaryUpload) {
+  console.log(`Submitting existing App Store Connect build ${pkg.version} (${pkg.buildNumber}) for ${appIdentifier}...`)
+} else {
+  console.log(`Uploading ${ipaPath} to App Store Connect for ${appIdentifier}...`)
+}
+
+await run(['bundle', 'exec', 'fastlane', 'ios', 'upload_ipa'], {
+  env: {
+    IOS_APP_IDENTIFIER: appIdentifier,
+    IOS_APP_VERSION: pkg.version,
+    IOS_BUILD_NUMBER: pkg.buildNumber,
+    IPA_PATH: ipaPath,
+    IOS_RELEASE_NOTES_PATH: releaseNotesPath,
+    IOS_BUILD_BEFORE_UPLOAD: skipBuild ? '0' : '1',
+  },
+})
+
+console.log('Done.')
+
+async function runPodThroughBundler() {
+  const subprocess = Bun.spawn(['bundle', 'exec', 'pod', '--version'], {
+    cwd: resolve(repoRoot, 'ios'),
+    stdout: 'ignore',
+    stderr: 'ignore',
+    env: process.env,
+  })
+
+  return (await subprocess.exited) === 0
+}
