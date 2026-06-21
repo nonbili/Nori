@@ -4,6 +4,7 @@ import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
 import { genId } from '@/lib/utils'
 import { settings$ } from './settings'
 import {
+  appendVisibleList,
   createRowJsonState,
   createStarterLists,
   getVisibleLists,
@@ -40,14 +41,11 @@ export const lists$: Observable<Store> = observable<Store>({
 
     const now = new Date().toISOString()
     const id = genId()
-    const nextSortIndex = lists$.lists.get().length
-    lists$.lists.push({
-      id,
-      name: trimmed,
-      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null }),
-      createdAt: now,
-      updatedAt: now,
-    })
+    const nextLists = appendVisibleList(lists$.lists.get(), id, trimmed, now)
+    if (!nextLists) {
+      return null
+    }
+    lists$.lists.set(nextLists)
     ensureSelectedList()
     return id
   },

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import {
+  appendVisibleList,
   createStarterBookmarks,
   createStarterLists,
   getAvailableBookmarks,
@@ -24,6 +25,32 @@ describe('starter rows', () => {
 })
 
 describe('normalizeLists', () => {
+  it('appends a new visible list with a fresh array reference', () => {
+    const lists = createStarterLists()
+    const next = appendVisibleList(lists, 'custom', '  Custom  ', '2026-06-21T00:00:00.000Z')
+
+    expect(next).not.toBe(lists)
+    expect(next).not.toBeNull()
+    expect(getVisibleLists(next!).map((item) => item.id)).toContain('custom')
+    expect(next!.at(-1)).toMatchObject({
+      id: 'custom',
+      name: 'Custom',
+      json: {
+        visible: true,
+        sort_index: lists.length,
+        deleted_at: null,
+      },
+      createdAt: '2026-06-21T00:00:00.000Z',
+      updatedAt: '2026-06-21T00:00:00.000Z',
+    })
+  })
+
+  it('does not append a blank list', () => {
+    const lists = createStarterLists()
+
+    expect(appendVisibleList(lists, 'custom', '   ')).toBeNull()
+  })
+
   it('normalizes json row state', () => {
     const lists = normalizeLists([
       { id: 'custom', name: 'Custom', json: { visible: true, sort_index: 4 } },

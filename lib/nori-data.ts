@@ -351,6 +351,21 @@ export function createStarterLists() {
   }))
 }
 
+export function appendVisibleList(lists: BookmarkListData[], id: string, name: string, now = isoNow()) {
+  const trimmed = name.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  return [...lists, {
+    id,
+    name: trimmed,
+    json: createRowJsonState({ visible: true, sort_index: lists.length, deleted_at: null }),
+    createdAt: now,
+    updatedAt: now,
+  }]
+}
+
 export function createStarterBookmarks() {
   const now = isoNow()
   return STARTER_BOOKMARKS.map((definition, index) => ({
