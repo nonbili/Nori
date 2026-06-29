@@ -33,7 +33,7 @@ export const AppHeader: React.FC = () => {
             icon: bookmarkEditMode ? ('check' as const) : ('edit-note' as const),
             handler: () => {
               ui$.bookmarkEditMode.set(!bookmarkEditMode)
-              ui$.selectedBookmarkId.set(null)
+              ui$.selectedBookmarkIds.set([])
             },
           },
         ]

@@ -25,6 +25,7 @@ const skipBinaryUpload = envFlag('IOS_SKIP_BINARY_UPLOAD', false)
 const skipBuild = envFlag('SKIP_BUILD', skipBinaryUpload)
 const submitForReview = envFlag('IOS_SUBMIT_FOR_REVIEW', true)
 const rejectIfPossible = envFlag('IOS_REJECT_IF_POSSIBLE', submitForReview)
+const automaticRelease = envFlag('IOS_AUTOMATIC_RELEASE', true)
 
 requireEnv('APP_STORE_KEY_ID')
 requireEnv('APP_STORE_ISSUER_ID')
@@ -87,6 +88,7 @@ await run(['bundle', 'exec', 'fastlane', 'ios', 'upload_ipa'], {
     IOS_BUILD_BEFORE_UPLOAD: skipBuild ? '0' : '1',
     IOS_SUBMIT_FOR_REVIEW: submitForReview ? '1' : '0',
     IOS_REJECT_IF_POSSIBLE: rejectIfPossible ? '1' : '0',
+    IOS_AUTOMATIC_RELEASE: automaticRelease ? '1' : '0',
   },
 })
 

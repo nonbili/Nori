@@ -4,14 +4,15 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useValue } from '@legendapp/state/react'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { ui$ } from '@/states/ui'
 import type { BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
 
 export const BookmarkPagerToolbar: React.FC<{
-  selectedBookmark: BookmarkRecord | null
+  selectedCount: number
+  allVisibleSelected: boolean
+  hasVisibleBookmarks: boolean
   actions: BookmarkPagerActions
-}> = ({ selectedBookmark, actions }) => {
+}> = ({ selectedCount, allVisibleSelected, hasVisibleBookmarks, actions }) => {
   const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const insets = useSafeAreaInsets()
@@ -33,25 +34,33 @@ export const BookmarkPagerToolbar: React.FC<{
           style={{ shadowColor: '#000', shadowOpacity: 0.16, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 16 }}
         >
           {bookmarkEditMode ? (
-            selectedBookmark ? (
-              <View className="flex-row items-center gap-3">
-                <Pressable
-                  onPress={() => {
-                    bookmarks$.setVisible(selectedBookmark.id, false)
-                    ui$.selectedBookmarkId.set(null)
-                  }}
-                  className="h-10 items-center justify-center rounded-full bg-stone-200 px-4 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
-                >
-                  <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">{t('bookmarks.hide')}</Text>
-                </Pressable>
-                <Pressable
-                  onPress={actions.onRemoveSelectedBookmark}
-                  className="h-10 w-10 items-center justify-center rounded-full bg-rose-100 active:bg-rose-200 dark:bg-rose-900/40 dark:active:bg-rose-900/60"
-                >
-                  <MaterialIcons name="delete" size={18} color={themeColors.iconDanger} />
-                </Pressable>
-              </View>
-            ) : <View className="h-10 w-10" />
+            <View className="flex-row items-center gap-3">
+              <Pressable
+                onPress={actions.onSelectAll}
+                disabled={!hasVisibleBookmarks}
+                className={`h-10 items-center justify-center rounded-full bg-stone-200 px-4 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700 ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
+              >
+                <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">
+                  {allVisibleSelected ? t('bookmarks.deselectAll') : t('bookmarks.selectAll')}
+                </Text>
+              </Pressable>
+              {selectedCount > 0 ? (
+                <>
+                  <Pressable
+                    onPress={actions.onHideSelected}
+                    className="h-10 items-center justify-center rounded-full bg-stone-200 px-4 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
+                  >
+                    <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">{t('bookmarks.hide')}</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={actions.onRemoveSelectedBookmark}
+                    className="h-10 w-10 items-center justify-center rounded-full bg-rose-100 active:bg-rose-200 dark:bg-rose-900/40 dark:active:bg-rose-900/60"
+                  >
+                    <MaterialIcons name="delete" size={18} color={themeColors.iconDanger} />
+                  </Pressable>
+                </>
+              ) : null}
+            </View>
           ) : (
             <Pressable onPress={actions.onOpenNewBookmark} className="h-10 w-10 items-center justify-center rounded-full bg-white/80 active:bg-white dark:bg-white/10 dark:active:bg-white/15">
               <MaterialIcons name="add" size={20} color={themeColors.iconMuted} />
@@ -66,7 +75,7 @@ export const BookmarkPagerToolbar: React.FC<{
           <Pressable
             onPress={() => {
               ui$.bookmarkEditMode.set(!bookmarkEditMode)
-              ui$.selectedBookmarkId.set(null)
+              ui$.selectedBookmarkIds.set([])
             }}
             className={`h-10 w-10 items-center justify-center rounded-full ${bookmarkEditMode ? 'bg-emerald-600 active:bg-emerald-700' : 'bg-white/80 active:bg-white dark:bg-white/10 dark:active:bg-white/15'}`}
           >

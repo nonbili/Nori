@@ -56,7 +56,7 @@ export const BookmarkPager: React.FC = () => {
   const bookmarks = useValue(bookmarks$.bookmarks)
   const selectedListId = useValue(settings$.lastSelectedListId)
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
-  const selectedBookmarkId = useValue(ui$.selectedBookmarkId)
+  const selectedBookmarkIds = useValue(ui$.selectedBookmarkIds)
   const pagerRef = useAnimatedRef<Animated.ScrollView>()
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>()
   const chipScrollViewRef = useRef<ScrollView>(null)
@@ -87,17 +87,34 @@ export const BookmarkPager: React.FC = () => {
     () => visibleLists.findIndex((item) => item.id === selectedList?.id),
     [selectedList?.id, visibleLists],
   )
-  const selectedBookmark = useMemo(
-    () => {
-      if (!selectedBookmarkId) return null
-      return bookmarks.find((bookmark) => bookmark.id === selectedBookmarkId) || null
-    },
-    [selectedBookmarkId, bookmarks],
+  const selectedIdSet = useMemo(() => new Set(selectedBookmarkIds), [selectedBookmarkIds])
+  const selectedBookmarks = useMemo(
+    () => bookmarks.filter((bookmark) => selectedIdSet.has(bookmark.id)),
+    [selectedIdSet, bookmarks],
+  )
+  const visibleListBookmarks = useMemo(
+    () => (selectedList ? bookmarksByList.get(selectedList.id)?.visible ?? [] : []),
+    [bookmarksByList, selectedList],
+  )
+  const allVisibleSelected = useMemo(
+    () => visibleListBookmarks.length > 0 && visibleListBookmarks.every((bookmark) => selectedIdSet.has(bookmark.id)),
+    [visibleListBookmarks, selectedIdSet],
   )
 
   const selectBookmark = useCallback((bookmark: BookmarkRecord) => {
-    ui$.selectedBookmarkId.set(ui$.selectedBookmarkId.get() === bookmark.id ? null : bookmark.id)
+    const current = ui$.selectedBookmarkIds.get()
+    ui$.selectedBookmarkIds.set(
+      current.includes(bookmark.id)
+        ? current.filter((id) => id !== bookmark.id)
+        : [...current, bookmark.id],
+    )
   }, [])
+
+  const selectAllBookmarks = useCallback(() => {
+    const visibleIds = visibleListBookmarks.map((bookmark) => bookmark.id)
+    const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIdSet.has(id))
+    ui$.selectedBookmarkIds.set(allSelected ? [] : visibleIds)
+  }, [visibleListBookmarks, selectedIdSet])
 
   const handleOpenBookmark = useCallback((bookmark: BookmarkRecord) => {
     void openBookmarkAction(bookmark)
@@ -218,12 +235,12 @@ export const BookmarkPager: React.FC = () => {
 
   useEffect(() => {
     if (!bookmarkEditMode) {
-      ui$.selectedBookmarkId.set(null)
+      ui$.selectedBookmarkIds.set([])
     }
   }, [bookmarkEditMode])
 
   useEffect(() => {
-    ui$.selectedBookmarkId.set(null)
+    ui$.selectedBookmarkIds.set([])
   }, [selectedList?.id])
 
   useEffect(() => {
@@ -279,23 +296,38 @@ export const BookmarkPager: React.FC = () => {
   }
 
   const removeSelectedBookmark = () => {
-    if (!selectedBookmark) {
+    if (!selectedBookmarks.length) {
       return
     }
 
-    Alert.alert(t('bookmarks.deleteTitle'), t('bookmarks.deleteBody', { title: selectedBookmark.title }), [
+    const count = selectedBookmarks.length
+    const title = count === 1 ? t('bookmarks.deleteTitle') : t('bookmarks.deleteSelectedTitle')
+    const body = count === 1
+      ? t('bookmarks.deleteBody', { title: selectedBookmarks[0].title })
+      : t('bookmarks.deleteSelectedBody', { count })
+
+    Alert.alert(title, body, [
       { text: t('bookmarks.cancel'), style: 'cancel' },
       {
         text: t('bookmarks.delete'),
         style: 'destructive',
         onPress: () => {
-          bookmarks$.remove(selectedBookmark.id)
+          bookmarks$.removeMany(selectedBookmarks.map((bookmark) => bookmark.id))
           showToast(t('bookmarks.deleted'))
-          ui$.selectedBookmarkId.set(null)
+          ui$.selectedBookmarkIds.set([])
         },
       },
     ])
   }
+
+  const hideSelectedBookmarks = useCallback(() => {
+    const ids = ui$.selectedBookmarkIds.get()
+    if (!ids.length) {
+      return
+    }
+    bookmarks$.setVisibleMany(ids, false)
+    ui$.selectedBookmarkIds.set([])
+  }, [])
 
   const promptDeleteBookmark = useCallback((bookmark: BookmarkRecord) => {
     Alert.alert(t('bookmarks.deleteTitle'), t('bookmarks.deleteBody', { title: bookmark.title }), [
@@ -306,13 +338,14 @@ export const BookmarkPager: React.FC = () => {
         onPress: () => {
           bookmarks$.remove(bookmark.id)
           showToast(t('bookmarks.deleted'))
-          if (selectedBookmarkId === bookmark.id) {
-            ui$.selectedBookmarkId.set(null)
+          const current = ui$.selectedBookmarkIds.get()
+          if (current.includes(bookmark.id)) {
+            ui$.selectedBookmarkIds.set(current.filter((id) => id !== bookmark.id))
           }
         },
       },
     ])
-  }, [selectedBookmarkId, t])
+  }, [t])
 
   const pagerActions = {
     iconSubtleColor: themeColors.iconSubtle,
@@ -326,6 +359,8 @@ export const BookmarkPager: React.FC = () => {
     onShareBookmark: shareBookmark,
     onDeleteBookmark: promptDeleteBookmark,
     onSelectBookmark: selectBookmark,
+    onSelectAll: selectAllBookmarks,
+    onHideSelected: hideSelectedBookmarks,
     onBottomStateChange: setBookmarkListAtBottom,
     onRemoveSelectedBookmark: removeSelectedBookmark,
   }
@@ -368,7 +403,12 @@ export const BookmarkPager: React.FC = () => {
         <BookmarkListChips pager={pagerView} />
         <BookmarkPagerPages pager={pagerView} actions={pagerActions} />
 
-        <BookmarkPagerToolbar selectedBookmark={selectedBookmark} actions={pagerActions} />
+        <BookmarkPagerToolbar
+          selectedCount={selectedBookmarks.length}
+          allVisibleSelected={allVisibleSelected}
+          hasVisibleBookmarks={visibleListBookmarks.length > 0}
+          actions={pagerActions}
+        />
       </View>
   )
 }

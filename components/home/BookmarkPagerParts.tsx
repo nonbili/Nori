@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, ScrollView, Text, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -35,6 +35,8 @@ export interface BookmarkPagerActions {
   onShareBookmark: (bookmark: BookmarkRecord) => void
   onDeleteBookmark: (bookmark: BookmarkRecord) => void
   onSelectBookmark: (bookmark: BookmarkRecord) => void
+  onSelectAll: () => void
+  onHideSelected: () => void
   onBottomStateChange: (atBottom: boolean) => void
   onRemoveSelectedBookmark: () => void
 }
@@ -100,7 +102,8 @@ export const BookmarkListPage = memo(({
 }) => {
   const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
-  const selectedBookmarkId = useValue(ui$.selectedBookmarkId)
+  const selectedBookmarkIds = useValue(ui$.selectedBookmarkIds)
+  const selectedIdSet = useMemo(() => new Set(selectedBookmarkIds), [selectedBookmarkIds])
   const insets = useSafeAreaInsets()
   const bottomPadding = PAGE_BOTTOM_PADDING + insets.bottom
   const itemWidth = (width - PAGE_HORIZONTAL_PADDING * 2 - (GRID_COLUMNS - 1) * GRID_GAP) / GRID_COLUMNS
@@ -155,7 +158,7 @@ export const BookmarkListPage = memo(({
       <BookmarkTile
         bookmark={bookmark}
         editMode={bookmarkEditMode}
-        selected={selectedBookmarkId === bookmark.id}
+        selected={selectedIdSet.has(bookmark.id)}
         onSelect={() => actions.onSelectBookmark(bookmark)}
         onOpen={() => (bookmarkEditMode ? actions.onSelectBookmark(bookmark) : actions.onOpenBookmark(bookmark))}
         onEdit={() => actions.onEditBookmark(bookmark)}
@@ -164,7 +167,7 @@ export const BookmarkListPage = memo(({
         onDelete={() => actions.onDeleteBookmark(bookmark)}
       />
     </View>
-  ), [actions, bookmarkEditMode, itemWidth, selectedBookmarkId])
+  ), [actions, bookmarkEditMode, itemWidth, selectedIdSet])
 
   const getItemLayout = useCallback((_: ArrayLike<BookmarkRecord> | null | undefined, index: number) => {
     const rowHeight = TILE_HEIGHT + GRID_GAP
@@ -240,7 +243,7 @@ export const BookmarkListPage = memo(({
               <BookmarkTile
                 bookmark={bookmark}
                 editMode={true}
-                selected={selectedBookmarkId === bookmark.id}
+                selected={selectedIdSet.has(bookmark.id)}
                 onSelect={() => actions.onSelectBookmark(bookmark)}
                 onOpen={() => actions.onSelectBookmark(bookmark)}
                 onEdit={() => actions.onEditBookmark(bookmark)}

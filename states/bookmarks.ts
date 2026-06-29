@@ -31,7 +31,9 @@ interface Store {
   add: (draft: BookmarkDraft) => string | null
   update: (id: string, draft: Partial<BookmarkDraft>) => void
   remove: (id: string) => void
+  removeMany: (ids: string[]) => void
   setVisible: (id: string, visible: boolean) => void
+  setVisibleMany: (ids: string[], visible: boolean) => void
   move: (id: string, delta: -1 | 1) => void
   reorder: (listId: string, orderedIds: string[]) => void
   deleteByListId: (listId: string) => void
@@ -119,6 +121,24 @@ export const bookmarks$: Observable<Store> = observable<Store>({
     }
     bookmarks$.bookmarks.set(nextItems)
   },
+  removeMany: (ids) => {
+    if (!ids.length) {
+      return
+    }
+    const idSet = new Set(ids)
+    const items = bookmarks$.bookmarks.get()
+    const now = new Date().toISOString()
+    const nextItems = items.map((item) => {
+      if (!idSet.has(item.id)) {
+        return item
+      }
+      return {
+        ...patchRowState(item, { deleted_at: now, visible: false }),
+        updatedAt: now,
+      }
+    })
+    bookmarks$.bookmarks.set(nextItems)
+  },
   setVisible: (id, visible) => {
     const items = bookmarks$.bookmarks.get()
     const index = items.findIndex((item) => item.id === id)
@@ -132,6 +152,24 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       ...next,
       updatedAt: new Date().toISOString(),
     }
+    bookmarks$.bookmarks.set(nextItems)
+  },
+  setVisibleMany: (ids, visible) => {
+    if (!ids.length) {
+      return
+    }
+    const idSet = new Set(ids)
+    const items = bookmarks$.bookmarks.get()
+    const now = new Date().toISOString()
+    const nextItems = items.map((item) => {
+      if (!idSet.has(item.id)) {
+        return item
+      }
+      return {
+        ...patchRowState(item, { visible }),
+        updatedAt: now,
+      }
+    })
     bookmarks$.bookmarks.set(nextItems)
   },
   move: (id, delta) => {

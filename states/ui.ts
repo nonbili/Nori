@@ -42,7 +42,7 @@ interface UIStore {
   pendingBookmarkImport: PendingBookmarkImportState | null
   pendingShare: PendingShareState | null
   recentSheetOpen: boolean
-  selectedBookmarkId: string | null
+  selectedBookmarkIds: string[]
   settingsSheetOpen: boolean
   openBookmarksDrawer: () => void
 }
@@ -58,7 +58,7 @@ export const ui$ = observable<UIStore>({
   pendingBookmarkImport: null,
   pendingShare: null,
   recentSheetOpen: false,
-  selectedBookmarkId: null,
+  selectedBookmarkIds: [],
   settingsSheetOpen: false,
   openBookmarksDrawer: () => {
     const selectedListId = settings$.lastSelectedListId.get()
