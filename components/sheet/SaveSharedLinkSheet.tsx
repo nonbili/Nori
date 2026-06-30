@@ -12,6 +12,7 @@ import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { getFallbackIcon } from '@/lib/bookmark'
 import { getPrefetchedBookmarkMeta } from '@/lib/bookmark-meta-cache'
+import { backfillMissingTitles } from '@/lib/title-backfill'
 import { getVisibleLists } from '@/lib/nori-data'
 import { showToast } from '@/lib/toast'
 
@@ -61,6 +62,11 @@ export const SaveSharedLinkSheet: React.FC = () => {
           }
         })
         .catch(() => {})
+        // If the fetch couldn't get a real title (e.g. a client-rendered SPA), fall
+        // back to the hidden WebView to resolve it.
+        .finally(() => {
+          void backfillMissingTitles()
+        })
     }
   }
 

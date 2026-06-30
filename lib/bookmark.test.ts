@@ -31,16 +31,35 @@ describe('bookmark helpers', () => {
     ])
   })
 
-  it('uses page metadata title and resolves relative icons', async () => {
+  it('uses page metadata title, sends a browser user-agent, and resolves relative icons', async () => {
     globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
       expect(String(input)).toBe('https://example.com/page')
       expect(init?.method).toBeUndefined()
+      expect(new Headers(init?.headers).get('User-Agent')).toContain('Mozilla/5.0')
       return new Response('<html><head><meta property="og:title" content="OG Title"><link rel="icon" href="/icon.png"></head></html>')
-    }) as typeof fetch
+    }) as unknown as typeof fetch
 
     await expect(getMeta('https://example.com/page')).resolves.toEqual({
       title: 'OG Title',
       icon: 'https://example.com/icon.png',
+    })
+  })
+
+  it('falls back to twitter:title and trims whitespace when og:title is missing', async () => {
+    globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+      const url = String(input)
+      if (url === 'https://example.com/page') {
+        return new Response('<html><head><meta name="twitter:title" content="  Twitter Title  "></head></html>')
+      }
+      if (init?.method === 'HEAD') {
+        return new Response('', { status: 404 })
+      }
+      return new Response('', { status: 404 })
+    }) as unknown as typeof fetch
+
+    await expect(getMeta('https://example.com/page')).resolves.toEqual({
+      title: 'Twitter Title',
+      icon: getGoogleFavicon('https://example.com/page'),
     })
   })
 
@@ -54,11 +73,30 @@ describe('bookmark helpers', () => {
         return new Response('', { status: 200 })
       }
       return new Response('', { status: 404 })
-    }) as typeof fetch
+    }) as unknown as typeof fetch
 
     await expect(getMeta('https://example.com/page')).resolves.toEqual({
       title: 'Page Title',
       icon: 'https://example.com/favicon.ico',
+    })
+  })
+
+  it('falls back to hostname when the response is not ok', async () => {
+    globalThis.fetch = (async () => new Response('nope', { status: 500 })) as unknown as typeof fetch
+
+    await expect(getMeta('https://www.example.com/page')).resolves.toEqual({
+      title: 'example.com',
+      icon: getGoogleFavicon('https://www.example.com/page'),
+    })
+  })
+
+  it('does not parse non-document responses as html', async () => {
+    globalThis.fetch = (async () =>
+      new Response('binary', { status: 200, headers: { 'content-type': 'image/png' } })) as unknown as typeof fetch
+
+    await expect(getMeta('https://www.example.com/photo.png')).resolves.toEqual({
+      title: 'example.com',
+      icon: getGoogleFavicon('https://www.example.com/photo.png'),
     })
   })
 

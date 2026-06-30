@@ -4,6 +4,7 @@ import { useValue } from '@legendapp/state/react'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { drainAppShareInbox, drainQuickShareInbox, resolveQuickShareTargetListId, syncQuickShareNativeConfig } from '@/lib/quick-share'
+import { backfillMissingTitles } from '@/lib/title-backfill'
 
 export function useQuickShare() {
   const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
@@ -21,12 +22,18 @@ export function useQuickShare() {
   }, [quickSaveSharedLinks, quickSaveShareListId, lists])
 
   useEffect(() => {
-    void drainQuickShareInbox()
-    void drainAppShareInbox()
+    const drainAndBackfill = async () => {
+      await drainQuickShareInbox()
+      await drainAppShareInbox()
+      // Quick-share saves bookmarks with a hostname placeholder title (no UI/WebView
+      // available at save time); now that we're foregrounded, fill in real titles.
+      void backfillMissingTitles()
+    }
+
+    void drainAndBackfill()
     const subscription = AppState.addEventListener('change', (nextState) => {
       if (nextState === 'active') {
-        void drainQuickShareInbox()
-        void drainAppShareInbox()
+        void drainAndBackfill()
       }
     })
 

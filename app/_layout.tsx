@@ -17,6 +17,7 @@ import { useAppColorScheme } from '@/lib/theme'
 import { auth$, bootstrapAuth } from '@/states/auth'
 import { settings$ } from '@/states/settings'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
+import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
 
 LogBox.ignoreAllLogs()
 
@@ -79,6 +80,7 @@ function LayoutContent() {
     <View className="flex-1 bg-stone-50 dark:bg-stone-950">
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <Slot />
+      <WebViewTitleResolver />
     </View>
   )
 }
