@@ -1,0 +1,2 @@
+- Support multi select in edit bookmarks mode
+- Resolve webpage titles for shared links
