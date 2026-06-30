@@ -16,6 +16,7 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       supportsTablet: true,
       bundleIdentifier: 'jp.nonbili.nori',
       buildNumber,
+      appleTeamId: process.env.APP_STORE_DEVELOPMENT_TEAM || 'NXW8RMPV8L',
     },
     android: {
       versionCode,
