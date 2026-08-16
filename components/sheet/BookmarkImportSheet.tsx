@@ -1,54 +1,64 @@
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native'
+import { useMemo, useRef } from 'react'
+import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { Sheet } from '@/components/modal/BaseModal'
-import { importBookmarksFromText, restoreBookmarksFromBackupText } from '@/lib/bookmark-import'
-import { isBookmarkBackupText } from '@/lib/bookmark-transfer'
+import { importBookmarksFromText, restoreBookmarksFromBackup } from '@/lib/bookmark-import'
+import { confirmAction } from '@/lib/confirm'
+import { isBookmarkBackupText, parseBookmarksBackup, type BookmarkBackupData } from '@/lib/bookmark-transfer'
 import { showToast } from '@/lib/toast'
 import { ui$ } from '@/states/ui'
 
 export const BookmarkImportSheet: React.FC = () => {
   const { t } = useTranslation()
   const pendingImport = useValue(ui$.pendingBookmarkImport)
+  const restoringRef = useRef(false)
 
   const onClose = () => {
     ui$.pendingBookmarkImport.set(null)
   }
 
-  const isBackup = pendingImport ? isBookmarkBackupText(pendingImport.content) : false
+  const content = pendingImport?.content || ''
+  const isBackup = isBookmarkBackupText(content)
+  const backup = useMemo(() => isBackup ? parseBookmarksBackup(content) : null, [content, isBackup])
 
-  const restoreBackup = (content: string) => {
-    Alert.alert(
-      t('settings.transfer.restoreTitle'),
-      t('settings.transfer.restoreBody'),
-      [
-        { text: t('bookmarks.cancel'), style: 'cancel' },
-        {
-          text: t('settings.transfer.restoreAction'),
-          style: 'destructive',
-          onPress: () => {
-            const restoredCount = restoreBookmarksFromBackupText(content)
-            ui$.pendingBookmarkImport.set(null)
-            showToast(
-              restoredCount == null
-                ? t('settings.transfer.restoreInvalid')
-                : t('settings.transfer.restored', { count: restoredCount }),
-            )
-          },
-        },
-      ],
-    )
+  const confirmBackupRestore = async (parsedBackup: BookmarkBackupData) => {
+    const confirmed = await confirmAction({
+      title: t('settings.transfer.restoreTitle'),
+      message: t('settings.transfer.restoreBody'),
+      cancelText: t('bookmarks.cancel'),
+      confirmText: t('settings.transfer.restoreAction'),
+      destructive: true,
+    })
+    if (!confirmed) {
+      return
+    }
+    try {
+      const restoredCount = restoreBookmarksFromBackup(parsedBackup)
+      showToast(t('settings.transfer.restored', { count: restoredCount }))
+    } catch {
+      showToast(t('settings.transfer.restoreInvalid'))
+    } finally {
+      ui$.pendingBookmarkImport.set(null)
+    }
   }
 
   const onImport = () => {
-    if (!pendingImport || pendingImport.isParsing) {
+    // The confirm is awaited, so the button stays live until the restore
+    // finishes — without this a second tap would restore twice.
+    if (!pendingImport || pendingImport.isParsing || restoringRef.current) {
       return
     }
 
     // A backup with only lists or only tombstones counts zero live bookmarks but
     // is still restorable, so availability follows the file kind, not the count.
     if (isBackup) {
-      restoreBackup(pendingImport.content)
+      if (backup) {
+        restoringRef.current = true
+        void confirmBackupRestore(backup).finally(() => {
+          restoringRef.current = false
+        })
+      }
       return
     }
 
@@ -66,7 +76,7 @@ export const BookmarkImportSheet: React.FC = () => {
 
   const isParsing = pendingImport?.isParsing ?? false
   const count = pendingImport?.count ?? 0
-  const canSubmit = !isParsing && (isBackup || count > 0)
+  const canSubmit = !isParsing && (backup != null || (!isBackup && count > 0))
   const title = isParsing
     ? t('settings.transfer.readingFile')
     : count === 1
@@ -89,7 +99,7 @@ export const BookmarkImportSheet: React.FC = () => {
             ) : null}
             {isBackup && !isParsing ? (
               <Text className="mt-2 text-sm text-rose-600 dark:text-rose-400">
-                {t('settings.transfer.restoreBody')}
+                {t(backup ? 'settings.transfer.restoreBody' : 'settings.transfer.restoreInvalid')}
               </Text>
             ) : null}
           </View>

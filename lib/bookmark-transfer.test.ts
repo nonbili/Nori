@@ -130,6 +130,9 @@ describe('bookmark transfer', () => {
     const backup = exportBookmarksToJson(normalizeLists([]), [])
     expect(isBookmarkBackupText(backup)).toBe(true)
     expect(isBookmarkBackupText('{"format":"something-else"}')).toBe(false)
+    expect(isBookmarkBackupText('{"format":"nori-backup","version":1}')).toBe(true)
+    expect(isBookmarkBackupText('{"format":"nori-backup","version":2}')).toBe(true)
+    expect(isBookmarkBackupText('{"format":"nori-backup","version":1,"lists":[{"id":"a","name":123}]}')).toBe(true)
     expect(isBookmarkBackupText('<DL><p><DT><A HREF="https://a.example">A</A>')).toBe(false)
   })
 
@@ -147,6 +150,57 @@ describe('bookmark transfer', () => {
     expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"bookmarks":[]}')).toBeNull()
     expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"lists":{},"bookmarks":[]}')).toBeNull()
     expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"lists":[],"bookmarks":null}')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"lists":[null],"bookmarks":[null]}')).toBeNull()
+  })
+
+  it('rejects unsupported versions and rows without ids', () => {
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":0,"lists":[],"bookmarks":[]}')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":0.5,"lists":[],"bookmarks":[]}')).toBeNull()
+
+    const missingId = JSON.parse(exportBookmarksToJson(
+      normalizeLists([{ id: 'work', name: 'Work', json: { visible: true } }]),
+      [],
+    ))
+    delete missingId.lists[0].id
+    expect(parseBookmarksBackup(JSON.stringify(missingId))).toBeNull()
+
+    const invalidName = JSON.parse(exportBookmarksToJson(
+      normalizeLists([{ id: 'work', name: 'Work', json: { visible: true } }]),
+      [],
+    ))
+    invalidName.lists[0].name = 123
+    expect(parseBookmarksBackup(JSON.stringify(invalidName))).toBeNull()
+
+    const orphan = JSON.parse(exportBookmarksToJson(
+      normalizeLists([{ id: 'work', name: 'Work', json: { visible: true } }]),
+      [],
+    ))
+    orphan.bookmarks.push({ id: 'orphan', listId: 'missing' })
+    expect(parseBookmarksBackup(JSON.stringify(orphan))).toBeNull()
+  })
+
+  it('allows starter bookmarks whose starter list will be regenerated', () => {
+    const backup = JSON.parse(exportBookmarksToJson(normalizeLists([]), normalizeBookmarks(normalizeLists([]), [])))
+    backup.lists = backup.lists.filter((item: { id: string }) => item.id !== 'builtin-sns')
+
+    const parsed = parseBookmarksBackup(JSON.stringify(backup))
+
+    expect(parsed).not.toBeNull()
+    expect(parsed!.lists.some((item) => item.id === 'builtin-sns')).toBe(true)
+    expect(parsed!.bookmarks.some((item) => item.id === 'builtin-sns-x')).toBe(true)
+  })
+
+  it('allows user bookmarks in a starter list the backup omits', () => {
+    const lists = normalizeLists([])
+    const backup = JSON.parse(exportBookmarksToJson(lists, normalizeBookmarks(lists, [
+      { id: 'mine', listId: 'builtin-sns', title: 'Mine', url: 'https://mine.example', icon: '', json: { visible: true } },
+    ])))
+    backup.lists = backup.lists.filter((item: { id: string }) => item.id !== 'builtin-sns')
+
+    const parsed = parseBookmarksBackup(JSON.stringify(backup))
+
+    expect(parsed).not.toBeNull()
+    expect(parsed!.bookmarks.some((item) => item.id === 'mine')).toBe(true)
   })
 
   it('tombstones rows the backup omits instead of dropping them', () => {
@@ -280,6 +334,28 @@ describe('bookmark transfer', () => {
     const result = parseBookmarksForImport(html, 'html')
     expect(result).toEqual([
       { listName: 'Bookmarks bar', title: 'Top', url: 'https://top.example/' },
+    ])
+  })
+
+  it('keeps a user folder that shares a browser root name', () => {
+    const html = `
+      <DL><p>
+        <DT><H3>Bookmarks bar</H3>
+        <DL><p>
+          <DT><H3>Favorites</H3>
+          <DL><p>
+            <DT><H3>Work</H3>
+            <DL><p>
+              <DT><A HREF="https://work.example/">Work</A>
+            </DL><p>
+          </DL><p>
+        </DL><p>
+      </DL><p>
+    `
+
+    const result = parseBookmarksForImport(html, 'html')
+    expect(result).toEqual([
+      { listName: 'Favorites', title: 'Work', url: 'https://work.example/', tags: ['Work'] },
     ])
   })
 

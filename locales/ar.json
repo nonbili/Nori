@@ -111,7 +111,8 @@
       "confirmBody": "ربط هذا الشراء بـ {{email}}؟",
       "errorSignInBuy": "سجّل الدخول لشراء Nori Sync",
       "errorSignInRestore": "سجّل الدخول لاستعادة المشتريات",
-      "errorNoPurchase": "لم يتم العثور على شراء Nori Sync لاستعادته"
+      "errorNoPurchase": "لم يتم العثور على شراء Nori Sync لاستعادته",
+      "errorPending": "لا تزال أحدث تغييراتك قيد المزامنة. حاول مرة أخرى بعد قليل."
     },
     "plan": {
       "label": "الخطة الحالية",

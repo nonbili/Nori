@@ -111,7 +111,8 @@
       "confirmBody": "Bu satın alımı {{email}} adresine bağla?",
       "errorSignInBuy": "Nori Sync satın almak için giriş yapın",
       "errorSignInRestore": "Satın alımları geri yüklemek için giriş yapın",
-      "errorNoPurchase": "Geri yüklenecek Nori Sync satın alımı bulunamadı"
+      "errorNoPurchase": "Geri yüklenecek Nori Sync satın alımı bulunamadı",
+      "errorPending": "Son değişiklikleriniz hâlâ eşitleniyor. Birazdan tekrar deneyin."
     },
     "plan": {
       "label": "Mevcut plan",

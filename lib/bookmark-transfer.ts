@@ -11,6 +11,7 @@ import {
   normalizeBookmarks,
   normalizeLists,
   patchRowState,
+  STARTER_BOOKMARKS,
   withUpdatedAt,
   type BookmarkListData,
   type BookmarkRecordData,
@@ -158,6 +159,14 @@ export function isBookmarkBackupText(content: string) {
   return new RegExp(`"format"\\s*:\\s*"${BOOKMARK_BACKUP_FORMAT}"`).test(content)
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function isBackupRow(value: unknown): value is { id: string } {
+  return isRecord(value) && typeof value.id === 'string'
+}
+
 export function parseBookmarksBackup(content: string): BookmarkBackupData | null {
   let raw: unknown
   try {
@@ -173,7 +182,13 @@ export function parseBookmarksBackup(content: string): BookmarkBackupData | null
   if (file.format !== BOOKMARK_BACKUP_FORMAT) {
     return null
   }
-  if (typeof file.version !== 'number' || file.version > BOOKMARK_BACKUP_VERSION) {
+  const version = file.version
+  if (
+    typeof version !== 'number'
+    || !Number.isInteger(version)
+    || version < 1
+    || version > BOOKMARK_BACKUP_VERSION
+  ) {
     return null
   }
   // Both collections must be present and well formed: normalizeLists/Bookmarks
@@ -182,11 +197,32 @@ export function parseBookmarksBackup(content: string): BookmarkBackupData | null
   if (!Array.isArray(file.lists) || !Array.isArray(file.bookmarks)) {
     return null
   }
-
-  const lists = normalizeLists(file.lists)
-  return {
-    lists,
-    bookmarks: normalizeBookmarks(lists, file.bookmarks),
+  // Reject entries the normalizers would silently discard, but let the
+  // normalizers repair optional fields exactly as they do for persisted data.
+  if (!file.lists.every(isBackupRow) || !file.bookmarks.every(isBackupRow)) {
+    return null
+  }
+  try {
+    // Checked against the normalized lists, not the raw ones: normalizeLists
+    // re-creates any starter list the backup omits, so a bookmark pointing at
+    // one is not actually an orphan. This mirrors the drop condition in
+    // normalizeBookmarks so the check rejects only what the restore would lose.
+    const lists = normalizeLists(file.lists)
+    const listIds = new Set(lists.map((item) => item.id))
+    const starterBookmarkIds = new Set(STARTER_BOOKMARKS.map((item) => item.id))
+    if (file.bookmarks.some((row) => {
+      const item = row as Partial<BookmarkRecordData>
+      const listId = typeof item.listId === 'string' ? item.listId : ''
+      return !listId || (!listIds.has(listId) && !starterBookmarkIds.has(row.id))
+    })) {
+      return null
+    }
+    return {
+      lists,
+      bookmarks: normalizeBookmarks(lists, file.bookmarks),
+    }
+  } catch {
+    return null
   }
 }
 
@@ -324,7 +360,10 @@ function findEnclosingFolderPath($: cheerio.CheerioAPI, element: AnyNode): strin
 // becomes tags, so a subfolder can be recovered by filtering the list by tag.
 function splitFolderPath(path: string[]) {
   const segments = path.map((item) => item.trim()).filter(Boolean)
-  while (segments.length > 1 && ROOT_FOLDER_NAMES.has(segments[0].toLowerCase())) {
+  // Only the outermost segment: browsers nest everything under a single root
+  // folder, so stripping further would eat a user folder that happens to share
+  // one of these names (e.g. "Bookmarks bar > Favorites > Work").
+  if (segments.length > 1 && ROOT_FOLDER_NAMES.has(segments[0].toLowerCase())) {
     segments.shift()
   }
 

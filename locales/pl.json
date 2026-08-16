@@ -111,7 +111,8 @@
       "confirmBody": "Powiązać ten zakup z {{email}}?",
       "errorSignInBuy": "Zaloguj się, aby kupić Nori Sync",
       "errorSignInRestore": "Zaloguj się, aby przywrócić zakupy",
-      "errorNoPurchase": "Nie znaleziono zakupu Nori Sync do przywrócenia"
+      "errorNoPurchase": "Nie znaleziono zakupu Nori Sync do przywrócenia",
+      "errorPending": "Twoje najnowsze zmiany są nadal synchronizowane. Spróbuj ponownie za chwilę."
     },
     "plan": {
       "label": "Aktualny plan",

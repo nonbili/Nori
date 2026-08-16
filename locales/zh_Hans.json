@@ -111,7 +111,8 @@
       "confirmBody": "将此购买绑定到 {{email}}？",
       "errorSignInBuy": "登录以购买 Nori 同步",
       "errorSignInRestore": "登录以恢复购买",
-      "errorNoPurchase": "未找到可恢复的 Nori 同步购买记录"
+      "errorNoPurchase": "未找到可恢复的 Nori 同步购买记录",
+      "errorPending": "最新更改仍在同步，请稍后再试。"
     },
     "plan": {
       "label": "当前套餐",

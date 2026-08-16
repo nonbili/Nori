@@ -111,7 +111,8 @@
       "confirmBody": "將此購買連結至 {{email}}？",
       "errorSignInBuy": "登入以購買 Nori 同步",
       "errorSignInRestore": "登入以復原購買",
-      "errorNoPurchase": "未找到可復原的 Nori 同步購買紀錄"
+      "errorNoPurchase": "未找到可復原的 Nori 同步購買紀錄",
+      "errorPending": "最新變更仍在同步，請稍後再試。"
     },
     "plan": {
       "label": "目前方案",

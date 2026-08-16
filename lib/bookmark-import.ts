@@ -5,6 +5,7 @@ import {
   mergeImportedBookmarks,
   parseBookmarksBackup,
   parseBookmarksForImport,
+  type BookmarkBackupData,
 } from '@/lib/bookmark-transfer'
 import { getLiveBookmarks } from '@/lib/nori-data'
 import {
@@ -77,12 +78,7 @@ export const readBookmarkImportText = async (asset: BookmarkImportAsset) => {
 
 // Replaces the whole store, so callers must confirm with the user first. Kept
 // separate from importBookmarksFromText so a merge import can never wipe data.
-export const restoreBookmarksFromBackupText = (content: string) => {
-  const backup = parseBookmarksBackup(content)
-  if (!backup) {
-    return null
-  }
-
+export const restoreBookmarksFromBackup = (backup: BookmarkBackupData) => {
   const next = applyBookmarkBackup(lists$.lists.get(), bookmarks$.bookmarks.get(), backup)
   batch(() => {
     lists$.replaceAll(next.lists)
@@ -94,7 +90,7 @@ export const restoreBookmarksFromBackupText = (content: string) => {
 export const importBookmarksFromText = (content: string, asset: Pick<BookmarkImportAsset, 'name' | 'mimeType'>) => {
   const format = inferBookmarkImportFormat(asset, content)
   if (format === 'json') {
-    // Backups are restored, not merged — see restoreBookmarksFromBackupText.
+    // Backups are restored, not merged — see restoreBookmarksFromBackup.
     return 0
   }
 

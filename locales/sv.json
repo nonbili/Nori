@@ -111,7 +111,8 @@
       "confirmBody": "Koppla detta köp till {{email}}?",
       "errorSignInBuy": "Logga in för att köpa Nori Synk",
       "errorSignInRestore": "Logga in för att återställa köp",
-      "errorNoPurchase": "Inget köp av Nori Synk hittades att återställa"
+      "errorNoPurchase": "Inget köp av Nori Synk hittades att återställa",
+      "errorPending": "Dina senaste ändringar synkroniseras fortfarande. Försök igen om en stund."
     },
     "plan": {
       "label": "Nuvarande plan",

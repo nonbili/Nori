@@ -9,6 +9,7 @@ import {
   type BookmarkRecordData,
 } from '@/lib/nori-data'
 import { dropExpiredSyncTombstones, isPristineStarterSeed, mergeSyncRows } from '@/lib/supabase/sync-merge'
+import { runWithConflictRetry, type SyncAttemptOutcome } from '@/lib/supabase/sync-scheduler'
 import { supabase } from './client'
 
 type RemoteListRow = {
@@ -33,6 +34,23 @@ type RemoteBookmarkRow = {
 let watchersStarted = false
 let applyingRemote = false
 let syncTimer: ReturnType<typeof setTimeout> | null = null
+let syncDeadline = 0
+let explicitDeadline = 0
+let activeSync: Promise<SyncAttemptOutcome> | null = null
+let localRevision = 0
+let syncQueued = false
+type SyncWaiter = { resolve: () => void; reject: (error: unknown) => void; carryovers: number }
+let queuedWaiters: SyncWaiter[] = []
+
+// A conflicted cycle pushed nothing, so callers awaiting it are chained onto the
+// follow-up instead of being told it succeeded. Counted per waiter so a caller
+// that just arrived does not inherit an older one's budget, and bounded so a
+// user who keeps editing cannot keep a manual sync spinning forever.
+const MAX_WAITER_CARRYOVERS = 3
+
+// Thrown at waiters whose changes are still unpushed after that many conflicted
+// cycles. Callers translate it; nothing was lost, the follow-up still runs.
+export const SYNC_PENDING_ERROR = 'sync-pending-changes'
 
 function canSync() {
   const { userId, plan } = auth$.peek()
@@ -163,17 +181,92 @@ function applyRemoteState(nextLists: BookmarkListData[], nextBookmarks: Bookmark
   }
 }
 
-export function scheduleSync(delayMs = 1000) {
-  if (!canSync()) {
-    return
+// Background edits debounce as usual, so a burst of changes still settles before
+// a sync starts. An explicit request only ever brings the run forward, and caps
+// how far a later edit may push it back — otherwise a stream of edits could
+// postpone a manual sync by another second, indefinitely.
+function armSyncTimer(delayMs: number, explicit: boolean) {
+  const now = Date.now()
+  let deadline = now + delayMs
+
+  if (explicit) {
+    explicitDeadline = explicitDeadline ? Math.min(explicitDeadline, deadline) : deadline
+    deadline = explicitDeadline
+    if (syncTimer && syncDeadline <= deadline) {
+      return
+    }
+  } else {
+    if (explicitDeadline) {
+      deadline = Math.min(deadline, explicitDeadline)
+    }
+    if (syncTimer && syncDeadline === deadline) {
+      return
+    }
   }
+
   if (syncTimer) {
     clearTimeout(syncTimer)
   }
-  syncTimer = setTimeout(() => {
-    syncTimer = null
-    void syncSupabase()
-  }, delayMs)
+  syncDeadline = deadline
+  syncTimer = setTimeout(executeScheduledSync, Math.max(0, deadline - now))
+}
+
+function executeScheduledSync() {
+  syncTimer = null
+  explicitDeadline = 0
+  if (activeSync) {
+    return
+  }
+  if (!syncQueued) {
+    return
+  }
+
+  syncQueued = false
+  const waiters = queuedWaiters
+  queuedWaiters = []
+  activeSync = runSyncCycle()
+  void activeSync.then((outcome) => {
+    if (outcome !== 'conflict') {
+      for (const waiter of waiters) {
+        waiter.resolve()
+      }
+      return
+    }
+    for (const waiter of waiters) {
+      if (waiter.carryovers < MAX_WAITER_CARRYOVERS) {
+        queuedWaiters.push({ ...waiter, carryovers: waiter.carryovers + 1 })
+      } else {
+        waiter.reject(new Error(SYNC_PENDING_ERROR))
+      }
+    }
+  }).catch((error) => {
+    for (const waiter of waiters) {
+      waiter.reject(error)
+    }
+  }).finally(() => {
+    activeSync = null
+    if (syncQueued && !syncTimer) {
+      // Carried-over waiters are still an explicit request, so edits must not
+      // keep sliding the follow-up they are chained to.
+      armSyncTimer(1000, queuedWaiters.length > 0)
+    }
+  })
+}
+
+function queueSync(delayMs: number, waitForCompletion: boolean, explicit: boolean) {
+  if (!canSync()) {
+    return Promise.resolve()
+  }
+  syncQueued = true
+  const completion = waitForCompletion
+    ? new Promise<void>((resolve, reject) => queuedWaiters.push({ resolve, reject, carryovers: 0 }))
+    : Promise.resolve()
+  armSyncTimer(delayMs, explicit)
+  return completion
+}
+
+export function scheduleSync(delayMs = 1000) {
+  void queueSync(delayMs, false, false)
 }
 
 export function startSupabaseSyncWatchers() {
@@ -191,6 +284,7 @@ export function startSupabaseSyncWatchers() {
       return
     }
     if (JSON.stringify(value) !== JSON.stringify(previous)) {
+      localRevision += 1
       syncMeta$.pendingListIds.set(uniqueIds((value || []).map((item: BookmarkListData) => item.id)))
       scheduleSync()
     }
@@ -205,79 +299,106 @@ export function startSupabaseSyncWatchers() {
       return
     }
     if (JSON.stringify(value) !== JSON.stringify(previous)) {
+      localRevision += 1
       syncMeta$.pendingBookmarkIds.set(uniqueIds((value || []).map((item: BookmarkRecordData) => item.id)))
       scheduleSync()
     }
   })
 }
 
-export async function syncSupabase() {
-  if (!canSync() || syncMeta$.inFlight.peek()) {
-    return
+async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
+  if (!canSync()) {
+    return 'skipped'
   }
 
   const userId = auth$.userId.peek()
   if (!userId) {
-    return
+    return 'skipped'
   }
 
+  const fetchRevision = localRevision
+  const localLists = snapshotLists()
+  const localBookmarks = snapshotBookmarks(localLists)
+  const pendingListIds = new Set(syncMeta$.pendingListIds.peek())
+  const pendingBookmarkIds = new Set(syncMeta$.pendingBookmarkIds.peek())
+  const remote = await fetchRemoteRows()
+  if (localRevision !== fetchRevision) {
+    return 'conflict'
+  }
+  const remoteLists = normalizeLists(remote.lists)
+  const remoteBookmarks = normalizeBookmarks(remoteLists, remote.bookmarks)
+
+  const shouldSeedRemote =
+    !syncMeta$.lastSyncAt.peek() &&
+    pendingListIds.size === 0 &&
+    pendingBookmarkIds.size === 0 &&
+    remoteLists.length === 0 &&
+    remoteBookmarks.length === 0 &&
+    isPristineStarterSeed(localLists, localBookmarks)
+
+  if (shouldSeedRemote) {
+    markAllRowsPending()
+  }
+
+  const nextPendingListIds = new Set(syncMeta$.pendingListIds.peek())
+  const nextPendingBookmarkIds = new Set(syncMeta$.pendingBookmarkIds.peek())
+
+  let mergedLists = mergeSyncRows(localLists, remoteLists, nextPendingListIds)
+  let mergedBookmarks = mergeSyncRows(localBookmarks, remoteBookmarks, nextPendingBookmarkIds)
+  applyRemoteState(mergedLists, mergedBookmarks)
+
+  const listPushRevision = localRevision
+  const pushedLists = await pushLists(userId, snapshotLists().filter((item) => nextPendingListIds.has(item.id)))
+  if (localRevision !== listPushRevision) {
+    return 'conflict'
+  }
+  if (pushedLists.length) {
+    mergedLists = mergeSyncRows(snapshotLists(), pushedLists, new Set())
+    syncMeta$.pendingListIds.set(syncMeta$.pendingListIds.peek().filter((id) => !nextPendingListIds.has(id)))
+    applyRemoteState(mergedLists, snapshotBookmarks(mergedLists))
+  }
+
+  const bookmarkPushRevision = localRevision
+  const pushedBookmarks = await pushBookmarks(userId, snapshotBookmarks(snapshotLists()).filter((item) => nextPendingBookmarkIds.has(item.id)))
+  if (localRevision !== bookmarkPushRevision) {
+    return 'conflict'
+  }
+  if (pushedBookmarks.length) {
+    mergedBookmarks = mergeSyncRows(snapshotBookmarks(snapshotLists()), pushedBookmarks, new Set())
+    syncMeta$.pendingBookmarkIds.set(syncMeta$.pendingBookmarkIds.peek().filter((id) => !nextPendingBookmarkIds.has(id)))
+    applyRemoteState(snapshotLists(), mergedBookmarks)
+  }
+
+  return 'synced'
+}
+
+async function runSyncCycle(): Promise<SyncAttemptOutcome> {
   syncMeta$.assign({
     inFlight: true,
     lastError: undefined,
   })
 
   try {
-    const localLists = snapshotLists()
-    const localBookmarks = snapshotBookmarks(localLists)
-    const pendingListIds = new Set(syncMeta$.pendingListIds.peek())
-    const pendingBookmarkIds = new Set(syncMeta$.pendingBookmarkIds.peek())
-    const remote = await fetchRemoteRows()
-    const remoteLists = normalizeLists(remote.lists)
-    const remoteBookmarks = normalizeBookmarks(remoteLists, remote.bookmarks)
-
-    const shouldSeedRemote =
-      !syncMeta$.lastSyncAt.peek() &&
-      pendingListIds.size === 0 &&
-      pendingBookmarkIds.size === 0 &&
-      remoteLists.length === 0 &&
-      remoteBookmarks.length === 0 &&
-      isPristineStarterSeed(localLists, localBookmarks)
-
-    if (shouldSeedRemote) {
-      markAllRowsPending()
+    const outcome = await runWithConflictRetry(
+      runSupabaseSync,
+      () => new Promise<void>((resolve) => setTimeout(resolve, 1000)),
+    )
+    if (outcome === 'conflict') {
+      syncQueued = true
+    } else if (outcome === 'synced') {
+      // A skipped cycle never talked to the server, so stamping lastSyncAt here
+      // would permanently disable the first-run remote seeding below.
+      syncMeta$.lastSyncAt.set(Date.now())
     }
-
-    const nextPendingListIds = new Set(syncMeta$.pendingListIds.peek())
-    const nextPendingBookmarkIds = new Set(syncMeta$.pendingBookmarkIds.peek())
-
-    let mergedLists = mergeSyncRows(localLists, remoteLists, nextPendingListIds)
-    let mergedBookmarks = mergeSyncRows(localBookmarks, remoteBookmarks, nextPendingBookmarkIds)
-    applyRemoteState(mergedLists, mergedBookmarks)
-
-    const pushedLists = await pushLists(userId, snapshotLists().filter((item) => nextPendingListIds.has(item.id)))
-    if (pushedLists.length) {
-      mergedLists = mergeSyncRows(snapshotLists(), pushedLists, new Set())
-      syncMeta$.pendingListIds.set(syncMeta$.pendingListIds.peek().filter((id) => !nextPendingListIds.has(id)))
-      applyRemoteState(mergedLists, snapshotBookmarks(mergedLists))
-    }
-
-    const pushedBookmarks = await pushBookmarks(userId, snapshotBookmarks(snapshotLists()).filter((item) => nextPendingBookmarkIds.has(item.id)))
-    if (pushedBookmarks.length) {
-      mergedBookmarks = mergeSyncRows(snapshotBookmarks(snapshotLists()), pushedBookmarks, new Set())
-      syncMeta$.pendingBookmarkIds.set(syncMeta$.pendingBookmarkIds.peek().filter((id) => !nextPendingBookmarkIds.has(id)))
-      applyRemoteState(snapshotLists(), mergedBookmarks)
-    }
-
-    syncMeta$.assign({
-      inFlight: false,
-      lastSyncAt: Date.now(),
-      lastError: undefined,
-    })
+    return outcome
   } catch (error) {
-    syncMeta$.assign({
-      inFlight: false,
-      lastError: error instanceof Error ? error.message : String(error),
-    })
+    syncMeta$.lastError.set(error instanceof Error ? error.message : String(error))
     throw error
+  } finally {
+    syncMeta$.inFlight.set(false)
   }
+}
+
+export function syncSupabase() {
+  return queueSync(activeSync ? 1000 : 0, true, true)
 }

@@ -1,4 +1,3 @@
-import { Alert } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system/legacy'
 import * as Sharing from 'expo-sharing'
@@ -11,16 +10,18 @@ import {
   exportBookmarksToJson,
   exportBookmarksToPlainText,
   isBookmarkBackupText,
+  parseBookmarksBackup,
   type BookmarkTransferFormat,
 } from '@/lib/bookmark-transfer'
 import {
   importBookmarksFromText,
   readBookmarkImportText,
-  restoreBookmarksFromBackupText,
+  restoreBookmarksFromBackup,
 } from '@/lib/bookmark-import'
+import { confirmAction } from '@/lib/confirm'
 import { prepareIosPurchase, syncIosTransaction } from '@/lib/nori-api'
 import { openDeleteAccount, openManagePlan } from '@/lib/supabase/auth'
-import { syncSupabase } from '@/lib/supabase/sync'
+import { syncSupabase, SYNC_PENDING_ERROR } from '@/lib/supabase/sync'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { auth$, refreshEntitlement } from '@/states/auth'
@@ -131,17 +132,24 @@ export function useSettingsSheetActions() {
     }
   }
 
+  // syncSupabase rejects with a bare code so the sync module stays free of i18n.
+  const requestSync = async () => {
+    try {
+      await syncSupabase()
+    } catch (error) {
+      if (error instanceof Error && error.message === SYNC_PENDING_ERROR) {
+        throw new Error(t('settings.sync.errorPending'))
+      }
+      throw error
+    }
+  }
+
   const confirmAccountBinding = () =>
-    new Promise<boolean>((resolve) => {
-      Alert.alert(
-        t('settings.sync.confirmTitle'),
-        t('settings.sync.confirmBody', { email: userEmail || 'your Nori account' }),
-        [
-          { text: t('lists.cancel'), style: 'cancel', onPress: () => resolve(false) },
-          { text: t('bookmarks.save'), onPress: () => resolve(true) },
-        ],
-        { cancelable: true, onDismiss: () => resolve(false) },
-      )
+    confirmAction({
+      title: t('settings.sync.confirmTitle'),
+      message: t('settings.sync.confirmBody', { email: userEmail || 'your Nori account' }),
+      cancelText: t('lists.cancel'),
+      confirmText: t('bookmarks.save'),
     })
 
   const onPurchase = () =>
@@ -156,7 +164,7 @@ export function useSettingsSheetActions() {
       const result = await NoriBilling.purchase(IOS_SYNC_PRODUCT_ID, prepared.appAccountToken)
       await syncIosTransaction(accessToken, result.signedTransactionInfo)
       await refreshEntitlement()
-      await syncSupabase()
+      await requestSync()
     })
 
   const onRestore = () =>
@@ -175,7 +183,7 @@ export function useSettingsSheetActions() {
       }
       await syncIosTransaction(accessToken, restored.signedTransactionInfo)
       await refreshEntitlement()
-      await syncSupabase()
+      await requestSync()
     })
 
   const onManage = () =>
@@ -189,23 +197,17 @@ export function useSettingsSheetActions() {
 
   const onManualSync = () =>
     runAction('sync', async () => {
-      await syncSupabase()
+      await requestSync()
       await refreshEntitlement()
     })
 
   const confirmRestore = () =>
-    new Promise<boolean>((resolve) => {
-      Alert.alert(
-        t('settings.transfer.restoreTitle'),
-        t('settings.transfer.restoreBody'),
-        [
-          { text: t('lists.cancel'), style: 'cancel', onPress: () => resolve(false) },
-          { text: t('settings.transfer.restoreAction'), style: 'destructive', onPress: () => resolve(true) },
-        ],
-        // Android dismisses via back button/outside tap without firing either
-        // button, which would leave the busy action pending forever.
-        { cancelable: true, onDismiss: () => resolve(false) },
-      )
+    confirmAction({
+      title: t('settings.transfer.restoreTitle'),
+      message: t('settings.transfer.restoreBody'),
+      cancelText: t('lists.cancel'),
+      confirmText: t('settings.transfer.restoreAction'),
+      destructive: true,
     })
 
   const onImportBookmarks = () =>
@@ -223,13 +225,14 @@ export function useSettingsSheetActions() {
       const content = await readBookmarkImportText(asset)
 
       if (isBookmarkBackupText(content)) {
+        const backup = parseBookmarksBackup(content)
+        if (!backup) {
+          throw new Error(t('settings.transfer.restoreInvalid'))
+        }
         if (!(await confirmRestore())) {
           return
         }
-        const restoredCount = restoreBookmarksFromBackupText(content)
-        if (restoredCount == null) {
-          throw new Error(t('settings.transfer.restoreInvalid'))
-        }
+        const restoredCount = restoreBookmarksFromBackup(backup)
         showToast(t('settings.transfer.restored', { count: restoredCount }))
         return
       }

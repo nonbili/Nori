@@ -111,7 +111,8 @@
       "confirmBody": "Associer cet achat à {{email}} ?",
       "errorSignInBuy": "Connectez-vous pour acheter Nori Sync",
       "errorSignInRestore": "Connectez-vous pour restaurer vos achats",
-      "errorNoPurchase": "Aucun achat Nori Sync trouvé à restaurer"
+      "errorNoPurchase": "Aucun achat Nori Sync trouvé à restaurer",
+      "errorPending": "Vos dernières modifications sont encore en cours de synchronisation. Réessayez dans un instant."
     },
     "plan": {
       "label": "Abonnement actuel",

@@ -111,7 +111,8 @@
       "confirmBody": "Bind this purchase to {{email}}?",
       "errorSignInBuy": "Sign in to buy Nori Sync",
       "errorSignInRestore": "Sign in to restore purchases",
-      "errorNoPurchase": "No Nori Sync purchase found to restore"
+      "errorNoPurchase": "No Nori Sync purchase found to restore",
+      "errorPending": "Your latest changes are still syncing. Try again in a moment."
     },
     "plan": {
       "label": "Current plan",

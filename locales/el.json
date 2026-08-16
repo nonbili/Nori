@@ -111,7 +111,8 @@
       "confirmBody": "Σύνδεση αυτής της αγοράς με {{email}};",
       "errorSignInBuy": "Συνδεθείτε για αγορά Nori Sync",
       "errorSignInRestore": "Συνδεθείτε για επαναφορά αγορών",
-      "errorNoPurchase": "Δεν βρέθηκε αγορά Nori Sync για επαναφορά"
+      "errorNoPurchase": "Δεν βρέθηκε αγορά Nori Sync για επαναφορά",
+      "errorPending": "Οι πιο πρόσφατες αλλαγές σας συγχρονίζονται ακόμη. Δοκιμάστε ξανά σε λίγο."
     },
     "plan": {
       "label": "Τρέχον πλάνο",

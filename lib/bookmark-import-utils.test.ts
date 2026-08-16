@@ -27,6 +27,11 @@ describe('bookmark import utils', () => {
     expect(inferBookmarkImportFormat({ name: 'other.json', mimeType: 'application/json' }, '{"a":1}')).toBe('plain')
   })
 
+  it('classifies invalid and future Nori backups as backups', () => {
+    expect(inferBookmarkImportFormat({}, '{"format":"nori-backup","version":2,"lists":[],"bookmarks":[]}')).toBe('json')
+    expect(inferBookmarkImportFormat({}, '{"format":"nori-backup","version":1,"lists":[{"id":"a","name":123}],"bookmarks":[]}')).toBe('json')
+  })
+
   it('defaults import format to plain text', () => {
     expect(inferBookmarkImportFormat({ name: 'bookmarks.txt', mimeType: 'text/plain' }, '# Later')).toBe('plain')
   })
