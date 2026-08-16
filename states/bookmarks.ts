@@ -32,6 +32,7 @@ interface Store {
   update: (id: string, draft: Partial<BookmarkDraft>) => void
   remove: (id: string) => void
   removeMany: (ids: string[]) => void
+  restoreMany: (bookmarks: BookmarkRecord[]) => void
   setVisible: (id: string, visible: boolean) => void
   setVisibleMany: (ids: string[], visible: boolean) => void
   move: (id: string, delta: -1 | 1) => void
@@ -137,6 +138,37 @@ export const bookmarks$: Observable<Store> = observable<Store>({
         updatedAt: now,
       }
     })
+    bookmarks$.bookmarks.set(nextItems)
+  },
+  restoreMany: (snapshots) => {
+    if (!snapshots.length) {
+      return
+    }
+    const snapshotById = new Map(snapshots.map((item) => [item.id, item]))
+    const now = Date.now()
+    const restore = (snapshot: (typeof snapshots)[number], currentUpdatedAt?: string) => {
+      const current = currentUpdatedAt ? Date.parse(currentUpdatedAt) : Number.NaN
+      return {
+        ...snapshot,
+        json: createRowJsonState({ ...snapshot.json, deleted_at: null }),
+        updatedAt: new Date(Number.isFinite(current) ? Math.max(now, current + 1) : now).toISOString(),
+      }
+    }
+
+    const items = bookmarks$.bookmarks.get()
+    const nextItems = items.map((item) => {
+      const snapshot = snapshotById.get(item.id)
+      if (!snapshot) {
+        return item
+      }
+      snapshotById.delete(item.id)
+      return restore(snapshot, item.updatedAt)
+    })
+    // Rows dropped from the store since the snapshot (a sync pull or backup
+    // restore replacing the list) are re-added rather than silently skipped.
+    for (const snapshot of snapshotById.values()) {
+      nextItems.push(restore(snapshot))
+    }
     bookmarks$.bookmarks.set(nextItems)
   },
   setVisible: (id, visible) => {

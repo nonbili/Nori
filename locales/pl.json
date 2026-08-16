@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "Usunąć zakładki?",
     "deleteSelectedBody": "Usunąć {{count}} zakładek?",
     "deleted": "Zakładka usunięta",
+    "deletedMany": "Usunięto {{count}} zakładek",
     "selectAll": "Zaznacz wszystko",
     "deselectAll": "Odznacz wszystko",
     "hide": "Ukryj",
@@ -80,6 +81,7 @@
     "clearBody": "Usunąć wszystkie ostatnio używane wpisy z Nori?",
     "clear": "Wyczyść",
     "clearAction": "Wyczyść historię",
+    "cleared": "Historia wyczyszczona",
     "reopen": "Otwórz ponownie",
     "noRecent": "Brak ostatnich kart",
     "noRecentHint": "Linki otwierane z Nori pojawią się tutaj, by można było łatwo je ponownie otworzyć.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "Wstecz",
     "close": "Zamknij",
-    "dismiss": "Zamknij"
+    "dismiss": "Zamknij",
+    "undo": "Cofnij"
   }
 }

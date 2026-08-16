@@ -1,6 +1,6 @@
-import { Alert, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { Pressable, Text, View, useWindowDimensions } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ScrollView } from 'react-native-gesture-handler'
+import { GestureDetector, ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
 import { useRef } from 'react'
 import { useValue } from '@legendapp/state/react'
@@ -9,15 +9,13 @@ import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$, type BookmarkList } from '@/states/lists'
 import { settings$ } from '@/states/settings'
-import { ui$ } from '@/states/ui'
-import { getInactiveLists, getVisibleLists } from '@/lib/nori-data'
-import { showToast } from '@/lib/toast'
+import { showSnackbar, ui$ } from '@/states/ui'
+import { getInactiveLists, getVisibleLists, isDeleted } from '@/lib/nori-data'
 import { useAppColorScheme, useThemeColors } from '@/lib/theme'
 import { ManageRow, SectionLabel } from '@/components/common/Common'
 import { Sheet } from '@/components/modal/BaseModal'
 import { SortableList } from '@/components/common/SortableList'
 import { NouMenu } from '@/components/menu/NouMenu'
-import { GestureDetector } from 'react-native-gesture-handler'
 
 export const ManageListsSheet: React.FC = () => {
   const { t } = useTranslation()
@@ -45,23 +43,17 @@ export const ManageListsSheet: React.FC = () => {
   }
 
   const deleteList = (list: BookmarkList) => {
-    Alert.alert(
-      t('lists.deleteTitle'),
-      t('lists.deleteBody', { name: list.name }),
-      [
-        { text: t('lists.cancel'), style: 'cancel' },
-        {
-          text: t('lists.delete'),
-          style: 'destructive',
-          onPress: () => {
-            bookmarks$.deleteByListId(list.id)
-            if (lists$.deleteList(list.id)) {
-              showToast(t('lists.deleted'))
-            }
-          },
-        },
-      ],
+    const bookmarkSnapshots = bookmarks$.bookmarks.get().filter(
+      (item) => item.listId === list.id && !isDeleted(item),
     )
+    if (!lists$.deleteList(list.id)) {
+      return
+    }
+    bookmarks$.deleteByListId(list.id)
+    showSnackbar(t('lists.deleted'), t('common.undo'), () => {
+      lists$.restoreList(list)
+      bookmarks$.restoreMany(bookmarkSnapshots)
+    })
   }
 
   const handleReorder = (orderedIds: string[]) => {

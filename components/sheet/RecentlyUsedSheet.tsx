@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Alert, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native'
+import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 
 import { Sheet } from '@/components/modal/BaseModal'
 import { Favicon } from '@/components/bookmark/Favicon'
-import { ui$ } from '@/states/ui'
+import { showSnackbar, ui$ } from '@/states/ui'
 import { history$ } from '@/states/history'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -137,15 +137,10 @@ export function RecentlyUsedSheet() {
   const [tab, setTab] = useState<HistoryTab>('used')
   const listNameById = new Map(allLists.map((list) => [list.id, list.name]))
 
-  const confirmClearRecentHistory = () => {
-    Alert.alert(t('history.clearTitle'), t('history.clearBody'), [
-      { text: t('lists.cancel'), style: 'cancel' },
-      {
-        text: t('history.clear'),
-        style: 'destructive',
-        onPress: () => history$.clearOpenedBookmarks(),
-      },
-    ])
+  const clearRecentHistory = () => {
+    const snapshot = history$.openedBookmarks.get()
+    history$.clearOpenedBookmarks()
+    showSnackbar(t('history.cleared'), t('common.undo'), () => history$.restoreOpenedBookmarks(snapshot))
   }
 
   const recentlyAdded = getLiveBookmarks(allBookmarks)
@@ -174,7 +169,7 @@ export function RecentlyUsedSheet() {
                 <>
                   <View className="flex-row items-center justify-end">
                     <Pressable
-                      onPress={confirmClearRecentHistory}
+                      onPress={clearRecentHistory}
                       className="rounded-lg px-2 py-1 active:bg-stone-200 dark:active:bg-stone-800"
                     >
                       <Text className="text-xs font-medium text-stone-500">{t('history.clearAction')}</Text>

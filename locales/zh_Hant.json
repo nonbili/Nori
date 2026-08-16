@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "刪除書籤？",
     "deleteSelectedBody": "移除 {{count}} 個書籤？",
     "deleted": "書籤已刪除",
+    "deletedMany": "已刪除 {{count}} 個書籤",
     "selectAll": "全選",
     "deselectAll": "取消全選",
     "hide": "隱藏",
@@ -80,6 +81,7 @@
     "clearBody": "從 Nori 中移除所有最近使用的項目？",
     "clear": "清除",
     "clearAction": "清除歷史紀錄",
+    "cleared": "歷史紀錄已清除",
     "reopen": "重新開啟",
     "noRecent": "無最近分頁",
     "noRecentHint": "您從 Nori 啟動的連結將顯示在此處，以便稍後輕鬆重新開啟。",
@@ -191,6 +193,7 @@
   "common": {
     "back": "返回",
     "close": "關閉",
-    "dismiss": "關閉"
+    "dismiss": "關閉",
+    "undo": "復原"
   }
 }

@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "Eliminare i segnalibri?",
     "deleteSelectedBody": "Rimuovere {{count}} segnalibri?",
     "deleted": "Segnalibro eliminato",
+    "deletedMany": "{{count}} segnalibri eliminati",
     "selectAll": "Seleziona tutto",
     "deselectAll": "Deseleziona tutto",
     "hide": "Nascondi",
@@ -80,6 +81,7 @@
     "clearBody": "Rimuovere tutte le voci usate di recente da Nori?",
     "clear": "Cancella",
     "clearAction": "Cancella cronologia",
+    "cleared": "Cronologia cancellata",
     "reopen": "Riapri",
     "noRecent": "Nessuna scheda recente",
     "noRecentHint": "I link che apri da Nori appariranno qui per poterli riaprire facilmente.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "Indietro",
     "close": "Chiudi",
-    "dismiss": "Chiudi"
+    "dismiss": "Chiudi",
+    "undo": "Annulla"
   }
 }

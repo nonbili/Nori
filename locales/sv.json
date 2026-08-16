@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "Ta bort bokmärken?",
     "deleteSelectedBody": "Ta bort {{count}} bokmärken?",
     "deleted": "Bokmärke borttaget",
+    "deletedMany": "{{count}} bokmärken borttagna",
     "selectAll": "Markera alla",
     "deselectAll": "Avmarkera alla",
     "hide": "Dölj",
@@ -80,6 +81,7 @@
     "clearBody": "Ta bort alla nyligen använda poster från Nori?",
     "clear": "Rensa",
     "clearAction": "Rensa historik",
+    "cleared": "Historiken har rensats",
     "reopen": "Öppna igen",
     "noRecent": "Inga nyligen använda flikar",
     "noRecentHint": "Länkar du öppnar från Nori kommer att visas här så att de är lätta att öppna igen senare.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "Tillbaka",
     "close": "Stäng",
-    "dismiss": "Stäng"
+    "dismiss": "Stäng",
+    "undo": "Ångra"
   }
 }

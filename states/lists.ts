@@ -20,6 +20,7 @@ interface Store {
   addList: (name: string) => string | null
   renameList: (id: string, name: string) => void
   deleteList: (id: string) => boolean
+  restoreList: (list: BookmarkList) => void
   setVisible: (id: string, visible: boolean) => void
   reorder: (orderedIds: string[]) => void
   replaceAll: (lists: BookmarkList[]) => void
@@ -86,6 +87,26 @@ export const lists$: Observable<Store> = observable<Store>({
     lists$.lists.set(nextItems)
     ensureSelectedList()
     return true
+  },
+  restoreList: (snapshot) => {
+    const items = lists$.lists.get()
+    const index = items.findIndex((item) => item.id === snapshot.id)
+    const currentUpdatedAt = index === -1 ? Number.NaN : Date.parse(items[index].updatedAt)
+    const now = Date.now()
+    const restored = {
+      ...snapshot,
+      json: createRowJsonState({ ...snapshot.json, deleted_at: null }),
+      updatedAt: new Date(Number.isFinite(currentUpdatedAt) ? Math.max(now, currentUpdatedAt + 1) : now).toISOString(),
+    }
+
+    if (index === -1) {
+      lists$.lists.set([...items, restored])
+    } else {
+      const nextItems = [...items]
+      nextItems[index] = restored
+      lists$.lists.set(nextItems)
+    }
+    ensureSelectedList()
   },
   setVisible: (id, visible) => {
     const items = lists$.lists.get()

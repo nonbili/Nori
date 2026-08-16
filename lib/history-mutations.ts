@@ -21,3 +21,16 @@ export function addOpenedBookmarkRecord(
 export function removeOpenedBookmarkRecord(openedBookmarks: OpenedBookmarkRecord[], id: string) {
   return openedBookmarks.filter((item) => item.id !== id)
 }
+
+export function restoreOpenedBookmarkRecords(
+  current: OpenedBookmarkRecord[],
+  snapshot: OpenedBookmarkRecord[],
+) {
+  const byId = new Map(snapshot.map((bookmark) => [bookmark.id, bookmark]))
+  for (const bookmark of current) {
+    byId.set(bookmark.id, bookmark)
+  }
+  return [...byId.values()]
+    .sort((a, b) => b.openedAt - a.openedAt)
+    .slice(0, 10)
+}

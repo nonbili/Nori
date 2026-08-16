@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "Excluir favoritos?",
     "deleteSelectedBody": "Remover {{count}} favoritos?",
     "deleted": "Favorito excluído",
+    "deletedMany": "{{count}} favoritos excluídos",
     "selectAll": "Selecionar tudo",
     "deselectAll": "Desmarcar tudo",
     "hide": "Ocultar",
@@ -80,6 +81,7 @@
     "clearBody": "Remover todas as entradas usadas recentemente do Nori?",
     "clear": "Limpar",
     "clearAction": "Limpar histórico",
+    "cleared": "Histórico limpo",
     "reopen": "Reabrir",
     "noRecent": "Sem abas recentes",
     "noRecentHint": "Links abertos pelo Nori aparecerão aqui para serem reabertos facilmente depois.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "Voltar",
     "close": "Fechar",
-    "dismiss": "Dispensar"
+    "dismiss": "Dispensar",
+    "undo": "Desfazer"
   }
 }

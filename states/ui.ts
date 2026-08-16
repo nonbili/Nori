@@ -31,6 +31,13 @@ export interface PendingBookmarkImportState {
   isParsing?: boolean
 }
 
+export interface SnackbarState {
+  id: number
+  message: string
+  actionLabel?: string
+  onAction?: () => void
+}
+
 interface UIStore {
   bookmarkEditMode: boolean
   bookmarkEditor: BookmarkEditorState | null
@@ -44,6 +51,8 @@ interface UIStore {
   recentSheetOpen: boolean
   selectedBookmarkIds: string[]
   settingsSheetOpen: boolean
+  snackbars: SnackbarState[]
+  snackbarHosts: number[]
   openBookmarksDrawer: () => void
 }
 
@@ -60,6 +69,8 @@ export const ui$ = observable<UIStore>({
   recentSheetOpen: false,
   selectedBookmarkIds: [],
   settingsSheetOpen: false,
+  snackbars: [],
+  snackbarHosts: [],
   openBookmarksDrawer: () => {
     const selectedListId = settings$.lastSelectedListId.get()
     const visibleLists = getVisibleLists(lists$.lists.get())
@@ -67,3 +78,36 @@ export const ui$ = observable<UIStore>({
     ui$.drawerOpen.set(true)
   },
 })
+
+let snackbarId = 0
+
+export const SNACKBAR_DURATION = 6000
+// Every pending snackbar stays on screen, so an undo action is never queued out
+// of reach. Beyond this many the oldest is dropped to keep the stack readable.
+export const MAX_VISIBLE_SNACKBARS = 3
+
+export function showSnackbar(message: string, actionLabel?: string, onAction?: () => void) {
+  const id = ++snackbarId
+  const next = [...ui$.snackbars.get(), { id, message, actionLabel, onAction }]
+  ui$.snackbars.set(next.slice(-MAX_VISIBLE_SNACKBARS))
+  // Each snackbar expires on its own schedule rather than waiting its turn.
+  setTimeout(() => dismissSnackbar(id), SNACKBAR_DURATION)
+}
+
+export function dismissSnackbar(id: number) {
+  ui$.snackbars.set(ui$.snackbars.get().filter((snackbar) => snackbar.id !== id))
+}
+
+let snackbarHostId = 0
+
+// The root snackbar sits below native modals (and below react-native-web's
+// portal, which renders at zIndex 9999), so sheets mount their own host and
+// only the most recently mounted one renders.
+export function registerSnackbarHost() {
+  const id = ++snackbarHostId
+  ui$.snackbarHosts.push(id)
+  return {
+    id,
+    unregister: () => ui$.snackbarHosts.set(ui$.snackbarHosts.get().filter((host) => host !== id)),
+  }
+}

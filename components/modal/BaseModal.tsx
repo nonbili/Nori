@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
+import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler'
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming, type SharedValue } from 'react-native-reanimated'
@@ -244,6 +245,7 @@ export const Sheet: React.FC<{
                 </View>
               </GestureDetector>
             ) : children}
+            <ActionSnackbar />
           </Animated.View>
         </View>
       </GestureHandlerRootView>

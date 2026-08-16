@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "Delete bookmarks?",
     "deleteSelectedBody": "Remove {{count}} bookmarks?",
     "deleted": "Bookmark deleted",
+    "deletedMany": "{{count}} bookmarks deleted",
     "selectAll": "Select all",
     "deselectAll": "Deselect all",
     "hide": "Hide",
@@ -80,6 +81,7 @@
     "clearBody": "Remove all recently used entries from Nori?",
     "clear": "Clear",
     "clearAction": "Clear history",
+    "cleared": "History cleared",
     "reopen": "Reopen",
     "noRecent": "No recent tabs",
     "noRecentHint": "Links you launch from Nori will show up here so they are easy to reopen later.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "Back",
     "close": "Close",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "undo": "Undo"
   }
 }

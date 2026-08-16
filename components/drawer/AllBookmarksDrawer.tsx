@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Alert, Share, View, useWindowDimensions } from 'react-native'
+import { Share, View, useWindowDimensions } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { Directions, Gesture } from 'react-native-gesture-handler'
@@ -7,12 +7,13 @@ import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
-import { ui$ } from '@/states/ui'
+import { showSnackbar, ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
 import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { showToast } from '@/lib/toast'
 import { getTags } from '@/lib/nori-data'
 import { HEADER_TOP_OFFSET } from '@/components/header/headerLayout'
+import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 import {
   DrawerBookmarkResults,
   DrawerFilterChips,
@@ -142,17 +143,12 @@ export function AllBookmarksDrawer() {
   }, [])
 
   const deleteBookmark = useCallback((bookmark: { id: string; title: string }) => {
-    Alert.alert(t('bookmarks.deleteTitle'), t('bookmarks.deleteBody', { title: bookmark.title }), [
-      { text: t('bookmarks.cancel'), style: 'cancel' },
-      {
-        text: t('bookmarks.delete'),
-        style: 'destructive',
-        onPress: () => {
-          bookmarks$.remove(bookmark.id)
-          showToast(t('bookmarks.deleted'))
-        },
-      },
-    ])
+    const snapshot = bookmarks$.bookmarks.get().find((item) => item.id === bookmark.id)
+    if (!snapshot) {
+      return
+    }
+    bookmarks$.remove(bookmark.id)
+    showSnackbar(t('bookmarks.deleted'), t('common.undo'), () => bookmarks$.restoreMany([snapshot]))
   }, [t])
 
   const handleOpenBookmark = useCallback((bookmark: BookmarkRecord) => {
@@ -200,6 +196,7 @@ export function AllBookmarksDrawer() {
             <DrawerFilterChips drawer={drawerParts} />
             <DrawerTagChips drawer={drawerParts} />
             <DrawerBookmarkResults drawer={drawerParts} />
+            {drawerOpen ? <ActionSnackbar /> : null}
           </View>
         </View>
       </Animated.View>

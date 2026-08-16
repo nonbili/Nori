@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "حذف الإشارات؟",
     "deleteSelectedBody": "إزالة {{count}} إشارة؟",
     "deleted": "تم حذف الإشارة",
+    "deletedMany": "تم حذف {{count}} إشارة",
     "selectAll": "تحديد الكل",
     "deselectAll": "إلغاء التحديد",
     "hide": "إخفاء",
@@ -80,6 +81,7 @@
     "clearBody": "إزالة جميع العناصر المستخدمة مؤخرًا من Nori؟",
     "clear": "مسح",
     "clearAction": "مسح السجل",
+    "cleared": "تم مسح السجل",
     "reopen": "إعادة الفتح",
     "noRecent": "لا توجد علامات تبويب حديثة",
     "noRecentHint": "الروابط التي تفتحها من Nori ستظهر هنا ليسهل عليك إعادة فتحها لاحقًا.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "رجوع",
     "close": "إغلاق",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "undo": "تراجع"
   }
 }

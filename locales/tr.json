@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "Yer imleri silinsin mi?",
     "deleteSelectedBody": "{{count}} yer imi kaldırılsın mı?",
     "deleted": "Yer imi silindi",
+    "deletedMany": "{{count}} yer imi silindi",
     "selectAll": "Tümünü seç",
     "deselectAll": "Seçimi kaldır",
     "hide": "Gizle",
@@ -80,6 +81,7 @@
     "clearBody": "Son kullanılan tüm girdiler Nori'den kaldırılsın mı?",
     "clear": "Temizle",
     "clearAction": "Geçmişi temizle",
+    "cleared": "Geçmiş temizlendi",
     "reopen": "Yeniden aç",
     "noRecent": "Son sekme yok",
     "noRecentHint": "Nori'den açtığınız bağlantılar, daha sonra kolayca yeniden açabilmeniz için burada görünür.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "Geri",
     "close": "Kapat",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "undo": "Geri al"
   }
 }

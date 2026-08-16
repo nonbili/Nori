@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "删除书签？",
     "deleteSelectedBody": "移除 {{count}} 个书签？",
     "deleted": "书签已删除",
+    "deletedMany": "已删除 {{count}} 个书签",
     "selectAll": "全选",
     "deselectAll": "取消全选",
     "hide": "隐藏",
@@ -80,6 +81,7 @@
     "clearBody": "从 Nori 中移除所有最近使用的条目？",
     "clear": "清除",
     "clearAction": "清除历史记录",
+    "cleared": "历史记录已清除",
     "reopen": "重新打开",
     "noRecent": "无最近标签页",
     "noRecentHint": "您从 Nori 启动的链接将显示在此处，以便稍后轻松重新打开。",
@@ -191,6 +193,7 @@
   "common": {
     "back": "返回",
     "close": "关闭",
-    "dismiss": "关闭"
+    "dismiss": "关闭",
+    "undo": "撤销"
   }
 }

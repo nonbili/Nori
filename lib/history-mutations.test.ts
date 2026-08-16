@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'bun:test'
-import { addOpenedBookmarkRecord, removeOpenedBookmarkRecord, type OpenedBookmarkRecord } from './history-mutations'
+import {
+  addOpenedBookmarkRecord,
+  removeOpenedBookmarkRecord,
+  restoreOpenedBookmarkRecords,
+  type OpenedBookmarkRecord,
+} from './history-mutations'
 
 const opened = (id: string, openedAt: number): OpenedBookmarkRecord => ({
   id,
@@ -50,5 +55,25 @@ describe('history mutations', () => {
 
   it('removes opened bookmarks by id', () => {
     expect(removeOpenedBookmarkRecord([opened('a', 1), opened('b', 2)], 'a')).toEqual([opened('b', 2)])
+  })
+
+  it('restores history in openedAt order and keeps current versions', () => {
+    expect(restoreOpenedBookmarkRecords(
+      [opened('new', 4), { ...opened('shared', 3), title: 'Current' }],
+      [opened('old', 1), { ...opened('shared', 2), title: 'Snapshot' }],
+    )).toEqual([
+      opened('new', 4),
+      { ...opened('shared', 3), title: 'Current' },
+      opened('old', 1),
+    ])
+  })
+
+  it('caps restored history at ten rows', () => {
+    const snapshot = Array.from({ length: 10 }, (_, index) => opened(`old-${index}`, index))
+    const restored = restoreOpenedBookmarkRecords([opened('new', 99)], snapshot)
+
+    expect(restored).toHaveLength(10)
+    expect(restored[0].id).toBe('new')
+    expect(restored.map((item) => item.id)).not.toContain('old-0')
   })
 })

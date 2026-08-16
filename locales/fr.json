@@ -37,6 +37,7 @@
     "deleteSelectedTitle": "Supprimer les favoris ?",
     "deleteSelectedBody": "Supprimer {{count}} favoris ?",
     "deleted": "Favori supprimé",
+    "deletedMany": "{{count}} favoris supprimés",
     "selectAll": "Tout sélectionner",
     "deselectAll": "Tout désélectionner",
     "hide": "Masquer",
@@ -80,6 +81,7 @@
     "clearBody": "Supprimer toutes les entrées récentes de Nori ?",
     "clear": "Effacer",
     "clearAction": "Effacer l'historique",
+    "cleared": "Historique effacé",
     "reopen": "Rouvrir",
     "noRecent": "Aucun onglet récent",
     "noRecentHint": "Les liens que vous ouvrez depuis Nori apparaîtront ici pour les rouvrir facilement.",
@@ -191,6 +193,7 @@
   "common": {
     "back": "Retour",
     "close": "Fermer",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "undo": "Annuler"
   }
 }

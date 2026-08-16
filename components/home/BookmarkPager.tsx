@@ -1,4 +1,4 @@
-import { Alert, InteractionManager, ScrollView, Share, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
+import { InteractionManager, ScrollView, Share, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
@@ -7,7 +7,7 @@ import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } fr
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
-import { ui$ } from '@/states/ui'
+import { showSnackbar, ui$ } from '@/states/ui'
 import { getSortIndex, getTags, getVisibleLists, isDeleted, isVisible } from '@/lib/nori-data'
 import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { useThemeColors } from '@/lib/theme'
@@ -300,24 +300,14 @@ export const BookmarkPager: React.FC = () => {
       return
     }
 
-    const count = selectedBookmarks.length
-    const title = count === 1 ? t('bookmarks.deleteTitle') : t('bookmarks.deleteSelectedTitle')
-    const body = count === 1
-      ? t('bookmarks.deleteBody', { title: selectedBookmarks[0].title })
-      : t('bookmarks.deleteSelectedBody', { count })
-
-    Alert.alert(title, body, [
-      { text: t('bookmarks.cancel'), style: 'cancel' },
-      {
-        text: t('bookmarks.delete'),
-        style: 'destructive',
-        onPress: () => {
-          bookmarks$.removeMany(selectedBookmarks.map((bookmark) => bookmark.id))
-          showToast(t('bookmarks.deleted'))
-          ui$.selectedBookmarkIds.set([])
-        },
-      },
-    ])
+    const snapshots = [...selectedBookmarks]
+    bookmarks$.removeMany(snapshots.map((bookmark) => bookmark.id))
+    ui$.selectedBookmarkIds.set([])
+    showSnackbar(
+      snapshots.length === 1 ? t('bookmarks.deleted') : t('bookmarks.deletedMany', { count: snapshots.length }),
+      t('common.undo'),
+      () => bookmarks$.restoreMany(snapshots),
+    )
   }
 
   const hideSelectedBookmarks = useCallback(() => {
@@ -329,22 +319,13 @@ export const BookmarkPager: React.FC = () => {
     ui$.selectedBookmarkIds.set([])
   }, [])
 
-  const promptDeleteBookmark = useCallback((bookmark: BookmarkRecord) => {
-    Alert.alert(t('bookmarks.deleteTitle'), t('bookmarks.deleteBody', { title: bookmark.title }), [
-      { text: t('bookmarks.cancel'), style: 'cancel' },
-      {
-        text: t('bookmarks.delete'),
-        style: 'destructive',
-        onPress: () => {
-          bookmarks$.remove(bookmark.id)
-          showToast(t('bookmarks.deleted'))
-          const current = ui$.selectedBookmarkIds.get()
-          if (current.includes(bookmark.id)) {
-            ui$.selectedBookmarkIds.set(current.filter((id) => id !== bookmark.id))
-          }
-        },
-      },
-    ])
+  const deleteBookmark = useCallback((bookmark: BookmarkRecord) => {
+    bookmarks$.remove(bookmark.id)
+    showSnackbar(t('bookmarks.deleted'), t('common.undo'), () => bookmarks$.restoreMany([bookmark]))
+    const current = ui$.selectedBookmarkIds.get()
+    if (current.includes(bookmark.id)) {
+      ui$.selectedBookmarkIds.set(current.filter((id) => id !== bookmark.id))
+    }
   }, [t])
 
   const pagerActions = {
@@ -357,7 +338,7 @@ export const BookmarkPager: React.FC = () => {
     onEditBookmark: editBookmark,
     onCopyBookmarkUrl: copyBookmarkUrl,
     onShareBookmark: shareBookmark,
-    onDeleteBookmark: promptDeleteBookmark,
+    onDeleteBookmark: deleteBookmark,
     onSelectBookmark: selectBookmark,
     onSelectAll: selectAllBookmarks,
     onHideSelected: hideSelectedBookmarks,

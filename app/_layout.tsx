@@ -18,6 +18,7 @@ import { auth$, bootstrapAuth } from '@/states/auth'
 import { settings$ } from '@/states/settings'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
+import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 
 LogBox.ignoreAllLogs()
 
@@ -81,6 +82,7 @@ function LayoutContent() {
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <Slot />
       <WebViewTitleResolver />
+      <ActionSnackbar />
     </View>
   )
 }
