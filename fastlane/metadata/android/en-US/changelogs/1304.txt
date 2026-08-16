@@ -1,0 +1,4 @@
+- Support undo for destructive actions
+- Import bookmark subfolders as tags
+- Add JSON backup and restore
+- Improve sync reliability
