@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Linking, Pressable, Text, View } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { Image } from 'expo-image'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'

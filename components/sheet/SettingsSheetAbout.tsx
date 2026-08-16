@@ -1,5 +1,5 @@
 import { Linking, Pressable, Text, View } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useTranslation } from 'react-i18next'
 import { useThemeColors, type ThemeColors } from '@/lib/theme'
 import type { SettingsActions } from '@/components/sheet/SettingsSheetSections'
@@ -21,7 +21,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 )
 
 export const AboutRow: React.FC<{
-  icon: keyof typeof MaterialIcons.glyphMap
+  icon: MaterialIconsIconName
   title: string
   detail: string
   onPress?: () => void

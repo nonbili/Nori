@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
 import { useTranslation } from 'react-i18next'

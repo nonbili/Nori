@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, ScrollView, Text, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated, { type AnimatedRef } from 'react-native-reanimated'

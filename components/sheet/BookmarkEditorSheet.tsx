@@ -10,7 +10,7 @@ import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { getMeta } from '@/lib/bookmark'
 import { getAllTags, getVisibleLists } from '@/lib/nori-data'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { showToast } from '@/lib/toast'
 import { parseHttpUrl } from '@/lib/url'
 

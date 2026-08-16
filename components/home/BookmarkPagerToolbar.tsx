@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'

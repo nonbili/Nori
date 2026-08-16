@@ -1,7 +1,7 @@
 import { Pressable, useWindowDimensions } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useEffect, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'

@@ -1,11 +1,11 @@
 import { type ReactNode } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useThemeColors } from '@/lib/theme'
 import { Favicon } from '@/components/bookmark/Favicon'
 
 export const ActionChip: React.FC<{
-  icon: keyof typeof MaterialIcons.glyphMap
+  icon: MaterialIconsIconName
   label?: string
   onPress: () => void
   variant?: 'outline' | 'filled'
@@ -37,7 +37,7 @@ export const SectionLabel: React.FC<{ title: string; subtitle?: string }> = ({ t
 )
 
 export const SettingsRow: React.FC<{
-  icon: keyof typeof MaterialIcons.glyphMap
+  icon: MaterialIconsIconName
   title: string
   description?: string
   value?: string
@@ -110,7 +110,7 @@ export const ManageRow: React.FC<{
 }
 
 export const IconAction: React.FC<{
-  icon: keyof typeof MaterialIcons.glyphMap
+  icon: MaterialIconsIconName
   onPress: () => void
   tint?: 'default' | 'danger' | 'accent'
 }> = ({ icon, onPress, tint = 'default' }) => {

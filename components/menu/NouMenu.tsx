@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { Modal, Pressable as NativePressable, Text, useWindowDimensions, View } from 'react-native'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
 
@@ -9,7 +9,7 @@ export interface NouMenuItem {
   label: string
   handler?: () => void
   selected?: boolean
-  icon?: keyof typeof MaterialIcons.glyphMap
+  icon?: MaterialIconsIconName
 }
 
 export const NouMenu: React.FC<{
