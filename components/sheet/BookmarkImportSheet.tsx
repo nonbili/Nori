@@ -1,8 +1,9 @@
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native'
 import { Sheet } from '@/components/modal/BaseModal'
-import { importBookmarksFromText } from '@/lib/bookmark-import'
+import { importBookmarksFromText, restoreBookmarksFromBackupText } from '@/lib/bookmark-import'
+import { isBookmarkBackupText } from '@/lib/bookmark-transfer'
 import { showToast } from '@/lib/toast'
 import { ui$ } from '@/states/ui'
 
@@ -14,8 +15,44 @@ export const BookmarkImportSheet: React.FC = () => {
     ui$.pendingBookmarkImport.set(null)
   }
 
+  const isBackup = pendingImport ? isBookmarkBackupText(pendingImport.content) : false
+
+  const restoreBackup = (content: string) => {
+    Alert.alert(
+      t('settings.transfer.restoreTitle'),
+      t('settings.transfer.restoreBody'),
+      [
+        { text: t('bookmarks.cancel'), style: 'cancel' },
+        {
+          text: t('settings.transfer.restoreAction'),
+          style: 'destructive',
+          onPress: () => {
+            const restoredCount = restoreBookmarksFromBackupText(content)
+            ui$.pendingBookmarkImport.set(null)
+            showToast(
+              restoredCount == null
+                ? t('settings.transfer.restoreInvalid')
+                : t('settings.transfer.restored', { count: restoredCount }),
+            )
+          },
+        },
+      ],
+    )
+  }
+
   const onImport = () => {
-    if (!pendingImport || pendingImport.isParsing || pendingImport.count <= 0) {
+    if (!pendingImport || pendingImport.isParsing) {
+      return
+    }
+
+    // A backup with only lists or only tombstones counts zero live bookmarks but
+    // is still restorable, so availability follows the file kind, not the count.
+    if (isBackup) {
+      restoreBackup(pendingImport.content)
+      return
+    }
+
+    if (pendingImport.count <= 0) {
       return
     }
 
@@ -29,6 +66,7 @@ export const BookmarkImportSheet: React.FC = () => {
 
   const isParsing = pendingImport?.isParsing ?? false
   const count = pendingImport?.count ?? 0
+  const canSubmit = !isParsing && (isBackup || count > 0)
   const title = isParsing
     ? t('settings.transfer.readingFile')
     : count === 1
@@ -49,6 +87,11 @@ export const BookmarkImportSheet: React.FC = () => {
                 {pendingImport.name}
               </Text>
             ) : null}
+            {isBackup && !isParsing ? (
+              <Text className="mt-2 text-sm text-rose-600 dark:text-rose-400">
+                {t('settings.transfer.restoreBody')}
+              </Text>
+            ) : null}
           </View>
 
           <View className="flex-row justify-end gap-3">
@@ -57,12 +100,17 @@ export const BookmarkImportSheet: React.FC = () => {
               className="rounded-full bg-stone-200 px-5 py-3 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
             >
               <Text className="font-medium text-stone-900 dark:text-stone-100">
-                {isParsing || count > 0 ? t('bookmarks.cancel') : t('settings.transfer.close')}
+                {isParsing || canSubmit ? t('bookmarks.cancel') : t('settings.transfer.close')}
               </Text>
             </Pressable>
-            {!isParsing && count > 0 ? (
-              <Pressable onPress={onImport} className="rounded-full bg-emerald-500 px-5 py-3 active:bg-emerald-600">
-                <Text className="font-medium text-white">{t('settings.transfer.importAction')}</Text>
+            {canSubmit ? (
+              <Pressable
+                onPress={onImport}
+                className={`rounded-full px-5 py-3 ${isBackup ? 'bg-rose-600 active:bg-rose-700' : 'bg-emerald-500 active:bg-emerald-600'}`}
+              >
+                <Text className="font-medium text-white">
+                  {isBackup ? t('settings.transfer.restoreAction') : t('settings.transfer.importAction')}
+                </Text>
               </Pressable>
             ) : null}
           </View>

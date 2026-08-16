@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import {
+  applyBookmarkBackup,
   exportBookmarksToHtml,
+  exportBookmarksToJson,
   exportBookmarksToPlainText,
+  isBookmarkBackupText,
   mergeImportedBookmarks,
+  parseBookmarksBackup,
   parseBookmarksForImport,
 } from './bookmark-transfer'
 import { createRowJsonState, normalizeBookmarks, normalizeLists, patchRowState } from './nori-data'
@@ -35,7 +39,7 @@ describe('bookmark transfer', () => {
     expect(out.endsWith('\n')).toBe(true)
   })
 
-  it('does not export hidden or deleted bookmark rows', () => {
+  it('exports ui-hidden bookmark rows but not deleted ones', () => {
     const lists = normalizeLists([{ id: 'read', name: 'Read', json: { visible: true } }])
     const bookmarks = normalizeBookmarks(lists, [
       { id: 'visible', listId: 'read', title: 'Visible', url: 'https://visible.example', icon: '', json: { visible: true } },
@@ -45,11 +49,11 @@ describe('bookmark transfer', () => {
 
     const out = exportBookmarksToPlainText(lists, bookmarks)
     expect(out).toContain('Visible\thttps://visible.example')
-    expect(out).not.toContain('Hidden\thttps://hidden.example')
+    expect(out).toContain('Hidden\thttps://hidden.example')
     expect(out).not.toContain('Deleted\thttps://deleted.example')
   })
 
-  it('does not export hidden or deleted list sections', () => {
+  it('exports ui-hidden list sections but not deleted ones', () => {
     const lists = normalizeLists([
       { id: 'visible', name: 'Visible', json: { visible: true } },
       { id: 'hidden', name: 'Hidden', json: { visible: false } },
@@ -63,7 +67,7 @@ describe('bookmark transfer', () => {
 
     const out = exportBookmarksToHtml(lists, bookmarks)
     expect(out).toContain('>Visible</H3>')
-    expect(out).not.toContain('>Hidden</H3>')
+    expect(out).toContain('>Hidden</H3>')
     expect(out).not.toContain('>Deleted</H3>')
   })
 
@@ -81,6 +85,115 @@ describe('bookmark transfer', () => {
     expect(parseBookmarksForImport(html, 'html')).toEqual([
       { listName: 'News', title: 'Example News', url: 'https://news.example/path' },
     ])
+  })
+
+  it('round-trips every field through the json backup', () => {
+    const lists = normalizeLists([
+      { id: 'work', name: 'Work', json: { visible: true, sort_index: 0 } },
+      { id: 'hidden-list', name: 'Hidden list', json: { visible: false, sort_index: 1 } },
+      { id: 'gone', name: 'Gone', json: { visible: true, sort_index: 2, deleted_at: '2026-06-21T00:00:00.000Z' } },
+    ])
+    const bookmarks = normalizeBookmarks(lists, [
+      {
+        id: 'docs',
+        listId: 'work',
+        title: 'Docs',
+        url: 'https://example.com/docs',
+        icon: 'https://example.com/favicon.ico',
+        json: { visible: true, sort_index: 0, tags: ['Tools', 'Editors'] },
+        createdAt: '2026-01-02T03:04:05.000Z',
+        updatedAt: '2026-02-03T04:05:06.000Z',
+      },
+      { id: 'stashed', listId: 'work', title: 'Stashed', url: 'https://example.com/stashed', icon: '', json: { visible: false, sort_index: 1 } },
+      { id: 'trashed', listId: 'work', title: 'Trashed', url: 'https://example.com/trashed', icon: '', json: { visible: true, sort_index: 2, deleted_at: '2026-06-21T00:00:00.000Z' } },
+    ])
+
+    const restored = parseBookmarksBackup(exportBookmarksToJson(lists, bookmarks))
+
+    expect(restored).not.toBeNull()
+    expect(restored!.lists).toEqual(lists)
+    expect(restored!.bookmarks).toEqual(bookmarks)
+
+    const docs = restored!.bookmarks.find((item) => item.id === 'docs')!
+    expect(docs.json.tags).toEqual(['Tools', 'Editors'])
+    expect(docs.createdAt).toBe('2026-01-02T03:04:05.000Z')
+    expect(docs.updatedAt).toBe('2026-02-03T04:05:06.000Z')
+    expect(docs.icon).toBe('https://example.com/favicon.ico')
+    // Hidden rows and deletion tombstones both survive.
+    expect(restored!.bookmarks.find((item) => item.id === 'stashed')?.json.visible).toBe(false)
+    expect(restored!.bookmarks.find((item) => item.id === 'trashed')?.json.deleted_at).toBe('2026-06-21T00:00:00.000Z')
+    expect(restored!.lists.find((item) => item.id === 'hidden-list')?.json.visible).toBe(false)
+    expect(restored!.lists.find((item) => item.id === 'gone')?.json.deleted_at).toBe('2026-06-21T00:00:00.000Z')
+  })
+
+  it('recognises backup files by content', () => {
+    const backup = exportBookmarksToJson(normalizeLists([]), [])
+    expect(isBookmarkBackupText(backup)).toBe(true)
+    expect(isBookmarkBackupText('{"format":"something-else"}')).toBe(false)
+    expect(isBookmarkBackupText('<DL><p><DT><A HREF="https://a.example">A</A>')).toBe(false)
+  })
+
+  it('rejects malformed, foreign, and newer backup files', () => {
+    expect(parseBookmarksBackup('not json')).toBeNull()
+    expect(parseBookmarksBackup('[]')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"other","version":1,"lists":[],"bookmarks":[]}')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":99,"lists":[],"bookmarks":[]}')).toBeNull()
+  })
+
+  it('rejects backups with missing or mistyped row collections', () => {
+    // These would otherwise normalize into starter data and reset the user.
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":1}')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"lists":[]}')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"bookmarks":[]}')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"lists":{},"bookmarks":[]}')).toBeNull()
+    expect(parseBookmarksBackup('{"format":"nori-backup","version":1,"lists":[],"bookmarks":null}')).toBeNull()
+  })
+
+  it('tombstones rows the backup omits instead of dropping them', () => {
+    const currentLists = normalizeLists([
+      { id: 'kept', name: 'Kept', json: { visible: true, sort_index: 0 } },
+      { id: 'dropped', name: 'Dropped', json: { visible: true, sort_index: 1 } },
+    ])
+    const currentBookmarks = normalizeBookmarks(currentLists, [
+      { id: 'kept-b', listId: 'kept', title: 'Kept', url: 'https://kept.example', icon: '', json: { visible: true } },
+      { id: 'dropped-b', listId: 'dropped', title: 'Dropped', url: 'https://dropped.example', icon: '', json: { visible: true } },
+    ])
+
+    const backup = {
+      lists: currentLists.filter((item) => item.id === 'kept'),
+      bookmarks: currentBookmarks.filter((item) => item.id === 'kept-b'),
+    }
+
+    const next = applyBookmarkBackup(currentLists, currentBookmarks, backup, '2026-08-16T00:00:00.000Z')
+
+    // Still present as rows, so the sync watcher marks them pending and pushes
+    // the tombstones rather than letting the remote copies come back.
+    const droppedList = next.lists.find((item) => item.id === 'dropped')
+    expect(droppedList?.json.deleted_at).toBe('2026-08-16T00:00:00.000Z')
+    expect(droppedList?.json.visible).toBe(false)
+    expect(droppedList?.updatedAt).toBe('2026-08-16T00:00:00.000Z')
+
+    const droppedBookmark = next.bookmarks.find((item) => item.id === 'dropped-b')
+    expect(droppedBookmark?.json.deleted_at).toBe('2026-08-16T00:00:00.000Z')
+
+    expect(next.lists.find((item) => item.id === 'kept')?.json.deleted_at).toBeNull()
+    expect(next.bookmarks.find((item) => item.id === 'kept-b')?.json.deleted_at).toBeNull()
+  })
+
+  it('keeps existing tombstones untouched when restoring', () => {
+    const currentLists = normalizeLists([
+      { id: 'kept', name: 'Kept', json: { visible: true } },
+      { id: 'old', name: 'Old', json: { visible: false, deleted_at: '2026-01-01T00:00:00.000Z' } },
+    ])
+
+    const next = applyBookmarkBackup(
+      currentLists,
+      [],
+      { lists: currentLists.filter((item) => item.id === 'kept'), bookmarks: [] },
+      '2026-08-16T00:00:00.000Z',
+    )
+
+    expect(next.lists.find((item) => item.id === 'old')?.json.deleted_at).toBe('2026-01-01T00:00:00.000Z')
   })
 
   it('imports plain bookmark lists with headings and tab titles', () => {
@@ -109,7 +222,7 @@ describe('bookmark transfer', () => {
     ])
   })
 
-  it('finds folder name across nested DT wrappers (real Chrome export shape)', () => {
+  it('maps subfolders to tags across nested DT wrappers (real Chrome export shape)', () => {
     const html = `
       <DL><p>
         <DT><H3>Outer</H3>
@@ -123,7 +236,63 @@ describe('bookmark transfer', () => {
     `
     const result = parseBookmarksForImport(html, 'html')
     expect(result).toHaveLength(1)
-    expect(result[0].listName).toBe('Inner')
+    expect(result[0].listName).toBe('Outer')
+    expect(result[0].tags).toEqual(['Inner'])
+  })
+
+  it('keeps every nesting level below the list as tags', () => {
+    const html = `
+      <DL><p>
+        <DT><H3>Bookmarks bar</H3>
+        <DL><p>
+          <DT><H3>Dev</H3>
+          <DL><p>
+            <DT><A HREF="https://dev.example/">Dev root</A>
+            <DT><H3>Tools</H3>
+            <DL><p>
+              <DT><H3>Editors</H3>
+              <DL><p>
+                <DT><A HREF="https://editor.example/">Editor</A>
+              </DL><p>
+            </DL><p>
+          </DL><p>
+        </DL><p>
+      </DL><p>
+    `
+
+    const result = parseBookmarksForImport(html, 'html')
+    expect(result).toEqual([
+      { listName: 'Dev', title: 'Dev root', url: 'https://dev.example/' },
+      { listName: 'Dev', title: 'Editor', url: 'https://editor.example/', tags: ['Tools', 'Editors'] },
+    ])
+  })
+
+  it('keeps the browser root folder as the list when nothing is nested below it', () => {
+    const html = `
+      <DL><p>
+        <DT><H3>Bookmarks bar</H3>
+        <DL><p>
+          <DT><A HREF="https://top.example/">Top</A>
+        </DL><p>
+      </DL><p>
+    `
+
+    const result = parseBookmarksForImport(html, 'html')
+    expect(result).toEqual([
+      { listName: 'Bookmarks bar', title: 'Top', url: 'https://top.example/' },
+    ])
+  })
+
+  it('imports subfolder tags onto merged bookmarks', () => {
+    const result = mergeImportedBookmarks(normalizeLists([]), [], [
+      { listName: 'Dev', title: 'Editor', url: 'https://editor.example/', tags: ['Tools', 'Editors'] },
+      { listName: 'Dev', title: 'Plain', url: 'https://plain.example/' },
+    ])
+
+    expect(result.importedCount).toBe(2)
+    const imported = result.bookmarks.find((item) => item.url === 'https://editor.example/')
+    expect(imported?.json.tags).toEqual(['Tools', 'Editors'])
+    expect(result.bookmarks.find((item) => item.url === 'https://plain.example/')?.json.tags).toBeUndefined()
   })
 
   it('escapes tabs and newlines in plain export list names and titles', () => {

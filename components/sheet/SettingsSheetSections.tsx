@@ -22,7 +22,16 @@ import { getVisibleLists } from '@/lib/nori-data'
 const TERMS_OF_USE_URL = 'https://www.apple.com/legal/macapps/stdeula/'
 const PRIVACY_POLICY_URL = 'https://inks.page/p/privacy'
 
-export type SettingsBusyAction = 'buy' | 'restore' | 'manage' | 'sync' | 'import' | 'export-html' | 'export-plain' | null
+export type SettingsBusyAction =
+  | 'buy'
+  | 'restore'
+  | 'manage'
+  | 'sync'
+  | 'import'
+  | 'export-html'
+  | 'export-plain'
+  | 'export-json'
+  | null
 
 export interface SettingsActions {
   actionError?: string
@@ -461,6 +470,13 @@ export const TransferSection: React.FC<{ actions: SettingsActions }> = ({ action
         title={t('settings.transfer.exportPlain')}
         detail={actions.busyAction === 'export-plain' ? t('settings.transfer.exporting') : t('settings.transfer.exportPlainHint')}
         onPress={() => actions.onExportBookmarks('plain')}
+        themeColors={themeColors}
+      />
+      <AboutRow
+        icon="backup"
+        title={t('settings.transfer.exportBackup')}
+        detail={actions.busyAction === 'export-json' ? t('settings.transfer.exporting') : t('settings.transfer.exportBackupHint')}
+        onPress={() => actions.onExportBookmarks('json')}
         themeColors={themeColors}
         isLast
       />

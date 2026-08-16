@@ -6,8 +6,18 @@ import { useEffect, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import NoriBilling from '@/modules/nori-billing'
-import { exportBookmarksToHtml, exportBookmarksToPlainText, type BookmarkTransferFormat } from '@/lib/bookmark-transfer'
-import { importBookmarksFromAsset } from '@/lib/bookmark-import'
+import {
+  exportBookmarksToHtml,
+  exportBookmarksToJson,
+  exportBookmarksToPlainText,
+  isBookmarkBackupText,
+  type BookmarkTransferFormat,
+} from '@/lib/bookmark-transfer'
+import {
+  importBookmarksFromText,
+  readBookmarkImportText,
+  restoreBookmarksFromBackupText,
+} from '@/lib/bookmark-import'
 import { prepareIosPurchase, syncIosTransaction } from '@/lib/nori-api'
 import { openDeleteAccount, openManagePlan } from '@/lib/supabase/auth'
 import { syncSupabase } from '@/lib/supabase/sync'
@@ -23,11 +33,25 @@ const IOS_SYNC_PRODUCT_ID = process.env.EXPO_PUBLIC_NORI_IOS_SYNC_PRODUCT_ID || 
 const TRANSFER_MIME = {
   html: 'text/html',
   plain: 'text/plain',
+  json: 'application/json',
 } as const
 
 const TRANSFER_EXTENSION = {
   html: 'html',
   plain: 'txt',
+  json: 'json',
+} as const
+
+const TRANSFER_UTI = {
+  html: 'public.html',
+  plain: 'public.plain-text',
+  json: 'public.json',
+} as const
+
+const TRANSFER_BUSY_ACTION = {
+  html: 'export-html',
+  plain: 'export-plain',
+  json: 'export-json',
 } as const
 
 const downloadOnWeb = (filename: string, content: string, mimeType: string) => {
@@ -116,6 +140,7 @@ export function useSettingsSheetActions() {
           { text: t('lists.cancel'), style: 'cancel', onPress: () => resolve(false) },
           { text: t('bookmarks.save'), onPress: () => resolve(true) },
         ],
+        { cancelable: true, onDismiss: () => resolve(false) },
       )
     })
 
@@ -168,10 +193,25 @@ export function useSettingsSheetActions() {
       await refreshEntitlement()
     })
 
+  const confirmRestore = () =>
+    new Promise<boolean>((resolve) => {
+      Alert.alert(
+        t('settings.transfer.restoreTitle'),
+        t('settings.transfer.restoreBody'),
+        [
+          { text: t('lists.cancel'), style: 'cancel', onPress: () => resolve(false) },
+          { text: t('settings.transfer.restoreAction'), style: 'destructive', onPress: () => resolve(true) },
+        ],
+        // Android dismisses via back button/outside tap without firing either
+        // button, which would leave the busy action pending forever.
+        { cancelable: true, onDismiss: () => resolve(false) },
+      )
+    })
+
   const onImportBookmarks = () =>
     runAction('import', async () => {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ['text/html', 'text/plain', 'text/*', 'application/octet-stream'],
+        type: ['text/html', 'text/plain', 'application/json', 'text/*', 'application/octet-stream'],
         copyToCacheDirectory: true,
         base64: isWeb,
       })
@@ -179,7 +219,22 @@ export function useSettingsSheetActions() {
         return
       }
 
-      const importedCount = await importBookmarksFromAsset(result.assets[0])
+      const asset = result.assets[0]
+      const content = await readBookmarkImportText(asset)
+
+      if (isBookmarkBackupText(content)) {
+        if (!(await confirmRestore())) {
+          return
+        }
+        const restoredCount = restoreBookmarksFromBackupText(content)
+        if (restoredCount == null) {
+          throw new Error(t('settings.transfer.restoreInvalid'))
+        }
+        showToast(t('settings.transfer.restored', { count: restoredCount }))
+        return
+      }
+
+      const importedCount = importBookmarksFromText(content, asset)
       if (!importedCount) {
         showToast(t('settings.transfer.importEmpty'))
         return
@@ -188,8 +243,12 @@ export function useSettingsSheetActions() {
     })
 
   const onExportBookmarks = (format: BookmarkTransferFormat) =>
-    runAction(format === 'html' ? 'export-html' : 'export-plain', async () => {
-      const content = format === 'html' ? exportBookmarksToHtml(lists, bookmarks) : exportBookmarksToPlainText(lists, bookmarks)
+    runAction(TRANSFER_BUSY_ACTION[format], async () => {
+      const content = format === 'html'
+        ? exportBookmarksToHtml(lists, bookmarks)
+        : format === 'json'
+          ? exportBookmarksToJson(lists, bookmarks)
+          : exportBookmarksToPlainText(lists, bookmarks)
       const date = new Date().toISOString().slice(0, 10)
       const filename = `nori-bookmarks-${date}.${TRANSFER_EXTENSION[format]}`
       const mimeType = TRANSFER_MIME[format]
@@ -211,7 +270,7 @@ export function useSettingsSheetActions() {
       }
       await Sharing.shareAsync(uri, {
         mimeType,
-        UTI: format === 'html' ? 'public.html' : 'public.plain-text',
+        UTI: TRANSFER_UTI[format],
         dialogTitle: t('settings.transfer.exportTitle'),
       })
     })

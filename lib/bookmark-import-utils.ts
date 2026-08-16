@@ -1,4 +1,4 @@
-import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
+import { isBookmarkBackupText, type BookmarkTransferFormat } from '@/lib/bookmark-transfer'
 
 export interface BookmarkImportAssetInfo {
   name?: string | null
@@ -11,6 +11,11 @@ export const inferBookmarkImportFormat = (
 ): BookmarkTransferFormat => {
   const name = asset.name?.toLowerCase() || ''
   const mimeType = asset.mimeType?.toLowerCase() || ''
+  // Detected from the content rather than the extension, so a .json file that is
+  // not one of our backups still falls through to the plain-text scraper.
+  if (isBookmarkBackupText(content)) {
+    return 'json'
+  }
   if (mimeType.includes('html') || name.endsWith('.html') || name.endsWith('.htm')) {
     return 'html'
   }

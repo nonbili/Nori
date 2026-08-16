@@ -17,6 +17,16 @@ describe('bookmark import utils', () => {
     expect(inferBookmarkImportFormat({}, '<DL><p></DL><p>')).toBe('html')
   })
 
+  it('infers json backups from content regardless of file name', () => {
+    const backup = '{\n  "format": "nori-backup",\n  "version": 1,\n  "lists": [],\n  "bookmarks": []\n}'
+    expect(inferBookmarkImportFormat({ name: 'backup.json', mimeType: 'application/json' }, backup)).toBe('json')
+    expect(inferBookmarkImportFormat({ name: 'nori-bookmarks-2026-08-16.txt' }, backup)).toBe('json')
+  })
+
+  it('does not treat unrelated json as a backup', () => {
+    expect(inferBookmarkImportFormat({ name: 'other.json', mimeType: 'application/json' }, '{"a":1}')).toBe('plain')
+  })
+
   it('defaults import format to plain text', () => {
     expect(inferBookmarkImportFormat({ name: 'bookmarks.txt', mimeType: 'text/plain' }, '# Later')).toBe('plain')
   })

@@ -1,9 +1,12 @@
 import * as FileSystem from 'expo-file-system/legacy'
 import { batch } from '@legendapp/state'
 import {
+  applyBookmarkBackup,
   mergeImportedBookmarks,
+  parseBookmarksBackup,
   parseBookmarksForImport,
 } from '@/lib/bookmark-transfer'
+import { getLiveBookmarks } from '@/lib/nori-data'
 import {
   decodeBookmarkImportBase64,
   getReadableBookmarkImportUriCandidates,
@@ -72,13 +75,30 @@ export const readBookmarkImportText = async (asset: BookmarkImportAsset) => {
   throw lastError instanceof Error ? lastError : new Error('Unable to read shared file')
 }
 
-export const importBookmarksFromAsset = async (asset: BookmarkImportAsset) => {
-  const content = await readBookmarkImportText(asset)
-  return importBookmarksFromText(content, asset)
+// Replaces the whole store, so callers must confirm with the user first. Kept
+// separate from importBookmarksFromText so a merge import can never wipe data.
+export const restoreBookmarksFromBackupText = (content: string) => {
+  const backup = parseBookmarksBackup(content)
+  if (!backup) {
+    return null
+  }
+
+  const next = applyBookmarkBackup(lists$.lists.get(), bookmarks$.bookmarks.get(), backup)
+  batch(() => {
+    lists$.replaceAll(next.lists)
+    bookmarks$.bookmarks.set(next.bookmarks)
+  })
+  return getLiveBookmarks(next.bookmarks).length
 }
 
 export const importBookmarksFromText = (content: string, asset: Pick<BookmarkImportAsset, 'name' | 'mimeType'>) => {
-  const imported = parseBookmarksForImport(content, inferBookmarkImportFormat(asset, content))
+  const format = inferBookmarkImportFormat(asset, content)
+  if (format === 'json') {
+    // Backups are restored, not merged — see restoreBookmarksFromBackupText.
+    return 0
+  }
+
+  const imported = parseBookmarksForImport(content, format)
   const merged = mergeImportedBookmarks(lists$.lists.get(), bookmarks$.bookmarks.get(), imported)
   if (merged.importedCount) {
     batch(() => {
@@ -89,5 +109,11 @@ export const importBookmarksFromText = (content: string, asset: Pick<BookmarkImp
   return merged.importedCount
 }
 
-export const countBookmarksInImportText = (content: string, asset: Pick<BookmarkImportAsset, 'name' | 'mimeType'>) =>
-  parseBookmarksForImport(content, inferBookmarkImportFormat(asset, content)).length
+export const countBookmarksInImportText = (content: string, asset: Pick<BookmarkImportAsset, 'name' | 'mimeType'>) => {
+  const format = inferBookmarkImportFormat(asset, content)
+  if (format === 'json') {
+    const backup = parseBookmarksBackup(content)
+    return backup ? getLiveBookmarks(backup.bookmarks).length : 0
+  }
+  return parseBookmarksForImport(content, format).length
+}

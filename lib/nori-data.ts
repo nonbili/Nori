@@ -496,6 +496,20 @@ export function getLiveBookmarks(bookmarks: BookmarkRecordData[]) {
   return [...bookmarks].filter((item) => !isDeleted(item))
 }
 
+// `visible: false` only means "hidden from the grid", so exports keep those rows
+// and drop deleted ones only.
+export function getLiveLists(lists: BookmarkListData[]) {
+  return [...lists]
+    .filter((item) => !isDeleted(item))
+    .sort(compareBySortIndex)
+}
+
+export function getLiveBookmarksInList(bookmarks: BookmarkRecordData[], listId: string) {
+  return [...bookmarks]
+    .filter((item) => item.listId === listId && !isDeleted(item))
+    .sort(compareBySortIndex)
+}
+
 export function moveItemWithinVisibleSubset<T extends { id: string; json: RowJsonState }>(
   items: T[],
   visibleIds: string[],

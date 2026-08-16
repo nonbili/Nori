@@ -4,24 +4,31 @@ import { nanoid } from 'nanoid'
 import { getDuckDuckGoIcon } from './bookmark'
 import {
   createRowJsonState,
-  getVisibleBookmarks,
-  getVisibleLists,
+  getLiveBookmarksInList,
+  getLiveLists,
   isDeleted,
   isoNow,
   normalizeBookmarks,
   normalizeLists,
+  patchRowState,
+  withUpdatedAt,
   type BookmarkListData,
   type BookmarkRecordData,
+  type RowJsonState,
 } from './nori-data'
 import { parseHttpUrl } from './url'
 
-export type BookmarkTransferFormat = 'html' | 'plain'
+export type BookmarkTransferFormat = 'html' | 'plain' | 'json'
+// The JSON backup is restored wholesale, so it never goes through the
+// name/url merge that the interchange formats use.
+export type BookmarkMergeFormat = Exclude<BookmarkTransferFormat, 'json'>
 
 export interface ParsedBookmarkImport {
   listName: string
   title: string
   url: string
   icon?: string
+  tags?: string[]
 }
 
 export interface BookmarkImportResult {
@@ -86,7 +93,7 @@ function titleFromUrl(url: string) {
 }
 
 export function exportBookmarksToHtml(lists: BookmarkListData[], bookmarks: BookmarkRecordData[]) {
-  const visibleLists = getVisibleLists(lists)
+  const exportedLists = getLiveLists(lists)
   const addDate = Math.floor(Date.now() / 1000)
   const lines = [
     '<!DOCTYPE NETSCAPE-Bookmark-file-1>',
@@ -96,8 +103,8 @@ export function exportBookmarksToHtml(lists: BookmarkListData[], bookmarks: Book
     '<DL><p>',
   ]
 
-  for (const list of visibleLists) {
-    const listBookmarks = getVisibleBookmarks(bookmarks, list.id)
+  for (const list of exportedLists) {
+    const listBookmarks = getLiveBookmarksInList(bookmarks, list.id)
     if (!listBookmarks.length) {
       continue
     }
@@ -114,14 +121,118 @@ export function exportBookmarksToHtml(lists: BookmarkListData[], bookmarks: Book
   return `${lines.join('\n')}\n`
 }
 
+export const BOOKMARK_BACKUP_FORMAT = 'nori-backup'
+export const BOOKMARK_BACKUP_VERSION = 1
+
+export interface BookmarkBackupFile {
+  format: typeof BOOKMARK_BACKUP_FORMAT
+  version: number
+  exportedAt: string
+  lists: BookmarkListData[]
+  bookmarks: BookmarkRecordData[]
+}
+
+export interface BookmarkBackupData {
+  lists: BookmarkListData[]
+  bookmarks: BookmarkRecordData[]
+}
+
+// Unlike the interchange formats this is a verbatim dump: ids, timestamps, and
+// the whole json blob (tags, visible, sort_index) survive, and deleted rows stay
+// in so their tombstones are not lost for sync.
+export function exportBookmarksToJson(lists: BookmarkListData[], bookmarks: BookmarkRecordData[]) {
+  const backup: BookmarkBackupFile = {
+    format: BOOKMARK_BACKUP_FORMAT,
+    version: BOOKMARK_BACKUP_VERSION,
+    exportedAt: isoNow(),
+    lists,
+    bookmarks,
+  }
+  return `${JSON.stringify(backup, null, 2)}\n`
+}
+
+export function isBookmarkBackupText(content: string) {
+  if (!content.trimStart().startsWith('{')) {
+    return false
+  }
+  return new RegExp(`"format"\\s*:\\s*"${BOOKMARK_BACKUP_FORMAT}"`).test(content)
+}
+
+export function parseBookmarksBackup(content: string): BookmarkBackupData | null {
+  let raw: unknown
+  try {
+    raw = JSON.parse(content)
+  } catch {
+    return null
+  }
+
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return null
+  }
+  const file = raw as Partial<BookmarkBackupFile>
+  if (file.format !== BOOKMARK_BACKUP_FORMAT) {
+    return null
+  }
+  if (typeof file.version !== 'number' || file.version > BOOKMARK_BACKUP_VERSION) {
+    return null
+  }
+  // Both collections must be present and well formed: normalizeLists/Bookmarks
+  // turn a missing one into starter data, which would silently reset the user
+  // instead of reporting an unreadable backup.
+  if (!Array.isArray(file.lists) || !Array.isArray(file.bookmarks)) {
+    return null
+  }
+
+  const lists = normalizeLists(file.lists)
+  return {
+    lists,
+    bookmarks: normalizeBookmarks(lists, file.bookmarks),
+  }
+}
+
+// Rows are never dropped from the store — deletes are tombstones — because the
+// sync watcher only marks ids present in the array as pending. A row silently
+// removed here would keep its live remote copy and be resurrected on next sync,
+// so anything missing from the backup is tombstoned instead.
+function tombstoneRowsMissingFrom<T extends { id: string; json: RowJsonState; updatedAt: string }>(
+  current: T[],
+  next: T[],
+  now: string,
+) {
+  const nextIds = new Set(next.map((item) => item.id))
+  const removed = current
+    .filter((item) => !nextIds.has(item.id))
+    .map((item) => (
+      isDeleted(item)
+        ? item
+        : withUpdatedAt(patchRowState(item, { deleted_at: now, visible: false }), now)
+    ))
+  return [...next, ...removed]
+}
+
+export function applyBookmarkBackup(
+  currentLists: BookmarkListData[],
+  currentBookmarks: BookmarkRecordData[],
+  backup: BookmarkBackupData,
+  now = isoNow(),
+): BookmarkBackupData {
+  const lists = tombstoneRowsMissingFrom(currentLists, backup.lists, now)
+  const bookmarks = tombstoneRowsMissingFrom(currentBookmarks, backup.bookmarks, now)
+  const normalizedLists = normalizeLists(lists)
+  return {
+    lists: normalizedLists,
+    bookmarks: normalizeBookmarks(normalizedLists, bookmarks),
+  }
+}
+
 function sanitizePlainField(value: string) {
   return value.replace(/[\t\r\n]+/g, ' ').trim()
 }
 
 export function exportBookmarksToPlainText(lists: BookmarkListData[], bookmarks: BookmarkRecordData[]) {
-  const sections = getVisibleLists(lists)
+  const sections = getLiveLists(lists)
     .map((list) => {
-      const lines = getVisibleBookmarks(bookmarks, list.id).map(
+      const lines = getLiveBookmarksInList(bookmarks, list.id).map(
         (bookmark) => `${sanitizePlainField(bookmark.title)}\t${bookmark.url}`,
       )
       return lines.length ? [`# ${sanitizePlainField(list.name)}`, ...lines].join('\n') : ''
@@ -172,7 +283,24 @@ function parsePlainBookmarks(content: string) {
   return parsed
 }
 
-function findEnclosingFolderName($: cheerio.CheerioAPI, element: AnyNode): string {
+// Browsers wrap every bookmark in a root folder that carries no meaning for us
+// ("Bookmarks bar", "Bookmarks Menu", …). Those are dropped when a real folder
+// sits below them, so the user's own top folder becomes the list.
+const ROOT_FOLDER_NAMES = new Set([
+  'bookmarks',
+  'bookmarks bar',
+  'bookmarks toolbar',
+  'bookmarks menu',
+  'other bookmarks',
+  'mobile bookmarks',
+  'favorites',
+  'favorites bar',
+  'bookmark bar',
+])
+
+// Outermost folder first.
+function findEnclosingFolderPath($: cheerio.CheerioAPI, element: AnyNode): string[] {
+  const path: string[] = []
   let current = $(element).parent()
   while (current.length) {
     if (current.is('dl')) {
@@ -182,13 +310,36 @@ function findEnclosingFolderName($: cheerio.CheerioAPI, element: AnyNode): strin
         const h3 = node.is('h3') ? node : node.find('h3').first()
         const name = h3.text().trim()
         if (name) {
-          return name
+          path.push(name)
+          break
         }
       }
     }
     current = current.parent()
   }
-  return ''
+  return path.reverse()
+}
+
+// The first meaningful folder becomes the list; everything nested below it
+// becomes tags, so a subfolder can be recovered by filtering the list by tag.
+function splitFolderPath(path: string[]) {
+  const segments = path.map((item) => item.trim()).filter(Boolean)
+  while (segments.length > 1 && ROOT_FOLDER_NAMES.has(segments[0].toLowerCase())) {
+    segments.shift()
+  }
+
+  const seen = new Set<string>()
+  const tags: string[] = []
+  for (const segment of segments.slice(1)) {
+    const key = segment.toLowerCase()
+    if (seen.has(key)) {
+      continue
+    }
+    seen.add(key)
+    tags.push(segment)
+  }
+
+  return { listName: segments[0] || '', tags }
 }
 
 function parseHtmlBookmarks(content: string) {
@@ -202,12 +353,13 @@ function parseHtmlBookmarks(content: string) {
       return
     }
 
-    const folder = findEnclosingFolderName($, element)
+    const { listName, tags } = splitFolderPath(findEnclosingFolderPath($, element))
     parsed.push({
-      listName: folder || DEFAULT_IMPORT_LIST,
+      listName: listName || DEFAULT_IMPORT_LIST,
       title: link.text().trim() || titleFromUrl(url),
       url,
       icon: link.attr('icon') || link.attr('ICON') || undefined,
+      ...(tags.length ? { tags } : {}),
     })
   })
 
@@ -238,7 +390,7 @@ function parseHtmlBookmarks(content: string) {
   return parsed
 }
 
-export function parseBookmarksForImport(content: string, format: BookmarkTransferFormat) {
+export function parseBookmarksForImport(content: string, format: BookmarkMergeFormat) {
   return format === 'html' ? parseHtmlBookmarks(content) : parsePlainBookmarks(content)
 }
 
@@ -300,7 +452,12 @@ export function mergeImportedBookmarks(
       url: item.url,
       title: item.title.trim() || titleFromUrl(item.url),
       icon: item.icon?.trim() || getDuckDuckGoIcon(item.url),
-      json: createRowJsonState({ visible: true, sort_index: existingInList + index, deleted_at: null }),
+      json: createRowJsonState({
+        visible: true,
+        sort_index: existingInList + index,
+        deleted_at: null,
+        tags: item.tags,
+      }),
       createdAt: now,
       updatedAt: now,
     })))

@@ -22,6 +22,7 @@ interface Store {
   deleteList: (id: string) => boolean
   setVisible: (id: string, visible: boolean) => void
   reorder: (orderedIds: string[]) => void
+  replaceAll: (lists: BookmarkList[]) => void
 }
 
 function ensureSelectedList() {
@@ -119,6 +120,10 @@ export const lists$: Observable<Store> = observable<Store>({
       },
       updatedAt: now,
     })))
+    ensureSelectedList()
+  },
+  replaceAll: (lists) => {
+    lists$.lists.set(lists)
     ensureSelectedList()
   },
 })
