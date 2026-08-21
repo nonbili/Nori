@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { htmlLooksLikeBookmarkExport, parseSharedUrl } from './share-intent'
+import { htmlLooksLikeBookmarkExport, parseSharedUrl, parseSharedUrls } from './share-intent'
 
 describe('share intent parsing', () => {
   it('extracts urls from shared text', () => {
@@ -22,6 +22,28 @@ describe('share intent parsing', () => {
     expect(parseSharedUrl()).toBeNull()
     expect(parseSharedUrl(null)).toBeNull()
     expect(parseSharedUrl({ text: '   ' })).toBeNull()
+  })
+
+  it('extracts every url from a multi link share', () => {
+    expect(parseSharedUrls({
+      text: 'https://one.example/a\nhttps://two.example/b\nhttps://three.example/c',
+    })).toEqual([
+      'https://one.example/a',
+      'https://two.example/b',
+      'https://three.example/c',
+    ])
+  })
+
+  it('deduplicates urls and drops trailing punctuation', () => {
+    expect(parseSharedUrls({
+      webUrl: 'https://one.example/a',
+      text: 'See (https://one.example/a) and https://two.example/b.',
+    })).toEqual(['https://one.example/a', 'https://two.example/b'])
+  })
+
+  it('returns an empty list when nothing is shared', () => {
+    expect(parseSharedUrls()).toEqual([])
+    expect(parseSharedUrls({ text: 'no links here' })).toEqual([])
   })
 
   it('detects bookmark export html', () => {

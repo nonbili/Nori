@@ -17,10 +17,14 @@ export interface ListEditorState {
   name: string
 }
 
-export interface PendingShareState {
+export interface PendingShareItem {
   url: string
   title: string
   icon: string
+}
+
+export interface PendingShareState {
+  items: PendingShareItem[]
 }
 
 export interface PendingBookmarkImportState {

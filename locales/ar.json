@@ -91,8 +91,13 @@
   },
   "sharing": {
     "title": "حفظ الرابط المشارك",
+    "titleMultiple": "حفظ الروابط المشتركة",
     "pickList": "اختر قائمة لحفظ هذه الإشارة المرجعية.",
-    "savedToList": "تم الحفظ في {{name}}"
+    "pickListMultiple": "اختر قائمة لحفظ هذه الإشارات المرجعية ({{count}}).",
+    "savedToList": "تم الحفظ في {{name}}",
+    "savedCountToList": "تم حفظ {{count}} إشارة مرجعية في {{name}}",
+    "readFileFailed": "تعذّرت قراءة الملف المشترك",
+    "noLinkFound": "لا يحتوي المحتوى المشترك على رابط صالح"
   },
   "settings": {
     "title": "الإعدادات",

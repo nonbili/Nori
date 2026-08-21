@@ -62,7 +62,28 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       'expo-web-browser',
       'expo-font',
       'expo-status-bar',
-      'expo-sharing',
+      [
+        'expo-sharing',
+        {
+          ios: {
+            enabled: true,
+            extensionBundleIdentifier: 'jp.nonbili.nori.ShareExtension',
+            appGroupId: 'group.jp.nonbili.nori',
+            activationRule: {
+              supportsText: true,
+              // Browsers can share many tabs at once; accept them all instead of the first.
+              supportsWebUrlWithMaxCount: 50,
+              supportsWebPageWithMaxCount: 50,
+              supportsFileWithMaxCount: 1,
+            },
+          },
+          // Android shares are handled by ./plugins/withAndroidPlugin.ts, which routes them
+          // to the native QuickShareReceiverActivity.
+          android: {
+            enabled: false,
+          },
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,

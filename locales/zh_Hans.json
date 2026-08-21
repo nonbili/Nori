@@ -91,8 +91,13 @@
   },
   "sharing": {
     "title": "保存共享链接",
+    "titleMultiple": "保存分享的链接",
     "pickList": "选择一个列表以保存此书签。",
-    "savedToList": "已保存至 {{name}}"
+    "pickListMultiple": "选择一个列表来保存这 {{count}} 个书签。",
+    "savedToList": "已保存至 {{name}}",
+    "savedCountToList": "已将 {{count}} 个书签保存到 {{name}}",
+    "readFileFailed": "无法读取分享的文件",
+    "noLinkFound": "分享的内容不包含有效链接"
   },
   "settings": {
     "title": "设置",

@@ -91,8 +91,13 @@
   },
   "sharing": {
     "title": "Zapisz udostępniony link",
+    "titleMultiple": "Zapisz udostępnione linki",
     "pickList": "Wybierz listę, na której zapisać tę zakładkę.",
-    "savedToList": "Zapisano w {{name}}"
+    "pickListMultiple": "Wybierz listę, aby zapisać te zakładki ({{count}}).",
+    "savedToList": "Zapisano w {{name}}",
+    "savedCountToList": "Zapisano {{count}} zakładek na liście {{name}}",
+    "readFileFailed": "Nie udało się odczytać udostępnionego pliku",
+    "noLinkFound": "Udostępniona treść nie zawierała prawidłowego linku"
   },
   "settings": {
     "title": "Ustawienia",

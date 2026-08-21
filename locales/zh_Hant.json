@@ -91,8 +91,13 @@
   },
   "sharing": {
     "title": "儲存共享連結",
+    "titleMultiple": "儲存分享的連結",
     "pickList": "選擇一個列表以儲存此書籤。",
-    "savedToList": "已儲存至 {{name}}"
+    "pickListMultiple": "選擇一個列表來儲存這 {{count}} 個書籤。",
+    "savedToList": "已儲存至 {{name}}",
+    "savedCountToList": "已將 {{count}} 個書籤儲存至 {{name}}",
+    "readFileFailed": "無法讀取分享的檔案",
+    "noLinkFound": "分享的內容不包含有效連結"
   },
   "settings": {
     "title": "設定",

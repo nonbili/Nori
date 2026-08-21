@@ -91,8 +91,13 @@
   },
   "sharing": {
     "title": "Spara delad länk",
+    "titleMultiple": "Spara delade länkar",
     "pickList": "Välj en lista för att spara detta bokmärke.",
-    "savedToList": "Sparad i {{name}}"
+    "pickListMultiple": "Välj en lista att spara dessa {{count}} bokmärken i.",
+    "savedToList": "Sparad i {{name}}",
+    "savedCountToList": "Sparade {{count}} bokmärken i {{name}}",
+    "readFileFailed": "Kunde inte läsa den delade filen",
+    "noLinkFound": "Det delade innehållet innehöll ingen giltig länk"
   },
   "settings": {
     "title": "Inställningar",

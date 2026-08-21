@@ -56,6 +56,10 @@ const withAndroidSigningConfig: ConfigPlugin = (config) => {
           'nori-quick-share-intent-filters': 'true',
         },
         action: [{ $: { 'android:name': 'android.intent.action.SEND_MULTIPLE' } }],
+        data: [
+          { $: { 'android:mimeType': 'text/*' } },
+          { $: { 'android:mimeType': '*/*' } },
+        ],
         category: [{ $: { 'android:name': 'android.intent.category.DEFAULT' } }],
       },
     ] as any

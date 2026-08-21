@@ -39,20 +39,33 @@ export const SaveSharedLinkSheet: React.FC = () => {
       return
     }
 
-    const share = pendingShare
+    const items = pendingShare.items
     ui$.pendingShare.set(null)
 
-    const id = bookmarks$.add({
-      listId,
-      url: share.url,
-      title: share.title,
-      icon: share.icon || getFallbackIcon(share.url),
+    const saved = items.flatMap((share) => {
+      const id = bookmarks$.add({
+        listId,
+        url: share.url,
+        title: share.title,
+        icon: share.icon || getFallbackIcon(share.url),
+      })
+      return id ? [{ id, share }] : []
     })
 
-    if (id) {
-      settings$.setLastSelectedListId(listId)
-      showToast(t('sharing.savedToList', { name: visibleLists.find((item) => item.id === listId)?.name || t('lists.name') }))
-      void getPrefetchedBookmarkMeta(share.url)
+    if (saved.length === 0) {
+      return
+    }
+
+    settings$.setLastSelectedListId(listId)
+    const name = visibleLists.find((item) => item.id === listId)?.name || t('lists.name')
+    showToast(
+      saved.length > 1
+        ? t('sharing.savedCountToList', { count: saved.length, name })
+        : t('sharing.savedToList', { name }),
+    )
+
+    void Promise.all(saved.map(({ id, share }) => (
+      getPrefetchedBookmarkMeta(share.url)
         .then((meta) => {
           if (meta.title || meta.icon) {
             bookmarks$.update(id, {
@@ -62,18 +75,18 @@ export const SaveSharedLinkSheet: React.FC = () => {
           }
         })
         .catch(() => {})
-        // If the fetch couldn't get a real title (e.g. a client-rendered SPA), fall
-        // back to the hidden WebView to resolve it.
-        .finally(() => {
-          void backfillMissingTitles()
-        })
-    }
+    )))
+      // If the fetch couldn't get a real title (e.g. a client-rendered SPA), fall
+      // back to the hidden WebView to resolve it.
+      .finally(() => {
+        void backfillMissingTitles()
+      })
   }
 
   return (
     <Sheet
       visible={pendingShare != null}
-      title={t('sharing.title')}
+      title={pendingShare && pendingShare.items.length > 1 ? t('sharing.titleMultiple') : t('sharing.title')}
       height={windowHeight * 0.85}
       onClose={onClose}
       contentScrollRef={scrollRef}
@@ -88,11 +101,22 @@ export const SaveSharedLinkSheet: React.FC = () => {
           onScroll={handleScroll}
           scrollEventThrottle={16}
         >
-          <View className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
-            <Text className="text-base font-semibold text-stone-900 dark:text-stone-50">{pendingShare.title}</Text>
-            <Text className="mt-2 text-sm text-stone-500 dark:text-stone-400">{pendingShare.url}</Text>
+          <View className="gap-3">
+            {pendingShare.items.map((item) => (
+              <View
+                key={item.url}
+                className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900"
+              >
+                <Text className="text-base font-semibold text-stone-900 dark:text-stone-50">{item.title}</Text>
+                <Text className="mt-2 text-sm text-stone-500 dark:text-stone-400" numberOfLines={2}>{item.url}</Text>
+              </View>
+            ))}
           </View>
-          <Text className="text-sm text-stone-600 dark:text-stone-400">{t('sharing.pickList')}</Text>
+          <Text className="text-sm text-stone-600 dark:text-stone-400">
+            {pendingShare.items.length > 1
+              ? t('sharing.pickListMultiple', { count: pendingShare.items.length })
+              : t('sharing.pickList')}
+          </Text>
           <View className="gap-3">
             {visibleLists.map((list) => (
               <ActionChip key={list.id} icon="bookmark-add" label={list.name} onPress={() => onSaveToList(list.id)} />

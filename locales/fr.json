@@ -91,8 +91,13 @@
   },
   "sharing": {
     "title": "Enregistrer le lien partagé",
+    "titleMultiple": "Enregistrer les liens partagés",
     "pickList": "Choisissez une liste pour enregistrer ce favori.",
-    "savedToList": "Enregistré dans {{name}}"
+    "pickListMultiple": "Choisis une liste pour enregistrer ces {{count}} favoris.",
+    "savedToList": "Enregistré dans {{name}}",
+    "savedCountToList": "{{count}} favoris enregistrés dans {{name}}",
+    "readFileFailed": "Impossible de lire le fichier partagé",
+    "noLinkFound": "Le contenu partagé ne contenait pas de lien valide"
   },
   "settings": {
     "title": "Réglages",

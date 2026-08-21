@@ -91,8 +91,13 @@
   },
   "sharing": {
     "title": "Save shared link",
+    "titleMultiple": "Save shared links",
     "pickList": "Pick a list to save this bookmark.",
-    "savedToList": "Saved to {{name}}"
+    "pickListMultiple": "Pick a list to save these {{count}} bookmarks.",
+    "savedToList": "Saved to {{name}}",
+    "savedCountToList": "Saved {{count}} bookmarks to {{name}}",
+    "readFileFailed": "Could not read shared file",
+    "noLinkFound": "Shared content did not contain a valid link"
   },
   "settings": {
     "title": "Settings",

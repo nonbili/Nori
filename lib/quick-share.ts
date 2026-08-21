@@ -70,19 +70,25 @@ export async function drainQuickShareInbox() {
 
 export async function drainAppShareInbox() {
   const pending = await getPendingAppShareLinks()
-  const handledIds: string[] = []
-  const entry = pending[0]
+  if (pending.length === 0) {
+    return 0
+  }
 
-  if (entry?.url && isValidQuickShareHttpUrl(entry.url)) {
-    ui$.pendingBookmarkImport.set(null)
-    ui$.pendingShare.set({
+  const items = pending
+    .filter((entry) => entry.url && isValidQuickShareHttpUrl(entry.url))
+    .map((entry) => ({
       url: entry.url,
       title: getFallbackTitle(entry.url),
       icon: getFallbackIcon(entry.url),
-    })
-    handledIds.push(entry.id)
+    }))
+
+  if (items.length > 0) {
+    ui$.pendingBookmarkImport.set(null)
+    ui$.pendingShare.set({ items })
   }
 
-  await removePendingAppShareLinkIds(handledIds)
-  return handledIds.length
+  // Drop every entry, including the ones without a usable URL, so a share we cannot
+  // handle doesn't stay at the head of the inbox and shadow later ones.
+  await removePendingAppShareLinkIds(pending.map((entry) => entry.id))
+  return items.length
 }

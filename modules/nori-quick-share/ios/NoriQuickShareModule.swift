@@ -15,6 +15,9 @@ struct PendingQuickShareLinkRecord: Record {
   var createdAt: String = ""
 }
 
+private let quickShareInboxKey = "quick_share_inbox"
+private let appShareInboxKey = "app_share_inbox"
+
 public class NoriQuickShareModule: Module {
   public func definition() -> ModuleDefinition {
     Name("NoriQuickShare")
@@ -38,14 +41,33 @@ public class NoriQuickShareModule: Module {
     }
 
     AsyncFunction("removePendingLinkIds") { (ids: [String]) in
-      let removeIds = Set(ids)
-      let next = self.readInbox().filter { item in
-        guard let id = item["id"] else {
-          return true
-        }
-        return !removeIds.contains(id)
+      self.writeInbox(self.removing(ids, from: self.readInbox()), forKey: quickShareInboxKey)
+    }
+
+    AsyncFunction("getPendingAppLinks") { () -> [PendingQuickShareLinkRecord] in
+      return self.readInbox(forKey: appShareInboxKey).map { item in
+        PendingQuickShareLinkRecord(
+          id: item["id"] ?? "",
+          url: item["url"] ?? "",
+          targetListId: item["targetListId"] ?? "",
+          createdAt: item["createdAt"] ?? ""
+        )
       }
-      self.writeInbox(next)
+    }
+
+    AsyncFunction("removePendingAppLinkIds") { (ids: [String]) in
+      let inbox = self.readInbox(forKey: appShareInboxKey)
+      self.writeInbox(self.removing(ids, from: inbox), forKey: appShareInboxKey)
+    }
+  }
+
+  private func removing(_ ids: [String], from items: [[String: String]]) -> [[String: String]] {
+    let removeIds = Set(ids)
+    return items.filter { item in
+      guard let id = item["id"] else {
+        return true
+      }
+      return !removeIds.contains(id)
     }
   }
 
@@ -57,17 +79,17 @@ public class NoriQuickShareModule: Module {
     return UserDefaults.standard
   }
 
-  private func readInbox() -> [[String: String]] {
-    guard let data = defaults().data(forKey: "quick_share_inbox"),
+  private func readInbox(forKey key: String = quickShareInboxKey) -> [[String: String]] {
+    guard let data = defaults().data(forKey: key),
           let value = try? JSONSerialization.jsonObject(with: data) as? [[String: String]] else {
       return []
     }
     return value
   }
 
-  private func writeInbox(_ items: [[String: String]]) {
+  private func writeInbox(_ items: [[String: String]], forKey key: String = quickShareInboxKey) {
     let data = try? JSONSerialization.data(withJSONObject: items)
-    defaults().set(data, forKey: "quick_share_inbox")
+    defaults().set(data, forKey: key)
     defaults().synchronize()
   }
 }
