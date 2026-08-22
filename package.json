@@ -2,9 +2,9 @@
   "name": "nori",
   "private": true,
   "main": "expo-router/entry",
-  "version": "0.1.12",
-  "versionCode": 13,
-  "buildNumber": "12",
+  "version": "0.1.13",
+  "versionCode": 14,
+  "buildNumber": "13",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -62,5 +62,8 @@
     "eslint-config-expo": "~57.0.1",
     "ts-node": "^10.9.2",
     "typescript": "~6.0.3"
+  },
+  "patchedDependencies": {
+    "expo-modules-jsi@57.0.4": "patches/expo-modules-jsi@57.0.4.patch"
   }
 }

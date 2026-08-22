@@ -53,7 +53,7 @@ export const AppHeader: React.FC = () => {
           <MaterialIcons name="bookmarks" size={20} color={themeColors.icon} />
         </Pressable>
       </View>
-      <View className="flex-row gap-2">
+      <View className="flex-row gap-4">
         <Pressable
           onPress={() => ui$.recentSheetOpen.set(true)}
           testID="history_button"

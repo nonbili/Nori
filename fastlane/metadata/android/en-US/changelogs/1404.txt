@@ -1,0 +1,5 @@
+- Support sharing multiple links at once
+- Add move to list action for bookmarks
+- Add share option to bookmark selection bar
+- Add in-app changelog from GitHub releases
+- Improve sync performance and search efficiency
