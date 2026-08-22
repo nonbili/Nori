@@ -4,6 +4,9 @@ import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { dismissSnackbar, registerSnackbarHost, ui$, type SnackbarState } from '@/states/ui'
 
+const TOOLBAR_BOTTOM_MARGIN = 16
+const SNACKBAR_TOOLBAR_GAP = 8
+
 function SnackbarRow({ snackbar }: { snackbar: SnackbarState }) {
   return (
     <View className="mt-2 w-full max-w-xl flex-row items-center rounded-2xl bg-stone-900 px-4 py-3 shadow-lg dark:bg-stone-100">
@@ -28,6 +31,7 @@ function SnackbarRow({ snackbar }: { snackbar: SnackbarState }) {
 export function ActionSnackbar() {
   const snackbars = useValue(ui$.snackbars)
   const hosts = useValue(ui$.snackbarHosts)
+  const toolbarHeight = useValue(ui$.bookmarkToolbarHeight)
   const insets = useSafeAreaInsets()
   const [hostId, setHostId] = useState<number | null>(null)
 
@@ -43,12 +47,21 @@ export function ActionSnackbar() {
     return null
   }
 
+  // Sheets and the drawer cover the toolbar, so only the root stack avoids it.
+  const isRootHost = hosts[0] === hostId
+
   return (
     <View
       pointerEvents="box-none"
       accessibilityLiveRegion="polite"
       className="absolute inset-x-0 bottom-0 z-50 items-center px-4"
-      style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+      // The home toolbar owns the bottom of the screen, so the stack sits above
+      // it rather than covering its buttons.
+      style={{
+        paddingBottom: isRootHost && toolbarHeight > 0
+          ? insets.bottom + TOOLBAR_BOTTOM_MARGIN + toolbarHeight + SNACKBAR_TOOLBAR_GAP
+          : Math.max(insets.bottom, 16),
+      }}
     >
       {snackbars.map((snackbar) => (
         <SnackbarRow key={snackbar.id} snackbar={snackbar} />

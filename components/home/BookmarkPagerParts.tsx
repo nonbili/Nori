@@ -38,6 +38,7 @@ export interface BookmarkPagerActions {
   onSelectAll: () => void
   onHideSelected: () => void
   onMoveSelectedToList: (listId: string) => void
+  onShareSelected: () => void
   onBottomStateChange: (atBottom: boolean) => void
   onRemoveSelectedBookmark: () => void
 }

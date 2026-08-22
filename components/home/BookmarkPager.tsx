@@ -310,6 +310,19 @@ export const BookmarkPager: React.FC = () => {
     )
   }
 
+  const shareSelectedBookmarks = useCallback(() => {
+    if (!selectedBookmarks.length) {
+      return
+    }
+
+    const urls = selectedBookmarks.map((bookmark) => bookmark.url)
+    void Share.share(
+      urls.length === 1
+        ? { url: urls[0], message: urls[0] }
+        : { message: urls.join('\n') },
+    )
+  }, [selectedBookmarks])
+
   const moveSelectedBookmarks = useCallback((targetListId: string) => {
     const snapshots = [...selectedBookmarks]
     if (!snapshots.length) {
@@ -366,6 +379,7 @@ export const BookmarkPager: React.FC = () => {
     onSelectAll: selectAllBookmarks,
     onHideSelected: hideSelectedBookmarks,
     onMoveSelectedToList: moveSelectedBookmarks,
+    onShareSelected: shareSelectedBookmarks,
     onBottomStateChange: setBookmarkListAtBottom,
     onRemoveSelectedBookmark: removeSelectedBookmark,
   }

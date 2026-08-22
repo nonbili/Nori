@@ -45,6 +45,7 @@ export interface SnackbarState {
 interface UIStore {
   bookmarkEditMode: boolean
   bookmarkEditor: BookmarkEditorState | null
+  bookmarkToolbarHeight: number
   drawerFilterListId: string
   bookmarkListAtBottom: boolean
   drawerOpen: boolean
@@ -63,6 +64,7 @@ interface UIStore {
 export const ui$ = observable<UIStore>({
   bookmarkEditMode: false,
   bookmarkEditor: null,
+  bookmarkToolbarHeight: 0,
   drawerFilterListId: 'all',
   bookmarkListAtBottom: true,
   drawerOpen: false,

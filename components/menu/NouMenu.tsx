@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import { Modal, Pressable as NativePressable, Text, useWindowDimensions, View } from 'react-native'
+import { Modal, Pressable as NativePressable, ScrollView, Text, useWindowDimensions, View } from 'react-native'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
@@ -28,7 +28,7 @@ export const NouMenu: React.FC<{
   const triggerRef = useRef<View>(null)
   const menuWidth = 220
   const itemHeight = 44
-  const menuHeight = items.length * itemHeight + 16
+  const menuPadding = 16
 
   const openMenu = () => {
     triggerRef.current?.measureInWindow((x, y, width, height) => {
@@ -59,6 +59,10 @@ export const NouMenu: React.FC<{
   const verticalPadding = 8
   const triggerGap = 4
   const minTop = insets.top + verticalPadding
+  // A long list would otherwise run past the screen edge with its lower items
+  // out of reach, so the menu scrolls once it fills the available height.
+  const availableHeight = Math.max(itemHeight + menuPadding, screenHeight - insets.top - insets.bottom - verticalPadding * 2)
+  const menuHeight = Math.min(items.length * itemHeight + menuPadding, availableHeight)
   const maxTop = Math.max(minTop, screenHeight - insets.bottom - menuHeight - verticalPadding)
   const top = anchor
     ? (() => {
@@ -100,40 +104,43 @@ export const NouMenu: React.FC<{
                 top,
                 left,
                 width: menuWidth,
+                maxHeight: menuHeight,
                 backgroundColor: themeColors.surface,
                 borderColor: themeColors.surfaceBorder,
               }}
             >
-              {items.map((item, index) => (
-                <NativePressable
-                  key={index}
-                  testID={`menu_item_${item.label.toLowerCase().replace(/\s+/g, '_')}`}
-                  accessibilityLabel={item.label}
-                  accessibilityRole="menuitem"
-                  className="flex-row items-center px-4"
-                  style={{ minHeight: itemHeight }}
-                  onPress={() => {
-                    pendingItem.current = item
-                    closeMenu()
-                  }}
-                >
-                  <View className="mr-3 w-5 items-center" accessible={false} importantForAccessibility="no-hide-descendants">
-                    {item.icon ? (
-                      <MaterialIcons
-                        name={item.icon}
-                        size={18}
-                        color={themeColors.icon}
-                      />
-                    ) : null}
-                  </View>
-                  <Text className="flex-1" style={{ color: themeColors.textPrimary }}>{item.label}</Text>
-                  {item.selected ? (
-                    <View accessible={false} importantForAccessibility="no-hide-descendants">
-                      <MaterialIcons name="check" size={18} color={themeColors.iconAccentStrong} />
+              <ScrollView bounces={false} showsVerticalScrollIndicator={items.length * itemHeight + menuPadding > menuHeight}>
+                {items.map((item, index) => (
+                  <NativePressable
+                    key={index}
+                    testID={`menu_item_${item.label.toLowerCase().replace(/\s+/g, '_')}`}
+                    accessibilityLabel={item.label}
+                    accessibilityRole="menuitem"
+                    className="flex-row items-center px-4"
+                    style={{ minHeight: itemHeight }}
+                    onPress={() => {
+                      pendingItem.current = item
+                      closeMenu()
+                    }}
+                  >
+                    <View className="mr-3 w-5 items-center" accessible={false} importantForAccessibility="no-hide-descendants">
+                      {item.icon ? (
+                        <MaterialIcons
+                          name={item.icon}
+                          size={18}
+                          color={themeColors.icon}
+                        />
+                      ) : null}
                     </View>
-                  ) : null}
-                </NativePressable>
-              ))}
+                    <Text className="flex-1" style={{ color: themeColors.textPrimary }}>{item.label}</Text>
+                    {item.selected ? (
+                      <View accessible={false} importantForAccessibility="no-hide-descendants">
+                        <MaterialIcons name="check" size={18} color={themeColors.iconAccentStrong} />
+                      </View>
+                    ) : null}
+                  </NativePressable>
+                ))}
+              </ScrollView>
             </View>
           </View>
         </Modal>
