@@ -5,14 +5,17 @@ import { useValue } from '@legendapp/state/react'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ui$ } from '@/states/ui'
+import { NouMenu } from '@/components/menu/NouMenu'
+import { showToast } from '@/lib/toast'
 import type { BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
 
 export const BookmarkPagerToolbar: React.FC<{
   selectedCount: number
   allVisibleSelected: boolean
   hasVisibleBookmarks: boolean
+  moveTargetLists: { id: string; name: string }[]
   actions: BookmarkPagerActions
-}> = ({ selectedCount, allVisibleSelected, hasVisibleBookmarks, actions }) => {
+}> = ({ selectedCount, allVisibleSelected, hasVisibleBookmarks, moveTargetLists, actions }) => {
   const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const insets = useSafeAreaInsets()
@@ -52,6 +55,29 @@ export const BookmarkPagerToolbar: React.FC<{
                   >
                     <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">{t('bookmarks.hide')}</Text>
                   </Pressable>
+                  {moveTargetLists.length ? (
+                    <NouMenu
+                      accessibilityLabel={t('bookmarks.moveTo')}
+                      items={moveTargetLists.map((list) => ({
+                        id: list.id,
+                        label: list.name,
+                        handler: () => actions.onMoveSelectedToList(list.id),
+                      }))}
+                      trigger={(
+                        <View className="h-10 w-10 items-center justify-center rounded-full bg-stone-200 dark:bg-stone-800">
+                          <MaterialIcons name="drive-file-move" size={18} color={themeColors.icon} />
+                        </View>
+                      )}
+                    />
+                  ) : (
+                    <Pressable
+                      onPress={() => showToast(t('bookmarks.noOtherLists'))}
+                      className="h-10 w-10 items-center justify-center rounded-full bg-stone-200 opacity-40 dark:bg-stone-800"
+                      accessibilityLabel={t('bookmarks.moveTo')}
+                    >
+                      <MaterialIcons name="drive-file-move" size={18} color={themeColors.icon} />
+                    </Pressable>
+                  )}
                   <Pressable
                     onPress={actions.onRemoveSelectedBookmark}
                     className="h-10 w-10 items-center justify-center rounded-full bg-rose-100 active:bg-rose-200 dark:bg-rose-900/40 dark:active:bg-rose-900/60"
@@ -71,7 +97,7 @@ export const BookmarkPagerToolbar: React.FC<{
               <View className="h-1 w-12 rounded-full bg-stone-300/90 dark:bg-white/20" />
               <MaterialIcons name="keyboard-arrow-up" size={24} color={themeColors.iconMuted} />
             </Pressable>
-          ) : <View className="h-10 w-20" />}
+          ) : <View className="h-10 w-2" />}
           <Pressable
             onPress={() => {
               ui$.bookmarkEditMode.set(!bookmarkEditMode)

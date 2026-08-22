@@ -14,20 +14,23 @@ import { htmlLooksLikeBookmarkExport, parseSharedUrls } from '@/lib/share-intent
 import { backfillMissingTitles } from '@/lib/title-backfill'
 import { showToast } from '@/lib/toast'
 
-const isHtmlPayload = (payload: ResolvedSharePayload) => {
-  const name = payload.originalName?.toLowerCase() || ''
-  const mimeType = payload.contentMimeType?.toLowerCase() || ''
+interface SharedFile {
+  uri: string
+  name: string | null
+  mimeType: string | null
+}
+
+const isHtmlFile = (file: SharedFile) => {
+  const name = file.name?.toLowerCase() || ''
+  const mimeType = file.mimeType?.toLowerCase() || ''
   return mimeType.includes('html') || name.endsWith('.html') || name.endsWith('.htm')
 }
 
 const isFileUri = (uri: string | null | undefined) =>
   !!uri && !/^https?:\/\//i.test(uri)
 
-const isFilePayload = (payload: ResolvedSharePayload) =>
-  isFileUri(payload.contentUri)
-
-const getPayloadsKey = (payloads: ResolvedSharePayload[]) =>
-  payloads.map((payload) => `${payload.contentType ?? 'text'}:${payload.contentUri ?? ''}:${payload.value}`).join('|')
+const getPayloadsKey = (payloads: (SharePayload | ResolvedSharePayload)[]) =>
+  payloads.map((payload) => `${payload.shareType}:${payload.value}`).join('|')
 
 const looksLikeFilePayload = (payload: SharePayload) =>
   payload.shareType === 'audio'
@@ -45,15 +48,41 @@ const fileNameFromValue = (value: string) => {
   }
 }
 
+const resolvedFile = (payloads: ResolvedSharePayload[]): SharedFile | null => {
+  const payload = payloads.find((item) => isFileUri(item.contentUri))
+  return payload?.contentUri
+    ? { uri: payload.contentUri, name: payload.originalName, mimeType: payload.contentMimeType }
+    : null
+}
+
+const rawFile = (payloads: SharePayload[]): SharedFile | null => {
+  const payload = payloads.find((item) => looksLikeFilePayload(item) && isFileUri(item.value))
+  return payload
+    ? { uri: payload.value, name: fileNameFromValue(payload.value), mimeType: payload.mimeType ?? null }
+    : null
+}
+
+// A single share can carry many links: several browser tabs arrive either as one payload
+// per tab, or as one newline separated text payload.
+const resolvedUrls = (payloads: ResolvedSharePayload[]) => [...new Set(payloads.flatMap((payload) => (
+  payload.contentType === 'website' && payload.contentUri
+    ? [payload.contentUri]
+    : parseSharedUrls({ text: payload.value })
+)))]
+
+const rawUrls = (payloads: SharePayload[]) =>
+  [...new Set(payloads.flatMap((payload) => parseSharedUrls({ text: payload.value })))]
+
 /**
  * Handles shares coming in through the iOS share extension. Android delivers shares to
  * the native QuickShareReceiverActivity instead, which drains through `useQuickShare`.
  */
 export const usePendingShareIntent = () => {
   const { t } = useTranslation()
-  const { sharedPayloads, resolvedSharedPayloads, clearSharedPayloads, isResolving } = useIncomingShare()
+  const { sharedPayloads, resolvedSharedPayloads, clearSharedPayloads, isResolving, error } = useIncomingShare()
   const handledPayloadsKey = useRef<string | null>(null)
   const placeholderShownRef = useRef(false)
+  const resolutionRanRef = useRef(false)
 
   useEffect(() => {
     if (Platform.OS !== 'ios' || placeholderShownRef.current) {
@@ -75,20 +104,41 @@ export const usePendingShareIntent = () => {
   }, [sharedPayloads])
 
   useEffect(() => {
-    if (Platform.OS !== 'ios' || isResolving) {
+    if (Platform.OS !== 'ios') {
       return
     }
-    if (resolvedSharedPayloads.length === 0) {
+    if (isResolving) {
+      resolutionRanRef.current = true
+      return
+    }
+    if (sharedPayloads.length === 0) {
       handledPayloadsKey.current = null
       placeholderShownRef.current = false
+      resolutionRanRef.current = false
       return
     }
 
-    const key = getPayloadsKey(resolvedSharedPayloads)
+    // Resolving enriches payloads (redirect targets, file URIs) but needs the network, so
+    // it can fail or come back empty. Fall back to the raw payloads rather than sitting on
+    // a share we can never handle; only wait while resolution still has a chance to run.
+    const useRawPayloads = resolvedSharedPayloads.length === 0
+    if (useRawPayloads && !error && !resolutionRanRef.current) {
+      return
+    }
+
+    const payloads: (SharePayload | ResolvedSharePayload)[] = useRawPayloads ? sharedPayloads : resolvedSharedPayloads
+    const key = getPayloadsKey(payloads)
     if (handledPayloadsKey.current === key) {
       return
     }
     handledPayloadsKey.current = key
+
+    const done = () => {
+      handledPayloadsKey.current = null
+      placeholderShownRef.current = false
+      resolutionRanRef.current = false
+      clearSharedPayloads()
+    }
 
     const handleUrls = (urls: string[]) => {
       ui$.pendingBookmarkImport.set(null)
@@ -106,8 +156,7 @@ export const usePendingShareIntent = () => {
           )
           void backfillMissingTitles()
         }
-        handledPayloadsKey.current = null
-        clearSharedPayloads()
+        done()
         return
       }
 
@@ -119,71 +168,60 @@ export const usePendingShareIntent = () => {
           icon: getFallbackIcon(url),
         })),
       })
-      handledPayloadsKey.current = null
-      clearSharedPayloads()
+      done()
     }
 
-    const handleFile = (payload: ResolvedSharePayload, uri: string) => {
+    const handleFile = (file: SharedFile) => {
       ui$.pendingShare.set(null)
       ui$.pendingBookmarkImport.set({
         content: '',
-        name: payload.originalName,
-        mimeType: payload.contentMimeType,
+        name: file.name,
+        mimeType: file.mimeType,
         count: 0,
         isParsing: true,
       })
 
       void readBookmarkImportText({
-        uri,
-        name: payload.originalName,
-        mimeType: payload.contentMimeType,
+        uri: file.uri,
+        name: file.name,
+        mimeType: file.mimeType,
       })
         .then((content) => {
-          const count = isHtmlPayload(payload) && !htmlLooksLikeBookmarkExport(content)
+          const count = isHtmlFile(file) && !htmlLooksLikeBookmarkExport(content)
             ? 0
             : countBookmarksInImportText(content, {
-                name: payload.originalName,
-                mimeType: payload.contentMimeType,
+                name: file.name,
+                mimeType: file.mimeType,
               })
 
           ui$.pendingBookmarkImport.set({
             content,
-            name: payload.originalName,
-            mimeType: payload.contentMimeType,
+            name: file.name,
+            mimeType: file.mimeType,
             count,
             isParsing: false,
           })
         })
-        .catch((error) => {
+        .catch((readError) => {
           console.warn('Failed to read shared bookmark file', {
-            contentUri: uri,
-            originalName: payload.originalName,
-            contentMimeType: payload.contentMimeType,
-            error,
+            contentUri: file.uri,
+            originalName: file.name,
+            contentMimeType: file.mimeType,
+            error: readError,
           })
           ui$.pendingBookmarkImport.set(null)
           showToast(t('sharing.readFileFailed'))
         })
-        .finally(() => {
-          handledPayloadsKey.current = null
-          clearSharedPayloads()
-        })
+        .finally(done)
     }
 
-    const filePayload = resolvedSharedPayloads.find(isFilePayload)
-    if (filePayload?.contentUri) {
-      handleFile(filePayload, filePayload.contentUri)
+    const file = useRawPayloads ? rawFile(sharedPayloads) : resolvedFile(resolvedSharedPayloads)
+    if (file) {
+      handleFile(file)
       return
     }
 
-    // A single share can carry many links: several browser tabs arrive either as one
-    // payload per tab, or as one newline separated text payload.
-    const urls = [...new Set(resolvedSharedPayloads.flatMap((payload) => (
-      payload.contentType === 'website' && payload.contentUri
-        ? [payload.contentUri]
-        : parseSharedUrls({ text: payload.value })
-    )))]
-
+    const urls = useRawPayloads ? rawUrls(sharedPayloads) : resolvedUrls(resolvedSharedPayloads)
     if (urls.length > 0) {
       handleUrls(urls)
       return
@@ -191,7 +229,6 @@ export const usePendingShareIntent = () => {
 
     ui$.pendingBookmarkImport.set(null)
     showToast(t('sharing.noLinkFound'))
-    handledPayloadsKey.current = null
-    clearSharedPayloads()
-  }, [resolvedSharedPayloads, isResolving, clearSharedPayloads, t])
+    done()
+  }, [sharedPayloads, resolvedSharedPayloads, isResolving, error, clearSharedPayloads, t])
 }

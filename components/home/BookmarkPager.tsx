@@ -310,6 +310,29 @@ export const BookmarkPager: React.FC = () => {
     )
   }
 
+  const moveSelectedBookmarks = useCallback((targetListId: string) => {
+    const snapshots = [...selectedBookmarks]
+    if (!snapshots.length) {
+      return
+    }
+
+    const moved = bookmarks$.moveManyToList(snapshots.map((bookmark) => bookmark.id), targetListId)
+    ui$.selectedBookmarkIds.set([])
+    if (!moved) {
+      showToast(t('bookmarks.moveSkipped'))
+      return
+    }
+
+    const listName = visibleLists.find((list) => list.id === targetListId)?.name || ''
+    showSnackbar(
+      moved === 1
+        ? t('bookmarks.movedOne', { name: listName })
+        : t('bookmarks.movedMany', { count: moved, name: listName }),
+      t('common.undo'),
+      () => bookmarks$.restoreMany(snapshots),
+    )
+  }, [selectedBookmarks, t, visibleLists])
+
   const hideSelectedBookmarks = useCallback(() => {
     const ids = ui$.selectedBookmarkIds.get()
     if (!ids.length) {
@@ -342,6 +365,7 @@ export const BookmarkPager: React.FC = () => {
     onSelectBookmark: selectBookmark,
     onSelectAll: selectAllBookmarks,
     onHideSelected: hideSelectedBookmarks,
+    onMoveSelectedToList: moveSelectedBookmarks,
     onBottomStateChange: setBookmarkListAtBottom,
     onRemoveSelectedBookmark: removeSelectedBookmark,
   }
@@ -386,6 +410,7 @@ export const BookmarkPager: React.FC = () => {
 
         <BookmarkPagerToolbar
           selectedCount={selectedBookmarks.length}
+          moveTargetLists={visibleLists.filter((list) => list.id !== selectedList?.id)}
           allVisibleSelected={allVisibleSelected}
           hasVisibleBookmarks={visibleListBookmarks.length > 0}
           actions={pagerActions}

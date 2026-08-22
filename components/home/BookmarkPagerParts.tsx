@@ -37,6 +37,7 @@ export interface BookmarkPagerActions {
   onSelectBookmark: (bookmark: BookmarkRecord) => void
   onSelectAll: () => void
   onHideSelected: () => void
+  onMoveSelectedToList: (listId: string) => void
   onBottomStateChange: (atBottom: boolean) => void
   onRemoveSelectedBookmark: () => void
 }

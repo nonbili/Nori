@@ -36,6 +36,7 @@ interface Store {
   setVisible: (id: string, visible: boolean) => void
   setVisibleMany: (ids: string[], visible: boolean) => void
   move: (id: string, delta: -1 | 1) => void
+  moveManyToList: (ids: string[], listId: string) => number
   reorder: (listId: string, orderedIds: string[]) => void
   deleteByListId: (listId: string) => void
 }
@@ -217,6 +218,49 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       ...item,
       updatedAt: visibleIds.includes(item.id) ? now : item.updatedAt,
     })))
+  },
+  moveManyToList: (ids, listId) => {
+    const targetListId = resolveListId(listId)
+    if (!ids.length || !targetListId) {
+      return 0
+    }
+
+    const idSet = new Set(ids)
+    const items = bookmarks$.bookmarks.get()
+    const targetUrlKeys = new Set(
+      items
+        .filter((item) => item.listId === targetListId && !isDeleted(item) && !idSet.has(item.id))
+        .map((item) => getBookmarkUrlKey(item.url)),
+    )
+    let nextSortIndex = items.filter((item) => item.listId === targetListId).length
+    const now = new Date().toISOString()
+    let moved = 0
+
+    const nextItems = items.map((item) => {
+      if (!idSet.has(item.id) || item.listId === targetListId || isDeleted(item)) {
+        return item
+      }
+
+      // A link already filed under the target list would become a duplicate there.
+      const urlKey = getBookmarkUrlKey(item.url)
+      if (targetUrlKeys.has(urlKey)) {
+        return item
+      }
+      targetUrlKeys.add(urlKey)
+      moved += 1
+
+      return {
+        ...patchRowState(item, { sort_index: nextSortIndex++ }),
+        listId: targetListId,
+        updatedAt: now,
+      }
+    })
+
+    if (!moved) {
+      return 0
+    }
+    bookmarks$.bookmarks.set(nextItems)
+    return moved
   },
   reorder: (listId, orderedIds) => {
     const items = bookmarks$.bookmarks.get()
