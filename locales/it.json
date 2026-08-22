@@ -193,6 +193,16 @@
       "languageHint": "Scegli una lingua oppure utilizza la lingua di sistema.",
       "languageSystem": "Sistema"
     },
+    "changelog": {
+      "label": "Registro modifiche",
+      "hint": "Versioni e correzioni recenti da GitHub.",
+      "loading": "Caricamento delle note di rilascio…",
+      "error": "Impossibile caricare le note di rilascio.",
+      "retry": "Riprova",
+      "empty": "Nessuna nota di rilascio trovata.",
+      "current": "Attuale",
+      "noNotes": "Nessuna nota di rilascio fornita per questa versione."
+    },
     "about": {
       "label": "Informazioni",
       "version": "Versione",

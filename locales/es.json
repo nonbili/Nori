@@ -193,6 +193,16 @@
       "languageHint": "Elige un idioma o sigue el idioma del sistema.",
       "languageSystem": "Sistema"
     },
+    "changelog": {
+      "label": "Registro de cambios",
+      "hint": "Versiones y correcciones recientes desde GitHub.",
+      "loading": "Cargando notas de la versión…",
+      "error": "No se pudieron cargar las notas de la versión.",
+      "retry": "Reintentar",
+      "empty": "No se encontraron notas de versión.",
+      "current": "Actual",
+      "noNotes": "No se proporcionaron notas para esta versión."
+    },
     "about": {
       "label": "Acerca de",
       "version": "Versión",

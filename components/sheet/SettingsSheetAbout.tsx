@@ -52,14 +52,22 @@ export const AboutRow: React.FC<{
   )
 }
 
-export const SettingsAboutPage: React.FC<{ appVersion: string }> = ({ appVersion }) => {
+export const SettingsAboutPage: React.FC<{ appVersion: string; actions: SettingsActions }> = ({ appVersion, actions }) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
 
   return (
     <>
       <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-        <AboutRow icon="info-outline" title={t('settings.about.version')} detail={`v${appVersion}`} themeColors={themeColors} isLast />
+        <AboutRow icon="info-outline" title={t('settings.about.version')} detail={`v${appVersion}`} themeColors={themeColors} />
+        <AboutRow
+          icon="history"
+          title={t('settings.changelog.label')}
+          detail={t('settings.changelog.hint')}
+          onPress={actions.onOpenChangelog}
+          themeColors={themeColors}
+          isLast
+        />
       </View>
 
       <SectionCard title={t('settings.about.code')}>

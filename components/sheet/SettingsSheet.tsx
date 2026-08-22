@@ -14,6 +14,7 @@ import {
   TransferSection,
 } from '@/components/sheet/SettingsSheetSections'
 import { AboutSettingsSection, SettingsAboutPage } from '@/components/sheet/SettingsSheetAbout'
+import { SettingsChangelogPage } from '@/components/sheet/SettingsSheetChangelog'
 import { useSettingsSheetActions } from '@/components/sheet/useSettingsSheetActions'
 import { version as appVersion } from '@/package.json'
 
@@ -24,7 +25,7 @@ export const SettingsSheet: React.FC = () => {
   const visible = useValue(ui$.settingsSheetOpen)
   const scrollOffset = useSharedValue(0)
   const scrollRef = useRef(null)
-  const [page, setPage] = useState<'home' | 'about'>('home')
+  const [page, setPage] = useState<'home' | 'about' | 'changelog'>('home')
   const settingsActions = useSettingsSheetActions()
 
   useEffect(() => {
@@ -44,12 +45,13 @@ export const SettingsSheet: React.FC = () => {
   const actions = {
     ...settingsActions,
     onOpenAbout: () => setPage('about'),
+    onOpenChangelog: () => setPage('changelog'),
   }
 
   const headerLeft =
     page === 'home' ? undefined : (
       <Pressable
-        onPress={() => setPage('home')}
+        onPress={() => setPage(page === 'changelog' ? 'about' : 'home')}
         accessibilityLabel={t('common.back')}
         accessibilityRole="button"
         className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
@@ -61,9 +63,9 @@ export const SettingsSheet: React.FC = () => {
   return (
     <Sheet
       visible={visible}
-      title={page === 'about' ? t('settings.about.label') : t('settings.title')}
+      title={page === 'about' ? t('settings.about.label') : page === 'changelog' ? t('settings.changelog.label') : t('settings.title')}
       height={windowHeight * 0.85}
-      onClose={page === 'about' ? () => setPage('home') : onClose}
+      onClose={page === 'home' ? onClose : () => setPage(page === 'changelog' ? 'about' : 'home')}
       headerLeft={headerLeft}
       showCloseButton={page === 'home'}
       contentScrollRef={scrollRef}
@@ -73,12 +75,14 @@ export const SettingsSheet: React.FC = () => {
         ref={scrollRef}
         showsVerticalScrollIndicator={false}
         className="flex-1"
-        contentContainerClassName={`${page === 'about' ? 'gap-6' : 'gap-8'} pb-4`}
+        contentContainerClassName={`${page === 'home' ? 'gap-8' : 'gap-6'} pb-4`}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-        {page === 'about' ? (
-          <SettingsAboutPage appVersion={appVersion} />
+        {page === 'changelog' ? (
+          <SettingsChangelogPage appVersion={appVersion} />
+        ) : page === 'about' ? (
+          <SettingsAboutPage appVersion={appVersion} actions={actions} />
         ) : (
           <>
             <SyncSettingsSections actions={actions} />

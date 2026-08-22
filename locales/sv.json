@@ -193,6 +193,16 @@
       "languageHint": "Välj ett språk eller följ systemspråket.",
       "languageSystem": "System"
     },
+    "changelog": {
+      "label": "Ändringslogg",
+      "hint": "Senaste versioner och korrigeringar från GitHub.",
+      "loading": "Läser in versionsinformation…",
+      "error": "Kunde inte läsa in versionsinformationen.",
+      "retry": "Försök igen",
+      "empty": "Ingen versionsinformation hittades.",
+      "current": "Nuvarande",
+      "noNotes": "Ingen versionsinformation angavs för den här versionen."
+    },
     "about": {
       "label": "Om",
       "version": "Version",

@@ -46,6 +46,7 @@ export interface SettingsActions {
   onExportBookmarks: (format: BookmarkTransferFormat) => void
   onDeleteAccount: () => void
   onOpenAbout: () => void
+  onOpenChangelog: () => void
 }
 
 const SectionCard: React.FC<{ title: string; children: ReactNode }> = ({ title, children }) => (

@@ -193,6 +193,16 @@
       "languageHint": "Bir dil seçin veya sistem dilini kullanın.",
       "languageSystem": "Sistem"
     },
+    "changelog": {
+      "label": "Değişiklik günlüğü",
+      "hint": "GitHub'daki son sürümler ve düzeltmeler.",
+      "loading": "Sürüm notları yükleniyor…",
+      "error": "Sürüm notları yüklenemedi.",
+      "retry": "Yeniden dene",
+      "empty": "Sürüm notu bulunamadı.",
+      "current": "Geçerli",
+      "noNotes": "Bu sürüm için sürüm notu verilmedi."
+    },
     "about": {
       "label": "Hakkında",
       "version": "Sürüm",

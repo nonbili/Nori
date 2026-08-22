@@ -193,6 +193,16 @@
       "languageHint": "選擇一種語言或使用系統語言。",
       "languageSystem": "系統"
     },
+    "changelog": {
+      "label": "更新日誌",
+      "hint": "來自 GitHub 的最新版本與修正。",
+      "loading": "正在載入發行說明…",
+      "error": "載入發行說明失敗。",
+      "retry": "重試",
+      "empty": "找不到發行說明。",
+      "current": "目前",
+      "noNotes": "此版本未提供發行說明。"
+    },
     "about": {
       "label": "關於",
       "version": "版本",

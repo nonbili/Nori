@@ -193,6 +193,16 @@
       "languageHint": "Wybierz język lub użyj języka systemowego.",
       "languageSystem": "Systemowy"
     },
+    "changelog": {
+      "label": "Lista zmian",
+      "hint": "Najnowsze wydania i poprawki z GitHuba.",
+      "loading": "Wczytywanie informacji o wydaniu…",
+      "error": "Nie udało się wczytać informacji o wydaniu.",
+      "retry": "Ponów",
+      "empty": "Nie znaleziono informacji o wydaniach.",
+      "current": "Bieżące",
+      "noNotes": "Dla tej wersji nie podano informacji o wydaniu."
+    },
     "about": {
       "label": "O aplikacji",
       "version": "Wersja",
