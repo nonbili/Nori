@@ -13,6 +13,7 @@ import i18n from 'i18next'
 import { colorScheme as nativeWindColorScheme } from 'nativewind'
 import { onReceiveAuthUrl } from '@/lib/supabase/auth'
 import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
+import { purgeExpiredTombstones } from '@/lib/tombstone-purge'
 import { useAppColorScheme } from '@/lib/theme'
 import { auth$, bootstrapAuth } from '@/states/auth'
 import { settings$ } from '@/states/settings'
@@ -45,6 +46,9 @@ function LayoutContent() {
   }, [theme])
 
   useEffect(() => {
+    // Before the watchers start, so compacting old tombstones does not mark every
+    // row pending and schedule a full push.
+    purgeExpiredTombstones()
     startSupabaseSyncWatchers()
     void bootstrapAuth()
 

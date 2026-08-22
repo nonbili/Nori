@@ -31,6 +31,15 @@ const getCreatedAtMs = (value?: string) => {
 
 type SortType = 'newest' | 'oldest' | 'az' | 'za'
 
+interface SearchEntry {
+  bookmark: BookmarkRecord
+  listId: string
+  titleLower: string
+  urlLower: string
+  tagsLower: string[]
+  createdAtMs: number
+}
+
 export interface DrawerPartsState {
   searchQuery: string
   setSearchQuery: (value: string) => void
@@ -227,36 +236,48 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const bookmarks = useValue(bookmarks$.bookmarks)
+  // Lowercasing every title, url and tag per keystroke is the expensive half of
+  // searching, and none of it depends on the query — so it is done once per
+  // bookmark change instead.
+  const searchIndex = useMemo<SearchEntry[]>(() => getLiveBookmarks(bookmarks).map((bookmark) => ({
+    bookmark,
+    listId: bookmark.listId,
+    titleLower: bookmark.title.toLowerCase(),
+    urlLower: bookmark.url.toLowerCase(),
+    tagsLower: getTags(bookmark).map((tag) => tag.toLowerCase()),
+    createdAtMs: getCreatedAtMs(bookmark.createdAt),
+  })), [bookmarks])
+
+  // `drawer` is rebuilt on every render of the parent, so this depends on the
+  // individual fields it reads rather than the object itself.
+  const { searchQuery, sortType, filterListId, filterTags } = drawer
   const filteredBookmarks = useMemo(() => {
-    const query = drawer.searchQuery.trim().toLowerCase()
-    const filterTags = drawer.filterTags.map((tag) => tag.toLowerCase())
-    const result = getLiveBookmarks(bookmarks).filter((bookmark) => {
-      if (drawer.filterListId !== 'all' && bookmark.listId !== drawer.filterListId) return false
-      if (filterTags.length) {
-        const bookmarkTags = getTags(bookmark).map((tag) => tag.toLowerCase())
-        if (!filterTags.every((tag) => bookmarkTags.includes(tag))) return false
-      }
+    const query = searchQuery.trim().toLowerCase()
+    const tags = filterTags.map((tag) => tag.toLowerCase())
+    const matched = searchIndex.filter((entry) => {
+      if (filterListId !== 'all' && entry.listId !== filterListId) return false
+      if (tags.length && !tags.every((tag) => entry.tagsLower.includes(tag))) return false
       if (!query) return true
-      return bookmark.title.toLowerCase().includes(query) || bookmark.url.toLowerCase().includes(query)
+      return entry.titleLower.includes(query) || entry.urlLower.includes(query)
     })
 
-    result.sort((a, b) => {
-      switch (drawer.sortType) {
+    matched.sort((a, b) => {
+      switch (sortType) {
         case 'az':
-          return a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+          return a.titleLower.localeCompare(b.titleLower)
         case 'za':
-          return b.title.toLowerCase().localeCompare(a.title.toLowerCase())
+          return b.titleLower.localeCompare(a.titleLower)
         case 'newest':
-          return getCreatedAtMs(b.createdAt) - getCreatedAtMs(a.createdAt)
+          return b.createdAtMs - a.createdAtMs
         case 'oldest':
-          return getCreatedAtMs(a.createdAt) - getCreatedAtMs(b.createdAt)
+          return a.createdAtMs - b.createdAtMs
         default:
           return 0
       }
     })
 
-    return result
-  }, [bookmarks, drawer])
+    return matched.map((entry) => entry.bookmark)
+  }, [searchIndex, searchQuery, sortType, filterListId, filterTags])
 
   const renderBookmarkRow = useCallback(({ item: bookmark }: { item: BookmarkRecord }) => (
     <BookmarkItem bookmark={bookmark} drawer={drawer} />
