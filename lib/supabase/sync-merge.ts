@@ -4,7 +4,7 @@ import {
   getDeletedAt,
   type BookmarkListData,
   type BookmarkRecordData,
-} from '@/lib/nori-data'
+} from '../nori-data'
 
 export const TOMBSTONE_RETENTION_MS = 90 * 24 * 60 * 60 * 1000
 

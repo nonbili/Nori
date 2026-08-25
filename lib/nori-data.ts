@@ -1,4 +1,4 @@
-import { getDuckDuckGoIcon } from './bookmark'
+import { getDuckDuckGoIcon } from './favicon'
 
 export interface RowJsonState {
   visible?: boolean

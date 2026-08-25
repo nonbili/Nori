@@ -1,4 +1,7 @@
 {
+  "workspaces": [
+    "extension"
+  ],
   "name": "nori",
   "private": true,
   "main": "expo-router/entry",
@@ -36,6 +39,7 @@
     "expo-system-ui": "~57.0.2",
     "expo-web-browser": "~57.0.2",
     "i18next": "^25.7.3",
+    "nanoid": "^6.0.1",
     "nativewind": "^4.1.23",
     "react": "19.2.3",
     "react-dom": "19.2.3",

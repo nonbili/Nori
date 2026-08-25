@@ -30,6 +30,8 @@ expo-env.d.ts
 
 # typescript
 *.tsbuildinfo
+.wxt/
+.output/
 
 /android
 /ios

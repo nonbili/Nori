@@ -1,0 +1,43 @@
+import { beforeAll, describe, expect, it } from 'bun:test'
+import { createProfile, liveBookmarks, mergeRows, normalizeUrl, saveBookmark, tombstone } from './domain'
+
+beforeAll(() => {
+  if (!globalThis.crypto?.randomUUID) {
+    Object.defineProperty(globalThis, 'crypto', { value: { randomUUID: () => 'generated-id' } })
+  }
+})
+
+describe('extension domain adapter', () => {
+  it('uses the mobile URL and starter-data behavior', () => {
+    const profile = createProfile()
+    expect(profile.lists.some((list) => list.id === 'builtin-later')).toBe(true)
+    expect(profile.bookmarks.some((bookmark) => bookmark.id === 'builtin-ai-chatgpt')).toBe(true)
+    expect(normalizeUrl('example.com')).toBe('https://example.com/')
+    expect(normalizeUrl('javascript:alert(1)')).toBe('')
+  })
+
+  it('uses the shared duplicate-save mutation', () => {
+    const profile = createProfile()
+    const draft = { listId: 'builtin-later', url: 'https://example.com', title: 'Example', tags: ['read'] }
+    const first = saveBookmark(profile, draft)
+    const second = saveBookmark(profile, draft)
+    expect(second).toBe(first)
+    expect(profile.bookmarks.filter((row) => row.id === first)).toHaveLength(1)
+    expect(profile.pendingBookmarkIds).toContain(first)
+  })
+
+  it('protects pending local rows during shared timestamp merges', () => {
+    const local = [{ id: 'one', updatedAt: '2026-01-01T00:00:00.000Z', value: 'local' }]
+    const remote = [{ id: 'one', updatedAt: '2026-02-01T00:00:00.000Z', value: 'remote' }]
+    expect(mergeRows(local, remote, ['one'])[0].value).toBe('local')
+    expect(mergeRows(local, remote, [])[0].value).toBe('remote')
+  })
+
+  it('uses tombstones rather than removing rows', () => {
+    const profile = createProfile()
+    const id = saveBookmark(profile, { listId: 'builtin-later', url: 'https://example.org' })
+    tombstone(profile.bookmarks, profile.pendingBookmarkIds, id)
+    expect(profile.bookmarks.find((row) => row.id === id)?.json.deleted_at).toBeTruthy()
+    expect(liveBookmarks(profile).some((row) => row.id === id)).toBe(false)
+  })
+})

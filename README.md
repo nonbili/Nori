@@ -37,3 +37,15 @@ Install from App Store, Google Play, or download APK from GitHub.
 bun install
 bun run start
 ```
+
+### Browser extension
+
+Nori also includes a local-first Chrome and Firefox extension with a quick-save popup and full bookmark manager.
+
+```sh
+cd extension
+bun run dev
+bun run dev:firefox
+bun run check
+bun run build:all
+```

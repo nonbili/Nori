@@ -1,0 +1,7 @@
+body { @apply h-[570px] w-[420px] overflow-hidden; }
+#root { @apply h-full; }
+.list-chips { scrollbar-width: none; }
+.list-chips::-webkit-scrollbar { display: none; }
+.bookmark-pill .favicon { @apply h-6 w-6 rounded-full bg-transparent; }
+.bookmark-pill .favicon img { @apply h-5 w-5; }
+.bookmark-pill .favicon.fallback { @apply bg-stone-100 text-[11px] dark:bg-stone-800; }

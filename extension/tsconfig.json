@@ -1,0 +1,10 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "jsx": "react-jsx",
+    "paths": { "@/*": ["../*"], "nori/*": ["../*"] },
+    "types": ["bun", "node"]
+  }
+}

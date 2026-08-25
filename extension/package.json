@@ -1,0 +1,39 @@
+{
+  "name": "nori-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox --mv3",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox --mv3",
+    "build:all": "bun run build && bun run build:firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox --mv3",
+    "zip:all": "bun run zip && bun run zip:firefox",
+    "test": "bun test",
+    "check": "tsc --noEmit && bun test",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.93.3",
+    "i18next": "^25.7.3",
+    "nori": "file:..",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-i18next": "^16.5.1"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@types/node": "latest",
+    "@vitejs/plugin-react": "latest",
+    "@wxt-dev/module-react": "latest",
+    "autoprefixer": "latest",
+    "postcss": "latest",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~6.0.3",
+    "wxt": "latest"
+  }
+}
