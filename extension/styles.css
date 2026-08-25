@@ -3,17 +3,37 @@
 @tailwind utilities;
 
 @layer base {
-  html { @apply bg-stone-50 text-stone-900 antialiased dark:bg-stone-950 dark:text-stone-50; }
-  body { @apply m-0; }
-  button { @apply cursor-pointer disabled:cursor-default disabled:opacity-50; }
+  html {
+    @apply bg-stone-50 text-stone-900 antialiased dark:bg-stone-950 dark:text-stone-50;
+  }
+  body {
+    @apply m-0;
+  }
+  button {
+    @apply cursor-pointer disabled:cursor-default disabled:opacity-50;
+  }
 }
 
 @layer components {
-  .button { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-3 py-2 font-semibold text-stone-800 transition hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800; }
-  .button-primary { @apply border-transparent bg-nori-700 text-white hover:bg-nori-600 dark:bg-nori-600 dark:hover:bg-nori-500; }
-  .button-ghost { @apply border-transparent bg-transparent; }
-  .field { @apply w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-stone-900 outline-none transition focus:border-nori-500 focus:ring-4 focus:ring-nori-500/10 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-50; }
-  .panel { @apply rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900; }
-  .favicon { @apply grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-stone-100 font-bold text-stone-500 dark:bg-stone-800 dark:text-stone-400; }
-  .favicon img { @apply h-5 w-5 object-contain; }
+  .button {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-3 py-2 font-semibold text-stone-800 transition hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800;
+  }
+  .button-primary {
+    @apply border-transparent bg-nori-700 text-white hover:bg-nori-600 dark:bg-nori-600 dark:hover:bg-nori-500;
+  }
+  .button-ghost {
+    @apply border-transparent bg-transparent;
+  }
+  .field {
+    @apply w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-stone-900 outline-none transition focus:border-nori-500 focus:ring-4 focus:ring-nori-500/10 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-50;
+  }
+  .panel {
+    @apply rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900;
+  }
+  .favicon {
+    @apply grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-stone-100 font-bold text-stone-500 dark:bg-stone-800 dark:text-stone-400;
+  }
+  .favicon img {
+    @apply h-5 w-5 object-contain;
+  }
 }

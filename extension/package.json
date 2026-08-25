@@ -13,6 +13,8 @@
     "zip:firefox": "wxt zip -b firefox --mv3",
     "zip:all": "bun run zip && bun run zip:firefox",
     "test": "bun test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "check": "tsc --noEmit && bun test",
     "postinstall": "wxt prepare"
   },

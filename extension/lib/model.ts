@@ -1,6 +1,6 @@
-export type Theme = 'system' | 'light' | 'dark'
-
 import type { BookmarkListData, BookmarkRecordData, RowJsonState } from 'nori/lib/nori-data'
+
+export type Theme = 'system' | 'light' | 'dark'
 
 export type RowState = RowJsonState
 export type NoriList = BookmarkListData
@@ -61,13 +61,18 @@ export interface AppSnapshot {
   syncError?: string
 }
 
-export type BookmarkDraft = Pick<NoriBookmark, 'listId' | 'url'> & Partial<Pick<NoriBookmark, 'title' | 'icon'>> & { tags?: string[] }
+export type BookmarkDraft = Pick<NoriBookmark, 'listId' | 'url'> &
+  Partial<Pick<NoriBookmark, 'title' | 'icon'>> & { tags?: string[] }
 
 export type RequestMessage =
   | { type: 'snapshot' }
   | { type: 'save-bookmark'; draft: BookmarkDraft }
   | { type: 'update-bookmark'; id: string; draft: Partial<BookmarkDraft> }
   | { type: 'delete-bookmark'; id: string }
+  | { type: 'delete-bookmarks'; ids: string[] }
+  | { type: 'restore-bookmarks'; ids: string[] }
+  | { type: 'set-bookmark-visibility'; ids: string[]; visible: boolean }
+  | { type: 'move-bookmarks'; ids: string[]; listId: string }
   | { type: 'open-bookmark'; id: string }
   | { type: 'add-list'; name: string }
   | { type: 'rename-list'; id: string; name: string }

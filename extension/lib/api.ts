@@ -25,7 +25,13 @@ export async function getAuthState(): Promise<AuthState> {
     const body = await response.json()
     if (!response.ok || body?.error) throw new Error(body?.message || 'Unable to load plan')
     const entitlement = body?.result?.data || body
-    return { loaded: true, userId: session.user.id, email: session.user.email, plan: entitlement.plan || 'free', source: entitlement.source || 'none' }
+    return {
+      loaded: true,
+      userId: session.user.id,
+      email: session.user.email,
+      plan: entitlement.plan || 'free',
+      source: entitlement.source || 'none',
+    }
   } catch {
     return { loaded: true, userId: session.user.id, email: session.user.email, plan: 'free', source: 'none' }
   }
@@ -65,13 +71,27 @@ function toList(row: any): NoriList {
 }
 
 function toBookmark(row: any): NoriBookmark {
-  return { id: row.id, listId: row.list_id, url: row.url, title: row.title, icon: row.icon, json: row.json || {}, createdAt: row.created_at, updatedAt: row.updated_at }
+  return {
+    id: row.id,
+    listId: row.list_id,
+    url: row.url,
+    title: row.title,
+    icon: row.icon,
+    json: row.json || {},
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
 }
 
 async function fetchRows(table: 'lists' | 'bookmarks', columns: string, cursor?: string) {
   const rows: any[] = []
   for (let from = 0; ; from += PAGE_SIZE) {
-    let query = db.from(table).select(columns).order('updated_at').order('id').range(from, from + PAGE_SIZE - 1)
+    let query = db
+      .from(table)
+      .select(columns)
+      .order('updated_at')
+      .order('id')
+      .range(from, from + PAGE_SIZE - 1)
     if (cursor) query = query.gte('updated_at', cursor)
     const { data, error } = await query
     if (error) throw error
@@ -81,14 +101,25 @@ async function fetchRows(table: 'lists' | 'bookmarks', columns: string, cursor?:
 }
 
 function nextCursor(rows: { updatedAt: string }[], previous?: string) {
-  const max = rows.reduce((value, row) => Math.max(value, Date.parse(row.updatedAt) || 0), Date.parse(previous || '') || 0)
+  const max = rows.reduce(
+    (value, row) => Math.max(value, Date.parse(row.updatedAt) || 0),
+    Date.parse(previous || '') || 0,
+  )
   return max ? new Date(Math.max(0, max - 30_000)).toISOString() : previous
 }
 
 async function upsertLists(userId: string, rows: NoriList[]) {
   const pushed: NoriList[] = []
   for (let index = 0; index < rows.length; index += PAGE_SIZE) {
-    const { data, error } = await db.from('lists').upsert(rows.slice(index, index + PAGE_SIZE).map((row) => ({ user_id: userId, id: row.id, name: row.name, json: row.json })), { onConflict: 'user_id,id' }).select('id,name,json,created_at,updated_at')
+    const { data, error } = await db
+      .from('lists')
+      .upsert(
+        rows
+          .slice(index, index + PAGE_SIZE)
+          .map((row) => ({ user_id: userId, id: row.id, name: row.name, json: row.json })),
+        { onConflict: 'user_id,id' },
+      )
+      .select('id,name,json,created_at,updated_at')
     if (error) throw error
     pushed.push(...(data || []).map(toList))
   }
@@ -98,7 +129,21 @@ async function upsertLists(userId: string, rows: NoriList[]) {
 async function upsertBookmarks(userId: string, rows: NoriBookmark[]) {
   const pushed: NoriBookmark[] = []
   for (let index = 0; index < rows.length; index += PAGE_SIZE) {
-    const { data, error } = await db.from('bookmarks').upsert(rows.slice(index, index + PAGE_SIZE).map((row) => ({ user_id: userId, id: row.id, list_id: row.listId, url: row.url, title: row.title, icon: row.icon, json: row.json })), { onConflict: 'user_id,id' }).select('id,list_id,url,title,icon,json,created_at,updated_at')
+    const { data, error } = await db
+      .from('bookmarks')
+      .upsert(
+        rows.slice(index, index + PAGE_SIZE).map((row) => ({
+          user_id: userId,
+          id: row.id,
+          list_id: row.listId,
+          url: row.url,
+          title: row.title,
+          icon: row.icon,
+          json: row.json,
+        })),
+        { onConflict: 'user_id,id' },
+      )
+      .select('id,list_id,url,title,icon,json,created_at,updated_at')
     if (error) throw error
     pushed.push(...(data || []).map(toBookmark))
   }
@@ -107,10 +152,15 @@ async function upsertBookmarks(userId: string, rows: NoriBookmark[]) {
 
 export async function syncProfile(profile: ProfileData, auth: AuthState) {
   if (!auth.userId || auth.plan === 'free') return false
-  const full = !profile.listsCursor || !profile.bookmarksCursor || Date.now() - (profile.lastFullPullAt || 0) > 86_400_000
+  const full =
+    !profile.listsCursor || !profile.bookmarksCursor || Date.now() - (profile.lastFullPullAt || 0) > 86_400_000
   const [listRows, bookmarkRows] = await Promise.all([
     fetchRows('lists', 'id,name,json,created_at,updated_at', full ? undefined : profile.listsCursor),
-    fetchRows('bookmarks', 'id,list_id,url,title,icon,json,created_at,updated_at', full ? undefined : profile.bookmarksCursor),
+    fetchRows(
+      'bookmarks',
+      'id,list_id,url,title,icon,json,created_at,updated_at',
+      full ? undefined : profile.bookmarksCursor,
+    ),
   ])
   const remoteLists = listRows.map(toList)
   const remoteBookmarks = bookmarkRows.map(toBookmark)
@@ -119,15 +169,25 @@ export async function syncProfile(profile: ProfileData, auth: AuthState) {
     profile.pendingListIds = profile.lists.map((row) => row.id)
     profile.pendingBookmarkIds = profile.bookmarks.map((row) => row.id)
   } else if (full && !pristine) {
-    profile.pendingListIds = [...new Set([...profile.pendingListIds, ...collectUnsyncedRowIds(profile.lists, remoteLists)])]
-    profile.pendingBookmarkIds = [...new Set([...profile.pendingBookmarkIds, ...collectUnsyncedRowIds(profile.bookmarks, remoteBookmarks)])]
+    profile.pendingListIds = [
+      ...new Set([...profile.pendingListIds, ...collectUnsyncedRowIds(profile.lists, remoteLists)]),
+    ]
+    profile.pendingBookmarkIds = [
+      ...new Set([...profile.pendingBookmarkIds, ...collectUnsyncedRowIds(profile.bookmarks, remoteBookmarks)]),
+    ]
   }
   profile.lists = mergeRows(profile.lists, remoteLists, profile.pendingListIds)
   profile.bookmarks = mergeRows(profile.bookmarks, remoteBookmarks, profile.pendingBookmarkIds)
   const pendingLists = new Set(profile.pendingListIds)
   const pendingBookmarks = new Set(profile.pendingBookmarkIds)
-  const pushedLists = await upsertLists(auth.userId, profile.lists.filter((row) => pendingLists.has(row.id)))
-  const pushedBookmarks = await upsertBookmarks(auth.userId, profile.bookmarks.filter((row) => pendingBookmarks.has(row.id)))
+  const pushedLists = await upsertLists(
+    auth.userId,
+    profile.lists.filter((row) => pendingLists.has(row.id)),
+  )
+  const pushedBookmarks = await upsertBookmarks(
+    auth.userId,
+    profile.bookmarks.filter((row) => pendingBookmarks.has(row.id)),
+  )
   profile.lists = mergeRows(profile.lists, pushedLists, [])
   profile.bookmarks = mergeRows(profile.bookmarks, pushedBookmarks, [])
   profile.pendingListIds = profile.pendingListIds.filter((id) => !pendingLists.has(id))

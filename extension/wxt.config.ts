@@ -29,15 +29,18 @@ export default defineConfig({
       'https://nori.inks.page/*',
       'https://github.com/nonbili/Nori/*',
     ],
-    browser_specific_settings: browser === 'firefox'
-      ? { gecko: {
-          id: 'browser-extension@nori.inks.page',
-          strict_min_version: '140.0',
-          data_collection_permissions: {
-            required: ['none'],
-            optional: ['personallyIdentifyingInfo', 'authenticationInfo', 'browsingActivity'],
-          },
-        } } as any
-      : undefined,
+    browser_specific_settings:
+      browser === 'firefox'
+        ? ({
+            gecko: {
+              id: 'browser-extension@nori.inks.page',
+              strict_min_version: '140.0',
+              data_collection_permissions: {
+                required: ['none'],
+                optional: ['personallyIdentifyingInfo', 'authenticationInfo', 'browsingActivity'],
+              },
+            },
+          } as any)
+        : undefined,
   }),
 })
