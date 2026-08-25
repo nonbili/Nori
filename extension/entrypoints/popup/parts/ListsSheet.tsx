@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState, type DragEvent } from 'react'
+import { useMemo, type ReactNode } from 'react'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useTranslation } from 'react-i18next'
 import { getInactiveLists, getVisibleLists } from 'nori/lib/nori-data'
 import { useApp } from '../../../components/AppContext'
@@ -6,9 +8,28 @@ import { Icon } from '../../../components/Icon'
 import { Menu } from '../../../components/Menu'
 import { Sheet } from '../../../components/Overlays'
 import { ManageRow, SectionLabel } from '../../../components/Rows'
+import { Sortable, useSortableItem } from '../../../components/Sortable'
 import { showSnackbar } from '../../../components/Snackbar'
 import { isDeleted } from '../../../lib/domain'
 import type { NoriList } from '../../../lib/model'
+
+function SortableListRow({ list, dragLabel, actions }: { list: NoriList; dragLabel: string; actions: ReactNode }) {
+  const { itemProps, handleProps, handleRef, isDragging } = useSortableItem(list.id)
+  return (
+    <div {...itemProps}>
+      <ManageRow
+        title={list.name}
+        className={isDragging ? 'dragging' : ''}
+        left={
+          <button type="button" className="drag-handle" aria-label={dragLabel} ref={handleRef} {...handleProps}>
+            <Icon name="drag" size={18} />
+          </button>
+        }
+        actions={actions}
+      />
+    </div>
+  )
+}
 
 export function ListsSheet({
   onClose,
@@ -23,38 +44,10 @@ export function ListsSheet({
   const { snapshot, mutate } = useApp()
   const visibleLists = getVisibleLists(snapshot.profile.lists)
   const inactiveLists = getInactiveLists(snapshot.profile.lists)
-  const [orderedIds, setOrderedIds] = useState<string[]>([])
-  const [draggingId, setDraggingId] = useState<string>()
-  const orderRef = useRef<string[]>([])
-
-  useEffect(() => {
-    const ids = visibleLists.map((list) => list.id)
-    setOrderedIds(ids)
-    orderRef.current = ids
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleLists.map((list) => list.id).join(',')])
-
-  const ordered = orderedIds.map((id) => visibleLists.find((list) => list.id === id)).filter(Boolean) as NoriList[]
-
-  const dragOver = (event: DragEvent, targetId: string) => {
-    event.preventDefault()
-    if (!draggingId || draggingId === targetId) return
-    setOrderedIds((current) => {
-      const from = current.indexOf(draggingId)
-      const to = current.indexOf(targetId)
-      if (from < 0 || to < 0) return current
-      const next = [...current]
-      next.splice(from, 1)
-      next.splice(to, 0, draggingId)
-      orderRef.current = next
-      return next
-    })
-  }
-
-  const finishDrag = () => {
-    setDraggingId(undefined)
-    void mutate({ type: 'reorder-lists', ids: [...orderRef.current, ...inactiveLists.map((list) => list.id)] })
-  }
+  const ids = useMemo(() => visibleLists.map((list) => list.id), [visibleLists])
+  const byId = useMemo(() => new Map(visibleLists.map((list) => [list.id, list])), [visibleLists])
+  const reorder = (next: string[]) =>
+    void mutate({ type: 'reorder-lists', ids: [...next, ...inactiveLists.map((list) => list.id)] })
 
   const deleteList = async (list: NoriList) => {
     const affected = snapshot.profile.bookmarks.filter((item) => item.listId === list.id && !isDeleted(item))
@@ -89,45 +82,36 @@ export function ListsSheet({
         </button>
       }
     >
-      <div className="min-h-0 flex-1 overflow-y-auto pb-4">
-        <div className="grid gap-3">
-          {ordered.map((list) => (
-            <div
-              key={list.id}
-              onDragOver={(event) => dragOver(event, list.id)}
-              onDrop={(event) => event.preventDefault()}
-              onDragEnd={finishDrag}
-              draggable={draggingId === list.id}
-              onDragStart={(event) => {
-                event.dataTransfer.effectAllowed = 'move'
-                event.dataTransfer.setData('text/plain', list.id)
-              }}
-            >
-              <ManageRow
-                title={list.name}
-                className={draggingId === list.id ? 'opacity-50' : ''}
-                left={
-                  <span
-                    className="drag-handle"
-                    aria-hidden="true"
-                    onMouseDown={() => setDraggingId(list.id)}
-                    onMouseUp={() => setDraggingId(undefined)}
-                  >
-                    <Icon name="drag" size={18} />
-                  </span>
-                }
-                actions={
-                  <Menu
-                    className="round-action"
-                    label={t('moreOptions')}
-                    items={listMenu(list, true)}
-                    trigger={<Icon name="more" size={17} />}
+      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-1 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <Sortable
+          ids={ids}
+          onReorder={reorder}
+          strategy={verticalListSortingStrategy}
+          modifiers={[restrictToVerticalAxis]}
+        >
+          {(order) => (
+            <div className="grid gap-3 py-1">
+              {order.map((id) => {
+                const list = byId.get(id)
+                return list ? (
+                  <SortableListRow
+                    key={id}
+                    list={list}
+                    dragLabel={t('reorderList', { name: list.name })}
+                    actions={
+                      <Menu
+                        className="round-action"
+                        label={t('moreOptions')}
+                        items={listMenu(list, true)}
+                        trigger={<Icon name="more" size={17} />}
+                      />
+                    }
                   />
-                }
-              />
+                ) : null
+              })}
             </div>
-          ))}
-        </div>
+          )}
+        </Sortable>
         {inactiveLists.length > 0 && (
           <div className="mt-8">
             <SectionLabel title={t('hiddenLists')} />

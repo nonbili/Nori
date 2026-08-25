@@ -26,6 +26,7 @@ const en = {
   openDrawer: 'All bookmarks',
   history: 'Recently opened',
   moreOptions: 'More options',
+  reorderList: 'Reorder {{name}}',
   savePage: 'Save this page',
   search: 'Search bookmarks',
   bookmarkActions: 'Bookmark actions',

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'bun:test'
-import { createProfile, liveBookmarks, mergeRows, normalizeUrl, saveBookmark, tombstone } from './domain'
+import { createProfile, liveBookmarks, mergeRows, normalizeUrl, reorder, saveBookmark, tombstone } from './domain'
 
 beforeAll(() => {
   if (!globalThis.crypto?.randomUUID) {
@@ -39,5 +39,21 @@ describe('extension domain adapter', () => {
     tombstone(profile.bookmarks, profile.pendingBookmarkIds, id)
     expect(profile.bookmarks.find((row) => row.id === id)?.json.deleted_at).toBeTruthy()
     expect(liveBookmarks(profile).some((row) => row.id === id)).toBe(false)
+  })
+
+  it('reorders rows and preserves missing rows with consistent sort index', () => {
+    const rows = [
+      { id: 'a', json: { sort_index: 0 }, updatedAt: '2026-01-01T00:00:00.000Z' },
+      { id: 'b', json: { sort_index: 1 }, updatedAt: '2026-01-01T00:00:00.000Z' },
+      { id: 'c', json: { sort_index: 2 }, updatedAt: '2026-01-01T00:00:00.000Z' },
+    ]
+    const pending: string[] = []
+    reorder(rows, ['c', 'a'], pending)
+    expect(rows.find((r) => r.id === 'c')?.json.sort_index).toBe(0)
+    expect(rows.find((r) => r.id === 'a')?.json.sort_index).toBe(1)
+    expect(rows.find((r) => r.id === 'b')?.json.sort_index).toBe(2)
+    expect(pending).toContain('c')
+    expect(pending).toContain('a')
+    expect(pending).toContain('b')
   })
 })

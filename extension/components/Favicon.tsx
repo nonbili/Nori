@@ -17,6 +17,7 @@ export function Favicon({
       <img
         src={bookmark.icon}
         alt=""
+        draggable={false}
         onError={(event) => {
           event.currentTarget.style.display = 'none'
         }}

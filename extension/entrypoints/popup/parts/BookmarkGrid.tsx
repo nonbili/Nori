@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
+import { useMemo, useRef } from 'react'
+import { rectSortingStrategy } from '@dnd-kit/sortable'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../../../components/AppContext'
 import { Favicon } from '../../../components/Favicon'
 import { Icon } from '../../../components/Icon'
 import { Menu, type MenuItem } from '../../../components/Menu'
 import { SectionLabel } from '../../../components/Rows'
+import { Sortable, useSortableItem } from '../../../components/Sortable'
 import { isDeleted, isVisible } from '../../../lib/domain'
 import type { NoriBookmark, NoriList } from '../../../lib/model'
 
@@ -26,42 +28,57 @@ export function useBookmarkMenuItems(bookmark: NoriBookmark, handlers: BookmarkH
   ]
 }
 
+function BookmarkPill({
+  bookmark,
+  selected,
+  onClick,
+}: {
+  bookmark: NoriBookmark
+  selected?: boolean
+  onClick?: () => void
+}) {
+  const { snapshot } = useApp()
+  return (
+    <button
+      type="button"
+      className={`bookmark-pill ${selected ? 'selected' : ''}`}
+      title={bookmark.url}
+      onClick={onClick}
+    >
+      <Favicon bookmark={bookmark} enabled={snapshot.preferences.showFavicons} />
+      <span>{bookmark.title}</span>
+      {selected && (
+        <span className="selection-check">
+          <Icon name="check" size={12} />
+        </span>
+      )}
+    </button>
+  )
+}
+
 function BookmarkTile({
   bookmark,
   editMode,
   selected,
   handlers,
   onSelect,
-  dragProps,
-  dragging,
 }: {
   bookmark: NoriBookmark
   editMode: boolean
   selected: boolean
   handlers: BookmarkHandlers
   onSelect: () => void
-  dragProps?: Partial<React.HTMLAttributes<HTMLDivElement>> & { draggable?: boolean }
-  dragging?: boolean
 }) {
   const { t } = useTranslation()
-  const { snapshot } = useApp()
   const items = useBookmarkMenuItems(bookmark, handlers)
+  const { itemProps, handleProps, isDragging } = useSortableItem(bookmark.id)
   return (
-    <div className={`bookmark-wrap ${dragging ? 'dragging' : ''}`} {...dragProps}>
-      <button
-        type="button"
-        className={`bookmark-pill ${selected ? 'selected' : ''}`}
-        title={bookmark.url}
+    <div className={`bookmark-wrap draggable ${isDragging ? 'dragging' : ''}`} {...itemProps} {...handleProps}>
+      <BookmarkPill
+        bookmark={bookmark}
+        selected={selected}
         onClick={() => (editMode ? onSelect() : handlers.onOpen(bookmark))}
-      >
-        <Favicon bookmark={bookmark} enabled={snapshot.preferences.showFavicons} />
-        <span>{bookmark.title}</span>
-        {selected && (
-          <span className="selection-check">
-            <Icon name="check" size={12} />
-          </span>
-        )}
-      </button>
+      />
       {!editMode && (
         <Menu
           className="tile-menu-button"
@@ -117,41 +134,12 @@ export function BookmarkGrid({
         .sort((a, b) => Number(a.json.sort_index || 0) - Number(b.json.sort_index || 0)),
     [listId, snapshot],
   )
-  const [orderedIds, setOrderedIds] = useState<string[]>([])
-  const [draggingId, setDraggingId] = useState<string>()
-  const orderRef = useRef<string[]>([])
   const overscrollRef = useRef(0)
 
-  useEffect(() => {
-    const ids = listBookmarks.map((item) => item.id)
-    setOrderedIds(ids)
-    orderRef.current = ids
-  }, [listBookmarks])
-
-  const shown = useMemo(() => {
-    if (!editMode) return listBookmarks
-    const byId = new Map(listBookmarks.map((item) => [item.id, item]))
-    return orderedIds.map((id) => byId.get(id)).filter(Boolean) as NoriBookmark[]
-  }, [editMode, listBookmarks, orderedIds])
-
-  const reorderOver = (event: DragEvent, targetId: string) => {
-    event.preventDefault()
-    if (!draggingId || draggingId === targetId) return
-    setOrderedIds((current) => {
-      const from = current.indexOf(draggingId)
-      const to = current.indexOf(targetId)
-      if (from < 0 || to < 0) return current
-      const next = [...current]
-      next.splice(from, 1)
-      next.splice(to, 0, draggingId)
-      orderRef.current = next
-      return next
-    })
-  }
-
-  const finishDrag = () => {
-    setDraggingId(undefined)
-    if (listId) void mutate({ type: 'reorder-bookmarks', listId, ids: orderRef.current })
+  const ids = useMemo(() => listBookmarks.map((item) => item.id), [listBookmarks])
+  const byId = useMemo(() => new Map(listBookmarks.map((item) => [item.id, item])), [listBookmarks])
+  const reorder = (next: string[]) => {
+    if (listId) void mutate({ type: 'reorder-bookmarks', listId, ids: next })
   }
 
   // Android opens the drawer when the grid is pulled past its bottom edge; a
@@ -184,35 +172,26 @@ export function BookmarkGrid({
           </div>
         </div>
       )}
-      {shown.length ? (
-        <div className="bookmark-grid">
-          {shown.map((bookmark) => (
-            <BookmarkTile
-              key={bookmark.id}
-              bookmark={bookmark}
-              editMode={editMode}
-              selected={selectedIds.includes(bookmark.id)}
-              handlers={handlers}
-              onSelect={() => onToggleSelected(bookmark.id)}
-              dragging={draggingId === bookmark.id}
-              dragProps={
-                editMode
-                  ? {
-                      draggable: true,
-                      onDragStart: (event: DragEvent<HTMLDivElement>) => {
-                        setDraggingId(bookmark.id)
-                        event.dataTransfer.effectAllowed = 'move'
-                        event.dataTransfer.setData('text/plain', bookmark.id)
-                      },
-                      onDragOver: (event: DragEvent<HTMLDivElement>) => reorderOver(event, bookmark.id),
-                      onDrop: (event: DragEvent<HTMLDivElement>) => event.preventDefault(),
-                      onDragEnd: finishDrag,
-                    }
-                  : undefined
-              }
-            />
-          ))}
-        </div>
+      {ids.length ? (
+        <Sortable ids={ids} onReorder={reorder} strategy={rectSortingStrategy}>
+          {(order) => (
+            <div className="bookmark-grid">
+              {order.map((id) => {
+                const bookmark = byId.get(id)
+                return bookmark ? (
+                  <BookmarkTile
+                    key={id}
+                    bookmark={bookmark}
+                    editMode={editMode}
+                    selected={selectedIds.includes(id)}
+                    handlers={handlers}
+                    onSelect={() => onToggleSelected(id)}
+                  />
+                ) : null
+              })}
+            </div>
+          )}
+        </Sortable>
       ) : (
         !editMode && list && <EmptyList listName={list.name} />
       )}

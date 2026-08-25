@@ -63,6 +63,7 @@ export function Menu({
         className={className}
         aria-label={label}
         aria-haspopup="menu"
+        onPointerDown={(event) => event.stopPropagation()}
         onClick={(event) => {
           event.stopPropagation()
           setOpen((current) => !current)

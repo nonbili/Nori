@@ -44,7 +44,7 @@ export const liveLists = (profile: ProfileData) => getVisibleLists(profile.lists
 
 export function liveBookmarks(profile: ProfileData) {
   return profile.bookmarks
-    .filter(isVisible)
+    .filter((item) => !isDeleted(item) && isVisible(item))
     .sort((a, b) => Number(a.json.sort_index ?? 0) - Number(b.json.sort_index ?? 0))
 }
 
@@ -95,11 +95,13 @@ export function reorder<T extends { id: string; json: Record<string, unknown>; u
   pending: string[],
 ) {
   const timestamp = now()
-  ids.forEach((id, index) => {
-    const row = rows.find((item) => item.id === id)
-    if (!row) return
+  const ordered = ids.map((id) => rows.find((item) => item.id === id)).filter((item): item is T => item != null)
+  const missing = rows.filter((item) => !ids.includes(item.id))
+  const next = [...ordered, ...missing]
+  next.forEach((row, index) => {
     row.json = patchRowState(row, { sort_index: index }).json
     row.updatedAt = timestamp
-    mark(pending, id)
+    mark(pending, row.id)
   })
+  rows.splice(0, rows.length, ...next)
 }

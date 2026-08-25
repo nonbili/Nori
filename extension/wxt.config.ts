@@ -3,6 +3,18 @@ import { resolve } from 'node:path'
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
+  // `nori` is a file: dependency, so packages get hoisted into the repo root's
+  // node_modules, where they resolve the root copy of React instead of ours.
+  // Two React instances mean every hook they call throws, so pin the imports.
+  vite: () => ({
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+      alias: [
+        { find: /^react(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react') },
+        { find: /^react-dom(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-dom') },
+      ],
+    },
+  }),
   publicDir: '../assets/images',
   zip: {
     sourcesRoot: resolve(process.cwd(), '..'),
