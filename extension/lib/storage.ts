@@ -13,7 +13,6 @@ export const defaultState = (): StoredState => ({
     language: browser.i18n.getUILanguage().replace('-', '_'),
     lastListId: 'builtin-later',
     showFavicons: true,
-    searchProvider: 'google',
   },
 })
 

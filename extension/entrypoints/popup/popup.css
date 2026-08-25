@@ -1,20 +1,41 @@
 body {
-  @apply h-[570px] w-[420px] overflow-hidden;
+  @apply h-[600px] w-[420px] overflow-hidden;
 }
 #root {
   @apply h-full;
 }
+.app-shell {
+  @apply relative flex h-full flex-col overflow-hidden bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-50;
+}
+
+/* Scrollable chip rows keep the Android look: no visible scrollbar. */
 .list-chips {
   scrollbar-width: none;
 }
 .list-chips::-webkit-scrollbar {
   display: none;
 }
+
+/* Header */
 .header-action {
-  @apply grid h-10 w-10 place-items-center rounded-full border border-stone-300 bg-stone-100 text-stone-800 transition hover:bg-stone-200 active:scale-95 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-50 dark:hover:bg-stone-700;
+  @apply grid h-10 w-10 shrink-0 place-items-center rounded-full border border-stone-300 bg-stone-100 text-stone-800 transition hover:bg-stone-200 active:scale-95 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-50 dark:hover:bg-stone-700;
 }
+.round-action {
+  @apply grid h-9 w-9 shrink-0 place-items-center rounded-full bg-stone-200 text-stone-500 transition hover:bg-stone-300 dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-stone-700;
+}
+.pill-button {
+  @apply flex h-8 items-center gap-1.5 rounded-full bg-stone-900 px-3 text-xs font-bold text-stone-50 hover:opacity-80 dark:bg-stone-100 dark:text-stone-950;
+}
+.primary-button {
+  @apply flex h-10 w-full items-center justify-center rounded-full bg-stone-900 px-5 text-sm font-medium text-stone-50 hover:opacity-80 dark:bg-stone-100 dark:text-stone-950;
+}
+.text-button {
+  @apply rounded-lg px-2 py-1 text-xs font-medium text-stone-500 hover:bg-stone-200 dark:hover:bg-stone-800;
+}
+
+/* List chips */
 .list-chip {
-  @apply flex h-8 shrink-0 items-center rounded-full border border-stone-200 bg-transparent px-4 text-sm font-medium text-stone-600 transition hover:bg-stone-100 dark:border-stone-800 dark:text-stone-300 dark:hover:bg-stone-900;
+  @apply flex h-8 shrink-0 items-center rounded-full border border-stone-200 bg-transparent px-4 text-sm font-medium text-stone-600 transition hover:bg-stone-100 dark:border-stone-800 dark:text-stone-400 dark:hover:bg-stone-900;
 }
 .list-chip.active {
   @apply border-stone-900 bg-stone-900 text-stone-50 dark:border-stone-100 dark:bg-stone-100 dark:text-stone-950;
@@ -22,14 +43,22 @@ body {
 .new-list-chip {
   @apply flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-stone-300 bg-transparent px-4 text-sm font-medium text-stone-600 transition hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-900;
 }
-.search-box {
-  @apply mx-6 mt-3 flex h-11 shrink-0 items-center gap-2 rounded-full border border-stone-200 bg-white px-4 text-stone-500 shadow-sm dark:border-stone-800 dark:bg-stone-900 dark:text-stone-400;
+.tag-chip {
+  @apply flex h-8 shrink-0 items-center gap-1 rounded-full border border-stone-200 px-3.5 text-sm font-medium text-stone-500 transition hover:bg-stone-100 dark:border-stone-800 dark:text-stone-400 dark:hover:bg-stone-900;
 }
-.search-box input {
-  @apply min-w-0 flex-1 border-0 bg-transparent text-sm text-stone-900 outline-none placeholder:text-stone-400 dark:text-stone-50;
+.tag-chip > span {
+  @apply text-xs font-bold text-stone-400 dark:text-stone-500;
 }
-.search-box button {
-  @apply grid place-items-center border-0 bg-transparent p-1 text-stone-500;
+.tag-chip.active {
+  @apply border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-300;
+}
+.tag-chip.active > span {
+  @apply text-emerald-500;
+}
+
+/* Bookmarks */
+.bookmark-page {
+  @apply min-h-0 flex-1 overflow-y-auto px-6 pb-24 pt-4;
 }
 .bookmark-grid {
   @apply grid grid-cols-2 gap-4;
@@ -53,15 +82,6 @@ body {
 .bookmark-pill.selected {
   @apply border-emerald-500 bg-emerald-100/70 text-emerald-950 dark:bg-emerald-950/30 dark:text-emerald-100;
 }
-.bookmark-pill .favicon {
-  @apply h-6 w-6 rounded-full bg-transparent;
-}
-.bookmark-pill .favicon img {
-  @apply h-5 w-5;
-}
-.bookmark-pill .favicon.fallback {
-  @apply bg-stone-100 text-[11px] dark:bg-stone-800;
-}
 .selection-check {
   @apply grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-600 text-white;
 }
@@ -72,15 +92,26 @@ body {
 .tile-menu-button:focus {
   @apply grid;
 }
-.bookmark-menu {
-  @apply absolute right-1 top-10 z-30 grid min-w-36 overflow-hidden rounded-xl border border-stone-200 bg-white p-1 shadow-xl dark:border-stone-700 dark:bg-stone-900;
+.favicon {
+  @apply grid shrink-0 place-items-center overflow-hidden rounded-full font-bold text-stone-500 dark:text-stone-400;
 }
-.bookmark-menu button {
-  @apply flex items-center gap-2 rounded-lg px-3 py-2 text-left text-xs hover:bg-stone-100 dark:hover:bg-stone-800;
+.favicon.tile {
+  @apply h-6 w-6;
 }
-.bookmark-menu button.danger {
-  @apply text-rose-600 dark:text-rose-400;
+.favicon.tile img {
+  @apply h-5 w-5 object-contain;
 }
+.favicon.tile.fallback {
+  @apply bg-stone-100 text-[11px] dark:bg-stone-800;
+}
+.favicon.row {
+  @apply h-10 w-10 rounded-xl bg-stone-100 dark:bg-stone-800;
+}
+.favicon.row img {
+  @apply h-6 w-6 object-contain;
+}
+
+/* Edit mode */
 .edit-hint {
   @apply mb-4 flex items-center gap-3 rounded-[20px] border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-900/50 dark:bg-emerald-950/20;
 }
@@ -93,15 +124,31 @@ body {
 .edit-hint small {
   @apply mt-0.5 block text-[11px] leading-4 text-emerald-900 dark:text-emerald-50;
 }
+
+/* Empty states */
 .empty-state {
-  @apply flex h-full min-h-52 flex-col items-center justify-center gap-2 text-sm text-stone-500 dark:text-stone-400;
+  @apply flex min-h-52 flex-col items-center justify-center gap-2 px-2 py-8 text-sm text-stone-500 dark:text-stone-400;
 }
-.empty-state > span {
+.empty-badge {
   @apply mb-2 grid h-14 w-14 place-items-center rounded-[20px] border border-stone-200 bg-white text-stone-400 dark:border-stone-800 dark:bg-stone-900;
 }
 .empty-state strong {
-  @apply text-base text-stone-800 dark:text-stone-100;
+  @apply text-center text-base text-stone-900 dark:text-stone-100;
 }
+.empty-state small {
+  @apply max-w-[280px] text-center text-sm leading-6 text-stone-600 dark:text-stone-400;
+}
+.empty-tip {
+  @apply mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center dark:border-emerald-900/40 dark:bg-emerald-950/20;
+}
+.empty-tip > span {
+  @apply text-xs font-medium uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300;
+}
+.empty-tip p {
+  @apply m-0 mt-2 max-w-[260px] text-sm leading-5 text-emerald-900 dark:text-emerald-50;
+}
+
+/* Bottom toolbar */
 .floating-toolbar {
   @apply absolute bottom-4 left-6 right-6 z-20 flex min-h-16 items-center justify-between gap-2 rounded-full border border-white/70 bg-white/75 px-3 py-2 shadow-xl backdrop-blur dark:border-white/10 dark:bg-stone-950/75;
 }
@@ -124,23 +171,163 @@ body {
 .selection-count {
   @apply flex h-10 items-center justify-center gap-1.5 rounded-full bg-stone-200 px-4 text-sm font-medium text-stone-900 hover:bg-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700;
 }
-.move-menu {
-  @apply absolute bottom-12 left-0 grid min-w-40 overflow-hidden rounded-xl border border-stone-200 bg-white p-1 shadow-xl dark:border-stone-700 dark:bg-stone-900;
+
+/* Anchored menus (the Android NouMenu) */
+.anchor-menu {
+  @apply fixed z-[120] grid w-[200px] gap-0.5 overflow-hidden rounded-xl border border-stone-200 bg-white p-1 shadow-xl dark:border-stone-700 dark:bg-stone-900;
 }
-.move-menu button {
-  @apply rounded-lg px-3 py-2 text-left text-sm hover:bg-stone-100 dark:hover:bg-stone-800;
+.anchor-menu button {
+  @apply flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-stone-800 hover:bg-stone-100 dark:text-stone-100 dark:hover:bg-stone-800;
 }
-.move-menu span {
-  @apply px-3 py-2 text-xs text-stone-500;
+.anchor-menu button > span {
+  @apply min-w-0 flex-1 truncate;
 }
-.popup-modal {
-  @apply fixed inset-0 z-50 grid place-items-center bg-black/55 p-4;
+.anchor-menu button.danger {
+  @apply text-rose-600 dark:text-rose-400;
 }
-.popup-dialog {
-  @apply grid max-h-[540px] w-full gap-4 overflow-y-auto rounded-[24px] border border-stone-200 bg-stone-50 p-5 shadow-2xl dark:border-stone-700 dark:bg-stone-950;
+.menu-empty {
+  @apply block px-3 py-2 text-xs text-stone-500;
 }
-.round-action {
-  @apply grid h-8 w-8 place-items-center rounded-full bg-stone-200 text-stone-500 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700;
+
+/* Overlays */
+.overlay-root {
+  @apply absolute inset-0 z-[100] flex flex-col justify-end;
+}
+.overlay-backdrop {
+  @apply absolute inset-0 bg-black/60;
+  animation: nori-fade 180ms ease-out;
+}
+.sheet {
+  @apply relative flex w-full flex-col overflow-hidden rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 pb-5 dark:border-stone-800 dark:bg-stone-950;
+  animation: nori-rise 220ms ease-out;
+}
+.sheet-grabber {
+  @apply flex shrink-0 justify-center py-3;
+}
+.sheet-grabber span {
+  @apply h-1.5 w-12 rounded-full bg-stone-200 dark:bg-stone-800;
+}
+.sheet-header {
+  @apply mb-4 flex shrink-0 items-center justify-between gap-3;
+}
+.center-modal {
+  @apply relative m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-[24px] border border-stone-200 bg-stone-50 shadow-2xl dark:border-stone-700 dark:bg-stone-950;
+  animation: nori-fade 160ms ease-out;
+}
+.full-cover {
+  @apply absolute inset-0 z-[100] flex flex-col bg-stone-50 dark:bg-stone-950;
+  animation: nori-rise 220ms ease-out;
+}
+@keyframes nori-rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes nori-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Search drawer */
+.drawer-search {
+  @apply flex h-11 min-w-0 flex-1 items-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 text-stone-500 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-400;
+}
+.drawer-search input {
+  @apply min-w-0 flex-1 border-0 bg-transparent text-sm text-stone-900 outline-none placeholder:text-stone-400 dark:text-stone-50;
+}
+.sort-trigger {
+  @apply flex h-11 shrink-0 items-center gap-1 rounded-2xl border border-stone-200 bg-white px-2.5 text-sm font-medium text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300;
+}
+
+/* Rows */
+.manage-row {
+  @apply flex items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 dark:border-stone-800 dark:bg-stone-900;
+}
+.manage-row-main {
+  @apply min-w-0 flex-1 text-left;
+}
+.drag-handle {
+  @apply grid h-8 w-8 shrink-0 cursor-grab place-items-center text-stone-500 dark:text-stone-400;
+}
+.history-row {
+  @apply flex w-full items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-left hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-900 dark:hover:bg-stone-800;
+}
+.list-badge {
+  @apply shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300;
+}
+.row-badge {
+  @apply shrink-0 rounded-full bg-stone-200 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-stone-600 dark:bg-stone-800 dark:text-stone-400;
+}
+.tab-bar {
+  @apply flex shrink-0 gap-1 rounded-2xl bg-stone-100 p-1 dark:bg-stone-900;
+}
+.tab-bar button {
+  @apply flex-1 rounded-xl px-3 py-2 text-xs font-medium text-stone-600 dark:text-stone-400;
+}
+.tab-bar button.active {
+  @apply bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-900;
+}
+
+/* Settings */
+.section-label {
+  @apply px-1 text-xs uppercase tracking-[0.18em] text-stone-500;
+}
+.section-body {
+  @apply overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70;
+}
+.setting-row {
+  @apply flex w-full items-center gap-3 px-4 py-4 text-left text-stone-900 dark:text-stone-100;
+}
+.setting-row.divided {
+  @apply border-b border-stone-200 dark:border-stone-800;
+}
+.setting-row.column {
+  @apply flex-col items-stretch gap-3;
+}
+button.setting-row:hover {
+  @apply bg-stone-100 dark:bg-stone-800/60;
+}
+.setting-icon {
+  @apply grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-stone-200 bg-white text-stone-500 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-400;
+}
+.toggle {
+  @apply flex h-8 w-14 shrink-0 items-center rounded-full bg-stone-300 p-1 transition dark:bg-stone-700;
+}
+.toggle.on {
+  @apply bg-emerald-500;
+}
+.toggle span {
+  @apply h-6 w-6 rounded-full bg-white transition-transform;
+}
+.toggle.on span {
+  @apply translate-x-6;
+}
+.segmented {
+  @apply rounded-full bg-stone-200 px-4 py-2 text-sm font-medium text-stone-700 dark:bg-stone-800 dark:text-stone-300;
+}
+.segmented.active {
+  @apply bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-950;
+}
+.value-trigger {
+  @apply flex shrink-0 items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1.5 text-sm font-medium text-stone-700 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-300;
+}
+.badge {
+  @apply inline-block rounded-full border border-stone-300 bg-stone-100 px-3 py-1 text-xs text-stone-700 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-300;
+}
+.account-avatar {
+  @apply grid h-11 w-11 shrink-0 place-items-center rounded-full bg-stone-900 text-base font-bold text-stone-50 dark:bg-stone-100 dark:text-stone-900;
+}
+
+/* Editors */
+.editor-form {
+  @apply grid gap-4 p-6;
 }
 .editor-field {
   @apply w-full rounded-2xl border border-stone-200 bg-white px-4 py-3.5 text-sm text-stone-900 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-50;
@@ -152,22 +339,31 @@ body {
   @apply h-7 shrink-0 rounded-full border border-stone-200 px-3 text-sm text-stone-500 hover:bg-stone-100 dark:border-stone-800 dark:hover:bg-stone-800;
 }
 .dialog-button {
-  @apply rounded-full bg-stone-200 px-5 py-3 text-stone-900 hover:bg-stone-300 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700;
+  @apply rounded-full bg-stone-200 px-5 py-3 text-sm text-stone-900 hover:bg-stone-300 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700;
 }
 .dialog-button.primary {
   @apply bg-emerald-500 font-medium text-white hover:bg-emerald-600;
 }
-.snackbar,
-.error-toast {
-  @apply absolute bottom-24 left-6 right-6 z-40 flex items-center gap-3 rounded-2xl bg-stone-900 px-4 py-3 text-xs text-white shadow-xl dark:bg-stone-100 dark:text-stone-900;
+
+/* Snackbars */
+.snackbar-stack {
+  @apply pointer-events-none absolute inset-x-4 bottom-4 z-[130] grid gap-2;
 }
-.snackbar span,
-.error-toast span {
+.snackbar-stack.raised {
+  @apply bottom-24;
+}
+.snackbar {
+  @apply pointer-events-auto flex items-center gap-3 rounded-2xl bg-stone-900 px-4 py-3 text-xs font-medium text-stone-50 shadow-xl dark:bg-stone-100 dark:text-stone-900;
+}
+.snackbar span {
   @apply min-w-0 flex-1;
 }
 .snackbar button {
-  @apply font-semibold text-emerald-400 dark:text-emerald-700;
+  @apply shrink-0 font-bold text-emerald-300 dark:text-emerald-700;
 }
 .error-toast {
-  @apply bg-rose-600 text-white dark:bg-rose-600 dark:text-white;
+  @apply absolute inset-x-6 bottom-24 z-[140] flex items-center gap-3 rounded-2xl bg-rose-600 px-4 py-3 text-xs text-white shadow-xl;
+}
+.error-toast span {
+  @apply min-w-0 flex-1;
 }

@@ -40,7 +40,7 @@ bun run start
 
 ### Browser extension
 
-Nori also includes a local-first Chrome and Firefox extension with a quick-save popup and full bookmark manager.
+Nori also includes a local-first Chrome and Firefox extension whose popup mirrors the Android app: lists, search drawer, history, list management and settings all live in the popup.
 
 ```sh
 cd extension

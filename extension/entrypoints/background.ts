@@ -117,6 +117,12 @@ async function mutate(message: RequestMessage): Promise<unknown> {
         ].slice(0, 10)
       break
     }
+    case 'clear-history':
+      profile.history = []
+      break
+    case 'restore-history':
+      profile.history = message.items
+      break
     case 'add-list': {
       const name = message.name.trim()
       if (!name) throw new Error('List name is required')
@@ -146,6 +152,33 @@ async function mutate(message: RequestMessage): Promise<unknown> {
       profile.bookmarks
         .filter((row) => row.listId === message.id)
         .forEach((row) => tombstone(profile.bookmarks, profile.pendingBookmarkIds, row.id))
+      break
+    }
+    case 'restore-list': {
+      const timestamp = now()
+      const list = profile.lists.find((row) => row.id === message.list.id)
+      if (list) {
+        list.json = patchRowState(list, { visible: true, deleted_at: null }).json
+        list.updatedAt = timestamp
+      } else {
+        profile.lists.push(message.list)
+      }
+      mark(profile.pendingListIds, message.list.id)
+      message.bookmarks.forEach((snapshotRow) => {
+        const item = profile.bookmarks.find((row) => row.id === snapshotRow.id)
+        if (!item) return
+        item.json = patchRowState(item, { visible: true, deleted_at: null }).json
+        item.updatedAt = timestamp
+        mark(profile.pendingBookmarkIds, item.id)
+      })
+      break
+    }
+    case 'set-list-visibility': {
+      const item = profile.lists.find((row) => row.id === message.id)
+      if (!item) throw new Error('List not found')
+      item.json = patchRowState(item, { visible: message.visible }).json
+      item.updatedAt = now()
+      mark(profile.pendingListIds, item.id)
       break
     }
     case 'reorder-lists':
