@@ -59,7 +59,7 @@ export function AllBookmarksDrawer() {
 
   const drawerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: drawerTranslateY.value }],
-  }))
+  }), [drawerTranslateY])
 
   const closeDrawer = () => ui$.drawerOpen.set(false)
   const closeDrawerWithAnimation = () => {

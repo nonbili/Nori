@@ -152,7 +152,7 @@ function DraggableRow<T extends { id: string }>({
       shadowRadius: isDragging.value ? 8 : 0,
       elevation: isDragging.value ? 5 : 0,
     }
-  })
+  }, [gap, id, initialIndex, isDragging, itemHeight, positions, startY, translateY])
 
   if (dragHandleOnly) {
     return (

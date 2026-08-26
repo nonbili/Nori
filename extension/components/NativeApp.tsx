@@ -6,13 +6,17 @@ import { colorScheme } from 'nativewind'
 import { setDynamicLoadingEnabled } from '@react-native-vector-icons/common'
 import { browser } from 'wxt/browser'
 import { useTranslation } from 'react-i18next'
+import i18n from 'i18next'
 import { NoriHome } from 'nori-root/components/home/NoriHome'
 import { ActionSnackbar } from 'nori-root/components/common/ActionSnackbar'
 import { AppProvider } from './AppContext'
 import { SettingsSheet } from './SharedSettingsSheet'
 import { useSnapshot } from './useSnapshot'
 import { useSharedStateBridge } from './useSharedStateBridge'
+import settingsI18n from '../lib/i18n'
+import { systemLanguage } from '../lib/language'
 import './native-fonts.css'
+import './nativewind-interop'
 
 setDynamicLoadingEnabled(false)
 
@@ -33,6 +37,19 @@ function ReadyApp({
       setActiveTab({ url: tab?.url, title: tab?.title, icon: tab?.favIconUrl })
     })
   }, [])
+
+  // The shared components read the default i18next instance while the
+  // extension's own settings sheet has its own; keep both on the language the
+  // background stores, falling back to the browser UI language.
+  useEffect(() => {
+    const language = state.snapshot.preferences.language || systemLanguage()
+    if (i18n.language !== language) {
+      void i18n.changeLanguage(language)
+    }
+    if (settingsI18n.language !== language) {
+      void settingsI18n.changeLanguage(language)
+    }
+  }, [state.snapshot.preferences.language])
 
   useEffect(() => {
     const theme = state.snapshot.preferences.theme

@@ -223,7 +223,7 @@ function DraggableTile<T extends { id: string }>({
       shadowRadius: isDragging.value ? 20 : 0,
       elevation: isDragging.value ? 10 : 0,
     }
-  })
+  }, [getCoords, id, initialIndex, isDragging, itemHeight, itemWidth, positions, startX, startY, translateX, translateY])
 
   return (
     <GestureDetector gesture={panGesture}>

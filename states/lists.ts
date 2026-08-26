@@ -1,6 +1,7 @@
 import { observable, type Observable } from '@legendapp/state'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
+import { Platform } from 'react-native'
 import { genId } from '@/lib/utils'
 import { settings$ } from './settings'
 import {
@@ -149,20 +150,22 @@ export const lists$: Observable<Store> = observable<Store>({
   },
 })
 
-syncObservable(lists$, {
-  persist: {
-    name: 'lists',
-    plugin: ObservablePersistMMKV,
-    transform: {
-      load: (data: Partial<Store>) => {
-        if (!data) {
-          return data
-        }
-        return {
-          ...data,
-          lists: normalizeLists(data.lists),
-        }
+if (Platform.OS !== 'web') {
+  syncObservable(lists$, {
+    persist: {
+      name: 'lists',
+      plugin: ObservablePersistMMKV,
+      transform: {
+        load: (data: Partial<Store>) => {
+          if (!data) {
+            return data
+          }
+          return {
+            ...data,
+            lists: normalizeLists(data.lists),
+          }
+        },
       },
     },
-  },
-})
+  })
+}

@@ -1,6 +1,7 @@
 import { observable, type Observable } from '@legendapp/state'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
+import { Platform } from 'react-native'
 import { addOpenedBookmarkRecord, removeOpenedBookmarkRecord, restoreOpenedBookmarkRecords } from '@/lib/history-mutations'
 
 export interface OpenedBookmark {
@@ -35,9 +36,11 @@ export const history$: Observable<Store> = observable<Store>({
   },
 })
 
-syncObservable(history$.openedBookmarks, {
-  persist: {
-    name: 'history',
-    plugin: ObservablePersistMMKV,
-  },
-})
+if (Platform.OS !== 'web') {
+  syncObservable(history$.openedBookmarks, {
+    persist: {
+      name: 'history',
+      plugin: ObservablePersistMMKV,
+    },
+  })
+}

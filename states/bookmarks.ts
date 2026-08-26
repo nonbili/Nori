@@ -1,6 +1,7 @@
 import { observable, type Observable } from '@legendapp/state'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
+import { Platform } from 'react-native'
 import { lists$ } from './lists'
 import { genId } from '@/lib/utils'
 import { normalizeUrlInput } from '@/lib/url'
@@ -302,20 +303,22 @@ export const bookmarks$: Observable<Store> = observable<Store>({
   },
 })
 
-syncObservable(bookmarks$.bookmarks, {
-  persist: {
-    name: 'bookmarks',
-    plugin: ObservablePersistMMKV,
-    transform: {
-      load: (data: BookmarkRecord[] | Record<string, unknown>) => {
-        if (!data) {
-          return data
+if (Platform.OS !== 'web') {
+  syncObservable(bookmarks$.bookmarks, {
+    persist: {
+      name: 'bookmarks',
+      plugin: ObservablePersistMMKV,
+      transform: {
+        load: (data: BookmarkRecord[] | Record<string, unknown>) => {
+          if (!data) {
+            return data
+          }
+          if (isArrayPatch(data)) {
+            return data
+          }
+          return normalizeBookmarks(lists$.lists.get(), data)
         }
-        if (isArrayPatch(data)) {
-          return data
-        }
-        return normalizeBookmarks(lists$.lists.get(), data)
       },
     },
-  },
-})
+  })
+}

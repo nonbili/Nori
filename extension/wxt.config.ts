@@ -1,6 +1,5 @@
 import { defineConfig } from 'wxt'
 import { resolve } from 'node:path'
-import react from '@vitejs/plugin-react'
 import reactNativeWeb from 'vite-plugin-react-native-web'
 
 const extensionDir = process.cwd()
@@ -22,12 +21,18 @@ const rewriteRootAliases = {
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
+  react: {
+    vite: { jsxImportSource: 'nativewind' },
+  },
   // `nori` is a file: dependency, so packages get hoisted into the repo root's
   // node_modules, where they resolve the root copy of React instead of ours.
   // Two React instances mean every hook they call throws, so pin the imports.
+  // i18next needs the same treatment for a different reason: react-i18next keeps
+  // the default instance in module scope, so a second copy leaves the shared
+  // components reading an instance nobody initialised and rendering raw keys.
   vite: () => ({
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'i18next', 'react-i18next'],
       alias: [
         {
           find: 'nori-extension-settings',
@@ -40,11 +45,12 @@ export default defineConfig({
         { find: 'nori-root', replacement: rootDir },
         { find: /^react(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react') },
         { find: /^react-dom(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-dom') },
+        { find: /^i18next(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/i18next') },
+        { find: /^react-i18next(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-i18next') },
       ],
     },
     plugins: [
       rewriteRootAliases,
-      react({ jsxImportSource: 'nativewind' }),
       reactNativeWeb(),
     ],
   }),

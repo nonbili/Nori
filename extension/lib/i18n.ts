@@ -1,5 +1,4 @@
 import { createInstance } from 'i18next'
-import { initReactI18next } from 'react-i18next'
 
 const i18n = createInstance()
 
@@ -327,7 +326,12 @@ const resources = Object.fromEntries(
   ]),
 )
 
-void i18n.use(initReactI18next).init({ resources, lng: 'en', fallbackLng: 'en', interpolation: { escapeValue: false } })
+// Deliberately not `.use(initReactI18next)`: that registers the instance as
+// react-i18next's process-wide default, which would steal `useTranslation()`
+// from the shared Nori components and their nested keys. This catalogue is flat
+// and extension-only, so it is reached solely through the <I18nextProvider> in
+// components/SharedSettingsSheet.tsx.
+void i18n.init({ resources, lng: 'en', fallbackLng: 'en', interpolation: { escapeValue: false } })
 
 export default i18n
 export { languages } from './language'

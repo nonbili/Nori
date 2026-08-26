@@ -1,6 +1,7 @@
 import { observable } from '@legendapp/state'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
+import { Platform } from 'react-native'
 
 interface Store {
   inFlight: boolean
@@ -28,9 +29,11 @@ export const syncMeta$ = observable<Store>({
   lastFullPullAt: undefined,
 })
 
-syncObservable(syncMeta$, {
-  persist: {
-    name: 'sync-meta',
-    plugin: ObservablePersistMMKV,
-  },
-})
+if (Platform.OS !== 'web') {
+  syncObservable(syncMeta$, {
+    persist: {
+      name: 'sync-meta',
+      plugin: ObservablePersistMMKV,
+    },
+  })
+}

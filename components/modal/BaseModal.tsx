@@ -107,11 +107,11 @@ export const Sheet: React.FC<{
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
-  }))
+  }), [translateY])
 
   const backdropAnimatedStyle = useAnimatedStyle(() => ({
     opacity: backdropOpacity.value,
-  }))
+  }), [backdropOpacity])
 
   const dragGesture = Gesture.Pan()
     .activeOffsetY(8)

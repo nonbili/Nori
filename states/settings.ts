@@ -1,6 +1,7 @@
 import { observable, type Observable } from '@legendapp/state'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
+import { Platform } from 'react-native'
 import { normalizeI18nLanguage, type SupportedI18nLanguage } from '@/lib/i18n'
 
 export interface Settings {
@@ -68,9 +69,11 @@ export const settings$: Observable<Store> = observable<Store>({
   },
 })
 
-syncObservable(settings$, {
-  persist: {
-    name: 'settings',
-    plugin: ObservablePersistMMKV,
-  },
-})
+if (Platform.OS !== 'web') {
+  syncObservable(settings$, {
+    persist: {
+      name: 'settings',
+      plugin: ObservablePersistMMKV,
+    },
+  })
+}

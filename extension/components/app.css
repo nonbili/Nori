@@ -222,8 +222,11 @@
   @apply absolute inset-0 bg-black/60;
   animation: nori-fade 180ms ease-out;
 }
+/* No horizontal padding here: a scrolling child needs to reach the sheet's own
+   edge so its scrollbar rides the edge rather than floating 24px inside it.
+   The rows below re-add the inset, and so does the scrolling content itself. */
 .sheet {
-  @apply relative flex w-full flex-col overflow-hidden rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 pb-5 dark:border-stone-800 dark:bg-stone-950;
+  @apply relative flex w-full flex-col overflow-hidden rounded-t-[32px] border-t border-stone-200 bg-stone-50 pb-5 dark:border-stone-800 dark:bg-stone-950;
   animation: nori-rise 280ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
@@ -234,7 +237,7 @@
   @apply h-1.5 w-12 rounded-full bg-stone-200 dark:bg-stone-800;
 }
 .sheet-header {
-  @apply mb-4 flex shrink-0 items-center justify-between gap-3;
+  @apply mb-4 flex shrink-0 items-center justify-between gap-3 px-6;
 }
 .center-modal {
   @apply relative m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] overflow-y-auto rounded-[24px] border border-stone-200 bg-stone-50 shadow-2xl dark:border-stone-700 dark:bg-stone-950;

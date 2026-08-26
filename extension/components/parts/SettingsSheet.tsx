@@ -307,7 +307,7 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
         )
       }
     >
-      <div ref={scrollRef} className="grid min-h-0 flex-1 content-start gap-6 overflow-y-auto pb-4">
+      <div ref={scrollRef} className="grid min-h-0 flex-1 content-start gap-6 overflow-y-auto px-6 pb-4">
         {page === 'about' ? (
           <AboutPage version={version} />
         ) : (
