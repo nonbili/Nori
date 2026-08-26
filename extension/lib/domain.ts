@@ -89,6 +89,11 @@ export function mark(ids: string[], id: string) {
   if (!ids.includes(id)) ids.push(id)
 }
 
+export function changedRowIds<T extends { id: string }>(previous: T[], next: T[]) {
+  const previousRows = new Map(previous.map((row) => [row.id, JSON.stringify(row)]))
+  return next.filter((row) => previousRows.get(row.id) !== JSON.stringify(row)).map((row) => row.id)
+}
+
 export function tombstone<T extends { id: string; json: Record<string, unknown>; updatedAt: string }>(
   rows: T[],
   pending: string[],

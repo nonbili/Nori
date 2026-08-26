@@ -9,10 +9,13 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
-import { NouMenu } from '@/components/menu/NouMenu'
+import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { HEADER_TOP_OFFSET } from './headerLayout'
 
-export const AppHeader: React.FC = () => {
+export const AppHeader: React.FC<{
+  additionalMenuItems?: NouMenuItem[]
+  onOpenSettings?: () => void
+}> = ({ additionalMenuItems = [], onOpenSettings }) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const insets = useSafeAreaInsets()
@@ -38,7 +41,12 @@ export const AppHeader: React.FC = () => {
           },
         ]
       : []),
-    { label: t('settings.title'), icon: 'settings' as const, handler: () => ui$.settingsSheetOpen.set(true) },
+    ...additionalMenuItems,
+    {
+      label: t('settings.title'),
+      icon: 'settings' as const,
+      handler: onOpenSettings ?? (() => ui$.settingsSheetOpen.set(true)),
+    },
   ]
 
   return (

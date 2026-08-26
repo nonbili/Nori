@@ -1,13 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import '../../lib/i18n'
+import 'nori/lib/i18n'
 import '../../styles.css'
 import '../../components/app.css'
 import './tab.css'
-import { App } from '../../components/App'
+import { NativeApp } from '../../components/NativeApp'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App mode="tab" />
+    <div className="app-shell">
+      <NativeApp mode="tab" />
+    </div>
   </StrictMode>,
 )

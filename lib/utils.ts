@@ -1,6 +1,6 @@
 import 'react-native-get-random-values'
 import { nanoid } from 'nanoid'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import { Platform } from 'react-native'
 

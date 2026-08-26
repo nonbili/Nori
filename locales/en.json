@@ -107,6 +107,7 @@
   "settings": {
     "title": "Settings",
     "moreOptions": "More options",
+    "openInTab": "Open in a tab",
     "sync": {
       "label": "Sync",
       "signIn": "Sign in",

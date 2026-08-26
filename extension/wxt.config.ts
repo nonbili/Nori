@@ -1,5 +1,24 @@
 import { defineConfig } from 'wxt'
 import { resolve } from 'node:path'
+import react from '@vitejs/plugin-react'
+import reactNativeWeb from 'vite-plugin-react-native-web'
+
+const extensionDir = process.cwd()
+const rootDir = resolve(extensionDir, '..')
+const rewriteRootAliases = {
+  name: 'rewrite-nori-root-aliases',
+  enforce: 'pre' as const,
+  transform(code: string, id: string) {
+    if (!id.startsWith(rootDir) || id.startsWith(extensionDir)) return
+    return code
+      .replaceAll("'@/components/sheet/SettingsSheet'", "'nori-extension-settings'")
+      .replaceAll('"@/components/sheet/SettingsSheet"', '"nori-extension-settings"')
+      .replaceAll("'@/lib/open-bookmark'", "'nori-extension-open-bookmark'")
+      .replaceAll('"@/lib/open-bookmark"', '"nori-extension-open-bookmark"')
+      .replaceAll("'@/", "'nori-root/")
+      .replaceAll('"@/', '"nori-root/')
+  },
+}
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -10,10 +29,24 @@ export default defineConfig({
     resolve: {
       dedupe: ['react', 'react-dom'],
       alias: [
+        {
+          find: 'nori-extension-settings',
+          replacement: resolve(extensionDir, 'components/SharedSettingsSheet.tsx'),
+        },
+        {
+          find: 'nori-extension-open-bookmark',
+          replacement: resolve(extensionDir, 'lib/open-bookmark.ts'),
+        },
+        { find: 'nori-root', replacement: rootDir },
         { find: /^react(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react') },
         { find: /^react-dom(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-dom') },
       ],
     },
+    plugins: [
+      rewriteRootAliases,
+      react({ jsxImportSource: 'nativewind' }),
+      reactNativeWeb(),
+    ],
   }),
   publicDir: '../assets/images',
   zip: {

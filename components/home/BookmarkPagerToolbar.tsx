@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { LayoutChangeEvent, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View, type LayoutChangeEvent } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'

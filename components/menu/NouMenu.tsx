@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Modal, Pressable as NativePressable, ScrollView, Text, useWindowDimensions, View } from 'react-native'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'

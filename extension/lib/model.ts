@@ -83,7 +83,13 @@ export type RequestMessage =
   | { type: 'set-list-visibility'; id: string; visible: boolean }
   | { type: 'reorder-lists'; ids: string[] }
   | { type: 'reorder-bookmarks'; listId: string; ids: string[] }
-  | { type: 'replace-data'; lists: NoriList[]; bookmarks: NoriBookmark[] }
+  | {
+      type: 'replace-data'
+      lists: NoriList[]
+      bookmarks: NoriBookmark[]
+      history?: HistoryItem[]
+      preferences?: Partial<Preferences>
+    }
   | { type: 'set-preferences'; preferences: Partial<Preferences> }
   | { type: 'sign-in' }
   | { type: 'sign-out' }

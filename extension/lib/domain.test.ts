@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'bun:test'
 import {
+  changedRowIds,
   createProfile,
   liveBookmarks,
   mergeRows,
@@ -84,5 +85,19 @@ describe('extension domain adapter', () => {
     expect(pending).toContain('c')
     expect(pending).toContain('a')
     expect(pending).toContain('b')
+  })
+
+  it('marks only rows that changed during a shared-state replacement', () => {
+    const previous = [
+      { id: 'unchanged', value: 1 },
+      { id: 'changed', value: 1 },
+    ]
+    const next = [
+      { id: 'unchanged', value: 1 },
+      { id: 'changed', value: 2 },
+      { id: 'new', value: 1 },
+    ]
+
+    expect(changedRowIds(previous, next)).toEqual(['changed', 'new'])
   })
 })

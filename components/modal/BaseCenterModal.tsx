@@ -1,5 +1,5 @@
 import { clsx, isIos, isWeb } from '@/lib/utils'
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Keyboard, KeyboardAvoidingView, Modal, Pressable, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 

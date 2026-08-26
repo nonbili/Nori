@@ -4,7 +4,13 @@
     "strict": true,
     "noUncheckedIndexedAccess": false,
     "jsx": "react-jsx",
-    "paths": { "@/*": ["../*"], "nori/*": ["../*"] },
-    "types": ["bun", "node"]
+    "paths": {
+      "@/components/sheet/SettingsSheet": ["./components/SharedSettingsSheet.tsx"],
+      "@/lib/open-bookmark": ["./lib/open-bookmark.ts"],
+      "@/*": ["../*"],
+      "nori/*": ["../*"],
+      "nori-root/*": ["../*"]
+    },
+    "types": ["bun", "node", "nativewind/types"]
   }
 }

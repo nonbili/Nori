@@ -1,19 +1,10 @@
 import { useCallback, useEffect } from 'react'
-import { BackHandler, View } from 'react-native'
+import { BackHandler } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import { ui$ } from '@/states/ui'
-import { AllBookmarksDrawer } from '@/components/drawer/AllBookmarksDrawer'
-import { BookmarkImportSheet } from '@/components/sheet/BookmarkImportSheet'
-import { AppHeader } from '@/components/header/AppHeader'
-import { BookmarkPager } from '@/components/home/BookmarkPager'
-import { BookmarkEditorSheet } from '@/components/sheet/BookmarkEditorSheet'
-import { ManageListsSheet } from '@/components/sheet/ManageListsSheet'
-import { RecentlyUsedSheet } from '@/components/sheet/RecentlyUsedSheet'
-import { SaveSharedLinkSheet } from '@/components/sheet/SaveSharedLinkSheet'
-import { SettingsSheet } from '@/components/sheet/SettingsSheet'
-import { ListEditorSheet } from '@/components/sheet/ListEditorSheet'
+import { NoriHome } from '@/components/home/NoriHome'
 import { usePendingShareIntent } from '@/hooks/usePendingShareIntent'
 import { useQuickShare } from '@/hooks/useQuickShare'
 
@@ -82,25 +73,5 @@ export default function HomeScreen() {
   useQuickShare()
   usePendingShareIntent()
 
-  return (
-    <View className="flex-1 bg-stone-50 dark:bg-stone-950">
-      <GestureDetector gesture={openDrawerGesture}>
-        <View className="flex-1">
-          {!bookmarkEditMode ? <AppHeader /> : null}
-          <BookmarkPager />
-        </View>
-      </GestureDetector>
-
-      <AllBookmarksDrawer />
-
-      <RecentlyUsedSheet />
-      <SettingsSheet />
-      <ManageListsSheet />
-      <BookmarkEditorSheet />
-      <ListEditorSheet />
-
-      <SaveSharedLinkSheet />
-      <BookmarkImportSheet />
-    </View>
-  )
+  return <NoriHome renderMain={(main) => <GestureDetector gesture={openDrawerGesture}>{main}</GestureDetector>} />
 }

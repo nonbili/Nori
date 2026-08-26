@@ -49,7 +49,9 @@ function groupBookmarksByList(bookmarks: BookmarkRecord[]) {
   return groups
 }
 
-export const BookmarkPager: React.FC = () => {
+export const BookmarkPager: React.FC<{
+  newBookmarkDefaults?: Partial<Pick<BookmarkRecord, 'url' | 'title' | 'icon'>>
+}> = ({ newBookmarkDefaults }) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const lists = useValue(lists$.lists)
@@ -126,13 +128,13 @@ export const BookmarkPager: React.FC = () => {
       return
     }
     ui$.bookmarkEditor.set({
-      url: '',
-      title: '',
-      icon: '',
+      url: newBookmarkDefaults?.url || '',
+      title: newBookmarkDefaults?.title || '',
+      icon: newBookmarkDefaults?.icon || '',
       listId: selectedList.id,
       tags: [],
     })
-  }, [selectedList, t])
+  }, [newBookmarkDefaults, selectedList, t])
 
   const editBookmark = useCallback((bookmark: BookmarkRecord) => {
     ui$.bookmarkEditor.set({

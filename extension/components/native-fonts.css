@@ -1,0 +1,7 @@
+@font-face {
+  font-family: 'MaterialIcons-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('../../node_modules/@react-native-vector-icons/material-icons/fonts/MaterialIcons.ttf') format('truetype');
+}

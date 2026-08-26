@@ -1,7 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: ['./entrypoints/**/*.{html,ts,tsx}', './components/**/*.{ts,tsx}'],
+  content: [
+    './entrypoints/**/*.{html,ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    '../components/**/*.{ts,tsx}',
+  ],
+  presets: [require('nativewind/preset')],
   theme: {
     extend: {
       colors: { nori: { 50: '#ecfdf5', 500: '#10b981', 600: '#059669', 700: '#047857', 950: '#022c22' } },

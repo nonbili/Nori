@@ -1,6 +1,7 @@
 import { browser } from 'wxt/browser'
 import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile } from '../lib/api'
 import {
+  changedRowIds,
   cleanTags,
   createProfile,
   mark,
@@ -208,10 +209,14 @@ async function mutate(message: RequestMessage): Promise<unknown> {
       )
       break
     case 'replace-data': {
+      const changedListIds = changedRowIds(profile.lists, message.lists)
+      const changedBookmarkIds = changedRowIds(profile.bookmarks, message.bookmarks)
       profile.lists = message.lists
       profile.bookmarks = message.bookmarks
-      profile.pendingListIds = message.lists.map((row) => row.id)
-      profile.pendingBookmarkIds = message.bookmarks.map((row) => row.id)
+      if (message.history) profile.history = message.history
+      if (message.preferences) state.preferences = { ...state.preferences, ...message.preferences }
+      changedListIds.forEach((id) => mark(profile.pendingListIds, id))
+      changedBookmarkIds.forEach((id) => mark(profile.pendingBookmarkIds, id))
       break
     }
     case 'set-preferences':
@@ -223,6 +228,33 @@ async function mutate(message: RequestMessage): Promise<unknown> {
   await saveState(state)
   queueSync()
   return output
+}
+
+async function handleMessage(message: RequestMessage): Promise<ResponseMessage> {
+  try {
+    if (message.type === 'snapshot') return { ok: true, data: await snapshot() }
+    if (message.type === 'sign-in') {
+      auth = await hostedSignIn()
+      const state = await loadState()
+      activateAccount(state, auth)
+      await saveState(state)
+      queueSync()
+      return { ok: true, data: await snapshot() }
+    }
+    if (message.type === 'sign-out') {
+      await signOut()
+      auth = { loaded: true, plan: 'free', source: 'none' }
+      return { ok: true, data: await snapshot() }
+    }
+    if (message.type === 'sync') {
+      await runSync()
+      return { ok: true, data: await snapshot() }
+    }
+    const data = await mutate(message)
+    return { ok: true, data }
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+  }
 }
 
 export default defineBackground(() => {
@@ -239,30 +271,8 @@ export default defineBackground(() => {
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === 'nori-sync') void runSync().catch(() => undefined)
   })
-  browser.runtime.onMessage.addListener(async (message: RequestMessage): Promise<ResponseMessage> => {
-    try {
-      if (message.type === 'snapshot') return { ok: true, data: await snapshot() }
-      if (message.type === 'sign-in') {
-        auth = await hostedSignIn()
-        const state = await loadState()
-        activateAccount(state, auth)
-        await saveState(state)
-        queueSync()
-        return { ok: true, data: await snapshot() }
-      }
-      if (message.type === 'sign-out') {
-        await signOut()
-        auth = { loaded: true, plan: 'free', source: 'none' }
-        return { ok: true, data: await snapshot() }
-      }
-      if (message.type === 'sync') {
-        await runSync()
-        return { ok: true, data: await snapshot() }
-      }
-      const data = await mutate(message)
-      return { ok: true, data }
-    } catch (error) {
-      return { ok: false, error: error instanceof Error ? error.message : String(error) }
-    }
+  browser.runtime.onMessage.addListener((message: RequestMessage, _sender, sendResponse) => {
+    void handleMessage(message).then(sendResponse)
+    return true
   })
 })
