@@ -325,4 +325,4 @@ const resources = Object.fromEntries(
 void i18n.use(initReactI18next).init({ resources, lng: 'en', fallbackLng: 'en', interpolation: { escapeValue: false } })
 
 export default i18n
-export const languages = ['ar', 'el', 'en', 'es', 'fr', 'it', 'pl', 'pt_BR', 'sv', 'tr', 'zh_Hans', 'zh_Hant']
+export { languages } from './language'

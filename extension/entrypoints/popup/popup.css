@@ -1,5 +1,7 @@
 body {
-  @apply h-[600px] w-[420px] overflow-hidden;
+  /* Fixed popup size, but never wider than the viewport the browser actually gives
+     us: a narrower popup then reflows instead of pushing content off the right. */
+  @apply h-[600px] w-[420px] max-w-full overflow-hidden;
 }
 #root {
   @apply h-full;
@@ -226,7 +228,7 @@ body {
   animation: nori-fade 160ms ease-out;
 }
 .full-cover {
-  @apply absolute inset-0 z-[100] flex flex-col bg-stone-50 dark:bg-stone-950;
+  @apply absolute inset-0 z-[100] flex min-w-0 flex-col overflow-hidden bg-stone-50 dark:bg-stone-950;
   animation: nori-rise 220ms ease-out;
 }
 @keyframes nori-rise {
@@ -256,10 +258,13 @@ body {
 .sort-trigger {
   @apply flex h-11 shrink-0 items-center gap-1 rounded-2xl border border-stone-200 bg-white px-2.5 text-sm font-medium text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300;
 }
+.drawer-results {
+  @apply min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-6 pb-6 pt-4;
+}
 
 /* Rows */
 .manage-row {
-  @apply flex items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 dark:border-stone-800 dark:bg-stone-900;
+  @apply flex w-full min-w-0 items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 dark:border-stone-800 dark:bg-stone-900;
 }
 .manage-row-main {
   @apply min-w-0 flex-1 text-left;

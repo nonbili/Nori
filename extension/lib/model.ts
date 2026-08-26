@@ -31,7 +31,8 @@ export interface ProfileData {
 
 export interface Preferences {
   theme: Theme
-  language: string
+  /** null means follow the browser UI language. */
+  language: string | null
   lastListId: string
   showFavicons: boolean
 }

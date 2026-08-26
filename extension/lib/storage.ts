@@ -1,5 +1,6 @@
 import { browser } from 'wxt/browser'
 import { createProfile } from './domain'
+import { normalizeLanguage } from './language'
 import type { StoredState } from './model'
 
 const KEY = 'nori-state'
@@ -10,7 +11,7 @@ export const defaultState = (): StoredState => ({
   profiles: { anonymous: createProfile() },
   preferences: {
     theme: 'system',
-    language: browser.i18n.getUILanguage().replace('-', '_'),
+    language: null,
     lastListId: 'builtin-later',
     showFavicons: true,
   },
@@ -22,6 +23,7 @@ export async function loadState(): Promise<StoredState> {
   if (!stored || stored.version !== 1 || !stored.profiles) return defaultState()
   if (!stored.profiles[stored.activeProfileId]) stored.activeProfileId = Object.keys(stored.profiles)[0] || 'anonymous'
   if (!stored.profiles.anonymous) stored.profiles.anonymous = createProfile()
+  if (stored.preferences) stored.preferences.language = normalizeLanguage(stored.preferences.language)
   return stored
 }
 

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { useTranslation } from 'react-i18next'
 import { browser } from 'wxt/browser'
 import '../../lib/i18n'
+import { systemLanguage } from '../../lib/language'
 import '../../styles.css'
 import './popup.css'
 import { AppProvider, useApp } from '../../components/AppContext'
@@ -272,7 +273,7 @@ function Popup() {
 
   useEffect(() => {
     if (!snapshot) return
-    void i18n.changeLanguage(snapshot.preferences.language)
+    void i18n.changeLanguage(snapshot.preferences.language || systemLanguage())
     const dark =
       snapshot.preferences.theme === 'dark' ||
       (snapshot.preferences.theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)

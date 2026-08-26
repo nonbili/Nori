@@ -161,9 +161,9 @@ export function SearchDrawer({
           })}
         </div>
       )}
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-4">
+      <div className="drawer-results">
         {results.length ? (
-          <div className="grid gap-3">
+          <div className="grid min-w-0 gap-3">
             {results.map((bookmark) => (
               <ResultRow key={bookmark.id} bookmark={bookmark} handlers={handlers} />
             ))}

@@ -7,7 +7,7 @@ import { Menu } from '../../../components/Menu'
 import { Sheet } from '../../../components/Overlays'
 import { SectionCard, Segmented, SettingRow, Toggle } from '../../../components/Rows'
 import { showSnackbar } from '../../../components/Snackbar'
-import { languages } from '../../../lib/i18n'
+import { languages, systemLanguage } from '../../../lib/language'
 import { exportBookmarks, readImportFile, type TransferFormat } from '../../../lib/transfer'
 import type { Theme } from '../../../lib/model'
 
@@ -104,6 +104,11 @@ function ExperienceSection() {
   const { preferences } = snapshot
   const setPreference = (patch: Partial<typeof preferences>) =>
     void mutate({ type: 'set-preferences', preferences: patch })
+  const resolvedSystemLanguage = systemLanguage()
+  const toLanguageLabel = (language: string) => languageNames[language] || language
+  const currentLanguageLabel = preferences.language
+    ? toLanguageLabel(preferences.language)
+    : `${t('languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`
 
   return (
     <SectionCard title={t('experienceLabel')}>
@@ -129,15 +134,22 @@ function ExperienceSection() {
             label={t('language')}
             trigger={
               <>
-                <span>{languageNames[preferences.language] || preferences.language}</span>
+                <span>{currentLanguageLabel}</span>
                 <Icon name="down" size={15} />
               </>
             }
-            items={languages.map((language) => ({
-              label: languageNames[language] || language,
-              selected: preferences.language === language,
-              handler: () => setPreference({ language }),
-            }))}
+            items={[
+              {
+                label: `${t('languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`,
+                selected: preferences.language === null,
+                handler: () => setPreference({ language: null }),
+              },
+              ...languages.map((language) => ({
+                label: toLanguageLabel(language),
+                selected: preferences.language === language,
+                handler: () => setPreference({ language }),
+              })),
+            ]}
           />
         }
       />
