@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { Icon } from '../../../components/Icon'
-import { Menu } from '../../../components/Menu'
+import { Icon } from '../Icon'
+import { Menu } from '../Menu'
 
 export function Header({
   hasList,
@@ -10,6 +10,7 @@ export function Header({
   onOpenLists,
   onOpenSettings,
   onToggleEdit,
+  onOpenInTab,
 }: {
   hasList: boolean
   editMode: boolean
@@ -18,6 +19,7 @@ export function Header({
   onOpenLists: () => void
   onOpenSettings: () => void
   onToggleEdit: () => void
+  onOpenInTab?: () => void
 }) {
   const { t } = useTranslation()
   return (
@@ -44,6 +46,7 @@ export function Header({
                   },
                 ]
               : []),
+            ...(onOpenInTab ? [{ label: t('openInTab'), icon: 'external' as const, handler: onOpenInTab }] : []),
             { label: t('settings'), icon: 'settings', handler: onOpenSettings },
           ]}
         />

@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useApp } from '../../../components/AppContext'
-import { CenterModal } from '../../../components/Overlays'
-import { showSnackbar } from '../../../components/Snackbar'
-import type { NoriList } from '../../../lib/model'
+import { useApp } from '../AppContext'
+import { CenterModal } from '../Overlays'
+import { showSnackbar } from '../Snackbar'
+import type { NoriList } from '../../lib/model'
 
 export function ListEditor({ list, onClose }: { list?: NoriList; onClose: () => void }) {
   const { t } = useTranslation()

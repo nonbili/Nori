@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAllTags, getTags } from 'nori/lib/nori-data'
-import { useApp } from '../../../components/AppContext'
-import { Icon } from '../../../components/Icon'
-import { CenterModal } from '../../../components/Overlays'
-import { showSnackbar } from '../../../components/Snackbar'
-import { request } from '../../../lib/client'
-import type { BookmarkDraft, NoriBookmark } from '../../../lib/model'
+import { useApp } from '../AppContext'
+import { Icon } from '../Icon'
+import { CenterModal } from '../Overlays'
+import { showSnackbar } from '../Snackbar'
+import { request } from '../../lib/client'
+import type { BookmarkDraft, NoriBookmark } from '../../lib/model'
 
 export function BookmarkEditor({
   bookmark,

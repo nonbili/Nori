@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useApp } from '../../../components/AppContext'
-import { Favicon } from '../../../components/Favicon'
-import { Sheet } from '../../../components/Overlays'
-import { showSnackbar } from '../../../components/Snackbar'
-import { createdAtMs, hostLabel } from '../../../lib/format'
-import type { HistoryItem, NoriBookmark } from '../../../lib/model'
+import { useApp } from '../AppContext'
+import { Favicon } from '../Favicon'
+import { Sheet } from '../Overlays'
+import { showSnackbar } from '../Snackbar'
+import { createdAtMs, hostLabel } from '../../lib/format'
+import type { HistoryItem, NoriBookmark } from '../../lib/model'
 
 const RECENTLY_ADDED_LIMIT = 20
 

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { Icon } from '../../../components/Icon'
-import { Menu } from '../../../components/Menu'
-import type { NoriList } from '../../../lib/model'
+import { Icon } from '../Icon'
+import { Menu } from '../Menu'
+import type { NoriList } from '../../lib/model'
 
 export function Toolbar({
   editMode,

@@ -1,14 +1,14 @@
 import { useMemo, useRef } from 'react'
 import { rectSortingStrategy } from '@dnd-kit/sortable'
 import { useTranslation } from 'react-i18next'
-import { useApp } from '../../../components/AppContext'
-import { Favicon } from '../../../components/Favicon'
-import { Icon } from '../../../components/Icon'
-import { ContextMenu, type MenuItem } from '../../../components/Menu'
-import { SectionLabel } from '../../../components/Rows'
-import { Sortable, useSortableItem } from '../../../components/Sortable'
-import { isDeleted, isVisible } from '../../../lib/domain'
-import type { NoriBookmark, NoriList } from '../../../lib/model'
+import { useApp } from '../AppContext'
+import { Favicon } from '../Favicon'
+import { Icon } from '../Icon'
+import { ContextMenu, type MenuItem } from '../Menu'
+import { SectionLabel } from '../Rows'
+import { Sortable, useSortableItem } from '../Sortable'
+import { isDeleted, isVisible } from '../../lib/domain'
+import type { NoriBookmark, NoriList } from '../../lib/model'
 
 export interface BookmarkHandlers {
   onOpen: (bookmark: NoriBookmark) => void

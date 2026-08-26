@@ -1,0 +1,13 @@
+body {
+  @apply h-screen overflow-hidden bg-stone-100 dark:bg-black;
+}
+#root {
+  @apply grid h-full place-items-center p-4;
+}
+/* The tab shows the popup UI at its own size rather than stretching it: the
+   Android layout is built for one narrow column, so a full-width version would
+   be a different design, not the same one. Free of the popup's 600px ceiling it
+   can use a real phone's 9:19.5, shrinking in height on short screens. */
+#root > .app-shell {
+  @apply h-[780px] max-h-full w-[360px] max-w-full rounded-[28px] border border-stone-200 shadow-panel dark:border-stone-800;
+}
