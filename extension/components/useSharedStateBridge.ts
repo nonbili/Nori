@@ -32,6 +32,23 @@ function currentPayload() {
 const fingerprint = (value: ReturnType<typeof currentPayload>) => JSON.stringify(value)
 
 /**
+ * Mutable state of the local write pipeline, shared between the projection and
+ * commit effects. `flushing` only guards flush() re-entrancy, so it is not part
+ * of the pending check: the trailing refresh() inside a flush must be allowed
+ * to project. Deriving "pending" from real state rather than a manual flag
+ * means a failed write cannot wedge the projection permanently.
+ */
+interface WriteState {
+  timer?: ReturnType<typeof setTimeout>
+  flushing: boolean
+  inFlight: boolean
+  queuedPayload?: ReturnType<typeof currentPayload>
+}
+
+const isWritePending = (state: WriteState) =>
+  state.timer !== undefined || state.inFlight || state.queuedPayload !== undefined
+
+/**
  * Keeps the shared synchronous UI stores as a projection of the extension's
  * durable background state. UI edits are batched and committed atomically so a
  * closing popup cannot leave only half of a multi-store operation persisted.
@@ -39,8 +56,18 @@ const fingerprint = (value: ReturnType<typeof currentPayload>) => JSON.stringify
 export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promise<void>, setError: (message: string) => void) {
   const applyingSnapshot = useRef(false)
   const lastFingerprint = useRef('')
+  const missedSnapshot = useRef(false)
+  const write = useRef<WriteState>({ flushing: false, inFlight: false })
 
   useEffect(() => {
+    // A background snapshot can arrive while a local edit is still debouncing or
+    // in flight, before replace-data has entered the operation queue. Preserve
+    // the local stores until that write settles, then re-read once it has.
+    if (isWritePending(write.current)) {
+      missedSnapshot.current = true
+      return
+    }
+    missedSnapshot.current = false
     applyingSnapshot.current = true
     batch(() => {
       lists$.lists.set(snapshot.profile.lists)
@@ -72,36 +99,53 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
   }, [snapshot])
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined
+    const state = write.current
     let stopped = false
-    let writing = false
-    let queuedPayload: ReturnType<typeof currentPayload> | undefined
+    // Re-read once a local write settles if snapshots were dropped meanwhile.
+    const settle = () => {
+      if (stopped || isWritePending(state) || !missedSnapshot.current) return
+      missedSnapshot.current = false
+      void refresh()
+    }
     const flush = async () => {
-      if (writing || !queuedPayload) return
-      writing = true
+      if (state.flushing || !state.queuedPayload) return
+      state.flushing = true
       try {
-        while (queuedPayload) {
-          const payload = queuedPayload
-          queuedPayload = undefined
-          await request({ type: 'replace-data', ...payload })
+        while (state.queuedPayload) {
+          const payload = state.queuedPayload
+          state.queuedPayload = undefined
+          state.inFlight = true
+          try {
+            await request({ type: 'replace-data', ...payload })
+          } finally {
+            state.inFlight = false
+          }
         }
-        if (!stopped) await refresh()
+        if (!stopped) {
+          missedSnapshot.current = false
+          await refresh()
+        }
       } catch (reason) {
         setError(reason instanceof Error ? reason.message : String(reason))
       } finally {
-        writing = false
-        if (queuedPayload) void flush()
+        state.flushing = false
+        if (state.queuedPayload) void flush()
+        else settle()
       }
     }
     const commit = () => {
       if (applyingSnapshot.current) return
-      clearTimeout(timer)
-      timer = setTimeout(() => {
+      clearTimeout(state.timer)
+      state.timer = setTimeout(() => {
+        state.timer = undefined
         const payload = currentPayload()
         const nextFingerprint = fingerprint(payload)
-        if (nextFingerprint === lastFingerprint.current) return
+        if (nextFingerprint === lastFingerprint.current) {
+          settle()
+          return
+        }
         lastFingerprint.current = nextFingerprint
-        queuedPayload = payload
+        state.queuedPayload = payload
         void flush()
       }, 40)
     }
@@ -117,7 +161,8 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
     ]
     return () => {
       stopped = true
-      clearTimeout(timer)
+      clearTimeout(state.timer)
+      state.timer = undefined
       subscriptions.forEach((subscription) => subscription())
     }
   }, [refresh, setError])

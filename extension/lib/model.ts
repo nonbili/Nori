@@ -75,6 +75,10 @@ export type RequestMessage =
   | { type: 'sign-out' }
   | { type: 'sync' }
 
+export interface StateChangedMessage {
+  type: 'state-changed'
+}
+
 export interface ResponseMessage<T = unknown> {
   ok: boolean
   data?: T

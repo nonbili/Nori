@@ -3,7 +3,7 @@ import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, 
 import { createProfile } from '../lib/domain'
 import { collectChangedRowIds } from 'nori/lib/supabase/sync-merge'
 import { loadState, saveState } from '../lib/storage'
-import type { AppSnapshot, AuthState, RequestMessage, ResponseMessage } from '../lib/model'
+import type { AppSnapshot, AuthState, RequestMessage, ResponseMessage, StateChangedMessage } from '../lib/model'
 
 let auth: AuthState = { loaded: false, plan: 'free', source: 'none' }
 let syncing = false
@@ -23,7 +23,12 @@ async function snapshot(): Promise<AppSnapshot> {
   return { profile, profileId: state.activeProfileId, preferences: state.preferences, auth, syncing, syncError }
 }
 
-async function runSync() {
+function notifyStateChanged() {
+  const message: StateChangedMessage = { type: 'state-changed' }
+  void browser.runtime.sendMessage(message).catch(() => undefined)
+}
+
+async function runSync(broadcast = true) {
   if (syncing) return
   syncing = true
   syncError = undefined
@@ -37,12 +42,13 @@ async function runSync() {
     throw error
   } finally {
     syncing = false
+    if (broadcast) notifyStateChanged()
   }
 }
 
 function queueSync() {
   clearTimeout(syncTimer)
-  syncTimer = setTimeout(() => void enqueue(runSync).catch(() => undefined), 1000)
+  syncTimer = setTimeout(() => void enqueue(() => runSync()).catch(() => undefined), 1000)
 }
 
 async function mutate(message: RequestMessage): Promise<void> {
@@ -73,17 +79,10 @@ async function mutate(message: RequestMessage): Promise<void> {
 async function handleMessage(message: RequestMessage): Promise<ResponseMessage> {
   try {
     if (message.type === 'snapshot') return { ok: true, data: await snapshot() }
-    if (message.type === 'sign-in') {
-      auth = await hostedSignIn()
-      const state = await loadState()
-      activateAccount(state, auth)
-      await saveState(state)
-      queueSync()
-      return { ok: true, data: await snapshot() }
-    }
     if (message.type === 'sign-out') {
       await signOut()
       auth = { loaded: true, plan: 'free', source: 'none' }
+      notifyStateChanged()
       return { ok: true, data: await snapshot() }
     }
     if (message.type === 'sync') {
@@ -92,6 +91,31 @@ async function handleMessage(message: RequestMessage): Promise<ResponseMessage> 
     }
     const data = await mutate(message)
     return { ok: true, data }
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+  }
+}
+
+async function handleSignIn(): Promise<ResponseMessage> {
+  try {
+    // Keep interactive browser UI outside the state-operation queue so tabs can
+    // continue reading snapshots while the user completes or abandons sign-in.
+    const nextAuth = await hostedSignIn()
+    return await enqueue(async () => {
+      try {
+        auth = nextAuth
+        const state = await loadState()
+        activateAccount(state, auth)
+        await saveState(state)
+        // Finish the initial pull before reporting sign-in complete so the
+        // requesting page's refresh includes the synced profile.
+        await runSync(false).catch(() => undefined)
+        notifyStateChanged()
+        return { ok: true, data: await snapshot() }
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : String(error) }
+      }
+    })
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : String(error) }
   }
@@ -107,13 +131,14 @@ export default defineBackground(() => {
       await saveState(state)
       queueSync()
     }
+    notifyStateChanged()
   })
   browser.alarms.create('nori-sync', { periodInMinutes: 15 })
   browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === 'nori-sync') void enqueue(runSync).catch(() => undefined)
+    if (alarm.name === 'nori-sync') void enqueue(() => runSync()).catch(() => undefined)
   })
   browser.runtime.onMessage.addListener((message: RequestMessage, _sender, sendResponse) => {
-    const response = message.type === 'snapshot' ? handleMessage(message) : enqueue(() => handleMessage(message))
+    const response = message.type === 'sign-in' ? handleSignIn() : enqueue(() => handleMessage(message))
     void response.then(sendResponse)
     return true
   })
