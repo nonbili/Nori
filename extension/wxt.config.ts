@@ -36,6 +36,8 @@ export default defineConfig({
     icons: { 16: 'icon.png', 32: 'icon.png', 48: 'icon.png', 128: 'icon.png' },
     permissions: ['storage', 'activeTab', 'identity', 'alarms'],
     host_permissions: [
+      'http://*/*',
+      'https://*/*',
       'https://pgukcvgypvjwtibzlvhr.supabase.co/*',
       'https://a.inks.page/*',
       'https://nori.inks.page/*',

@@ -1,6 +1,15 @@
 import { browser } from 'wxt/browser'
 import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile } from '../lib/api'
-import { cleanTags, createProfile, mark, now, reorder, saveBookmark, tombstone } from '../lib/domain'
+import {
+  cleanTags,
+  createProfile,
+  mark,
+  now,
+  reorder,
+  resolveBookmarkMetadata,
+  saveBookmark,
+  tombstone,
+} from '../lib/domain'
 import { getSortIndex, patchRowState } from 'nori/lib/nori-data'
 import { loadState, saveState } from '../lib/storage'
 import type { AppSnapshot, AuthState, RequestMessage, ResponseMessage } from '../lib/model'
@@ -43,19 +52,26 @@ async function mutate(message: RequestMessage): Promise<unknown> {
   const profile = state.profiles[state.activeProfileId] || (state.profiles[state.activeProfileId] = createProfile())
   let output: unknown
   switch (message.type) {
-    case 'save-bookmark':
-      output = saveBookmark(profile, message.draft)
+    case 'save-bookmark': {
+      const metadata = await resolveBookmarkMetadata(message.draft.url, message.draft.title, message.draft.icon)
+      output = saveBookmark(profile, { ...message.draft, ...metadata })
       break
+    }
     case 'update-bookmark': {
       const item = profile.bookmarks.find((row) => row.id === message.id)
       if (!item) throw new Error('Bookmark not found')
       const timestamp = now()
+      const metadata = await resolveBookmarkMetadata(
+        message.draft.url || item.url,
+        message.draft.title ?? item.title,
+        message.draft.icon ?? item.icon,
+      )
       Object.assign(
         item,
-        message.draft.title != null ? { title: message.draft.title.trim() || item.title } : {},
+        message.draft.title != null ? { title: metadata.title } : {},
         message.draft.url ? { url: message.draft.url } : {},
         message.draft.listId ? { listId: message.draft.listId } : {},
-        message.draft.icon != null ? { icon: message.draft.icon } : {},
+        message.draft.icon != null || !message.draft.title?.trim() ? { icon: metadata.icon } : {},
       )
       if (message.draft.tags) item.json = { ...item.json, tags: cleanTags(message.draft.tags) }
       item.updatedAt = timestamp

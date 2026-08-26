@@ -41,6 +41,7 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
   const [drawerFilterListId, setDrawerFilterListId] = useState('all')
   const [editor, setEditor] = useState<Editor>()
   const listChipsRef = useRef<HTMLElement>(null)
+  const didScrollToInitialListRef = useRef(false)
 
   useEffect(() => {
     setListId((current) =>
@@ -49,6 +50,7 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
   }, [lists, snapshot.preferences.lastListId])
 
   const selectedList = lists.find((list) => list.id === listId) || lists[0]
+  const listOrderKey = lists.map((list) => list.id).join(':')
   const listBookmarks = useMemo(
     () => bookmarks.filter((bookmark) => bookmark.listId === selectedList?.id),
     [bookmarks, selectedList?.id],
@@ -57,6 +59,24 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
   useEffect(() => {
     setSelectedIds([])
   }, [selectedList?.id, editMode])
+
+  useEffect(() => {
+    if (!listId) return
+
+    const frame = requestAnimationFrame(() => {
+      const chip = Array.from(listChipsRef.current?.querySelectorAll<HTMLElement>('[data-list-id]') || []).find(
+        (element) => element.dataset.listId === listId,
+      )
+      chip?.scrollIntoView({
+        behavior: didScrollToInitialListRef.current ? 'smooth' : 'auto',
+        block: 'nearest',
+        inline: 'center',
+      })
+      if (chip) didScrollToInitialListRef.current = true
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [listId, listOrderKey])
 
   const openBookmark = useCallback(
     async (bookmark: NoriBookmark) => {
@@ -117,12 +137,6 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
   const selectList = async (nextListId: string) => {
     if (editMode) return
     setListId(nextListId)
-    requestAnimationFrame(() => {
-      const chip = Array.from(listChipsRef.current?.querySelectorAll<HTMLElement>('[data-list-id]') || []).find(
-        (element) => element.dataset.listId === nextListId,
-      )
-      chip?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-    })
     await mutate({ type: 'set-preferences', preferences: { lastListId: nextListId } })
   }
 

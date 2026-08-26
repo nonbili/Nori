@@ -1,4 +1,5 @@
 import { addBookmarkRecord } from 'nori/lib/bookmark-mutations'
+import { getMeta } from 'nori/lib/bookmark'
 import { getDuckDuckGoIcon } from 'nori/lib/favicon'
 import {
   createStarterBookmarks,
@@ -27,6 +28,21 @@ export function normalizeUrl(value: string) {
 }
 
 export const faviconFor = getDuckDuckGoIcon
+
+export async function resolveBookmarkMetadata(urlValue: string, titleValue = '', iconValue = '', resolver = getMeta) {
+  const title = titleValue.trim()
+  const icon = iconValue.trim()
+  if (title) return { title, icon }
+
+  const url = normalizeUrl(urlValue)
+  if (!url) return { title, icon }
+
+  const metadata = await resolver(url)
+  return {
+    title: metadata.title,
+    icon: icon || metadata.icon,
+  }
+}
 
 export function createProfile(ownerId?: string, email?: string): ProfileData {
   return {

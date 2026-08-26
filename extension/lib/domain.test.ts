@@ -1,5 +1,14 @@
 import { beforeAll, describe, expect, it } from 'bun:test'
-import { createProfile, liveBookmarks, mergeRows, normalizeUrl, reorder, saveBookmark, tombstone } from './domain'
+import {
+  createProfile,
+  liveBookmarks,
+  mergeRows,
+  normalizeUrl,
+  reorder,
+  resolveBookmarkMetadata,
+  saveBookmark,
+  tombstone,
+} from './domain'
 
 beforeAll(() => {
   if (!globalThis.crypto?.randomUUID) {
@@ -24,6 +33,26 @@ describe('extension domain adapter', () => {
     expect(second).toBe(first)
     expect(profile.bookmarks.filter((row) => row.id === first)).toHaveLength(1)
     expect(profile.pendingBookmarkIds).toContain(first)
+  })
+
+  it('resolves page metadata when the bookmark title is empty', async () => {
+    const result = await resolveBookmarkMetadata('example.com/page', '  ', '', async (url) => {
+      expect(url).toBe('https://example.com/page')
+      return { title: 'Example page', icon: 'https://example.com/icon.png' }
+    })
+
+    expect(result).toEqual({ title: 'Example page', icon: 'https://example.com/icon.png' })
+  })
+
+  it('preserves an explicit title without fetching metadata', async () => {
+    let calls = 0
+    const result = await resolveBookmarkMetadata('example.com', ' Custom title ', ' custom.ico ', async () => {
+      calls += 1
+      return { title: 'Fetched title', icon: 'fetched.ico' }
+    })
+
+    expect(result).toEqual({ title: 'Custom title', icon: 'custom.ico' })
+    expect(calls).toBe(0)
   })
 
   it('protects pending local rows during shared timestamp merges', () => {

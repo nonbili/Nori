@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAllTags, getTags } from 'nori/lib/nori-data'
+import { normalizeUrlInput } from 'nori/lib/url'
 import { useApp } from '../AppContext'
 import { Icon } from '../Icon'
 import { CenterModal } from '../Overlays'
@@ -31,6 +32,23 @@ export function BookmarkEditor({
   const [tagInput, setTagInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setLocalError] = useState('')
+  const listChipsRef = useRef<HTMLDivElement>(null)
+  const activeListChipRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const container = listChipsRef.current
+    const activeChip = activeListChipRef.current
+    if (!container || !activeChip) return
+
+    const containerRect = container.getBoundingClientRect()
+    const chipRect = activeChip.getBoundingClientRect()
+
+    if (chipRect.left < containerRect.left) {
+      container.scrollTo({ left: container.scrollLeft + chipRect.left - containerRect.left, behavior: 'auto' })
+    } else if (chipRect.right > containerRect.right) {
+      container.scrollTo({ left: container.scrollLeft + chipRect.right - containerRect.right, behavior: 'auto' })
+    }
+  }, [draft.listId])
 
   const suggestions = getAllTags(bookmarks)
     .filter(
@@ -59,11 +77,14 @@ export function BookmarkEditor({
     event.preventDefault()
     setSaving(true)
     setLocalError('')
+    const normalizedUrl = normalizeUrlInput(draft.url)
+    const normalizedDraft = { ...draft, url: normalizedUrl }
+    setDraft(normalizedDraft)
     try {
       const tags = [...(draft.tags || [])]
       if (tagInput.trim()) tags.push(tagInput.trim())
-      if (bookmark) await request({ type: 'update-bookmark', id: bookmark.id, draft: { ...draft, tags } })
-      else await request({ type: 'save-bookmark', draft: { ...draft, tags } })
+      if (bookmark) await request({ type: 'update-bookmark', id: bookmark.id, draft: { ...normalizedDraft, tags } })
+      else await request({ type: 'save-bookmark', draft: { ...normalizedDraft, tags } })
       if (!bookmark) await request({ type: 'set-preferences', preferences: { lastListId: draft.listId } })
       await refresh()
       showSnackbar(bookmark ? t('updated') : t('saved'))
@@ -78,7 +99,7 @@ export function BookmarkEditor({
 
   return (
     <CenterModal onClose={onClose}>
-      <form className="editor-form" onSubmit={(event) => void submit(event)}>
+      <form className="editor-form" noValidate onSubmit={(event) => void submit(event)}>
         <div className="flex items-center justify-between">
           <h2 className="m-0 text-xl font-semibold">{bookmark ? t('editBookmark') : t('addBookmark')}</h2>
           <button type="button" className="round-action" onClick={onClose} aria-label={t('close')}>
@@ -93,6 +114,7 @@ export function BookmarkEditor({
             type="url"
             value={draft.url}
             onChange={(event) => setDraft({ ...draft, url: event.target.value })}
+            onBlur={() => setDraft((current) => ({ ...current, url: normalizeUrlInput(current.url) }))}
             placeholder={t('url')}
           />
           <input
@@ -147,10 +169,11 @@ export function BookmarkEditor({
             </div>
           )}
         </div>
-        <div className="list-chips flex gap-3 overflow-x-auto">
+        <div ref={listChipsRef} className="list-chips flex gap-3 overflow-x-auto">
           {lists.map((list) => (
             <button
               key={list.id}
+              ref={draft.listId === list.id ? activeListChipRef : undefined}
               type="button"
               className={`list-chip ${draft.listId === list.id ? 'active' : ''}`}
               onClick={() => setDraft({ ...draft, listId: list.id })}
