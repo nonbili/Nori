@@ -208,7 +208,8 @@
       "label": "About",
       "version": "Version",
       "code": "Code",
-      "donate": "Donate"
+      "donate": "Donate",
+      "extensionPrivacy": "No page content is read. Nori only receives links you choose to save."
     }
   },
   "common": {

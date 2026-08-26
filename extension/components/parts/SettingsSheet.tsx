@@ -6,34 +6,12 @@ import { Icon } from '../Icon'
 import { Menu } from '../Menu'
 import { Sheet } from '../Overlays'
 import { SectionCard, Segmented, SettingRow, Toggle } from '../Rows'
-import { showSnackbar } from '../Snackbar'
+import { showSnackbar } from 'nori-root/states/ui'
+import { languageNativeNames } from 'nori/lib/language'
+import { DONATE_LINKS, PLAN_URL, RELEASES_URL, REPO_URL } from 'nori/lib/product-links'
 import { languages, systemLanguage } from '../../lib/language'
 import { exportBookmarks, readImportFile, type TransferFormat } from '../../lib/transfer'
 import type { Theme } from '../../lib/model'
-
-const REPO_URL = 'https://github.com/nonbili/Nori'
-const RELEASES_URL = 'https://github.com/nonbili/Nori/releases'
-const PLAN_URL = 'https://nori.inks.page/app'
-const DONATE_LINKS = [
-  { label: 'GitHub Sponsors', detail: 'github.com/sponsors/rnons', url: 'https://github.com/sponsors/rnons' },
-  { label: 'Liberapay', detail: 'liberapay.com/rnons', url: 'https://liberapay.com/rnons' },
-  { label: 'PayPal', detail: 'paypal.me/rnons', url: 'https://paypal.me/rnons' },
-]
-
-const languageNames: Record<string, string> = {
-  ar: 'العربية',
-  el: 'Ελληνικά',
-  en: 'English',
-  es: 'Español',
-  fr: 'Français',
-  it: 'Italiano',
-  pl: 'Polski',
-  pt_BR: 'Português (Brasil)',
-  sv: 'Svenska',
-  tr: 'Türkçe',
-  zh_Hans: '简体中文',
-  zh_Hant: '繁體中文',
-}
 
 const openTab = (url: string) => void browser.tabs.create({ url })
 
@@ -45,50 +23,52 @@ function SyncSection() {
 
   if (!auth.userId)
     return (
-      <SectionCard title={t('syncLabel')}>
+      <SectionCard title={t('settings.sync.label')}>
         <div className="px-5 py-5">
-          <p className="m-0 text-sm leading-6 text-stone-600 dark:text-stone-400">{t('syncHint')}</p>
+          <p className="m-0 text-sm leading-6 text-stone-600 dark:text-stone-400">{t('settings.sync.syncHint')}</p>
           <button className="primary-button mt-4" onClick={() => void mutate({ type: 'sign-in' })}>
-            {t('signIn')}
+            {t('settings.sync.signIn')}
           </button>
         </div>
       </SectionCard>
     )
 
-  const planLabel = auth.plan === 'free' ? t('planFree') : t('planSync')
+  const planLabel = auth.plan === 'free' ? t('settings.plan.free') : t('settings.plan.sync')
   return (
     <>
-      <SectionCard title={t('syncLabel')}>
+      <SectionCard title={t('settings.sync.label')}>
         <div className="flex items-center gap-3 px-4 py-4">
           <span className="account-avatar">{(auth.email || 'N').slice(0, 1).toUpperCase()}</span>
           <div className="min-w-0 flex-1">
-            <div className="truncate font-medium">{auth.email || t('noriUser')}</div>
-            <div className="mt-1 text-sm text-stone-600 dark:text-stone-400">{t('plan', { plan: planLabel })}</div>
+            <div className="truncate font-medium">{auth.email || t('settings.sync.noriUser')}</div>
+            <div className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+              {t('settings.sync.plan', { plan: planLabel })}
+            </div>
           </div>
           <Menu
             className="round-action"
-            label={t('moreOptions')}
+            label={t('settings.moreOptions')}
             trigger={<Icon name="more" size={17} />}
             items={[
-              { label: t('sync'), icon: 'cloud', handler: () => void mutate({ type: 'sync' }) },
-              { label: t('managePlan'), icon: 'external', handler: () => openTab(PLAN_URL) },
-              { label: t('signOut'), handler: () => void mutate({ type: 'sign-out' }) },
+              { label: t('settings.sync.syncNow'), icon: 'cloud', handler: () => void mutate({ type: 'sync' }) },
+              { label: t('settings.plan.manage'), icon: 'external', handler: () => openTab(PLAN_URL) },
+              { label: t('settings.sync.signOut'), handler: () => void mutate({ type: 'sign-out' }) },
             ]}
           />
         </div>
       </SectionCard>
-      <SectionCard title={t('planLabel')}>
+      <SectionCard title={t('settings.plan.label')}>
         <div className="px-5 py-5">
           <span className="badge">{planLabel}</span>
           <p className="mt-4 text-sm leading-6 text-stone-600 dark:text-stone-400">
-            {auth.plan === 'free' ? t('upgradeHint') : t('syncHint')}
+            {auth.plan === 'free' ? t('settings.sync.upgradeHint') : t('settings.sync.syncHint')}
           </p>
           {profile.lastSyncAt ? (
             <p className="mt-2 text-xs text-stone-500">
-              {t('lastSync', { date: new Date(profile.lastSyncAt).toLocaleString() })}
+              {t('settings.sync.lastSynced', { date: new Date(profile.lastSyncAt).toLocaleString() })}
             </p>
           ) : null}
-          {busy ? <p className="mt-2 text-xs text-stone-500">{t('syncing')}</p> : null}
+          {busy ? <p className="mt-2 text-xs text-stone-500">{t('settings.sync.working')}</p> : null}
           {snapshot.syncError ? (
             <p className="mt-3 text-sm text-rose-600 dark:text-rose-400">{snapshot.syncError}</p>
           ) : null}
@@ -105,20 +85,21 @@ function ExperienceSection() {
   const setPreference = (patch: Partial<typeof preferences>) =>
     void mutate({ type: 'set-preferences', preferences: patch })
   const resolvedSystemLanguage = systemLanguage()
-  const toLanguageLabel = (language: string) => languageNames[language] || language
+  const toLanguageLabel = (language: string) =>
+    languageNativeNames[language as keyof typeof languageNativeNames] || language
   const currentLanguageLabel = preferences.language
     ? toLanguageLabel(preferences.language)
-    : `${t('languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`
+    : `${t('settings.experience.languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`
 
   return (
-    <SectionCard title={t('experienceLabel')}>
+    <SectionCard title={t('settings.experience.label')}>
       <SettingRow
         icon="image"
-        title={t('showFavicons')}
-        detail={t('showFaviconsHint')}
+        title={t('settings.experience.showFavicon')}
+        detail={t('settings.experience.showFaviconHint')}
         trailing={
           <Toggle
-            label={t('showFavicons')}
+            label={t('settings.experience.showFavicon')}
             checked={preferences.showFavicons}
             onChange={() => setPreference({ showFavicons: !preferences.showFavicons })}
           />
@@ -126,12 +107,12 @@ function ExperienceSection() {
       />
       <SettingRow
         icon="translate"
-        title={t('language')}
-        detail={t('languageHint')}
+        title={t('settings.experience.language')}
+        detail={t('settings.experience.languageHint')}
         trailing={
           <Menu
             className="value-trigger"
-            label={t('language')}
+            label={t('settings.experience.language')}
             trigger={
               <>
                 <span>{currentLanguageLabel}</span>
@@ -140,7 +121,7 @@ function ExperienceSection() {
             }
             items={[
               {
-                label: `${t('languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`,
+                label: `${t('settings.experience.languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`,
                 selected: preferences.language === null,
                 handler: () => setPreference({ language: null }),
               },
@@ -159,13 +140,15 @@ function ExperienceSection() {
             <Icon name="palette" size={18} />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block font-medium">{t('theme')}</span>
-            <span className="mt-1 block text-sm leading-5 text-stone-600 dark:text-stone-400">{t('themeHint')}</span>
+            <span className="block font-medium">{t('settings.experience.theme')}</span>
+            <span className="mt-1 block text-sm leading-5 text-stone-600 dark:text-stone-400">
+              {t('settings.experience.themeHint')}
+            </span>
           </span>
         </div>
         <Segmented
           options={(['system', 'light', 'dark'] as Theme[]).map((theme) => ({
-            label: t(theme),
+            label: t(`settings.experience.${theme}`),
             active: preferences.theme === theme,
             onClick: () => setPreference({ theme }),
           }))}
@@ -191,18 +174,21 @@ function TransferSection() {
     setBusy('import')
     try {
       const result = await readImportFile(file, snapshot.profile.lists, snapshot.profile.bookmarks)
-      if (!result) throw new Error(t('invalidFile'))
+      if (!result) throw new Error(t('settings.transfer.restoreInvalid'))
+      const importedCount = Math.max(0, result.bookmarks.length - snapshot.profile.bookmarks.length)
       await mutate({ type: 'replace-data', lists: result.lists, bookmarks: result.bookmarks })
-      showSnackbar(t('imported'))
+      showSnackbar(
+        importedCount ? t('settings.transfer.imported', { count: importedCount }) : t('settings.transfer.importEmpty'),
+      )
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : t('invalidFile'))
+      setError(reason instanceof Error ? reason.message : t('settings.transfer.restoreInvalid'))
     } finally {
       setBusy(undefined)
     }
   }
 
   return (
-    <SectionCard title={t('transferLabel')}>
+    <SectionCard title={t('settings.transfer.label')}>
       <input
         ref={fileRef}
         className="hidden"
@@ -216,26 +202,26 @@ function TransferSection() {
       />
       <SettingRow
         icon="upload"
-        title={t('import')}
-        detail={busy === 'import' ? t('importing') : t('importHint')}
+        title={t('settings.transfer.import')}
+        detail={busy === 'import' ? t('settings.transfer.importing') : t('settings.transfer.importHint')}
         onClick={() => fileRef.current?.click()}
       />
       <SettingRow
         icon="html"
-        title={t('exportHtml')}
-        detail={busy === 'html' ? t('exporting') : t('exportHtmlHint')}
+        title={t('settings.transfer.exportHtml')}
+        detail={busy === 'html' ? t('settings.transfer.exporting') : t('settings.transfer.exportHtmlHint')}
         onClick={() => runExport('html')}
       />
       <SettingRow
         icon="text"
-        title={t('exportPlain')}
-        detail={busy === 'plain' ? t('exporting') : t('exportPlainHint')}
+        title={t('settings.transfer.exportPlain')}
+        detail={busy === 'plain' ? t('settings.transfer.exporting') : t('settings.transfer.exportPlainHint')}
         onClick={() => runExport('plain')}
       />
       <SettingRow
         icon="backup"
-        title={t('exportBackup')}
-        detail={busy === 'json' ? t('exporting') : t('exportBackupHint')}
+        title={t('settings.transfer.exportBackup')}
+        detail={busy === 'json' ? t('settings.transfer.exporting') : t('settings.transfer.exportBackupHint')}
         onClick={() => runExport('json')}
         last
       />
@@ -248,17 +234,19 @@ function AboutPage({ version }: { version: string }) {
   return (
     <>
       <div className="section-body">
-        <SettingRow icon="info" title={t('version')} detail={`v${version}`} />
+        <SettingRow icon="info" title={t('settings.about.version')} detail={`v${version}`} />
         <SettingRow
           icon="history"
-          title={t('changelog')}
-          detail={t('changelogHint')}
+          title={t('settings.changelog.label')}
+          detail={t('settings.changelog.hint')}
           onClick={() => openTab(RELEASES_URL)}
           last
         />
       </div>
-      <p className="px-1 text-sm leading-6 text-stone-600 dark:text-stone-400">{t('privacy')}</p>
-      <SectionCard title={t('code')}>
+      <p className="px-1 text-sm leading-6 text-stone-600 dark:text-stone-400">
+        {t('settings.about.extensionPrivacy')}
+      </p>
+      <SectionCard title={t('settings.about.code')}>
         <SettingRow
           icon="code"
           title="GitHub"
@@ -267,7 +255,7 @@ function AboutPage({ version }: { version: string }) {
           last
         />
       </SectionCard>
-      <SectionCard title={t('donate')}>
+      <SectionCard title={t('settings.about.donate')}>
         {DONATE_LINKS.map((item, index) => (
           <SettingRow
             key={item.url}
@@ -296,12 +284,12 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
 
   return (
     <Sheet
-      title={page === 'about' ? t('about') : t('settings')}
+      title={page === 'about' ? t('settings.about.label') : t('settings.title')}
       onClose={page === 'home' ? onClose : () => setPage('home')}
       showCloseButton={page === 'home'}
       headerLeft={
         page === 'home' ? undefined : (
-          <button className="round-action" onClick={() => setPage('home')} aria-label={t('back')}>
+          <button className="round-action" onClick={() => setPage('home')} aria-label={t('common.back')}>
             <Icon name="back" size={18} />
           </button>
         )
@@ -315,8 +303,14 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
             <SyncSection />
             <ExperienceSection />
             <TransferSection />
-            <SectionCard title={t('aboutLabel')}>
-              <SettingRow icon="info" title={t('about')} detail={`v${version}`} onClick={() => setPage('about')} last />
+            <SectionCard title={t('settings.about.label')}>
+              <SettingRow
+                icon="info"
+                title={t('settings.about.label')}
+                detail={`v${version}`}
+                onClick={() => setPage('about')}
+                last
+              />
             </SectionCard>
           </>
         )}

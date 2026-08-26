@@ -61,28 +61,8 @@ export interface AppSnapshot {
   syncError?: string
 }
 
-export type BookmarkDraft = Pick<NoriBookmark, 'listId' | 'url'> &
-  Partial<Pick<NoriBookmark, 'title' | 'icon'>> & { tags?: string[] }
-
 export type RequestMessage =
   | { type: 'snapshot' }
-  | { type: 'save-bookmark'; draft: BookmarkDraft }
-  | { type: 'update-bookmark'; id: string; draft: Partial<BookmarkDraft> }
-  | { type: 'delete-bookmark'; id: string }
-  | { type: 'delete-bookmarks'; ids: string[] }
-  | { type: 'restore-bookmarks'; ids: string[] }
-  | { type: 'set-bookmark-visibility'; ids: string[]; visible: boolean }
-  | { type: 'move-bookmarks'; ids: string[]; listId: string }
-  | { type: 'open-bookmark'; id: string }
-  | { type: 'clear-history' }
-  | { type: 'restore-history'; items: HistoryItem[] }
-  | { type: 'add-list'; name: string }
-  | { type: 'rename-list'; id: string; name: string }
-  | { type: 'delete-list'; id: string }
-  | { type: 'restore-list'; list: NoriList; bookmarks: NoriBookmark[] }
-  | { type: 'set-list-visibility'; id: string; visible: boolean }
-  | { type: 'reorder-lists'; ids: string[] }
-  | { type: 'reorder-bookmarks'; listId: string; ids: string[] }
   | {
       type: 'replace-data'
       lists: NoriList[]

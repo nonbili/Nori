@@ -17,21 +17,14 @@ import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
 import { AboutRow } from '@/components/sheet/SettingsSheetAbout'
 import { useLocales } from 'expo-localization'
 import { resolveI18nLanguageFromExpoLocale, supportedI18nLanguages } from '@/lib/i18n'
+import { languageNativeNames } from '@/lib/language'
 import { getVisibleLists } from '@/lib/nori-data'
 
 const TERMS_OF_USE_URL = 'https://www.apple.com/legal/macapps/stdeula/'
 const PRIVACY_POLICY_URL = 'https://inks.page/p/privacy'
 
 export type SettingsBusyAction =
-  | 'buy'
-  | 'restore'
-  | 'manage'
-  | 'sync'
-  | 'import'
-  | 'export-html'
-  | 'export-plain'
-  | 'export-json'
-  | null
+  'buy' | 'restore' | 'manage' | 'sync' | 'import' | 'export-html' | 'export-plain' | 'export-json' | null
 
 export interface SettingsActions {
   actionError?: string
@@ -122,21 +115,36 @@ const AccountSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => 
     ...(isIos && source === 'app_store' && plan === 'sync'
       ? [{ id: 'manage-subscription', label: t('settings.ios.manage'), handler: () => void actions.onManage() }]
       : []),
-    ...(isIos ? [{ id: 'restore-purchase', label: t('settings.ios.restore'), handler: () => void actions.onRestore() }] : []),
-    { id: 'sync-now', label: t('settings.sync.syncNow'), icon: 'cloud-sync' as const, handler: () => void actions.onManualSync() },
-    ...(isIos ? [{ id: 'delete-account', label: t('settings.sync.deleteAccount'), icon: 'delete-outline' as const }] : []),
+    ...(isIos
+      ? [{ id: 'restore-purchase', label: t('settings.ios.restore'), handler: () => void actions.onRestore() }]
+      : []),
+    {
+      id: 'sync-now',
+      label: t('settings.sync.syncNow'),
+      icon: 'cloud-sync' as const,
+      handler: () => void actions.onManualSync(),
+    },
+    ...(isIos
+      ? [{ id: 'delete-account', label: t('settings.sync.deleteAccount'), icon: 'delete-outline' as const }]
+      : []),
     { id: 'sign-out', label: t('settings.sync.signOut'), handler: () => void signOut() },
   ]
 
   return (
     <SectionCard title={t('settings.sync.label')}>
       <View className="flex-row items-center gap-3 px-4 py-4">
-        <Image style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: '#18181b' }} source={user?.picture} contentFit="cover" />
+        <Image
+          style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: '#18181b' }}
+          source={user?.picture}
+          contentFit="cover"
+        />
         <View className="flex-1">
           <Text className="font-medium text-stone-900 dark:text-stone-100">
             {userEmail || user?.email || t('settings.sync.noriUser')}
           </Text>
-          <Text className="mt-1 text-sm text-stone-600 dark:text-stone-400">{t('settings.sync.plan', { plan: planLabel })}</Text>
+          <Text className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+            {t('settings.sync.plan', { plan: planLabel })}
+          </Text>
         </View>
         <NouMenu
           trigger={<MaterialIcons name="more-vert" size={20} color={themeColors.iconMuted} />}
@@ -164,7 +172,9 @@ const PlanSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => {
   const syncError = useValue(syncMeta$.lastError)
   const lastSyncAt = useValue(syncMeta$.lastSyncAt)
   const { plan, planLabel, syncHint } = usePlanCopy()
-  const iosStatusText = ios?.expiresAt ? t('settings.ios.expires', { date: new Date(ios.expiresAt).toLocaleString() }) : null
+  const iosStatusText = ios?.expiresAt
+    ? t('settings.ios.expires', { date: new Date(ios.expiresAt).toLocaleString() })
+    : null
 
   return (
     <SectionCard title={t('settings.plan.label')}>
@@ -174,15 +184,21 @@ const PlanSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => {
           {source === 'app_store' ? <SettingsBadge label={t('settings.plan.activeAppStore')} /> : null}
         </View>
         <Text className="mt-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{syncHint}</Text>
-        {iosStatusText ? <Text className="mt-3 text-xs text-stone-500 dark:text-stone-500">{iosStatusText}</Text> : null}
+        {iosStatusText ? (
+          <Text className="mt-3 text-xs text-stone-500 dark:text-stone-500">{iosStatusText}</Text>
+        ) : null}
         {lastSyncAt ? (
           <Text className="mt-1 text-xs text-stone-500 dark:text-stone-400">
             {t('settings.sync.lastSynced', { date: new Date(lastSyncAt).toLocaleString() })}
           </Text>
         ) : null}
-        {authRefreshing || syncInFlight ? <Text className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('settings.sync.working')}</Text> : null}
+        {authRefreshing || syncInFlight ? (
+          <Text className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('settings.sync.working')}</Text>
+        ) : null}
         {authError || syncError || actions.actionError ? (
-          <Text className="mt-3 text-sm text-rose-600 dark:text-rose-400">{authError || syncError || actions.actionError}</Text>
+          <Text className="mt-3 text-sm text-rose-600 dark:text-rose-400">
+            {authError || syncError || actions.actionError}
+          </Text>
         ) : null}
         {isIos ? (
           <IosPlanActions
@@ -213,8 +229,12 @@ const IosPlanActions: React.FC<{
 
   return (
     <View className="mt-5 gap-3">
-      {loadingProduct ? <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.loadingPrice')}</Text> : null}
-      {!loadingProduct && !productPrice ? <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.productUnavailable')}</Text> : null}
+      {loadingProduct ? (
+        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.loadingPrice')}</Text>
+      ) : null}
+      {!loadingProduct && !productPrice ? (
+        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.productUnavailable')}</Text>
+      ) : null}
       {source === 'app_store' && plan === 'sync' ? (
         busyAction === 'manage' || busyAction === 'restore' ? (
           <Text className="text-sm text-stone-400">
@@ -239,10 +259,16 @@ const IosPlanActions: React.FC<{
       <View className="gap-2 rounded-2xl border border-stone-300 bg-stone-100/80 px-4 py-3 dark:border-stone-800 dark:bg-stone-950/70">
         <Text className="text-xs leading-5 text-stone-600 dark:text-stone-400">{t('settings.ios.legalHint')}</Text>
         <View className="flex-row flex-wrap gap-3">
-          <Text className="text-xs text-stone-900 underline dark:text-stone-100" onPress={() => void Linking.openURL(TERMS_OF_USE_URL)}>
+          <Text
+            className="text-xs text-stone-900 underline dark:text-stone-100"
+            onPress={() => void Linking.openURL(TERMS_OF_USE_URL)}
+          >
             {t('settings.ios.termsOfUse')}
           </Text>
-          <Text className="text-xs text-stone-900 underline dark:text-stone-100" onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}>
+          <Text
+            className="text-xs text-stone-900 underline dark:text-stone-100"
+            onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
+          >
             {t('settings.ios.privacyPolicy')}
           </Text>
         </View>
@@ -270,21 +296,6 @@ const WebPlanActions: React.FC<{ source: string; onManage: () => void }> = ({ so
   )
 }
 
-const languageNativeNames: Record<string, string> = {
-  ar: 'العربية',
-  el: 'Ελληνικά',
-  en: 'English',
-  es: 'Español',
-  fr: 'Français',
-  it: 'Italiano',
-  pl: 'Polski',
-  pt_BR: 'Português (Brasil)',
-  sv: 'Svenska',
-  tr: 'Türkçe',
-  zh_Hans: '简体中文',
-  zh_Hant: '繁體中文',
-}
-
 const quickSaveTargetListId = (listId: string, visibleLists: { id: string }[]) =>
   visibleLists.some((list) => list.id === listId) ? listId : ''
 
@@ -305,7 +316,7 @@ export const ExperienceSection: React.FC = () => {
   const systemLanguage = resolveI18nLanguageFromExpoLocale(locales[0]) || 'en'
   const effectiveLanguage = selectedLanguage || systemLanguage
 
-  const toLanguageLabel = (code: string) => languageNativeNames[code] || code
+  const toLanguageLabel = (code: string) => languageNativeNames[code as keyof typeof languageNativeNames] || code
   const currentLanguageLabel = selectedLanguage
     ? toLanguageLabel(selectedLanguage)
     : `${t('settings.experience.languageSystem')} (${toLanguageLabel(effectiveLanguage)})`
@@ -343,8 +354,12 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="open-in-browser" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.defaultBrowser')}</Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.defaultBrowserHint')}</Text>
+            <Text className="font-medium text-stone-900 dark:text-stone-100">
+              {t('settings.experience.defaultBrowser')}
+            </Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+              {t('settings.experience.defaultBrowserHint')}
+            </Text>
           </View>
           <Pressable
             onPress={() => settings$.setOpenInSystemBrowser(!openInSystemBrowser)}
@@ -360,8 +375,12 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="save-alt" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.quickShare')}</Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.quickShareHint')}</Text>
+            <Text className="font-medium text-stone-900 dark:text-stone-100">
+              {t('settings.experience.quickShare')}
+            </Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+              {t('settings.experience.quickShareHint')}
+            </Text>
           </View>
           <Pressable
             onPress={toggleQuickShare}
@@ -393,8 +412,12 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="image" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.showFavicon')}</Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.showFaviconHint')}</Text>
+            <Text className="font-medium text-stone-900 dark:text-stone-100">
+              {t('settings.experience.showFavicon')}
+            </Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+              {t('settings.experience.showFaviconHint')}
+            </Text>
           </View>
           <Pressable
             onPress={() => settings$.setShowFavicon(showFavicon === false)}
@@ -411,14 +434,14 @@ export const ExperienceSection: React.FC = () => {
           </View>
           <View className="flex-1">
             <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.language')}</Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.languageHint')}</Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+              {t('settings.experience.languageHint')}
+            </Text>
           </View>
           <NouMenu
             trigger={
               <View className="flex-row items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1.5 dark:border-stone-700 dark:bg-stone-950">
-                <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
-                  {currentLanguageLabel}
-                </Text>
+                <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">{currentLanguageLabel}</Text>
                 <MaterialIcons name="keyboard-arrow-down" size={16} color={themeColors.iconMuted} />
               </View>
             }
@@ -433,13 +456,27 @@ export const ExperienceSection: React.FC = () => {
           </View>
           <View className="flex-1">
             <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.theme')}</Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.experience.themeHint')}</Text>
+            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+              {t('settings.experience.themeHint')}
+            </Text>
           </View>
         </View>
         <View className="flex-row justify-end gap-2">
-          <SegmentedOption label={t('settings.experience.system')} active={theme === null} onPress={() => settings$.theme.set(null)} />
-          <SegmentedOption label={t('settings.experience.light')} active={theme === 'light'} onPress={() => settings$.theme.set('light')} />
-          <SegmentedOption label={t('settings.experience.dark')} active={theme === 'dark'} onPress={() => settings$.theme.set('dark')} />
+          <SegmentedOption
+            label={t('settings.experience.system')}
+            active={theme === null}
+            onPress={() => settings$.theme.set(null)}
+          />
+          <SegmentedOption
+            label={t('settings.experience.light')}
+            active={theme === 'light'}
+            onPress={() => settings$.theme.set('light')}
+          />
+          <SegmentedOption
+            label={t('settings.experience.dark')}
+            active={theme === 'dark'}
+            onPress={() => settings$.theme.set('dark')}
+          />
         </View>
       </View>
     </SectionCard>
@@ -462,21 +499,33 @@ export const TransferSection: React.FC<{ actions: SettingsActions }> = ({ action
       <AboutRow
         icon="html"
         title={t('settings.transfer.exportHtml')}
-        detail={actions.busyAction === 'export-html' ? t('settings.transfer.exporting') : t('settings.transfer.exportHtmlHint')}
+        detail={
+          actions.busyAction === 'export-html'
+            ? t('settings.transfer.exporting')
+            : t('settings.transfer.exportHtmlHint')
+        }
         onPress={() => actions.onExportBookmarks('html')}
         themeColors={themeColors}
       />
       <AboutRow
         icon="subject"
         title={t('settings.transfer.exportPlain')}
-        detail={actions.busyAction === 'export-plain' ? t('settings.transfer.exporting') : t('settings.transfer.exportPlainHint')}
+        detail={
+          actions.busyAction === 'export-plain'
+            ? t('settings.transfer.exporting')
+            : t('settings.transfer.exportPlainHint')
+        }
         onPress={() => actions.onExportBookmarks('plain')}
         themeColors={themeColors}
       />
       <AboutRow
         icon="backup"
         title={t('settings.transfer.exportBackup')}
-        detail={actions.busyAction === 'export-json' ? t('settings.transfer.exporting') : t('settings.transfer.exportBackupHint')}
+        detail={
+          actions.busyAction === 'export-json'
+            ? t('settings.transfer.exporting')
+            : t('settings.transfer.exportBackupHint')
+        }
         onPress={() => actions.onExportBookmarks('json')}
         themeColors={themeColors}
         isLast

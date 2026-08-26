@@ -1,8 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react'
-import { getVisibleLists } from 'nori/lib/nori-data'
+import { getLiveBookmarks, getVisibleLists } from 'nori/lib/nori-data'
 import { useSnapshot } from './useSnapshot'
 import { request } from '../lib/client'
-import { liveBookmarks } from '../lib/domain'
 import type { AppSnapshot, NoriBookmark, NoriList, RequestMessage } from '../lib/model'
 
 interface AppContextValue {
@@ -41,7 +40,7 @@ export function AppProvider({
     () => ({
       snapshot,
       lists: getVisibleLists(snapshot.profile.lists),
-      bookmarks: liveBookmarks(snapshot.profile),
+      bookmarks: getLiveBookmarks(snapshot.profile.bookmarks),
       refresh,
       mutate,
       setError,

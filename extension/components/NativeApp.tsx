@@ -13,7 +13,6 @@ import { AppProvider } from './AppContext'
 import { SettingsSheet } from './SharedSettingsSheet'
 import { useSnapshot } from './useSnapshot'
 import { useSharedStateBridge } from './useSharedStateBridge'
-import settingsI18n from '../lib/i18n'
 import { systemLanguage } from '../lib/language'
 import './native-fonts.css'
 import './nativewind-interop'
@@ -41,16 +40,10 @@ function ReadyApp({
     })
   }, [mode])
 
-  // The shared components read the default i18next instance while the
-  // extension's own settings sheet has its own; keep both on the language the
-  // background stores, falling back to the browser UI language.
   useEffect(() => {
     const language = state.snapshot.preferences.language || systemLanguage()
     if (i18n.language !== language) {
       void i18n.changeLanguage(language)
-    }
-    if (settingsI18n.language !== language) {
-      void settingsI18n.changeLanguage(language)
     }
   }, [state.snapshot.preferences.language])
 
@@ -71,14 +64,20 @@ function ReadyApp({
             newBookmarkDefaults={activeTab}
             onOpenSettings={() => setSettingsOpen(true)}
             settingsSheet={settingsOpen ? <SettingsSheet onClose={() => setSettingsOpen(false)} /> : null}
-            headerMenuItems={mode === 'popup' ? [{
-              label: t('settings.openInTab'),
-              icon: 'open-in-new',
-              handler: () => {
-                void browser.tabs.create({ url: browser.runtime.getURL('/tab.html') })
-                window.close()
-              },
-            }] : undefined}
+            headerMenuItems={
+              mode === 'popup'
+                ? [
+                    {
+                      label: t('settings.openInTab'),
+                      icon: 'open-in-new',
+                      handler: () => {
+                        void browser.tabs.create({ url: browser.runtime.getURL('/tab.html') })
+                        window.close()
+                      },
+                    },
+                  ]
+                : undefined
+            }
           />
           <ActionSnackbar />
         </SafeAreaProvider>

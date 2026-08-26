@@ -13,22 +13,13 @@ import trText from '../locales/tr.json'
 import zhHansText from '../locales/zh_Hans.json'
 import zhHantText from '../locales/zh_Hant.json'
 import type { Locale } from 'expo-localization'
-
-export const supportedI18nLanguages = [
-  'ar',
-  'el',
-  'en',
-  'es',
-  'fr',
-  'it',
-  'pl',
-  'pt_BR',
-  'sv',
-  'tr',
-  'zh_Hans',
-  'zh_Hant',
-] as const
-export type SupportedI18nLanguage = (typeof supportedI18nLanguages)[number]
+import {
+  normalizeI18nLanguage,
+  resolveI18nLanguage,
+  supportedI18nLanguages,
+  type SupportedI18nLanguage,
+} from './language'
+export { normalizeI18nLanguage, supportedI18nLanguages, type SupportedI18nLanguage } from './language'
 
 const resources: Record<SupportedI18nLanguage, { translation: any }> = {
   ar: {
@@ -69,33 +60,9 @@ const resources: Record<SupportedI18nLanguage, { translation: any }> = {
   },
 }
 
-const isSupportedLanguage = (value?: string | null): value is SupportedI18nLanguage =>
-  Boolean(value && supportedI18nLanguages.includes(value as any))
-
 export const resolveI18nLanguageFromExpoLocale = (locale?: Locale): SupportedI18nLanguage | undefined => {
-  if (!locale?.languageCode) {
-    return undefined
-  }
-
-  if (locale.languageCode === 'zh') {
-    const script = locale.languageScriptCode
-    if (script === 'Hans' || script === 'Hant') {
-      return `zh_${script}` as SupportedI18nLanguage
-    }
-    const region = locale.regionCode?.toUpperCase()
-    return region === 'TW' || region === 'HK' || region === 'MO' ? 'zh_Hant' : 'zh_Hans'
-  }
-
-  if (locale.languageCode === 'pt') {
-    const region = locale.regionCode?.toUpperCase()
-    return region === 'BR' ? 'pt_BR' : undefined
-  }
-
-  return isSupportedLanguage(locale.languageCode) ? locale.languageCode : undefined
+  return resolveI18nLanguage(locale?.languageCode, locale?.languageScriptCode, locale?.regionCode)
 }
-
-export const normalizeI18nLanguage = (value?: string | null): SupportedI18nLanguage | null =>
-  value == null ? null : isSupportedLanguage(value) ? value : null
 
 // eslint-disable-next-line import/no-named-as-default-member
 void i18n.use(initReactI18next).init({

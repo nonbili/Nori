@@ -3,13 +3,7 @@ import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-
 import { useTranslation } from 'react-i18next'
 import { useThemeColors, type ThemeColors } from '@/lib/theme'
 import type { SettingsActions } from '@/components/sheet/SettingsSheetSections'
-
-const REPO_URL = 'https://github.com/nonbili/Nori'
-const DONATE_LINKS = [
-  { label: 'GitHub Sponsors', detail: 'github.com/sponsors/rnons', url: 'https://github.com/sponsors/rnons' },
-  { label: 'Liberapay', detail: 'liberapay.com/rnons', url: 'https://liberapay.com/rnons' },
-  { label: 'PayPal', detail: 'paypal.me/rnons', url: 'https://paypal.me/rnons' },
-]
+import { DONATE_LINKS, REPO_URL } from '@/lib/product-links'
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <View className="gap-3">
@@ -29,7 +23,9 @@ export const AboutRow: React.FC<{
   themeColors: ThemeColors
 }> = ({ icon, title, detail, onPress, isLast = false, themeColors }) => {
   const content = (
-    <View className={`flex-row items-center gap-3 px-4 py-4 ${isLast ? '' : 'border-b border-stone-200 dark:border-stone-800'}`}>
+    <View
+      className={`flex-row items-center gap-3 px-4 py-4 ${isLast ? '' : 'border-b border-stone-200 dark:border-stone-800'}`}
+    >
       <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
         <MaterialIcons name={icon} color={themeColors.iconMuted} size={18} />
       </View>
@@ -52,14 +48,22 @@ export const AboutRow: React.FC<{
   )
 }
 
-export const SettingsAboutPage: React.FC<{ appVersion: string; actions: SettingsActions }> = ({ appVersion, actions }) => {
+export const SettingsAboutPage: React.FC<{ appVersion: string; actions: SettingsActions }> = ({
+  appVersion,
+  actions,
+}) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
 
   return (
     <>
       <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
-        <AboutRow icon="info-outline" title={t('settings.about.version')} detail={`v${appVersion}`} themeColors={themeColors} />
+        <AboutRow
+          icon="info-outline"
+          title={t('settings.about.version')}
+          detail={`v${appVersion}`}
+          themeColors={themeColors}
+        />
         <AboutRow
           icon="history"
           title={t('settings.changelog.label')}
@@ -98,7 +102,10 @@ export const SettingsAboutPage: React.FC<{ appVersion: string; actions: Settings
   )
 }
 
-export const AboutSettingsSection: React.FC<{ appVersion: string; actions: SettingsActions }> = ({ appVersion, actions }) => {
+export const AboutSettingsSection: React.FC<{ appVersion: string; actions: SettingsActions }> = ({
+  appVersion,
+  actions,
+}) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
 

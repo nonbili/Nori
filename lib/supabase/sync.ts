@@ -2,12 +2,7 @@ import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { syncMeta$ } from '@/states/sync-meta'
-import {
-  normalizeBookmarks,
-  normalizeLists,
-  type BookmarkListData,
-  type BookmarkRecordData,
-} from '@/lib/nori-data'
+import { normalizeBookmarks, normalizeLists, type BookmarkListData, type BookmarkRecordData } from '@/lib/nori-data'
 import {
   collectChangedRowIds,
   dropExpiredSyncTombstones,
@@ -17,27 +12,17 @@ import {
   nextSyncCursor,
 } from '@/lib/supabase/sync-merge'
 import { collectPagedRows, keysetFilter, SYNC_PAGE_SIZE } from '@/lib/supabase/sync-paging'
+import {
+  toBatches,
+  toLocalBookmark,
+  toLocalList,
+  toRemoteBookmark,
+  toRemoteList,
+  type RemoteBookmarkRow,
+  type RemoteListRow,
+} from '@/lib/supabase/sync-rows'
 import { runWithConflictRetry, type SyncAttemptOutcome } from '@/lib/supabase/sync-scheduler'
 import { supabase } from './client'
-
-type RemoteListRow = {
-  id: string
-  name: string
-  json: Record<string, unknown> | null
-  created_at: string
-  updated_at: string
-}
-
-type RemoteBookmarkRow = {
-  id: string
-  list_id: string
-  url: string
-  title: string
-  icon: string
-  json: Record<string, unknown> | null
-  created_at: string
-  updated_at: string
-}
 
 let watchersStarted = false
 let applyingRemote = false
@@ -104,29 +89,6 @@ function snapshotBookmarks(lists = snapshotLists()) {
   return normalizeBookmarks(lists, bookmarks$.bookmarks.peek())
 }
 
-function toLocalList(row: RemoteListRow): BookmarkListData {
-  return {
-    id: row.id,
-    name: row.name,
-    json: row.json || {},
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  }
-}
-
-function toLocalBookmark(row: RemoteBookmarkRow): BookmarkRecordData {
-  return {
-    id: row.id,
-    listId: row.list_id,
-    url: row.url,
-    title: row.title,
-    icon: row.icon,
-    json: row.json || {},
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  }
-}
-
 async function fetchAllRows<T extends { id: string; updated_at: string }>(
   table: 'lists' | 'bookmarks',
   columns: string,
@@ -159,7 +121,11 @@ async function fetchAllRows<T extends { id: string; updated_at: string }>(
 async function fetchRemoteRows(listCursor?: string, bookmarkCursor?: string) {
   const [listRows, bookmarkRows] = await Promise.all([
     fetchAllRows<RemoteListRow>('lists', 'id,name,json,created_at,updated_at', listCursor),
-    fetchAllRows<RemoteBookmarkRow>('bookmarks', 'id,list_id,url,title,icon,json,created_at,updated_at', bookmarkCursor),
+    fetchAllRows<RemoteBookmarkRow>(
+      'bookmarks',
+      'id,list_id,url,title,icon,json,created_at,updated_at',
+      bookmarkCursor,
+    ),
   ])
 
   return {
@@ -188,27 +154,14 @@ function advanceSyncCursor(
 // Batched for the same reason reads are paged: an upsert echoes the rows back
 // through `select`, and anything past `max_rows` would be dropped from the
 // response, leaving this device without the server timestamps it just wrote.
-function toBatches<T>(rows: T[], size = SYNC_PAGE_SIZE) {
-  const batches: T[][] = []
-  for (let index = 0; index < rows.length; index += size) {
-    batches.push(rows.slice(index, index + size))
-  }
-  return batches
-}
-
 async function pushLists(userId: string, rows: BookmarkListData[]) {
   const pushed: BookmarkListData[] = []
 
-  for (const batch of toBatches(rows)) {
+  for (const batch of toBatches(rows, SYNC_PAGE_SIZE)) {
     const { data, error } = await supabase
       .from('lists')
       .upsert(
-        batch.map((row) => ({
-          user_id: userId,
-          id: row.id,
-          name: row.name,
-          json: row.json,
-        })),
+        batch.map((row) => toRemoteList(userId, row)),
         { onConflict: 'user_id,id' },
       )
       .select('id,name,json,created_at,updated_at')
@@ -226,19 +179,11 @@ async function pushLists(userId: string, rows: BookmarkListData[]) {
 async function pushBookmarks(userId: string, rows: BookmarkRecordData[]) {
   const pushed: BookmarkRecordData[] = []
 
-  for (const batch of toBatches(rows)) {
+  for (const batch of toBatches(rows, SYNC_PAGE_SIZE)) {
     const { data, error } = await supabase
       .from('bookmarks')
       .upsert(
-        batch.map((row) => ({
-          user_id: userId,
-          id: row.id,
-          list_id: row.listId,
-          url: row.url,
-          title: row.title,
-          icon: row.icon,
-          json: row.json,
-        })),
+        batch.map((row) => toRemoteBookmark(userId, row)),
         { onConflict: 'user_id,id' },
       )
       .select('id,list_id,url,title,icon,json,created_at,updated_at')
@@ -315,32 +260,35 @@ function executeScheduledSync() {
   const waiters = queuedWaiters
   queuedWaiters = []
   activeSync = runSyncCycle()
-  void activeSync.then((outcome) => {
-    if (outcome !== 'conflict') {
+  void activeSync
+    .then((outcome) => {
+      if (outcome !== 'conflict') {
+        for (const waiter of waiters) {
+          waiter.resolve()
+        }
+        return
+      }
       for (const waiter of waiters) {
-        waiter.resolve()
+        if (waiter.carryovers < MAX_WAITER_CARRYOVERS) {
+          queuedWaiters.push({ ...waiter, carryovers: waiter.carryovers + 1 })
+        } else {
+          waiter.reject(new Error(SYNC_PENDING_ERROR))
+        }
       }
-      return
-    }
-    for (const waiter of waiters) {
-      if (waiter.carryovers < MAX_WAITER_CARRYOVERS) {
-        queuedWaiters.push({ ...waiter, carryovers: waiter.carryovers + 1 })
-      } else {
-        waiter.reject(new Error(SYNC_PENDING_ERROR))
+    })
+    .catch((error) => {
+      for (const waiter of waiters) {
+        waiter.reject(error)
       }
-    }
-  }).catch((error) => {
-    for (const waiter of waiters) {
-      waiter.reject(error)
-    }
-  }).finally(() => {
-    activeSync = null
-    if (syncQueued && !syncTimer) {
-      // Carried-over waiters are still an explicit request, so edits must not
-      // keep sliding the follow-up they are chained to.
-      armSyncTimer(1000, queuedWaiters.length > 0)
-    }
-  })
+    })
+    .finally(() => {
+      activeSync = null
+      if (syncQueued && !syncTimer) {
+        // Carried-over waiters are still an explicit request, so edits must not
+        // keep sliding the follow-up they are chained to.
+        armSyncTimer(1000, queuedWaiters.length > 0)
+      }
+    })
 }
 
 function queueSync(delayMs: number, waitForCompletion: boolean, explicit: boolean) {
@@ -468,7 +416,10 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   applyRemoteState(mergedLists, mergedBookmarks)
 
   const listPushRevision = localRevision
-  const pushedLists = await pushLists(userId, snapshotLists().filter((item) => nextPendingListIds.has(item.id)))
+  const pushedLists = await pushLists(
+    userId,
+    snapshotLists().filter((item) => nextPendingListIds.has(item.id)),
+  )
   if (localRevision !== listPushRevision) {
     return 'conflict'
   }
@@ -479,13 +430,18 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   }
 
   const bookmarkPushRevision = localRevision
-  const pushedBookmarks = await pushBookmarks(userId, snapshotBookmarks(snapshotLists()).filter((item) => nextPendingBookmarkIds.has(item.id)))
+  const pushedBookmarks = await pushBookmarks(
+    userId,
+    snapshotBookmarks(snapshotLists()).filter((item) => nextPendingBookmarkIds.has(item.id)),
+  )
   if (localRevision !== bookmarkPushRevision) {
     return 'conflict'
   }
   if (pushedBookmarks.length) {
     mergedBookmarks = mergeSyncRows(snapshotBookmarks(snapshotLists()), pushedBookmarks, new Set())
-    syncMeta$.pendingBookmarkIds.set(syncMeta$.pendingBookmarkIds.peek().filter((id) => !nextPendingBookmarkIds.has(id)))
+    syncMeta$.pendingBookmarkIds.set(
+      syncMeta$.pendingBookmarkIds.peek().filter((id) => !nextPendingBookmarkIds.has(id)),
+    )
     applyRemoteState(snapshotLists(), mergedBookmarks)
   }
 
