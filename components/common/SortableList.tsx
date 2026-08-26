@@ -142,6 +142,7 @@ function DraggableRow<T extends { id: string }>({
       right: 0,
       height: itemHeight,
       zIndex: isDragging.value ? 100 : 1,
+      opacity: isDragging.value ? 0.5 : 1,
       transform: [
         { translateY: isDragging.value ? startY.value + translateY.value : withSpring(pos) },
         { scale: withSpring(isDragging.value ? 1.02 : 1) },
@@ -157,7 +158,7 @@ function DraggableRow<T extends { id: string }>({
   if (dragHandleOnly) {
     return (
       <Animated.View style={animatedStyle}>
-        {renderItem(item, isDragging.value, panGesture)}
+        {renderItem(item, false, panGesture)}
       </Animated.View>
     )
   }
@@ -165,7 +166,7 @@ function DraggableRow<T extends { id: string }>({
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={animatedStyle}>
-        {renderItem(item, isDragging.value, null)}
+        {renderItem(item, false, null)}
       </Animated.View>
     </GestureDetector>
   )

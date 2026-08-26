@@ -32,6 +32,7 @@ export function AllBookmarksDrawer() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortType, setSortType] = useState<SortType>('newest')
   const [filterTags, setFilterTags] = useState<string[]>([])
+  const [rendered, setRendered] = useState(drawerOpen)
   const scrollOffset = useSharedValue(0)
   const scrollRef = useRef(null)
   const { height: windowHeight } = useWindowDimensions()
@@ -39,27 +40,30 @@ export function AllBookmarksDrawer() {
   const drawerTranslateY = useSharedValue(closedTranslateY)
 
   useEffect(() => {
-    if (drawerOpen) {
+    if (drawerOpen && !rendered) {
+      setRendered(true)
       drawerTranslateY.value = windowHeight
       drawerTranslateY.value = withSpring(0, {
         damping: 20,
         stiffness: 90,
         overshootClamping: true,
       })
-    } else {
-      drawerTranslateY.value = withTiming(closedTranslateY, { duration: 220 })
-    }
-    if (!drawerOpen) {
+      scrollOffset.value = 0
+    } else if (!drawerOpen && rendered) {
+      drawerTranslateY.value = withTiming(closedTranslateY, { duration: 220 }, (finished) => {
+        if (finished) {
+          runOnJS(setRendered)(false)
+        }
+      })
       setSearchQuery('')
       setFilterTags([])
-    } else {
-      scrollOffset.value = 0
     }
-  }, [drawerOpen, drawerTranslateY, scrollOffset, closedTranslateY, windowHeight])
+  }, [drawerOpen, rendered, drawerTranslateY, scrollOffset, closedTranslateY, windowHeight])
 
   const drawerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: drawerTranslateY.value }],
-  }), [drawerTranslateY])
+    pointerEvents: drawerOpen ? 'auto' : 'none',
+  }), [drawerTranslateY, drawerOpen])
 
   const closeDrawer = () => ui$.drawerOpen.set(false)
   const closeDrawerWithAnimation = () => {
@@ -182,6 +186,10 @@ export function AllBookmarksDrawer() {
     onCopyUrl: copyBookmarkUrl,
     onShare: shareBookmark,
     onDelete: deleteBookmark,
+  }
+
+  if (!rendered) {
+    return null
   }
 
   return (

@@ -212,6 +212,7 @@ function DraggableTile<T extends { id: string }>({
       width: itemWidth,
       height: itemHeight,
       zIndex: isDragging.value ? 100 : 1,
+      opacity: isDragging.value ? 0.5 : 1,
       transform: [
         { translateX: isDragging.value ? startX.value + translateX.value : withSpring(pos.x) },
         { translateY: isDragging.value ? startY.value + translateY.value : withSpring(pos.y) },
@@ -228,7 +229,7 @@ function DraggableTile<T extends { id: string }>({
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={animatedStyle}>
-        {renderItem(item, isDragging.value)}
+        {renderItem(item, false)}
       </Animated.View>
     </GestureDetector>
   )
