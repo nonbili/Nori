@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { Icon, type IconName } from './Icon'
 import { useEscape } from './useEscape'
 
@@ -8,6 +9,7 @@ export interface MenuItem {
   icon?: IconName
   selected?: boolean
   danger?: boolean
+  footer?: boolean
   handler?: () => void
 }
 
@@ -58,7 +60,7 @@ function MenuPanel({
     setPosition({ top, left })
   }, [anchor, items.length])
 
-  return (
+  return createPortal(
     <div ref={menuRef} className="anchor-menu" role="menu" style={{ top: position.top, left: position.left }}>
       {items.length ? (
         items.map((item, index) => (
@@ -66,7 +68,9 @@ function MenuPanel({
             key={item.id || `${item.label}-${index}`}
             type="button"
             role="menuitem"
-            className={item.danger ? 'danger' : undefined}
+            className={
+              [item.danger ? 'danger' : '', item.footer ? 'footer' : ''].filter(Boolean).join(' ') || undefined
+            }
             onClick={() => {
               onClose()
               item.handler?.()
@@ -80,7 +84,8 @@ function MenuPanel({
       ) : (
         <span className="menu-empty">{empty}</span>
       )}
-    </div>
+    </div>,
+    document.body,
   )
 }
 

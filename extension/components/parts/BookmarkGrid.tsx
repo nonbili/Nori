@@ -42,7 +42,7 @@ function BookmarkPill({
     <button
       type="button"
       className={`bookmark-pill ${selected ? 'selected' : ''}`}
-      title={bookmark.url}
+      title={bookmark.title}
       onClick={onClick}
     >
       <Favicon bookmark={bookmark} enabled={snapshot.preferences.showFavicons} />
@@ -198,6 +198,7 @@ export function BookmarkGrid({
                 key={bookmark.id}
                 type="button"
                 className="bookmark-pill opacity-60"
+                title={bookmark.title}
                 onClick={() => void mutate({ type: 'set-bookmark-visibility', ids: [bookmark.id], visible: true })}
               >
                 <Favicon bookmark={bookmark} enabled={snapshot.preferences.showFavicons} />

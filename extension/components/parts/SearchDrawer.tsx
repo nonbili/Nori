@@ -39,11 +39,13 @@ function ResultRow({ bookmark, handlers }: { bookmark: NoriBookmark; handlers: B
 export function SearchDrawer({
   filterListId,
   setFilterListId,
+  onNewList,
   onClose,
   handlers,
 }: {
   filterListId: string
   setFilterListId: (value: string) => void
+  onNewList: () => void
   onClose: () => void
   handlers: BookmarkHandlers
 }) {
@@ -53,6 +55,7 @@ export function SearchDrawer({
   const [sort, setSort] = useState<SortType>('newest')
   const [filterTags, setFilterTags] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
+  const listChipsRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -101,6 +104,18 @@ export function SearchDrawer({
   }, [filterTags, query, scopedBookmarks, sort])
 
   const sortLabel = { newest: t('sortNewest'), oldest: t('sortOldest'), az: t('sortAZ'), za: t('sortZA') }[sort]
+  const selectedFilterList = lists.find((list) => list.id === filterListId)
+  const isFiltering = query.trim().length > 0 || filterTags.length > 0
+
+  const selectFilterList = (nextListId: string) => {
+    setFilterListId(nextListId)
+    requestAnimationFrame(() => {
+      const chip = Array.from(listChipsRef.current?.querySelectorAll<HTMLElement>('[data-list-id]') || []).find(
+        (element) => element.dataset.listId === nextListId,
+      )
+      chip?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    })
+  }
 
   return (
     <FullCover onClose={onClose}>
@@ -135,23 +150,46 @@ export function SearchDrawer({
           ]}
         />
       </div>
-      <nav className="list-chips flex shrink-0 gap-2 overflow-x-auto px-6 pt-4">
-        <button
-          className={`list-chip ${filterListId === 'all' ? 'active' : ''}`}
-          onClick={() => setFilterListId('all')}
+      <div className="list-chip-row pt-4">
+        <nav
+          ref={listChipsRef}
+          className="list-chips flex min-w-0 flex-1 gap-2 overflow-x-auto pl-6 pr-2"
+          aria-label={t('lists')}
         >
-          {t('all')}
-        </button>
-        {lists.map((list) => (
           <button
-            key={list.id}
-            className={`list-chip ${filterListId === list.id ? 'active' : ''}`}
-            onClick={() => setFilterListId(list.id)}
+            data-list-id="all"
+            className={`list-chip ${filterListId === 'all' ? 'active' : ''}`}
+            onClick={() => selectFilterList('all')}
           >
-            {list.name}
+            {t('all')}
           </button>
-        ))}
-      </nav>
+          {lists.map((list) => (
+            <button
+              key={list.id}
+              data-list-id={list.id}
+              className={`list-chip ${filterListId === list.id ? 'active' : ''}`}
+              onClick={() => selectFilterList(list.id)}
+            >
+              {list.name}
+            </button>
+          ))}
+        </nav>
+        <Menu
+          className="list-picker-trigger"
+          label={t('lists')}
+          trigger={<Icon name="list" size={18} />}
+          items={[
+            { id: 'all', label: t('all'), selected: filterListId === 'all', handler: () => selectFilterList('all') },
+            ...lists.map((list) => ({
+              id: list.id,
+              label: list.name,
+              selected: filterListId === list.id,
+              handler: () => selectFilterList(list.id),
+            })),
+            { id: 'new-list', label: t('newList'), icon: 'add', footer: true, handler: onNewList },
+          ]}
+        />
+      </div>
       {tags.length > 0 && (
         <div className="list-chips flex shrink-0 gap-2 overflow-x-auto px-6 pt-3">
           {tags.map((tag) => {
@@ -181,8 +219,20 @@ export function SearchDrawer({
             <span className="empty-badge">
               <Icon name="searchOff" size={24} />
             </span>
-            <strong>{t('noSearchResults')}</strong>
-            <small>{t('noSearchResultsHint')}</small>
+            <strong>
+              {isFiltering
+                ? t('noSearchResults')
+                : selectedFilterList
+                  ? t('emptyListTitle', { name: selectedFilterList.name })
+                  : t('noRecentAdded')}
+            </strong>
+            <small>
+              {isFiltering
+                ? t('noSearchResultsHint')
+                : selectedFilterList
+                  ? t('emptyListHint')
+                  : t('noRecentAddedHint')}
+            </small>
           </div>
         )}
       </div>

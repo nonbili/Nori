@@ -100,7 +100,9 @@ export const ManageRow = ({
   <div className={`manage-row ${className || ''}`}>
     {left}
     <button type="button" className="manage-row-main" onClick={onClick} disabled={!onClick}>
-      <span className="block truncate text-sm font-medium">{title}</span>
+      <span className="block truncate text-sm font-medium" title={title}>
+        {title}
+      </span>
       {subtitle ? <span className="mt-0.5 block truncate text-xs text-stone-500">{subtitle}</span> : null}
     </button>
     {actions ? <div className="flex shrink-0 items-center gap-1.5">{actions}</div> : null}

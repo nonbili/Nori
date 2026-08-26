@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { browser } from 'wxt/browser'
 import { systemLanguage } from '../lib/language'
 import { AppProvider, useApp } from './AppContext'
 import { useSnapshot } from './useSnapshot'
 import { Icon } from './Icon'
+import { Menu } from './Menu'
 import { Snackbars, showSnackbar } from './Snackbar'
 import { BookmarkGrid, type BookmarkHandlers } from './parts/BookmarkGrid'
 import { BookmarkEditor } from './parts/BookmarkEditor'
@@ -39,6 +40,7 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
   const [overlay, setOverlay] = useState<Overlay>(null)
   const [drawerFilterListId, setDrawerFilterListId] = useState('all')
   const [editor, setEditor] = useState<Editor>()
+  const listChipsRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     setListId((current) =>
@@ -115,6 +117,12 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
   const selectList = async (nextListId: string) => {
     if (editMode) return
     setListId(nextListId)
+    requestAnimationFrame(() => {
+      const chip = Array.from(listChipsRef.current?.querySelectorAll<HTMLElement>('[data-list-id]') || []).find(
+        (element) => element.dataset.listId === nextListId,
+      )
+      chip?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    })
     await mutate({ type: 'set-preferences', preferences: { lastListId: nextListId } })
   }
 
@@ -166,26 +174,52 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
           onOpenInTab={mode === 'popup' ? () => void openInTab() : undefined}
         />
       )}
-      <nav
-        className={`list-chips flex shrink-0 gap-3 overflow-x-auto px-6 pb-2 ${editMode ? 'pt-5' : 'pt-4'}`}
-        aria-label={t('lists')}
-      >
-        {lists.map((list) => (
-          <button
-            key={list.id}
-            className={`list-chip ${list.id === selectedList?.id ? 'active' : ''}`}
-            onClick={() => void selectList(list.id)}
-          >
-            {list.name}
-          </button>
-        ))}
+      <div className={`list-chip-row pb-2 ${editMode ? 'pt-5' : 'pt-4'}`}>
+        <nav
+          ref={listChipsRef}
+          className="list-chips flex min-w-0 flex-1 gap-3 overflow-x-auto pl-6 pr-2"
+          aria-label={t('lists')}
+        >
+          {lists.map((list) => (
+            <button
+              key={list.id}
+              data-list-id={list.id}
+              className={`list-chip ${list.id === selectedList?.id ? 'active' : ''}`}
+              onClick={() => void selectList(list.id)}
+            >
+              {list.name}
+            </button>
+          ))}
+          {!editMode && (
+            <button className="new-list-chip" onClick={() => setEditor({ kind: 'list' })}>
+              <Icon name="add" size={15} />
+              {t('newList')}
+            </button>
+          )}
+        </nav>
         {!editMode && (
-          <button className="new-list-chip" onClick={() => setEditor({ kind: 'list' })}>
-            <Icon name="add" size={15} />
-            {t('newList')}
-          </button>
+          <Menu
+            className="list-picker-trigger"
+            label={t('lists')}
+            trigger={<Icon name="list" size={18} />}
+            items={[
+              ...lists.map((list) => ({
+                id: list.id,
+                label: list.name,
+                selected: list.id === selectedList?.id,
+                handler: () => void selectList(list.id),
+              })),
+              {
+                id: 'new-list',
+                label: t('newList'),
+                icon: 'add' as const,
+                footer: true,
+                handler: () => setEditor({ kind: 'list' }),
+              },
+            ]}
+          />
         )}
-      </nav>
+      </div>
       <BookmarkGrid
         list={selectedList}
         editMode={editMode}
@@ -223,6 +257,7 @@ function Home({ mode, tab }: { mode: AppMode; tab: ActiveTab }) {
         <SearchDrawer
           filterListId={drawerFilterListId}
           setFilterListId={setDrawerFilterListId}
+          onNewList={() => setEditor({ kind: 'list' })}
           onClose={() => setOverlay(null)}
           handlers={handlers}
         />
@@ -275,6 +310,24 @@ export function App({ mode }: { mode: AppMode }) {
   const { i18n } = useTranslation()
   const { snapshot, error, refresh, setError } = useSnapshot()
   const [tab, setTab] = useState<ActiveTab>({ url: '', title: '' })
+
+  useEffect(() => {
+    // Mouse wheels usually scroll only vertically. Turn that motion into
+    // horizontal movement while hovering an overflowing chip strip so users do
+    // not need to discover the Shift+wheel shortcut.
+    const scrollChips = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return
+      const target = event.target instanceof Element ? event.target.closest<HTMLElement>('.list-chips') : null
+      if (!target || target.scrollWidth <= target.clientWidth) return
+
+      const before = target.scrollLeft
+      target.scrollLeft += event.deltaY
+      if (target.scrollLeft !== before) event.preventDefault()
+    }
+
+    document.addEventListener('wheel', scrollChips, { passive: false })
+    return () => document.removeEventListener('wheel', scrollChips)
+  }, [])
 
   useEffect(() => {
     void browser.tabs.query({ active: true, currentWindow: true }).then(([active]) => {
