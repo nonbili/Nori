@@ -76,6 +76,7 @@ export const BookmarkPager: React.FC<{
   const [renderNearbyPages, setRenderNearbyPages] = useState(false)
   const [immediatePagerIndex, setImmediatePagerIndex] = useState<number | null>(null)
   const { width: windowWidth } = useWindowDimensions()
+  const [pageWidth, setPageWidth] = useState(windowWidth)
   const visibleLists = useMemo(() => getVisibleLists(lists), [lists])
   const bookmarksByList = useMemo(() => groupBookmarksByList(bookmarks), [bookmarks])
   const selectedList = useMemo(
@@ -213,15 +214,15 @@ export const BookmarkPager: React.FC<{
     pagerIndexRef.current = index
     suppressScrollSyncRef.current = false
     animateNextPagerScrollRef.current = false
-    pagerRef.current?.scrollTo({ x: index * windowWidth, animated: false })
+    pagerRef.current?.scrollTo({ x: index * pageWidth, animated: false })
     settings$.setLastSelectedListId(listId)
-  }, [pagerRef, windowWidth])
+  }, [pageWidth, pagerRef])
 
   useEffect(() => {
     if (selectedListIndex !== -1) {
       if (pagerIndexRef.current === -1) {
         pagerIndexRef.current = selectedListIndex
-        pagerRef.current?.scrollTo({ x: selectedListIndex * windowWidth, animated: false })
+        pagerRef.current?.scrollTo({ x: selectedListIndex * pageWidth, animated: false })
         return
       }
 
@@ -230,10 +231,12 @@ export const BookmarkPager: React.FC<{
         animateNextPagerScrollRef.current = true
         suppressScrollSyncRef.current = animated
         pagerIndexRef.current = selectedListIndex
-        pagerRef.current?.scrollTo({ x: selectedListIndex * windowWidth, animated })
+        pagerRef.current?.scrollTo({ x: selectedListIndex * pageWidth, animated })
+      } else {
+        pagerRef.current?.scrollTo({ x: selectedListIndex * pageWidth, animated: false })
       }
     }
-  }, [pagerRef, selectedListIndex, windowWidth])
+  }, [pageWidth, pagerRef, selectedListIndex])
 
   useEffect(() => {
     if (!bookmarkEditMode) {
@@ -286,7 +289,7 @@ export const BookmarkPager: React.FC<{
     if (suppressScrollSyncRef.current) {
       return
     }
-    const index = Math.round(e.nativeEvent.contentOffset.x / windowWidth)
+    const index = Math.round(e.nativeEvent.contentOffset.x / pageWidth)
     if (index === pagerIndexRef.current) {
       return
     }
@@ -390,7 +393,7 @@ export const BookmarkPager: React.FC<{
     bookmarkEditMode,
     chipScrollViewRef,
     pagerScrollX,
-    pageWidth: windowWidth,
+    pageWidth,
     themeColors,
     onChipRowLayout,
     onChipLayout,
@@ -420,7 +423,15 @@ export const BookmarkPager: React.FC<{
   }
 
   return (
-    <View className="flex-1">
+    <View
+      className="flex-1"
+      onLayout={(event) => {
+        const width = event.nativeEvent.layout.width
+        if (width > 0 && width !== pageWidth) {
+          setPageWidth(width)
+        }
+      }}
+    >
         <BookmarkListChips pager={pagerView} />
         <BookmarkPagerPages pager={pagerView} actions={pagerActions} />
 

@@ -204,7 +204,7 @@ export const BookmarkListPage = memo(({
             bookmarkEditMode && availableBookmarks.length ? (
               <View className="gap-4 pt-4">
                 <SectionLabel title={t('bookmarks.hiddenInList')} subtitle={t('bookmarks.hiddenInListHint')} />
-                <HiddenBookmarksGrid items={availableBookmarks} scrollViewRef={actions.scrollViewRef} />
+                <HiddenBookmarksGrid items={availableBookmarks} containerWidth={width} scrollViewRef={actions.scrollViewRef} />
               </View>
             ) : null
           }
@@ -237,6 +237,7 @@ export const BookmarkListPage = memo(({
           <EditModeHint iconColor={actions.iconAccentColor} />
           <SortableGrid
             items={listBookmarks}
+            containerWidth={width}
             itemHeight={TILE_HEIGHT}
             editMode={true}
             scrollViewRef={actions.scrollViewRef}
@@ -259,7 +260,7 @@ export const BookmarkListPage = memo(({
           {availableBookmarks.length ? (
             <View className="gap-4">
               <SectionLabel title={t('bookmarks.hiddenInList')} subtitle={t('bookmarks.hiddenInListHint')} />
-              <HiddenBookmarksGrid items={availableBookmarks} scrollViewRef={actions.scrollViewRef} />
+              <HiddenBookmarksGrid items={availableBookmarks} containerWidth={width} scrollViewRef={actions.scrollViewRef} />
             </View>
           ) : null}
         </View>
@@ -269,9 +270,14 @@ export const BookmarkListPage = memo(({
 })
 BookmarkListPage.displayName = 'BookmarkListPage'
 
-const HiddenBookmarksGrid: React.FC<{ items: BookmarkRecord[]; scrollViewRef: AnimatedRef<Animated.ScrollView> }> = ({ items, scrollViewRef }) => (
+const HiddenBookmarksGrid: React.FC<{
+  items: BookmarkRecord[]
+  containerWidth: number
+  scrollViewRef: AnimatedRef<Animated.ScrollView>
+}> = ({ items, containerWidth, scrollViewRef }) => (
   <SortableGrid
     items={items}
+    containerWidth={containerWidth}
     itemHeight={TILE_HEIGHT}
     editMode={false}
     scrollViewRef={scrollViewRef}

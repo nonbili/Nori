@@ -16,6 +16,7 @@ const MARGIN_HORIZONTAL = 24
 
 interface SortableGridProps<T extends { id: string }> {
   items: T[]
+  containerWidth?: number
   itemHeight: number
   renderItem: (item: T, isDragging: boolean) => React.ReactNode
   onReorder: (newOrder: string[]) => void
@@ -27,6 +28,7 @@ interface SortableGridProps<T extends { id: string }> {
 
 export function SortableGrid<T extends { id: string }>({
   items,
+  containerWidth,
   itemHeight,
   renderItem,
   onReorder,
@@ -35,7 +37,8 @@ export function SortableGrid<T extends { id: string }>({
   headerHeight = 0,
   trailingItem,
 }: SortableGridProps<T>) {
-  const { width } = useWindowDimensions()
+  const { width: windowWidth } = useWindowDimensions()
+  const width = containerWidth ?? windowWidth
   const gridWidth = width - MARGIN_HORIZONTAL * 2
   const itemWidth = (gridWidth - (COLUMNS - 1) * GAP) / COLUMNS
 
