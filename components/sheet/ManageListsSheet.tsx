@@ -1,4 +1,4 @@
-import { Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { GestureDetector, ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
@@ -20,7 +20,6 @@ import { NouMenu } from '@/components/menu/NouMenu'
 export const ManageListsSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
-  const { height: windowHeight } = useWindowDimensions()
   const insets = useSafeAreaInsets()
   const colorScheme = useAppColorScheme()
   const isDark = colorScheme === 'dark'
@@ -66,7 +65,7 @@ export const ManageListsSheet: React.FC = () => {
       visible={visible}
       title={t('lists.manage')}
       onClose={() => ui$.listManagerOpen.set(false)}
-      height={windowHeight * 0.85}
+      height="85%"
       contentScrollRef={scrollRef}
       contentScrollOffset={scrollOffset}
       edgeToEdgeBottom

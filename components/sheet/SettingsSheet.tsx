@@ -1,4 +1,4 @@
-import { Pressable, useWindowDimensions } from 'react-native'
+import { Pressable } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
@@ -21,7 +21,6 @@ import { version as appVersion } from '@/package.json'
 export const SettingsSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
-  const { height: windowHeight } = useWindowDimensions()
   const visible = useValue(ui$.settingsSheetOpen)
   const scrollOffset = useSharedValue(0)
   const scrollRef = useRef(null)
@@ -64,7 +63,7 @@ export const SettingsSheet: React.FC = () => {
     <Sheet
       visible={visible}
       title={page === 'about' ? t('settings.about.label') : page === 'changelog' ? t('settings.changelog.label') : t('settings.title')}
-      height={windowHeight * 0.85}
+      height="85%"
       onClose={page === 'home' ? onClose : () => setPage(page === 'changelog' ? 'about' : 'home')}
       headerLeft={headerLeft}
       showCloseButton={page === 'home'}

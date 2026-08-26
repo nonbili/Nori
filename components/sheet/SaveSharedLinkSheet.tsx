@@ -1,6 +1,6 @@
 import { useValue } from '@legendapp/state/react'
 import { useRef } from 'react'
-import { Text, View, useWindowDimensions } from 'react-native'
+import { Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +18,6 @@ import { showToast } from '@/lib/toast'
 
 export const SaveSharedLinkSheet: React.FC = () => {
   const { t } = useTranslation()
-  const { height: windowHeight } = useWindowDimensions()
   const lists = useValue(lists$.lists)
   const pendingShare = useValue(ui$.pendingShare)
   const visibleLists = getVisibleLists(lists)
@@ -87,7 +86,7 @@ export const SaveSharedLinkSheet: React.FC = () => {
     <Sheet
       visible={pendingShare != null}
       title={pendingShare && pendingShare.items.length > 1 ? t('sharing.titleMultiple') : t('sharing.title')}
-      height={windowHeight * 0.85}
+      height="85%"
       onClose={onClose}
       contentScrollRef={scrollRef}
       contentScrollOffset={scrollOffset}

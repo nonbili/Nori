@@ -33,10 +33,13 @@ function ReadyApp({
   useSharedStateBridge(state.snapshot, state.refresh, state.setError)
 
   useEffect(() => {
+    if (mode !== 'popup') return
+
     void browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+      if (!/^https?:/i.test(tab?.url || '')) return
       setActiveTab({ url: tab?.url, title: tab?.title, icon: tab?.favIconUrl })
     })
-  }, [])
+  }, [mode])
 
   // The shared components read the default i18next instance while the
   // extension's own settings sheet has its own; keep both on the language the

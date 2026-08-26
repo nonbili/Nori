@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
-import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { Modal, Platform, Pressable, Text, View, useWindowDimensions } from 'react-native'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
@@ -134,6 +134,24 @@ export const BookmarkTile = memo(({
     })
   }
 
+  const webContextMenuProps = Platform.OS === 'web'
+    ? {
+        onContextMenu: (event: any) => {
+          if (editMode) return
+          event.preventDefault()
+          event.stopPropagation()
+          const nativeEvent = event.nativeEvent || event
+          setAnchor({
+            x: nativeEvent.clientX ?? nativeEvent.pageX,
+            y: nativeEvent.clientY ?? nativeEvent.pageY,
+            width: 0,
+            height: 0,
+          })
+          setMenuOpen(true)
+        },
+      }
+    : {}
+
   const actions = getBookmarkActionMenuItems({
     onEdit,
     onCopyUrl,
@@ -143,7 +161,7 @@ export const BookmarkTile = memo(({
 
   return (
     <View className="w-full gap-2">
-      <View ref={tileRef} collapsable={false}>
+      <View ref={tileRef} collapsable={false} {...webContextMenuProps}>
         <Pressable
           onPress={editMode ? onEnable || onSelect || undefined : onOpen}
           onLongPress={!editMode ? handleLongPress : undefined}

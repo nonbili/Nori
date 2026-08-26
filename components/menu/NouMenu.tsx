@@ -10,6 +10,7 @@ export interface NouMenuItem {
   handler?: () => void
   selected?: boolean
   icon?: MaterialIconsIconName
+  footer?: boolean
 }
 
 export const NouMenu: React.FC<{
@@ -117,7 +118,11 @@ export const NouMenu: React.FC<{
                     accessibilityLabel={item.label}
                     accessibilityRole="menuitem"
                     className="flex-row items-center px-4"
-                    style={{ minHeight: itemHeight }}
+                    style={{
+                      minHeight: itemHeight,
+                      borderTopWidth: item.footer ? 1 : 0,
+                      borderTopColor: themeColors.surfaceBorder,
+                    }}
                     onPress={() => {
                       pendingItem.current = item
                       closeMenu()

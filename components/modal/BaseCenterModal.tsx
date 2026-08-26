@@ -44,20 +44,34 @@ export const BaseCenterModal: React.FC<{
   const topAligned = align === 'top' || (align === 'keyboard' && keyboardVisible)
 
   const innerCls = clsx(
-    'rounded-2xl bg-stone-50 dark:bg-stone-950 w-[30rem] lg:w-[40rem] xl:w-[50rem] max-w-[80vw]',
+    'w-[30rem] max-w-[calc(100%-2rem)] rounded-2xl bg-stone-50 dark:bg-stone-950 lg:w-[40rem] xl:w-[50rem]',
     containerClassName,
   )
 
   return (
     <Modal transparent animationType="fade" visible onRequestClose={handleBackdropPress}>
-      <View
-        className={clsx('flex-1 items-center', topAligned ? 'justify-start' : 'justify-center', className)}
-        style={topAligned ? { paddingTop: insets.top + 12 } : undefined}
-      >
-        <Pressable className="absolute inset-0 bg-black/60" onPress={handleBackdropPress} />
-        <KeyboardAvoidingView behavior={isIos ? 'padding' : 'height'} pointerEvents="box-none">
-          <View className={innerCls}>{children}</View>
-        </KeyboardAvoidingView>
+      <View className="flex-1 items-center justify-center" pointerEvents="box-none">
+        <View
+          testID="app_modal_frame"
+          className={clsx('flex-1 self-stretch items-center overflow-hidden', topAligned ? 'justify-start' : 'justify-center', className)}
+          style={[
+            topAligned ? { paddingTop: insets.top + 12 } : undefined,
+          ]}
+        >
+          <Pressable className="absolute inset-0 bg-black/60" onPress={handleBackdropPress} />
+          <KeyboardAvoidingView
+            behavior={isIos ? 'padding' : 'height'}
+            pointerEvents="box-none"
+            style={isWeb ? { alignSelf: 'stretch', marginHorizontal: 16 } : undefined}
+          >
+            <View
+              className={innerCls}
+              style={isWeb ? { alignSelf: 'center', width: '100%', maxWidth: 800 } : undefined}
+            >
+              {children}
+            </View>
+          </KeyboardAvoidingView>
+        </View>
       </View>
     </Modal>
   )

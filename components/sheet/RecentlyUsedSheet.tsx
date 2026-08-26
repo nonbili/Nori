@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 
@@ -129,7 +129,6 @@ function EmptyState({ title, description }: { title: string; description: string
 
 export function RecentlyUsedSheet() {
   const { t } = useTranslation()
-  const { height: windowHeight } = useWindowDimensions()
   const visible = useValue(ui$.recentSheetOpen)
   const recentlyUsed = useValue(history$.openedBookmarks)
   const allBookmarks = useValue(bookmarks$.bookmarks)
@@ -153,7 +152,7 @@ export function RecentlyUsedSheet() {
     <Sheet
       visible={visible}
       showCloseButton={false}
-      height={windowHeight * 0.6}
+      height="60%"
       onClose={() => ui$.recentSheetOpen.set(false)}
     >
       <View className="flex-1 gap-4">

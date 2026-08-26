@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect */
 import { type ReactNode, useCallback, useEffect, useState } from 'react'
-import { Modal, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { Modal, Platform, Pressable, Text, View, useWindowDimensions, type DimensionValue } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -63,7 +63,7 @@ export const Sheet: React.FC<{
   headerLeft?: ReactNode
   headerRight?: ReactNode
   showCloseButton?: boolean
-  height?: number
+  height?: DimensionValue
   contentScrollRef?: any
   contentScrollOffset?: SharedValue<number>
   edgeToEdgeBottom?: boolean
@@ -195,21 +195,25 @@ export const Sheet: React.FC<{
   return (
     <Modal visible={rendered} animationType="none" transparent statusBarTranslucent navigationBarTranslucent onRequestClose={closeWithAnimation}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View className="flex-1">
-          <Animated.View className="absolute inset-0 bg-black/60" style={backdropAnimatedStyle} />
-          <Pressable className="flex-1" onPress={closeWithAnimation} testID="sheet_backdrop" accessibilityLabel={t('common.dismiss')} />
-          <Animated.View
-            className="rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 dark:border-stone-800 dark:bg-stone-950"
-            accessibilityViewIsModal={true}
-            style={[
-              {
-                paddingBottom: edgeToEdgeBottom ? 0 : Math.max(insets.bottom + 16, 24),
-                height,
-                maxHeight: windowHeight * 0.9,
-              },
-              sheetAnimatedStyle,
-            ]}
+        <View className="flex-1 items-center justify-center" pointerEvents="box-none">
+          <View
+            testID="app_modal_frame"
+            className="flex-1 self-stretch overflow-hidden"
           >
+            <Animated.View className="absolute inset-0 bg-black/60" style={backdropAnimatedStyle} />
+            <Pressable className="flex-1" onPress={closeWithAnimation} testID="sheet_backdrop" accessibilityLabel={t('common.dismiss')} />
+            <Animated.View
+              className="rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 dark:border-stone-800 dark:bg-stone-950"
+              accessibilityViewIsModal={true}
+              style={[
+                {
+                  paddingBottom: edgeToEdgeBottom ? 0 : Math.max(insets.bottom + 16, 24),
+                  height,
+                  maxHeight: Platform.OS === 'web' ? '90%' as DimensionValue : windowHeight * 0.9,
+                },
+                sheetAnimatedStyle,
+              ]}
+            >
             <GestureDetector gesture={dragGesture}>
               <View collapsable={false}>
                 <View className="items-center py-4">
@@ -245,8 +249,9 @@ export const Sheet: React.FC<{
                 </View>
               </GestureDetector>
             ) : children}
-            <ActionSnackbar />
-          </Animated.View>
+              <ActionSnackbar />
+            </Animated.View>
+          </View>
         </View>
       </GestureHandlerRootView>
     </Modal>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Pressable, Text, View, type LayoutChangeEvent } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
@@ -41,8 +41,19 @@ export const BookmarkPagerToolbar: React.FC<{
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const insets = useSafeAreaInsets()
   const { themeColors } = actions
+  const toolbarResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // The snackbar stack reads this so an undo action never lands on the toolbar.
-  useEffect(() => () => ui$.bookmarkToolbarHeight.set(0), [])
+  useEffect(() => {
+    if (toolbarResetTimerRef.current) {
+      clearTimeout(toolbarResetTimerRef.current)
+      toolbarResetTimerRef.current = null
+    }
+    return () => {
+      // Deferring lets a Strict Mode effect replay cancel the reset while a
+      // real unmount still clears the toolbar's reserved snackbar space.
+      toolbarResetTimerRef.current = setTimeout(() => ui$.bookmarkToolbarHeight.set(0), 0)
+    }
+  }, [])
   const onToolbarLayout = (event: LayoutChangeEvent) => {
     const height = Math.round(event.nativeEvent.layout.height)
     if (ui$.bookmarkToolbarHeight.peek() !== height) {

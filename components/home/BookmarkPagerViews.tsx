@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text, View, type LayoutChangeEvent } from 'react-native'
+import { Platform, Pressable, ScrollView, Text, View, type LayoutChangeEvent } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -6,6 +6,7 @@ import Animated from 'react-native-reanimated'
 import { ui$ } from '@/states/ui'
 import { settings$ } from '@/states/settings'
 import { ListChip } from '@/components/list/ListChip'
+import { NouMenu } from '@/components/menu/NouMenu'
 import { BookmarkListPage, type BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
 import type { BookmarkRecord } from '@/states/bookmarks'
 import type { ThemeColors } from '@/lib/theme'
@@ -39,11 +40,13 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
   // chips row becomes the topmost element and must clear the status bar itself.
   return (
   <View className="mb-8 mt-4 px-6" style={pager.bookmarkEditMode ? { paddingTop: insets.top } : undefined}>
+    <View className="flex-row items-center gap-2">
     <ScrollView
       ref={pager.chipScrollViewRef}
       horizontal
+      className="min-w-0 flex-1"
       showsHorizontalScrollIndicator={false}
-      contentContainerClassName="gap-3 pr-6"
+      contentContainerClassName="gap-3 pr-2"
       onLayout={pager.onChipRowLayout}
       onScroll={(event) => pager.onChipScroll(event.nativeEvent.contentOffset.x)}
       scrollEventThrottle={16}
@@ -70,6 +73,32 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
         </Pressable>
       ) : null}
     </ScrollView>
+    {Platform.OS === 'web' && !pager.bookmarkEditMode ? (
+      <NouMenu
+        accessibilityLabel={t('lists.manage')}
+        items={[
+          ...pager.lists.map((list, index) => ({
+            id: list.id,
+            label: list.name,
+            selected: list.id === pager.selectedListId,
+            handler: () => pager.onSelectList(list.id, index),
+          })),
+          {
+            id: 'new-list',
+            label: t('lists.new'),
+            icon: 'add' as const,
+            footer: true,
+            handler: () => ui$.listEditor.set({ name: '' }),
+          },
+        ]}
+        trigger={(
+          <View className="h-[32px] w-[32px] items-center justify-center rounded-full border border-stone-300 bg-stone-100 active:bg-stone-200 dark:border-stone-700 dark:bg-stone-800 dark:active:bg-stone-700">
+            <MaterialIcons name="list" size={18} color={pager.themeColors.icon} />
+          </View>
+        )}
+      />
+    ) : null}
+    </View>
   </View>
   )
 }

@@ -10,3 +10,13 @@ body {
 #root > .app-shell {
   @apply h-[900px] max-h-full w-[480px] max-w-full rounded-[28px] border border-stone-200 shadow-panel dark:border-stone-800;
 }
+
+/* React Native Web portals modals into body, so their internal frame must be
+   explicitly matched to the standalone app shell. */
+[data-testid='app_modal_frame'] {
+  flex: none !important;
+  align-self: auto !important;
+  width: min(480px, calc(100vw - 2rem));
+  height: min(900px, calc(100vh - 2rem));
+  border-radius: 28px;
+}
