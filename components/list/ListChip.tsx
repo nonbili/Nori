@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native'
+import { Platform, Pressable, View } from 'react-native'
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
 import { useAppColorScheme } from '@/lib/theme'
 
@@ -22,6 +22,7 @@ export const ListChip: React.FC<ListChipProps> = ({
 }) => {
   const colorScheme = useAppColorScheme()
   const isDark = colorScheme === 'dark'
+  const animatedPagerScrollX = Platform.OS === 'web' ? undefined : pagerScrollX
 
   // Colors matching original: bg-stone-900 / dark:bg-stone-100 (active), border-stone-200 / dark:border-stone-800 (inactive)
   const activeBg = isDark ? '#f5f5f4' : '#1c1917'
@@ -32,7 +33,7 @@ export const ListChip: React.FC<ListChipProps> = ({
   // Drive the active indicator directly from scroll position if pagerScrollX is provided
   const activeStyle = useAnimatedStyle(() => {
     'worklet'
-    if (!pagerScrollX || pageWidth === 0) {
+    if (!animatedPagerScrollX || pageWidth === 0) {
       return {
         opacity: isActive ? 1 : 0,
         position: 'absolute',
@@ -41,7 +42,7 @@ export const ListChip: React.FC<ListChipProps> = ({
       }
     }
     const progress = interpolate(
-      pagerScrollX.value,
+      animatedPagerScrollX.value,
       [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth],
       [0, 1, 0],
       'clamp',
@@ -52,11 +53,11 @@ export const ListChip: React.FC<ListChipProps> = ({
       inset: 0,
       borderRadius: 9999,
     }
-  }, [isActive, pagerScrollX, pageWidth, index])
+  }, [isActive, animatedPagerScrollX, pageWidth, index])
 
   const inactiveStyle = useAnimatedStyle(() => {
     'worklet'
-    if (!pagerScrollX || pageWidth === 0) {
+    if (!animatedPagerScrollX || pageWidth === 0) {
       return {
         opacity: isActive ? 0 : 1,
         position: 'absolute',
@@ -67,7 +68,7 @@ export const ListChip: React.FC<ListChipProps> = ({
       }
     }
     const progress = interpolate(
-      pagerScrollX.value,
+      animatedPagerScrollX.value,
       [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth],
       [0, 1, 0],
       'clamp',
@@ -80,21 +81,21 @@ export const ListChip: React.FC<ListChipProps> = ({
       borderWidth: 1,
       borderColor: inactiveBorder,
     }
-  }, [isActive, pagerScrollX, pageWidth, index, inactiveBorder])
+  }, [isActive, animatedPagerScrollX, pageWidth, index, inactiveBorder])
 
   const textStyle = useAnimatedStyle(() => {
     'worklet'
-    if (!pagerScrollX || pageWidth === 0) {
+    if (!animatedPagerScrollX || pageWidth === 0) {
       return { color: isActive ? activeText : inactiveText }
     }
     const progress = interpolate(
-      pagerScrollX.value,
+      animatedPagerScrollX.value,
       [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth],
       [0, 1, 0],
       'clamp',
     )
     return { color: progress > 0.5 ? activeText : inactiveText }
-  }, [isActive, pagerScrollX, pageWidth, index, activeText, inactiveText])
+  }, [isActive, animatedPagerScrollX, pageWidth, index, activeText, inactiveText])
 
   return (
     <View className="items-center gap-2">

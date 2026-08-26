@@ -52,6 +52,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
         <View key={list.id} onLayout={(event) => pager.onChipLayout(list.id, event)}>
           <ListChip
             name={list.name}
+            isActive={list.id === pager.selectedListId}
             index={index}
             pagerScrollX={pager.pagerScrollX}
             pageWidth={pager.pageWidth}

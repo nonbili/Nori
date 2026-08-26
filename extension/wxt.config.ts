@@ -27,12 +27,11 @@ export default defineConfig({
   // `nori` is a file: dependency, so packages get hoisted into the repo root's
   // node_modules, where they resolve the root copy of React instead of ours.
   // Two React instances mean every hook they call throws, so pin the imports.
-  // i18next needs the same treatment for a different reason: react-i18next keeps
-  // the default instance in module scope, so a second copy leaves the shared
-  // components reading an instance nobody initialised and rendering raw keys.
+  // i18next and Legend State also keep shared state in module scope, so their
+  // core packages and adapters must resolve to the same physical instances.
   vite: () => ({
     resolve: {
-      dedupe: ['react', 'react-dom', 'i18next', 'react-i18next'],
+      dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@legendapp/state'],
       alias: [
         {
           find: 'nori-extension-settings',
@@ -42,17 +41,19 @@ export default defineConfig({
           find: 'nori-extension-open-bookmark',
           replacement: resolve(extensionDir, 'lib/open-bookmark.ts'),
         },
+        {
+          find: '@legendapp/state/react',
+          replacement: resolve(extensionDir, 'lib/legend-react.ts'),
+        },
         { find: 'nori-root', replacement: rootDir },
         { find: /^react(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react') },
         { find: /^react-dom(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-dom') },
         { find: /^i18next(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/i18next') },
         { find: /^react-i18next(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-i18next') },
+        { find: /^@legendapp\/state(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/@legendapp/state') },
       ],
     },
-    plugins: [
-      rewriteRootAliases,
-      reactNativeWeb(),
-    ],
+    plugins: [rewriteRootAliases, reactNativeWeb()],
   }),
   publicDir: '../assets/images',
   zip: {
