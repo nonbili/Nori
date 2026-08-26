@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAllTags } from 'nori/lib/nori-data'
 import { useApp } from '../AppContext'
@@ -52,6 +52,14 @@ export function SearchDrawer({
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<SortType>('newest')
   const [filterTags, setFilterTags] = useState<string[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      inputRef.current?.focus({ preventScroll: true })
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [])
 
   const scopedBookmarks = useMemo(
     () => (filterListId === 'all' ? bookmarks : bookmarks.filter((item) => item.listId === filterListId)),
@@ -103,7 +111,7 @@ export function SearchDrawer({
         <div className="drawer-search">
           <Icon name="search" size={18} />
           <input
-            autoFocus
+            ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={t('searchPlaceholder')}

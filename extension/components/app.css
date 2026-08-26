@@ -201,7 +201,8 @@
 }
 .sheet {
   @apply relative flex w-full flex-col overflow-hidden rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 pb-5 dark:border-stone-800 dark:bg-stone-950;
-  animation: nori-rise 220ms ease-out;
+  animation: nori-rise 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 .sheet-grabber {
   @apply flex shrink-0 justify-center py-3;
@@ -218,7 +219,8 @@
 }
 .full-cover {
   @apply absolute inset-0 z-[100] flex min-w-0 flex-col overflow-hidden bg-stone-50 dark:bg-stone-950;
-  animation: nori-rise 220ms ease-out;
+  animation: nori-rise 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 @keyframes nori-rise {
   from {
