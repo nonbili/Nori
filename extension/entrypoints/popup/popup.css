@@ -98,13 +98,6 @@ body {
 .selection-check {
   @apply grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-600 text-white;
 }
-.tile-menu-button {
-  @apply absolute right-1 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-stone-500 shadow-sm hover:bg-stone-200 dark:bg-stone-800/95 dark:hover:bg-stone-700;
-}
-.bookmark-wrap:hover .tile-menu-button,
-.tile-menu-button:focus {
-  @apply grid;
-}
 .favicon {
   @apply grid shrink-0 place-items-center overflow-hidden rounded-full font-bold text-stone-500 dark:text-stone-400;
 }

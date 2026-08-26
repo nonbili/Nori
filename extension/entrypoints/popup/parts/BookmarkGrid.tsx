@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../../../components/AppContext'
 import { Favicon } from '../../../components/Favicon'
 import { Icon } from '../../../components/Icon'
-import { Menu, type MenuItem } from '../../../components/Menu'
+import { ContextMenu, type MenuItem } from '../../../components/Menu'
 import { SectionLabel } from '../../../components/Rows'
 import { Sortable, useSortableItem } from '../../../components/Sortable'
 import { isDeleted, isVisible } from '../../../lib/domain'
@@ -69,24 +69,18 @@ function BookmarkTile({
   handlers: BookmarkHandlers
   onSelect: () => void
 }) {
-  const { t } = useTranslation()
   const items = useBookmarkMenuItems(bookmark, handlers)
   const { itemProps, handleProps, isDragging } = useSortableItem(bookmark.id)
+  const pill = (
+    <BookmarkPill
+      bookmark={bookmark}
+      selected={selected}
+      onClick={() => (editMode ? onSelect() : handlers.onOpen(bookmark))}
+    />
+  )
   return (
     <div className={`bookmark-wrap draggable ${isDragging ? 'dragging' : ''}`} {...itemProps} {...handleProps}>
-      <BookmarkPill
-        bookmark={bookmark}
-        selected={selected}
-        onClick={() => (editMode ? onSelect() : handlers.onOpen(bookmark))}
-      />
-      {!editMode && (
-        <Menu
-          className="tile-menu-button"
-          label={t('bookmarkActions')}
-          items={items}
-          trigger={<Icon name="more" size={15} />}
-        />
-      )}
+      {editMode ? pill : <ContextMenu items={items}>{pill}</ContextMenu>}
     </div>
   )
 }
