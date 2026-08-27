@@ -70,8 +70,8 @@ export default defineConfig({
     ],
   },
   manifest: ({ browser }) => ({
-    name: 'Nori – Bookmark Manager',
-    description: 'Save, organize, search, and sync your Nori bookmarks.',
+    name: 'Nori',
+    description: 'Beautiful bookmark manager and launcher',
     version: '0.1.0',
     icons: { 16: 'icon.png', 32: 'icon.png', 48: 'icon.png', 128: 'icon.png' },
     permissions: ['storage', 'activeTab', 'identity', 'alarms'],

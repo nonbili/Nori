@@ -17,12 +17,22 @@ export const getDirectFavicon = (url: string) => {
   }
 }
 
+// DuckDuckGo answers unknown hosts with a 404 that still carries a placeholder
+// PNG body, so <img> reports a successful load and the fallback chain stalls on
+// a generic grey icon. Skip those urls at render time instead.
+const isDuckDuckGoIcon = (url: string) => {
+  try {
+    return new URL(url).hostname === 'icons.duckduckgo.com'
+  } catch {
+    return false
+  }
+}
+
 export const getRuntimeFaviconCandidates = (pageUrl?: string, iconUrl?: string) => {
-  const candidates = [iconUrl]
+  const candidates = [iconUrl && !isDuckDuckGoIcon(iconUrl) ? iconUrl : '']
 
   if (pageUrl) {
     candidates.push(getDirectFavicon(pageUrl))
-    candidates.push(getDuckDuckGoIcon(pageUrl))
     candidates.push(getGoogleFavicon(pageUrl))
   }
 

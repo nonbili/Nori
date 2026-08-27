@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio/slim'
-import { getDirectFavicon, getDuckDuckGoIcon, getGoogleFavicon } from './favicon'
+import { getDirectFavicon, getGoogleFavicon } from './favicon'
 
 export { getDirectFavicon, getDuckDuckGoIcon, getGoogleFavicon, getRuntimeFaviconCandidates } from './favicon'
 
@@ -12,7 +12,7 @@ export const getFallbackTitle = (url: string) => {
 }
 
 export const getFallbackIcon = (url: string) =>
-  getDuckDuckGoIcon(url)
+  getGoogleFavicon(url)
 
 const canLoadImageUrl = async (url: string) => {
   if (!url) {
@@ -74,16 +74,11 @@ export async function getMeta(url: string) {
     const title = extractTitle($, url)
     const icon = $('link[rel*=icon]').attr('href')
     const directFavicon = getDirectFavicon(url)
-    const duckDuckGoIcon = getDuckDuckGoIcon(url)
 
     let resolvedIcon = icon ? new URL(icon, url).href : ''
 
     if (!resolvedIcon && await canLoadImageUrl(directFavicon)) {
       resolvedIcon = directFavicon
-    }
-
-    if (!resolvedIcon && await canLoadImageUrl(duckDuckGoIcon)) {
-      resolvedIcon = duckDuckGoIcon
     }
 
     return {
