@@ -1,4 +1,4 @@
-import { getDuckDuckGoIcon } from './favicon'
+import { getGoogleFavicon } from './favicon'
 
 export interface RowJsonState {
   visible?: boolean
@@ -40,7 +40,7 @@ export interface StarterBookmarkDefinition {
   icon: string
 }
 
-const faviconForUrl = (url: string) => getDuckDuckGoIcon(url)
+const faviconForUrl = (url: string) => getGoogleFavicon(url)
 
 export const STARTER_LISTS: StarterListDefinition[] = [
   { id: 'builtin-sns', name: 'SNS' },

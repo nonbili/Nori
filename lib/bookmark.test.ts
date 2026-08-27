@@ -24,9 +24,16 @@ describe('bookmark helpers', () => {
   })
 
   it('dedupes runtime favicon candidates while preserving fallback order', () => {
-    expect(getRuntimeFaviconCandidates('https://example.com/page', 'https://example.com/favicon.ico')).toEqual([
+    expect(getRuntimeFaviconCandidates('https://example.com/page', 'https://example.com/icon.png')).toEqual([
+      'https://example.com/icon.png',
       'https://example.com/favicon.ico',
-      'https://icons.duckduckgo.com/ip3/example.com.ico',
+      'https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Fexample.com%2Fpage&sz=128',
+    ])
+  })
+
+  it('drops stored DuckDuckGo icons so a 404 placeholder cannot block the fallback chain', () => {
+    expect(getRuntimeFaviconCandidates('https://example.com/page', getDuckDuckGoIcon('https://example.com/page'))).toEqual([
+      'https://example.com/favicon.ico',
       'https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Fexample.com%2Fpage&sz=128',
     ])
   })

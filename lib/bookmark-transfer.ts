@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio/slim'
 import type { AnyNode } from 'domhandler'
 import { nanoid } from 'nanoid'
-import { getDuckDuckGoIcon } from './bookmark'
+import { getGoogleFavicon } from './bookmark'
 import {
   createRowJsonState,
   getLiveBookmarksInList,
@@ -490,7 +490,7 @@ export function mergeImportedBookmarks(
       listId: list.id,
       url: item.url,
       title: item.title.trim() || titleFromUrl(item.url),
-      icon: item.icon?.trim() || getDuckDuckGoIcon(item.url),
+      icon: item.icon?.trim() || getGoogleFavicon(item.url),
       json: createRowJsonState({
         visible: true,
         sort_index: existingInList + index,
