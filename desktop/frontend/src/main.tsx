@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import { initDesktopBridge } from './wxt-shim'
+import { installDesktopPageFetch } from './page-fetch'
 import background from 'nori-extension/entrypoints/background'
 import 'nori/lib/i18n'
 import 'nori-extension/styles.css'
@@ -11,6 +12,7 @@ import { NativeApp } from 'nori-extension/components/NativeApp'
 // desktop there is no separate worker context, so it runs here, in the same
 // page as the UI, ahead of the first render.
 await initDesktopBridge()
+installDesktopPageFetch()
 background.main()
 
 // `tab` is the extension's standalone-window mode, which is what a desktop

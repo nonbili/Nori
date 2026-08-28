@@ -6,12 +6,14 @@ import {
   getGoogleFavicon,
   getMeta,
   getRuntimeFaviconCandidates,
+  setPageFetch,
 } from './bookmark'
 
 const originalFetch = globalThis.fetch
 
 afterEach(() => {
   globalThis.fetch = originalFetch
+  setPageFetch((url, init) => fetch(url, { ...init, redirect: 'follow' }))
 })
 
 describe('bookmark helpers', () => {
@@ -41,7 +43,7 @@ describe('bookmark helpers', () => {
   it('uses page metadata title, sends a browser user-agent, and resolves relative icons', async () => {
     globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
       expect(String(input)).toBe('https://example.com/page')
-      expect(init?.method).toBeUndefined()
+      expect(init?.method).toBe('GET')
       expect(new Headers(init?.headers).get('User-Agent')).toContain('Mozilla/5.0')
       return new Response('<html><head><meta property="og:title" content="OG Title"><link rel="icon" href="/icon.png"></head></html>')
     }) as unknown as typeof fetch
@@ -115,6 +117,24 @@ describe('bookmark helpers', () => {
     await expect(getMeta('https://www.example.com/page')).resolves.toEqual({
       title: 'example.com',
       icon: getGoogleFavicon('https://www.example.com/page'),
+    })
+  })
+
+  it('routes requests through an injected fetch (desktop goes through Go)', async () => {
+    globalThis.fetch = (async () => {
+      throw new Error('blocked by CORS')
+    }) as unknown as typeof fetch
+    setPageFetch(async (url, init) => {
+      if (url !== 'https://example.com/page') {
+        return new Response('', { status: 404 })
+      }
+      expect(init.method).toBe('GET')
+      return new Response('<html><head><title>Injected Title</title></head></html>')
+    })
+
+    await expect(getMeta('https://example.com/page')).resolves.toEqual({
+      title: 'Injected Title',
+      icon: 'https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Fexample.com%2Fpage&sz=128',
     })
   })
 })
