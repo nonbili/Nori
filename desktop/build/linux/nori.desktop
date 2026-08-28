@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Nori
+GenericName=Bookmark Manager
+Comment=Beautiful bookmark manager and launcher
+Exec=nori %u
+Icon=nori
+Terminal=false
+Categories=Network;Utility;
+StartupNotify=true
+StartupWMClass=nori
+Keywords=Bookmark;Bookmarks;Launcher;

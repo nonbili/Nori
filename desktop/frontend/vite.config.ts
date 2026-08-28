@@ -16,7 +16,10 @@ const pinned = (name: string) => {
   return existsSync(local) ? local : resolve(rootDir, 'node_modules', name)
 }
 
-const version = JSON.parse(readFileSync(resolve(rootDir, 'package.json'), 'utf8')).version
+// The desktop app is versioned independently of the mobile app's package.json.
+// version.txt is the same file the Go side embeds and the release workflow
+// checks the pushed tag against.
+const version = readFileSync(resolve(desktopDir, 'version.txt'), 'utf8').trim()
 
 // Mirrors the extension's wxt.config.ts: the React Native app under the repo
 // root imports through the `@/` alias, and two of those modules have web

@@ -1,0 +1,15 @@
+{
+  "fixed": {
+    "file_version": "0.0.0"
+  },
+  "info": {
+    "0000": {
+      "ProductVersion": "0.0.0",
+      "CompanyName": "Nonbili",
+      "FileDescription": "Beautiful bookmark manager and launcher",
+      "LegalCopyright": "© Nonbili",
+      "ProductName": "Nori",
+      "Comments": "Version fields are stamped from desktop/version.txt at build time."
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- The Go runtime allocates writable-executable memory. -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <!-- JavaScriptCore JIT inside the webview. -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <!-- Supabase sync and page-title fetches. -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <!-- AuthService listens on 127.0.0.1 for the sign-in redirect. -->
+    <key>com.apple.security.network.server</key>
+    <true/>
+    <!-- WebKit is loaded dynamically. -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+</dict>
+</plist>

@@ -1,0 +1,3 @@
+- First desktop release, reusing the browser extension UI and sync stack
+- Bookmark titles are fetched natively, bypassing the webview's CORS rules
+- Sign-in through a loopback redirect, so cloud sync works without an extension

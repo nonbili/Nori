@@ -48,6 +48,8 @@ func main() {
 		BackgroundColour: application.RGBA{Red: 245, Green: 245, Blue: 244, Alpha: 255},
 	})
 
+	initUpdater(app)
+
 	if err := app.Run(); err != nil {
 		log.Fatal(err)
 	}
