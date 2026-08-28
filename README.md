@@ -15,6 +15,15 @@ Install from App Store, Google Play, or download APK from GitHub.
       alt="Get it on GitHub"
       height="50">](https://github.com/nonbili/Nori/releases/latest)
 
+<details>
+<summary>AppImage notes</summary>
+
+The Linux AppImage and tarball use the system WebKit, so they need GTK 3 and
+`webkit2gtk-4.1` installed (`libwebkit2gtk-4.1-0` on Debian/Ubuntu,
+`webkit2gtk4.1` on Fedora, `webkit2gtk-4.1` on Arch).
+
+</details>
+
 ## Features
 
 - Organize bookmarks into multiple lists
