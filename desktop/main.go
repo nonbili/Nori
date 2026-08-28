@@ -26,6 +26,7 @@ func main() {
 			application.NewService(store),
 			application.NewService(auth),
 			application.NewService(&ShellService{}),
+			application.NewService(NewPageService()),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.BundledAssetFileServer(assets),

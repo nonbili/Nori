@@ -14,20 +14,32 @@ export const getFallbackTitle = (url: string) => {
 export const getFallbackIcon = (url: string) =>
   getGoogleFavicon(url)
 
+// The desktop app's webview is a normal web origin, so a plain `fetch` of some
+// other site is blocked by CORS and every bookmark falls back to its hostname.
+// It swaps in a fetch that goes through Go instead; Android and the extension
+// (which holds host permissions) keep the global one.
+type PageFetch = (url: string, init: { method: 'GET' | 'HEAD'; headers?: Record<string, string> }) => Promise<Response>
+
+let pageFetch: PageFetch = (url, init) => fetch(url, { ...init, redirect: 'follow' })
+
+export const setPageFetch = (fetcher: PageFetch) => {
+  pageFetch = fetcher
+}
+
 const canLoadImageUrl = async (url: string) => {
   if (!url) {
     return false
   }
 
   try {
-    const head = await fetch(url, { method: 'HEAD' })
+    const head = await pageFetch(url, { method: 'HEAD' })
     if (head.ok) {
       return true
     }
   } catch {}
 
   try {
-    const get = await fetch(url, { method: 'GET' })
+    const get = await pageFetch(url, { method: 'GET' })
     return get.ok
   } catch {
     return false
@@ -56,7 +68,7 @@ const extractTitle = ($: cheerio.CheerioAPI, url: string) => {
 
 export async function getMeta(url: string) {
   try {
-    const res = await fetch(url, { headers: BROWSER_HEADERS, redirect: 'follow' })
+    const res = await pageFetch(url, { method: 'GET', headers: BROWSER_HEADERS })
 
     // Bail out early when the response is unusable so we keep a clean hostname
     // fallback instead of parsing an error page or binary payload as HTML.
