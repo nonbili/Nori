@@ -1,0 +1,33 @@
+# Config for `wails3 dev`. Only the watcher (`dev_mode`) section is used: the
+# rest of the v3 scaffolding (build/Taskfile.yml, packaging, icons) is not
+# generated for this project, since the Makefile already covers building and
+# picks the GTK3/GTK4 build tag per host.
+version: '3'
+
+dev_mode:
+  root_path: .
+  log_level: warn
+  debounce: 1000
+  ignore:
+    dir:
+      - .git
+      - node_modules
+      # Vite serves the frontend in dev mode, so Go never needs to rebuild for it.
+      - frontend
+      - bin
+      - build
+    file:
+      - .gitignore
+      - "*_test.go"
+    watched_extension:
+      - "*.go"
+    git_ignore: true
+  executes:
+    # Go-only rebuild; the embedded frontend/dist is ignored while the Vite
+    # dev server is up, but the embed directive still needs it to exist.
+    - cmd: make dev-build
+      type: blocking
+    - cmd: make dev-frontend
+      type: background
+    - cmd: ./bin/nori
+      type: primary

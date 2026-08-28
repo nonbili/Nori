@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { Linking, Pressable, Text, View } from 'react-native'
+import { Linking, Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { Image } from 'expo-image'
 import { useValue } from '@legendapp/state/react'
@@ -44,7 +45,7 @@ export interface SettingsActions {
 
 const SectionCard: React.FC<{ title: string; children: ReactNode }> = ({ title, children }) => (
   <View className="gap-3">
-    <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{title}</Text>
+    <NoriText className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{title}</NoriText>
     <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
       {children}
     </View>
@@ -53,7 +54,7 @@ const SectionCard: React.FC<{ title: string; children: ReactNode }> = ({ title, 
 
 const SettingsBadge: React.FC<{ label: string }> = ({ label }) => (
   <View className="rounded-full border border-stone-300 bg-stone-100 px-3 py-1 dark:border-stone-700 dark:bg-stone-950">
-    <Text className="text-xs text-stone-700 dark:text-stone-300">{label}</Text>
+    <NoriText className="text-xs text-stone-700 dark:text-stone-300">{label}</NoriText>
   </View>
 )
 
@@ -89,14 +90,14 @@ const SyncSignInSection: React.FC = () => {
   return (
     <SectionCard title={t('settings.sync.label')}>
       <View className="px-5 py-5">
-        <Text className="text-lg font-semibold text-stone-900 dark:text-stone-100">{t('settings.sync.label')}</Text>
-        <Text className="mt-2 text-sm leading-6 text-stone-600 dark:text-stone-400">{syncHint}</Text>
+        <NoriText className="text-lg font-semibold text-stone-900 dark:text-stone-100">{t('settings.sync.label')}</NoriText>
+        <NoriText className="mt-2 text-sm leading-6 text-stone-600 dark:text-stone-400">{syncHint}</NoriText>
         <View className="mt-5">
           <Pressable
             onPress={() => void startHostedSignIn()}
             className="items-center rounded-full bg-stone-900 px-5 py-2.5 active:opacity-80 dark:bg-stone-100"
           >
-            <Text className="text-sm font-medium text-stone-50 dark:text-stone-950">{t('settings.sync.signIn')}</Text>
+            <NoriText className="text-sm font-medium text-stone-50 dark:text-stone-950">{t('settings.sync.signIn')}</NoriText>
           </Pressable>
         </View>
       </View>
@@ -139,12 +140,12 @@ const AccountSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => 
           contentFit="cover"
         />
         <View className="flex-1">
-          <Text className="font-medium text-stone-900 dark:text-stone-100">
+          <NoriText className="font-medium text-stone-900 dark:text-stone-100">
             {userEmail || user?.email || t('settings.sync.noriUser')}
-          </Text>
-          <Text className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+          </NoriText>
+          <NoriText className="mt-1 text-sm text-stone-600 dark:text-stone-400">
             {t('settings.sync.plan', { plan: planLabel })}
-          </Text>
+          </NoriText>
         </View>
         <NouMenu
           trigger={<MaterialIcons name="more-vert" size={20} color={themeColors.iconMuted} />}
@@ -183,22 +184,22 @@ const PlanSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => {
           <SettingsBadge label={planLabel} />
           {source === 'app_store' ? <SettingsBadge label={t('settings.plan.activeAppStore')} /> : null}
         </View>
-        <Text className="mt-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{syncHint}</Text>
+        <NoriText className="mt-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{syncHint}</NoriText>
         {iosStatusText ? (
-          <Text className="mt-3 text-xs text-stone-500 dark:text-stone-500">{iosStatusText}</Text>
+          <NoriText className="mt-3 text-xs text-stone-500 dark:text-stone-500">{iosStatusText}</NoriText>
         ) : null}
         {lastSyncAt ? (
-          <Text className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+          <NoriText className="mt-1 text-xs text-stone-500 dark:text-stone-400">
             {t('settings.sync.lastSynced', { date: new Date(lastSyncAt).toLocaleString() })}
-          </Text>
+          </NoriText>
         ) : null}
         {authRefreshing || syncInFlight ? (
-          <Text className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('settings.sync.working')}</Text>
+          <NoriText className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('settings.sync.working')}</NoriText>
         ) : null}
         {authError || syncError || actions.actionError ? (
-          <Text className="mt-3 text-sm text-rose-600 dark:text-rose-400">
+          <NoriText className="mt-3 text-sm text-rose-600 dark:text-rose-400">
             {authError || syncError || actions.actionError}
-          </Text>
+          </NoriText>
         ) : null}
         {isIos ? (
           <IosPlanActions
@@ -230,16 +231,16 @@ const IosPlanActions: React.FC<{
   return (
     <View className="mt-5 gap-3">
       {loadingProduct ? (
-        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.loadingPrice')}</Text>
+        <NoriText className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.loadingPrice')}</NoriText>
       ) : null}
       {!loadingProduct && !productPrice ? (
-        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.productUnavailable')}</Text>
+        <NoriText className="text-sm text-stone-600 dark:text-stone-400">{t('settings.ios.productUnavailable')}</NoriText>
       ) : null}
       {source === 'app_store' && plan === 'sync' ? (
         busyAction === 'manage' || busyAction === 'restore' ? (
-          <Text className="text-sm text-stone-400">
+          <NoriText className="text-sm text-stone-400">
             {busyAction === 'manage' ? t('settings.ios.managing') : t('settings.ios.restoring')}
-          </Text>
+          </NoriText>
         ) : null
       ) : (
         <Pressable
@@ -247,30 +248,30 @@ const IosPlanActions: React.FC<{
           disabled={loadingProduct || !productPrice}
           className="items-center rounded-2xl bg-emerald-600 px-4 py-3 active:opacity-80 disabled:opacity-50"
         >
-          <Text className="font-medium text-white">
+          <NoriText className="font-medium text-white">
             {busyAction === 'buy'
               ? t('settings.ios.purchasing')
               : productPrice
                 ? t('settings.ios.buyPrice', { price: productPrice })
                 : t('settings.ios.buy')}
-          </Text>
+          </NoriText>
         </Pressable>
       )}
       <View className="gap-2 rounded-2xl border border-stone-300 bg-stone-100/80 px-4 py-3 dark:border-stone-800 dark:bg-stone-950/70">
-        <Text className="text-xs leading-5 text-stone-600 dark:text-stone-400">{t('settings.ios.legalHint')}</Text>
+        <NoriText className="text-xs leading-5 text-stone-600 dark:text-stone-400">{t('settings.ios.legalHint')}</NoriText>
         <View className="flex-row flex-wrap gap-3">
-          <Text
+          <NoriText
             className="text-xs text-stone-900 underline dark:text-stone-100"
             onPress={() => void Linking.openURL(TERMS_OF_USE_URL)}
           >
             {t('settings.ios.termsOfUse')}
-          </Text>
-          <Text
+          </NoriText>
+          <NoriText
             className="text-xs text-stone-900 underline dark:text-stone-100"
             onPress={() => void Linking.openURL(PRIVACY_POLICY_URL)}
           >
             {t('settings.ios.privacyPolicy')}
-          </Text>
+          </NoriText>
         </View>
       </View>
     </View>
@@ -283,13 +284,13 @@ const WebPlanActions: React.FC<{ source: string; onManage: () => void }> = ({ so
   return (
     <View className="mt-5">
       {source === 'app_store' ? (
-        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.plan.activeAppStore')}</Text>
+        <NoriText className="text-sm text-stone-600 dark:text-stone-400">{t('settings.plan.activeAppStore')}</NoriText>
       ) : (
         <Pressable
           onPress={onManage}
           className="items-center rounded-full border border-stone-300 bg-stone-100 px-5 py-2.5 active:opacity-80 dark:border-stone-700 dark:bg-stone-950"
         >
-          <Text className="text-sm text-stone-900 dark:text-stone-100">{t('settings.plan.manage')}</Text>
+          <NoriText className="text-sm text-stone-900 dark:text-stone-100">{t('settings.plan.manage')}</NoriText>
         </Pressable>
       )}
     </View>
@@ -354,12 +355,12 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="open-in-browser" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">
+            <NoriText className="font-medium text-stone-900 dark:text-stone-100">
               {t('settings.experience.defaultBrowser')}
-            </Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+            </NoriText>
+            <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
               {t('settings.experience.defaultBrowserHint')}
-            </Text>
+            </NoriText>
           </View>
           <Pressable
             onPress={() => settings$.setOpenInSystemBrowser(!openInSystemBrowser)}
@@ -375,12 +376,12 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="save-alt" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">
+            <NoriText className="font-medium text-stone-900 dark:text-stone-100">
               {t('settings.experience.quickShare')}
-            </Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+            </NoriText>
+            <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
               {t('settings.experience.quickShareHint')}
-            </Text>
+            </NoriText>
           </View>
           <Pressable
             onPress={toggleQuickShare}
@@ -395,9 +396,9 @@ export const ExperienceSection: React.FC = () => {
             <NouMenu
               trigger={
                 <View className="flex-row items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1.5 dark:border-stone-700 dark:bg-stone-950">
-                  <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                  <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">
                     {quickShareTargetList?.name || t('lists.unknown')}
-                  </Text>
+                  </NoriText>
                   <MaterialIcons name="keyboard-arrow-down" size={16} color={themeColors.iconMuted} />
                 </View>
               }
@@ -412,12 +413,12 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="image" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">
+            <NoriText className="font-medium text-stone-900 dark:text-stone-100">
               {t('settings.experience.showFavicon')}
-            </Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+            </NoriText>
+            <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
               {t('settings.experience.showFaviconHint')}
-            </Text>
+            </NoriText>
           </View>
           <Pressable
             onPress={() => settings$.setShowFavicon(showFavicon === false)}
@@ -433,15 +434,15 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="translate" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.language')}</Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+            <NoriText className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.language')}</NoriText>
+            <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
               {t('settings.experience.languageHint')}
-            </Text>
+            </NoriText>
           </View>
           <NouMenu
             trigger={
               <View className="flex-row items-center gap-1 rounded-full border border-stone-300 bg-stone-100 px-3 py-1.5 dark:border-stone-700 dark:bg-stone-950">
-                <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">{currentLanguageLabel}</Text>
+                <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">{currentLanguageLabel}</NoriText>
                 <MaterialIcons name="keyboard-arrow-down" size={16} color={themeColors.iconMuted} />
               </View>
             }
@@ -455,10 +456,10 @@ export const ExperienceSection: React.FC = () => {
             <MaterialIcons name="palette" color={themeColors.iconMuted} size={18} />
           </View>
           <View className="flex-1">
-            <Text className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.theme')}</Text>
-            <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
+            <NoriText className="font-medium text-stone-900 dark:text-stone-100">{t('settings.experience.theme')}</NoriText>
+            <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">
               {t('settings.experience.themeHint')}
-            </Text>
+            </NoriText>
           </View>
         </View>
         <View className="flex-row justify-end gap-2">

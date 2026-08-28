@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 
@@ -45,13 +46,13 @@ function TabButton({
         active ? 'bg-stone-900 dark:bg-stone-100' : 'bg-transparent'
       }`}
     >
-      <Text
+      <NoriText
         className={`text-xs font-medium ${
           active ? 'text-stone-50 dark:text-stone-900' : 'text-stone-600 dark:text-stone-400'
         }`}
       >
         {label}
-      </Text>
+      </NoriText>
     </Pressable>
   )
 }
@@ -87,31 +88,31 @@ function BookmarkRow({
         wrapperClassName="items-center justify-center overflow-hidden rounded-xl bg-stone-100 dark:bg-stone-800"
       />
       <View className="flex-1">
-        <Text className="text-sm font-medium text-stone-900 dark:text-stone-100" numberOfLines={1}>
+        <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-100" numberOfLines={1}>
           {title}
-        </Text>
+        </NoriText>
         {listLabel ? (
           <View className="mt-1 flex-row items-center gap-2">
             <View className="rounded-full bg-emerald-100 px-2 py-1 dark:bg-emerald-950/40">
-              <Text className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">
+              <NoriText className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">
                 {listLabel}
-              </Text>
+              </NoriText>
             </View>
-            <Text className="min-w-0 flex-1 text-xs text-stone-500" numberOfLines={1}>
+            <NoriText className="min-w-0 flex-1 text-xs text-stone-500" numberOfLines={1}>
               {subtitle || getHostLabel(url)}
-            </Text>
+            </NoriText>
           </View>
         ) : (
-          <Text className="mt-1 text-xs text-stone-500" numberOfLines={1}>
+          <NoriText className="mt-1 text-xs text-stone-500" numberOfLines={1}>
             {subtitle || getHostLabel(url)}
-          </Text>
+          </NoriText>
         )}
       </View>
       {trailing ? (
         <View className="rounded-full bg-stone-800 px-2 py-1">
-          <Text className="text-[10px] font-medium uppercase tracking-[0.12em] text-stone-200 dark:text-stone-400">
+          <NoriText className="text-[10px] font-medium uppercase tracking-[0.12em] text-stone-200 dark:text-stone-400">
             {trailing.label}
-          </Text>
+          </NoriText>
         </View>
       ) : null}
     </Pressable>
@@ -121,8 +122,8 @@ function BookmarkRow({
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <View className="items-center px-6 py-10">
-      <Text className="text-base font-semibold text-stone-900 dark:text-stone-200">{title}</Text>
-      <Text className="mt-2 text-center text-sm leading-6 text-stone-500">{description}</Text>
+      <NoriText className="text-base font-semibold text-stone-900 dark:text-stone-200">{title}</NoriText>
+      <NoriText className="mt-2 text-center text-sm leading-6 text-stone-500">{description}</NoriText>
     </View>
   )
 }
@@ -171,7 +172,7 @@ export function RecentlyUsedSheet() {
                       onPress={clearRecentHistory}
                       className="rounded-lg px-2 py-1 active:bg-stone-200 dark:active:bg-stone-800"
                     >
-                      <Text className="text-xs font-medium text-stone-500">{t('history.clearAction')}</Text>
+                      <NoriText className="text-xs font-medium text-stone-500">{t('history.clearAction')}</NoriText>
                     </Pressable>
                   </View>
                   <View className="gap-2.5">

@@ -1,10 +1,21 @@
+@import '@fontsource-variable/inter';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --nori-font-cjk: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC';
+  }
+  :root:lang(zh-Hant) {
+    --nori-font-cjk: 'PingFang TC', 'PingFang HK', 'Microsoft JhengHei', 'Noto Sans CJK TC', 'Source Han Sans TC';
+  }
   html {
     @apply bg-stone-50 text-stone-900 antialiased dark:bg-stone-950 dark:text-stone-50;
+    font-family:
+      'Inter Variable', var(--nori-font-cjk), 'Noto Sans Arabic', 'Geeza Pro', ui-sans-serif, system-ui, -apple-system,
+      BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   body {
     @apply m-0;

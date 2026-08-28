@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "nativewind",
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "paths": {
+      "wxt/browser": ["./src/wxt-shim.ts"],
+      "@/components/sheet/SettingsSheet": ["../../extension/components/SharedSettingsSheet.tsx"],
+      "@/lib/open-bookmark": ["../../extension/lib/open-bookmark.ts"],
+      "@/*": ["../../*"],
+      "nori/*": ["../../*"],
+      "nori-root/*": ["../../*"],
+      "nori-extension/*": ["../../extension/*"]
+    },
+    "types": ["node", "nativewind/types"]
+  },
+  "include": ["src", "vite.config.ts"]
+}

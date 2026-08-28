@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pressable, ScrollView as NativeScrollView, Text, TextInput, View } from 'react-native'
+import { Pressable, ScrollView as NativeScrollView, TextInput, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { FlashList } from '@shopify/flash-list'
 import { GestureDetector, ScrollView } from 'react-native-gesture-handler'
@@ -138,7 +139,7 @@ export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer })
         trigger={
           <View className="h-12 flex-row items-center gap-1.5 rounded-2xl border border-stone-200 bg-white px-3 dark:border-stone-800 dark:bg-stone-900">
             <MaterialIcons name="sort" size={18} color={drawer.themeColors.iconMuted} />
-            <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">{sortLabel}</Text>
+            <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">{sortLabel}</NoriText>
             <MaterialIcons name="arrow-drop-down" size={18} color={drawer.themeColors.iconMuted} />
           </View>
         }
@@ -221,8 +222,8 @@ export const DrawerTagChips: React.FC<{ drawer: DrawerPartsState }> = ({ drawer 
                     : 'border-stone-200 dark:border-stone-800'
                 }`}
               >
-                <Text className={`text-xs font-bold ${isActive ? 'text-emerald-500 dark:text-emerald-500' : 'text-stone-400 dark:text-stone-500'}`}>#</Text>
-                <Text className={`text-sm font-medium ${isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-stone-500 dark:text-stone-400'}`}>{tag}</Text>
+                <NoriText className={`text-xs font-bold ${isActive ? 'text-emerald-500 dark:text-emerald-500' : 'text-stone-400 dark:text-stone-500'}`}>#</NoriText>
+                <NoriText className={`text-sm font-medium ${isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-stone-500 dark:text-stone-400'}`}>{tag}</NoriText>
               </Pressable>
             )
           })}
@@ -305,8 +306,8 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
       ) : (
         <View className="flex-1 items-center py-20">
           <MaterialIcons name="search-off" size={48} color={drawer.themeColors.iconSubtle} />
-          <Text className="mt-4 text-base font-medium text-stone-500">{t('bookmarks.noSearchResults')}</Text>
-          <Text className="mt-1 text-sm text-stone-600 dark:text-stone-500">{t('bookmarks.noSearchResultsHint')}</Text>
+          <NoriText className="mt-4 text-base font-medium text-stone-500">{t('bookmarks.noSearchResults')}</NoriText>
+          <NoriText className="mt-1 text-sm text-stone-600 dark:text-stone-500">{t('bookmarks.noSearchResultsHint')}</NoriText>
         </View>
       )}
     </GestureDetector>

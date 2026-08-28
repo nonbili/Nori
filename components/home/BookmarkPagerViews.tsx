@@ -1,4 +1,5 @@
-import { Platform, Pressable, ScrollView, Text, View, type LayoutChangeEvent } from 'react-native'
+import { Platform, Pressable, ScrollView, View, type LayoutChangeEvent } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -69,7 +70,9 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
           className="h-[32px] flex-row items-center gap-1.5 rounded-full border border-dashed border-stone-300 bg-transparent px-4 dark:border-stone-700"
         >
           <MaterialIcons name="add" size={16} color={pager.themeColors.iconSubtle} />
-          <Text className="text-sm font-medium text-stone-600 dark:text-stone-300">{t('lists.new')}</Text>
+          <NoriText className="text-sm font-medium text-stone-600 dark:text-stone-300">
+            {t('lists.new')}
+          </NoriText>
         </Pressable>
       ) : null}
     </ScrollView>

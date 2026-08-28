@@ -1,6 +1,7 @@
 {
   "workspaces": [
-    "extension"
+    "extension",
+    "desktop/frontend"
   ],
   "name": "nori",
   "private": true,

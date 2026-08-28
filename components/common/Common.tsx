@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useThemeColors } from '@/lib/theme'
 import { Favicon } from '@/components/bookmark/Favicon'
@@ -23,7 +24,7 @@ export const ActionChip: React.FC<{
     >
       <View className="flex-row items-center gap-2">
         <MaterialIcons name={icon} color={themeColors.iconInverse} size={18} />
-        {label ? <Text className="text-sm font-medium text-stone-50 dark:text-stone-100">{label}</Text> : null}
+        {label ? <NoriText className="text-sm font-medium text-stone-50 dark:text-stone-100">{label}</NoriText> : null}
       </View>
     </Pressable>
   )
@@ -31,8 +32,8 @@ export const ActionChip: React.FC<{
 
 export const SectionLabel: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
   <View className="mb-4 items-center gap-1">
-    <Text className="text-xs uppercase tracking-[0.2em] text-stone-500 dark:text-stone-500">{title}</Text>
-    {subtitle ? <Text className="text-center text-sm text-stone-600 dark:text-stone-400">{subtitle}</Text> : null}
+    <NoriText className="text-xs uppercase tracking-[0.2em] text-stone-500 dark:text-stone-500">{title}</NoriText>
+    {subtitle ? <NoriText className="text-center text-sm text-stone-600 dark:text-stone-400">{subtitle}</NoriText> : null}
   </View>
 )
 
@@ -58,12 +59,12 @@ export const SettingsRow: React.FC<{
       </View>
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
-          <Text className="flex-1 font-medium text-stone-900 dark:text-stone-100">{title}</Text>
-          {value ? <Text className="text-xs uppercase tracking-[0.16em] text-stone-500">{value}</Text> : null}
+          <NoriText className="flex-1 font-medium text-stone-900 dark:text-stone-100">{title}</NoriText>
+          {value ? <NoriText className="text-xs uppercase tracking-[0.16em] text-stone-500">{value}</NoriText> : null}
         </View>
-        {description ? <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{description}</Text> : null}
+        {description ? <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{description}</NoriText> : null}
       </View>
-      {value ? <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">{value}</Text> : null}
+      {value ? <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">{value}</NoriText> : null}
     </Pressable>
   )
 }
@@ -77,7 +78,7 @@ export const SegmentedOption: React.FC<{
     onPress={onPress}
     className={`rounded-full px-4 py-2 ${active ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-800'}`}
   >
-    <Text className={`text-sm font-medium ${active ? 'text-stone-50 dark:text-stone-950' : 'text-stone-700 dark:text-stone-300'}`}>{label}</Text>
+    <NoriText className={`text-sm font-medium ${active ? 'text-stone-50 dark:text-stone-950' : 'text-stone-700 dark:text-stone-300'}`}>{label}</NoriText>
   </Pressable>
 )
 
@@ -94,13 +95,13 @@ export const ManageRow: React.FC<{
       <Pressable onPress={onPress} disabled={!onPress} className="flex-1 flex-row items-center gap-3">
         {left}
         <View className="flex-1">
-          <Text className="text-sm font-medium text-stone-900 dark:text-stone-100" numberOfLines={1}>
+          <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-100" numberOfLines={1}>
             {title}
-          </Text>
+          </NoriText>
           {subtitle ? (
-            <Text className="mt-1 text-xs text-stone-500" numberOfLines={1}>
+            <NoriText className="mt-1 text-xs text-stone-500" numberOfLines={1}>
               {subtitle}
-            </Text>
+            </NoriText>
           ) : null}
         </View>
       </Pressable>

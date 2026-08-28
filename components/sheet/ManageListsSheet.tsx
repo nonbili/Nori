@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { GestureDetector, ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
@@ -76,7 +77,7 @@ export const ManageListsSheet: React.FC = () => {
         >
           <View className="flex-row items-center gap-1.5">
             <MaterialIcons name="add" color={isDark ? '#0c0a09' : '#fafaf9'} size={16} />
-            <Text className="text-xs font-bold text-stone-50 dark:text-stone-950">{t('lists.new')}</Text>
+            <NoriText className="text-xs font-bold text-stone-50 dark:text-stone-950">{t('lists.new')}</NoriText>
           </View>
         </Pressable>
       }

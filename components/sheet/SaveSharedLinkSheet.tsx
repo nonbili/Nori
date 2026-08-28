@@ -1,6 +1,7 @@
 import { useValue } from '@legendapp/state/react'
 import { useRef } from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useSharedValue } from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next'
@@ -106,16 +107,16 @@ export const SaveSharedLinkSheet: React.FC = () => {
                 key={item.url}
                 className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900"
               >
-                <Text className="text-base font-semibold text-stone-900 dark:text-stone-50">{item.title}</Text>
-                <Text className="mt-2 text-sm text-stone-500 dark:text-stone-400" numberOfLines={2}>{item.url}</Text>
+                <NoriText className="text-base font-semibold text-stone-900 dark:text-stone-50">{item.title}</NoriText>
+                <NoriText className="mt-2 text-sm text-stone-500 dark:text-stone-400" numberOfLines={2}>{item.url}</NoriText>
               </View>
             ))}
           </View>
-          <Text className="text-sm text-stone-600 dark:text-stone-400">
+          <NoriText className="text-sm text-stone-600 dark:text-stone-400">
             {pendingShare.items.length > 1
               ? t('sharing.pickListMultiple', { count: pendingShare.items.length })
               : t('sharing.pickList')}
-          </Text>
+          </NoriText>
           <View className="gap-3">
             {visibleLists.map((list) => (
               <ActionChip key={list.id} icon="bookmark-add" label={list.name} onPress={() => onSaveToList(list.id)} />

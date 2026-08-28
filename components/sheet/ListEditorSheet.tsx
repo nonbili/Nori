@@ -1,5 +1,6 @@
 import { useValue } from '@legendapp/state/react'
-import { Text, TextInput, Pressable, View } from 'react-native'
+import { TextInput, Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
 import { useThemeColors } from '@/lib/theme'
@@ -42,9 +43,9 @@ export const ListEditorSheet: React.FC = () => {
   return (
     <BaseCenterModal onClose={onClose}>
       <View className="p-6 gap-4">
-        <Text className="text-xl font-semibold text-stone-900 dark:text-stone-50">
+        <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">
           {editor.id ? t('lists.rename') : t('lists.new')}
-        </Text>
+        </NoriText>
         <TextInput
           autoFocus={!editor.id}
           value={editor.name}
@@ -56,10 +57,10 @@ export const ListEditorSheet: React.FC = () => {
         />
         <View className="flex-row justify-end gap-3">
           <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-stone-200 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700">
-            <Text className="text-stone-900 dark:text-stone-100">{t('lists.cancel')}</Text>
+            <NoriText className="text-stone-900 dark:text-stone-100">{t('lists.cancel')}</NoriText>
           </Pressable>
           <Pressable onPress={saveList} className="rounded-full px-5 py-3 bg-emerald-500 active:bg-emerald-600">
-            <Text className="font-medium text-white">{t('lists.save')}</Text>
+            <NoriText className="font-medium text-white">{t('lists.save')}</NoriText>
           </Pressable>
         </View>
       </View>

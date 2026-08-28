@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, ScrollView, Text, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
+import { FlatList, ScrollView, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -51,16 +52,16 @@ const EmptyBookmarksState = memo(({ listName, iconColor }: { listName: string; i
         <MaterialIcons name="bookmark-border" size={26} color={iconColor} />
       </View>
       <View className="items-center gap-2">
-        <Text className="text-base font-semibold text-stone-900 dark:text-stone-100">{t('bookmarks.emptyListTitle', { name: listName })}</Text>
-        <Text className="max-w-[280px] text-center text-sm leading-6 text-stone-600 dark:text-stone-400">
+        <NoriText className="text-base font-semibold text-stone-900 dark:text-stone-100">{t('bookmarks.emptyListTitle', { name: listName })}</NoriText>
+        <NoriText className="max-w-[280px] text-center text-sm leading-6 text-stone-600 dark:text-stone-400">
           {t('bookmarks.emptyListHint')}
-        </Text>
+        </NoriText>
       </View>
       <View className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-900/40 dark:bg-emerald-950/20">
-        <Text className="text-center text-xs font-medium uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">{t('bookmarks.tip')}</Text>
-        <Text className="mt-2 max-w-[260px] text-center text-sm leading-5 text-emerald-900 dark:text-emerald-50">
+        <NoriText className="text-center text-xs font-medium uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-300">{t('bookmarks.tip')}</NoriText>
+        <NoriText className="mt-2 max-w-[260px] text-center text-sm leading-5 text-emerald-900 dark:text-emerald-50">
           {t('bookmarks.shareTip')}
-        </Text>
+        </NoriText>
       </View>
     </View>
   )
@@ -76,10 +77,10 @@ const EditModeHint = memo(({ iconColor, canReorder = true }: { iconColor: string
           <MaterialIcons name="edit" size={16} color={iconColor} />
         </View>
         <View className="flex-1">
-          <Text className="text-xs font-semibold text-emerald-950 dark:text-emerald-100">{t('bookmarks.editing')}</Text>
-          <Text className="mt-0.5 text-[11px] leading-4 text-emerald-900 dark:text-emerald-50">
+          <NoriText className="text-xs font-semibold text-emerald-950 dark:text-emerald-100">{t('bookmarks.editing')}</NoriText>
+          <NoriText className="mt-0.5 text-[11px] leading-4 text-emerald-900 dark:text-emerald-50">
             {canReorder ? t('bookmarks.editHint') : t('bookmarks.editHintNoReorder')}
-          </Text>
+          </NoriText>
         </View>
       </View>
     </View>

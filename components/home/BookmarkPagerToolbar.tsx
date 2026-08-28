@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { Pressable, Text, View, type LayoutChangeEvent } from 'react-native'
+import { Pressable, View, type LayoutChangeEvent } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'
@@ -76,7 +77,7 @@ export const BookmarkPagerToolbar: React.FC<{
           size={20}
           color={themeColors.icon}
         />
-        <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">{selectedCount}</Text>
+        <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-200">{selectedCount}</NoriText>
       </Pressable>
       {moveTargetLists.length ? (
         <NouMenu
@@ -137,7 +138,7 @@ export const BookmarkPagerToolbar: React.FC<{
               disabled={!hasVisibleBookmarks}
               className={`h-10 items-center justify-center rounded-full bg-stone-200 px-4 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700 ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
             >
-              <Text className="text-sm font-medium text-stone-900 dark:text-stone-200">{t('bookmarks.selectAll')}</Text>
+              <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-200">{t('bookmarks.selectAll')}</NoriText>
             </Pressable>
           )
         ) : (
