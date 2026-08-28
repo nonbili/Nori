@@ -1,4 +1,5 @@
-import { Linking, Pressable, Text, View } from 'react-native'
+import { Linking, Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useTranslation } from 'react-i18next'
 import { useThemeColors, type ThemeColors } from '@/lib/theme'
@@ -7,7 +8,7 @@ import { DONATE_LINKS, REPO_URL } from '@/lib/product-links'
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <View className="gap-3">
-    <Text className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{title}</Text>
+    <NoriText className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{title}</NoriText>
     <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
       {children}
     </View>
@@ -30,8 +31,8 @@ export const AboutRow: React.FC<{
         <MaterialIcons name={icon} color={themeColors.iconMuted} size={18} />
       </View>
       <View className="flex-1">
-        <Text className="font-medium text-stone-900 dark:text-stone-100">{title}</Text>
-        <Text className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{detail}</Text>
+        <NoriText className="font-medium text-stone-900 dark:text-stone-100">{title}</NoriText>
+        <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{detail}</NoriText>
       </View>
       {onPress ? <MaterialIcons name="chevron-right" color={themeColors.iconMuted} size={20} /> : null}
     </View>

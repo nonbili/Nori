@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect */
 import { type ReactNode, useCallback, useEffect, useState } from 'react'
-import { Modal, Platform, Pressable, Text, View, useWindowDimensions, type DimensionValue } from 'react-native'
+import { Modal, Platform, Pressable, View, useWindowDimensions, type DimensionValue } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -31,7 +32,7 @@ export const FullScreenModal: React.FC<{
         >
           {showHeader ? (
             <View className="mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-semibold text-stone-900 dark:text-stone-50">{title}</Text>
+              <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">{title}</NoriText>
               {showCloseButton ? (
                 <Pressable
                   onPress={onClose}
@@ -222,7 +223,7 @@ export const Sheet: React.FC<{
                 {showHeader ? (
                   <View className="mb-6 flex-row items-center justify-between">
                     <View className="flex-row items-center gap-3">
-                      {title ? <Text className="text-xl font-semibold text-stone-900 dark:text-stone-50">{title}</Text> : null}
+                      {title ? <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">{title}</NoriText> : null}
                       {headerLeft}
                     </View>
                     <View className="flex-row items-center gap-2">

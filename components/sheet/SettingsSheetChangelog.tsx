@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Linking, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Linking, Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useTranslation } from 'react-i18next'
 import { fetchReleaseEntries, type ReleaseEntry } from '@/lib/changelog'
@@ -55,7 +56,7 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
     return (
       <View className={`${cardCls} flex-row items-center gap-3 px-4 py-6`}>
         <ActivityIndicator color={themeColors.iconMuted} />
-        <Text className="text-sm text-stone-600 dark:text-stone-400">{t('settings.changelog.loading')}</Text>
+        <NoriText className="text-sm text-stone-600 dark:text-stone-400">{t('settings.changelog.loading')}</NoriText>
       </View>
     )
   }
@@ -64,7 +65,7 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
     return (
       <View className="gap-4">
         <View className={cardCls}>
-          <Text className="px-4 py-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{t('settings.changelog.error')}</Text>
+          <NoriText className="px-4 py-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{t('settings.changelog.error')}</NoriText>
         </View>
         <View className="items-end">
           <Pressable
@@ -72,7 +73,7 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
             accessibilityRole="button"
             className="rounded-full border border-stone-200 px-4 py-2 active:opacity-70 dark:border-stone-800"
           >
-            <Text className="text-sm font-medium text-stone-900 dark:text-stone-100">{t('settings.changelog.retry')}</Text>
+            <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-100">{t('settings.changelog.retry')}</NoriText>
           </Pressable>
         </View>
       </View>
@@ -82,7 +83,7 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
   if (!entries?.length) {
     return (
       <View className={cardCls}>
-        <Text className="px-4 py-4 text-sm text-stone-600 dark:text-stone-400">{t('settings.changelog.empty')}</Text>
+        <NoriText className="px-4 py-4 text-sm text-stone-600 dark:text-stone-400">{t('settings.changelog.empty')}</NoriText>
       </View>
     )
   }
@@ -105,24 +106,24 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
               </View>
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
-                  <Text className="flex-1 font-medium text-stone-900 dark:text-stone-100">{entry.tag}</Text>
+                  <NoriText className="flex-1 font-medium text-stone-900 dark:text-stone-100">{entry.tag}</NoriText>
                   {isCurrent ? (
-                    <Text className="rounded-full border border-stone-200 px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-stone-600 dark:border-stone-800 dark:text-stone-400">
+                    <NoriText className="rounded-full border border-stone-200 px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-stone-600 dark:border-stone-800 dark:text-stone-400">
                       {t('settings.changelog.current')}
-                    </Text>
+                    </NoriText>
                   ) : null}
                 </View>
-                <Text className="mt-1 text-sm text-stone-600 dark:text-stone-400">{formatReleaseDate(entry.updatedAt)}</Text>
+                <NoriText className="mt-1 text-sm text-stone-600 dark:text-stone-400">{formatReleaseDate(entry.updatedAt)}</NoriText>
                 <View className="mt-3 gap-2">
                   {entry.items.length ? (
                     entry.items.map((item) => (
                       <View className="flex-row gap-2" key={`${entry.url}-${item}`}>
-                        <Text className="text-sm leading-5 text-stone-600 dark:text-stone-400">{'•'}</Text>
-                        <Text className="flex-1 text-sm leading-5 text-stone-800 dark:text-stone-200">{item}</Text>
+                        <NoriText className="text-sm leading-5 text-stone-600 dark:text-stone-400">{'•'}</NoriText>
+                        <NoriText className="flex-1 text-sm leading-5 text-stone-800 dark:text-stone-200">{item}</NoriText>
                       </View>
                     ))
                   ) : (
-                    <Text className="text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.changelog.noNotes')}</Text>
+                    <NoriText className="text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.changelog.noNotes')}</NoriText>
                   )}
                 </View>
               </View>

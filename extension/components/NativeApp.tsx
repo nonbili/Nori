@@ -42,6 +42,7 @@ function ReadyApp({
 
   useEffect(() => {
     const language = state.snapshot.preferences.language || systemLanguage()
+    document.documentElement.lang = language.replace('_', '-')
     if (i18n.language !== language) {
       void i18n.changeLanguage(language)
     }

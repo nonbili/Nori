@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
-import { Modal, Platform, Pressable, Text, View, useWindowDimensions } from 'react-native'
+import { Modal, Platform, Pressable, View, useWindowDimensions } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
@@ -74,7 +75,9 @@ const AnchorMenu: React.FC<{
               <View accessible={false} importantForAccessibility="no-hide-descendants">
                 {action.icon ? <MaterialIcons name={action.icon} size={18} color={themeColors.iconMuted} /> : null}
               </View>
-              <Text className="flex-1 text-sm" style={{ color: themeColors.textPrimary }}>{action.label}</Text>
+              <NoriText className="flex-1 text-sm" style={{ color: themeColors.textPrimary }}>
+                {action.label}
+              </NoriText>
             </Pressable>
           ))}
         </View>
@@ -172,9 +175,9 @@ export const BookmarkTile = memo(({
           } ${isDragging ? 'opacity-50' : ''}`}
         >
           <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={24} iconSize={20} />
-          <Text className={`flex-1 text-sm font-medium ${titleClassName}`} numberOfLines={1}>
+          <NoriText className={`flex-1 text-sm font-medium ${titleClassName}`} numberOfLines={1}>
             {bookmark.title}
-          </Text>
+          </NoriText>
         </Pressable>
       </View>
       <AnchorMenu

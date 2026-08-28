@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
-import { ScrollView, Text, TextInput, Pressable, View } from 'react-native'
+import { ScrollView, TextInput, Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
 import { useAppColorScheme, useThemeColors } from '@/lib/theme'
@@ -148,9 +149,9 @@ export const BookmarkEditorSheet: React.FC = () => {
   return (
     <BaseCenterModal onClose={onClose}>
       <View className="p-6 gap-4">
-        <Text className="text-xl font-semibold text-stone-900 dark:text-stone-50">
+        <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">
           {editor.id ? t('bookmarks.edit') : t('bookmarks.add')}
-        </Text>
+        </NoriText>
         <View className="gap-3">
           <TextInput
             autoFocus={!editor.id}
@@ -182,7 +183,7 @@ export const BookmarkEditorSheet: React.FC = () => {
                   onPress={() => removeTag(tag)}
                   className="h-[32px] flex-row items-center gap-1 rounded-full bg-stone-200 px-3 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
                 >
-                  <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">{tag}</Text>
+                  <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">{tag}</NoriText>
                   <MaterialIcons name="close" size={14} color={themeColors.iconMuted} />
                 </Pressable>
               ))}
@@ -210,7 +211,7 @@ export const BookmarkEditorSheet: React.FC = () => {
                   }}
                   className="h-[28px] items-center justify-center rounded-full border border-stone-200 px-3 active:bg-stone-100 dark:border-stone-800 dark:active:bg-stone-800"
                 >
-                  <Text className="text-sm text-stone-500 dark:text-stone-400">{tag}</Text>
+                  <NoriText className="text-sm text-stone-500 dark:text-stone-400">{tag}</NoriText>
                 </Pressable>
               ))}
             </ScrollView>
@@ -247,22 +248,22 @@ export const BookmarkEditorSheet: React.FC = () => {
                   borderColor: isDark ? '#292524' : '#e7e5e4',
                 }}
               >
-                <Text
+                <NoriText
                   className="text-sm font-medium"
                   style={{ color: isActive ? (isDark ? '#0c0a09' : '#fafaf9') : (isDark ? '#a8a29e' : '#57534e') }}
                 >
                   {list.name}
-                </Text>
+                </NoriText>
               </Pressable>
             )
           })}
         </ScrollView>
         <View className="flex-row justify-end gap-3">
           <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-stone-200 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700">
-            <Text className="text-stone-900 dark:text-stone-100">{t('bookmarks.cancel')}</Text>
+            <NoriText className="text-stone-900 dark:text-stone-100">{t('bookmarks.cancel')}</NoriText>
           </Pressable>
           <Pressable onPress={() => void saveBookmark()} className="rounded-full px-5 py-3 bg-emerald-500 active:bg-emerald-600">
-            <Text className="font-medium text-white">{metadataLoading ? t('bookmarks.saving') : t('bookmarks.save')}</Text>
+            <NoriText className="font-medium text-white">{metadataLoading ? t('bookmarks.saving') : t('bookmarks.save')}</NoriText>
           </Pressable>
         </View>
       </View>

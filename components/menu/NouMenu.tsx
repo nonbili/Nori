@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Modal, Pressable as NativePressable, ScrollView, Text, useWindowDimensions, View } from 'react-native'
+import { Modal, Pressable as NativePressable, ScrollView, useWindowDimensions, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
@@ -137,7 +138,9 @@ export const NouMenu: React.FC<{
                         />
                       ) : null}
                     </View>
-                    <Text className="flex-1" style={{ color: themeColors.textPrimary }}>{item.label}</Text>
+                    <NoriText className="flex-1" style={{ color: themeColors.textPrimary }}>
+                      {item.label}
+                    </NoriText>
                     {item.selected ? (
                       <View accessible={false} importantForAccessibility="no-hide-descendants">
                         <MaterialIcons name="check" size={18} color={themeColors.iconAccentStrong} />

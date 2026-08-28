@@ -1,0 +1,20 @@
+/* The window itself is the app frame, so the shell fills it edge to edge
+   instead of floating in a page like the extension's standalone tab. */
+body {
+  @apply h-screen overflow-hidden bg-stone-50 dark:bg-stone-950;
+}
+#root {
+  @apply h-full;
+}
+#root > .app-shell {
+  @apply h-full w-full;
+}
+
+/* React Native Web portals modals into body, so their internal frame has to be
+   matched to the window explicitly. */
+[data-testid='app_modal_frame'] {
+  flex: none !important;
+  align-self: auto !important;
+  width: 100vw;
+  height: 100vh;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, View } from 'react-native'
+import { NoriText } from '@/components/common/NoriText'
 import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { dismissSnackbar, registerSnackbarHost, ui$, type SnackbarState } from '@/states/ui'
@@ -10,7 +11,7 @@ const SNACKBAR_TOOLBAR_GAP = 8
 function SnackbarRow({ snackbar }: { snackbar: SnackbarState }) {
   return (
     <View className="mt-2 w-full max-w-xl flex-row items-center rounded-2xl bg-stone-900 px-4 py-3 shadow-lg dark:bg-stone-100">
-      <Text className="flex-1 text-sm font-medium text-stone-50 dark:text-stone-900">{snackbar.message}</Text>
+      <NoriText className="flex-1 text-sm font-medium text-stone-50 dark:text-stone-900">{snackbar.message}</NoriText>
       {snackbar.actionLabel && snackbar.onAction ? (
         <Pressable
           accessibilityRole="button"
@@ -21,7 +22,7 @@ function SnackbarRow({ snackbar }: { snackbar: SnackbarState }) {
           }}
           className="ml-4 rounded-lg px-2 py-1 active:opacity-60"
         >
-          <Text className="text-sm font-bold text-emerald-300 dark:text-emerald-700">{snackbar.actionLabel}</Text>
+          <NoriText className="text-sm font-bold text-emerald-300 dark:text-emerald-700">{snackbar.actionLabel}</NoriText>
         </Pressable>
       ) : null}
     </View>

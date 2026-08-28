@@ -1,6 +1,7 @@
 import { Platform, Pressable, View } from 'react-native'
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
 import { useAppColorScheme } from '@/lib/theme'
+import { noriTextStyle } from '@/components/common/NoriText'
 
 export interface ListChipProps {
   name: string
@@ -108,7 +109,7 @@ export const ListChip: React.FC<ListChipProps> = ({
       >
         <Animated.View style={[activeStyle, { backgroundColor: activeBg }]} />
         <Animated.View style={inactiveStyle} />
-        <Animated.Text className="relative text-sm font-medium" style={textStyle}>
+        <Animated.Text className="relative text-sm font-medium" style={[noriTextStyle, textStyle]}>
           {name}
         </Animated.Text>
       </Pressable>
