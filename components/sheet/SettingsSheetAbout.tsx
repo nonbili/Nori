@@ -8,8 +8,8 @@ import { DONATE_LINKS, REPO_URL } from '@/lib/product-links'
 
 const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <View className="gap-3">
-    <NoriText className="px-1 text-xs uppercase tracking-[0.18em] text-stone-500">{title}</NoriText>
-    <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
+    <NoriText className="px-1 text-xs uppercase tracking-[0.18em] text-content-subtle">{title}</NoriText>
+    <View className="overflow-hidden rounded-[24px] border border-line bg-surface/90 dark:bg-surface/70">
       {children}
     </View>
   </View>
@@ -25,16 +25,16 @@ export const AboutRow: React.FC<{
 }> = ({ icon, title, detail, onPress, isLast = false, themeColors }) => {
   const content = (
     <View
-      className={`flex-row items-center gap-3 px-4 py-4 ${isLast ? '' : 'border-b border-stone-200 dark:border-stone-800'}`}
+      className={`flex-row items-center gap-3 px-4 py-4 ${isLast ? '' : 'border-b border-line'}`}
     >
-      <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
-        <MaterialIcons name={icon} color={themeColors.iconMuted} size={18} />
+      <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+        <MaterialIcons name={icon} color={themeColors.contentMuted} size={18} />
       </View>
       <View className="flex-1">
-        <NoriText className="font-medium text-stone-900 dark:text-stone-100">{title}</NoriText>
-        <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{detail}</NoriText>
+        <NoriText className="font-medium text-content">{title}</NoriText>
+        <NoriText className="mt-1 text-sm leading-5 text-content-muted">{detail}</NoriText>
       </View>
-      {onPress ? <MaterialIcons name="chevron-right" color={themeColors.iconMuted} size={20} /> : null}
+      {onPress ? <MaterialIcons name="chevron-right" color={themeColors.contentMuted} size={20} /> : null}
     </View>
   )
 
@@ -58,7 +58,7 @@ export const SettingsAboutPage: React.FC<{ appVersion: string; actions: Settings
 
   return (
     <>
-      <View className="overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70">
+      <View className="overflow-hidden rounded-[24px] border border-line bg-surface/90 dark:bg-surface/70">
         <AboutRow
           icon="info-outline"
           title={t('settings.about.version')}

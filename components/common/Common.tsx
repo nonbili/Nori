@@ -18,13 +18,13 @@ export const ActionChip: React.FC<{
       onPress={onPress}
       className={`rounded-full px-4 py-2 active:opacity-70 ${
         variant === 'filled'
-          ? 'bg-stone-900 dark:bg-stone-800'
-          : 'border border-stone-300 bg-transparent dark:border-stone-700'
+          ? 'bg-contrast'
+          : 'border border-line-strong bg-transparent'
       }`}
     >
       <View className="flex-row items-center gap-2">
-        <MaterialIcons name={icon} color={themeColors.iconInverse} size={18} />
-        {label ? <NoriText className="text-sm font-medium text-stone-50 dark:text-stone-100">{label}</NoriText> : null}
+        <MaterialIcons name={icon} color={themeColors.contentInverse} size={18} />
+        {label ? <NoriText className="text-sm font-medium text-content-inverse">{label}</NoriText> : null}
       </View>
     </Pressable>
   )
@@ -32,8 +32,8 @@ export const ActionChip: React.FC<{
 
 export const SectionLabel: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
   <View className="mb-4 items-center gap-1">
-    <NoriText className="text-xs uppercase tracking-[0.2em] text-stone-500 dark:text-stone-500">{title}</NoriText>
-    {subtitle ? <NoriText className="text-center text-sm text-stone-600 dark:text-stone-400">{subtitle}</NoriText> : null}
+    <NoriText className="text-xs uppercase tracking-[0.2em] text-content-subtle">{title}</NoriText>
+    {subtitle ? <NoriText className="text-center text-sm text-content-muted">{subtitle}</NoriText> : null}
   </View>
 )
 
@@ -50,21 +50,21 @@ export const SettingsRow: React.FC<{
   return (
     <Pressable
       onPress={onPress}
-      className={`flex-row items-center gap-3 px-4 py-4 active:bg-stone-100 dark:active:bg-stone-900 ${
-        !isLast ? 'border-b border-stone-200 dark:border-stone-800' : ''
+      className={`flex-row items-center gap-3 px-4 py-4 active:bg-muted ${
+        !isLast ? 'border-b border-line' : ''
       }`}
     >
-      <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
-        <MaterialIcons name={icon} color={themeColors.iconMuted} size={18} />
+      <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+        <MaterialIcons name={icon} color={themeColors.contentMuted} size={18} />
       </View>
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
-          <NoriText className="flex-1 font-medium text-stone-900 dark:text-stone-100">{title}</NoriText>
-          {value ? <NoriText className="text-xs uppercase tracking-[0.16em] text-stone-500">{value}</NoriText> : null}
+          <NoriText className="flex-1 font-medium text-content">{title}</NoriText>
+          {value ? <NoriText className="text-xs uppercase tracking-[0.16em] text-content-subtle">{value}</NoriText> : null}
         </View>
-        {description ? <NoriText className="mt-1 text-sm leading-5 text-stone-600 dark:text-stone-400">{description}</NoriText> : null}
+        {description ? <NoriText className="mt-1 text-sm leading-5 text-content-muted">{description}</NoriText> : null}
       </View>
-      {value ? <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">{value}</NoriText> : null}
+      {value ? <NoriText className="text-sm font-medium text-content-secondary">{value}</NoriText> : null}
     </Pressable>
   )
 }
@@ -76,9 +76,9 @@ export const SegmentedOption: React.FC<{
 }> = ({ active, label, onPress }) => (
   <Pressable
     onPress={onPress}
-    className={`rounded-full px-4 py-2 ${active ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-800'}`}
+    className={`rounded-full px-4 py-2 ${active ? 'bg-contrast' : 'bg-muted'}`}
   >
-    <NoriText className={`text-sm font-medium ${active ? 'text-stone-50 dark:text-stone-950' : 'text-stone-700 dark:text-stone-300'}`}>{label}</NoriText>
+    <NoriText className={`text-sm font-medium ${active ? 'text-content-inverse' : 'text-content-secondary'}`}>{label}</NoriText>
   </Pressable>
 )
 
@@ -91,15 +91,15 @@ export const ManageRow: React.FC<{
   className?: string
 }> = ({ title, subtitle, left, actions, onPress, className }) => {
   return (
-    <View className={`flex-row items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 dark:border-stone-800 dark:bg-stone-900 ${className}`}>
+    <View className={`flex-row items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3 ${className}`}>
       <Pressable onPress={onPress} disabled={!onPress} className="flex-1 flex-row items-center gap-3">
         {left}
         <View className="flex-1">
-          <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-100" numberOfLines={1}>
+          <NoriText className="text-sm font-medium text-content" numberOfLines={1}>
             {title}
           </NoriText>
           {subtitle ? (
-            <NoriText className="mt-1 text-xs text-stone-500" numberOfLines={1}>
+            <NoriText className="mt-1 text-xs text-content-subtle" numberOfLines={1}>
               {subtitle}
             </NoriText>
           ) : null}
@@ -122,10 +122,10 @@ export const IconAction: React.FC<{
       onPress={onPress}
       className={`rounded-full p-2 ${
         tint === 'danger'
-          ? 'bg-rose-950/40'
+          ? 'bg-danger-100 dark:bg-danger-900/40'
           : tint === 'accent'
-            ? 'bg-emerald-950/30'
-            : 'bg-stone-200 dark:bg-stone-800'
+            ? 'bg-accent-100 dark:bg-accent-900/30'
+            : 'bg-muted'
       }`}
     >
       <MaterialIcons
@@ -133,10 +133,10 @@ export const IconAction: React.FC<{
         size={16}
         color={
           tint === 'danger'
-            ? themeColors.iconDanger
+            ? themeColors.danger
             : tint === 'accent'
-              ? themeColors.iconAccentStrong
-              : themeColors.iconMuted
+              ? themeColors.accent
+              : themeColors.contentMuted
         }
       />
     </Pressable>

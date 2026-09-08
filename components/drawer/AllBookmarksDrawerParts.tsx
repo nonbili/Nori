@@ -74,7 +74,7 @@ const BookmarkItem = memo(({ bookmark, drawer }: { bookmark: BookmarkRecord; dra
         slotSize={40}
         iconSize={24}
         fallbackIconSize={16}
-        wrapperClassName="items-center justify-center overflow-hidden rounded-xl bg-stone-100 dark:bg-stone-800"
+        wrapperClassName="items-center justify-center overflow-hidden rounded-xl bg-muted"
       />
     }
     onPress={() => drawer.onOpen(bookmark)}
@@ -85,8 +85,8 @@ const BookmarkItem = memo(({ bookmark, drawer }: { bookmark: BookmarkRecord; dra
         onShare={() => drawer.onShare(bookmark)}
         onDelete={() => drawer.onDelete(bookmark)}
         trigger={
-          <View className="h-8 w-8 items-center justify-center rounded-full bg-stone-100 dark:bg-stone-800">
-            <MaterialIcons name="more-vert" size={18} color={drawer.themeColors.iconMuted} />
+          <View className="h-8 w-8 items-center justify-center rounded-full bg-muted">
+            <MaterialIcons name="more-vert" size={18} color={drawer.themeColors.contentMuted} />
           </View>
         }
       />
@@ -117,18 +117,18 @@ export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer })
     <View className="mb-6 flex-row items-center gap-3">
       <Pressable
         onPress={drawer.closeDrawerWithAnimation}
-        className="h-10 w-10 items-center justify-center rounded-full border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900"
+        className="h-10 w-10 items-center justify-center rounded-full border border-line bg-surface"
       >
-        <MaterialIcons name="arrow-back" size={20} color={drawer.themeColors.iconMuted} />
+        <MaterialIcons name="arrow-back" size={20} color={drawer.themeColors.contentMuted} />
       </Pressable>
-      <View className="h-12 flex-1 flex-row items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 dark:border-stone-800 dark:bg-stone-900">
-        <MaterialIcons name="search" size={20} color={drawer.themeColors.iconMuted} />
+      <View className="h-12 flex-1 flex-row items-center gap-2 rounded-2xl border border-line bg-surface px-4">
+        <MaterialIcons name="search" size={20} color={drawer.themeColors.contentMuted} />
         <TextInput
           value={drawer.searchQuery}
           onChangeText={drawer.setSearchQuery}
           placeholder={t('bookmarks.searchPlaceholder')}
-          placeholderTextColor={drawer.themeColors.placeholder}
-          className="flex-1 text-base text-stone-900 dark:text-stone-50"
+          placeholderTextColor={drawer.themeColors.contentSubtle}
+          className="flex-1 text-base text-content"
           autoFocus={false}
           autoCapitalize="none"
           autoCorrect={false}
@@ -137,10 +137,10 @@ export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer })
       <NouMenu
         items={sortMenuItems}
         trigger={
-          <View className="h-12 flex-row items-center gap-1.5 rounded-2xl border border-stone-200 bg-white px-3 dark:border-stone-800 dark:bg-stone-900">
-            <MaterialIcons name="sort" size={18} color={drawer.themeColors.iconMuted} />
-            <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">{sortLabel}</NoriText>
-            <MaterialIcons name="arrow-drop-down" size={18} color={drawer.themeColors.iconMuted} />
+          <View className="h-12 flex-row items-center gap-1.5 rounded-2xl border border-line bg-surface px-3">
+            <MaterialIcons name="sort" size={18} color={drawer.themeColors.contentMuted} />
+            <NoriText className="text-sm font-medium text-content-secondary">{sortLabel}</NoriText>
+            <MaterialIcons name="arrow-drop-down" size={18} color={drawer.themeColors.contentMuted} />
           </View>
         }
       />
@@ -218,12 +218,12 @@ export const DrawerTagChips: React.FC<{ drawer: DrawerPartsState }> = ({ drawer 
                 onPress={() => toggleTag(tag)}
                 className={`h-[32px] flex-row items-center gap-1 rounded-full border px-3.5 ${
                   isActive
-                    ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-800/60 dark:bg-emerald-950/40'
-                    : 'border-stone-200 dark:border-stone-800'
+                    ? 'border-accent-300 bg-accent-50 dark:border-accent-800/60 dark:bg-accent-950/40'
+                    : 'border-line'
                 }`}
               >
-                <NoriText className={`text-xs font-bold ${isActive ? 'text-emerald-500 dark:text-emerald-500' : 'text-stone-400 dark:text-stone-500'}`}>#</NoriText>
-                <NoriText className={`text-sm font-medium ${isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-stone-500 dark:text-stone-400'}`}>{tag}</NoriText>
+                <NoriText className={`text-xs font-bold ${isActive ? 'text-accent-500' : 'text-content-subtle'}`}>#</NoriText>
+                <NoriText className={`text-sm font-medium ${isActive ? 'text-accent-700 dark:text-accent-300' : 'text-content-muted'}`}>{tag}</NoriText>
               </Pressable>
             )
           })}
@@ -305,9 +305,9 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
         </View>
       ) : (
         <View className="flex-1 items-center py-20">
-          <MaterialIcons name="search-off" size={48} color={drawer.themeColors.iconSubtle} />
-          <NoriText className="mt-4 text-base font-medium text-stone-500">{t('bookmarks.noSearchResults')}</NoriText>
-          <NoriText className="mt-1 text-sm text-stone-600 dark:text-stone-500">{t('bookmarks.noSearchResultsHint')}</NoriText>
+          <MaterialIcons name="search-off" size={48} color={drawer.themeColors.contentSubtle} />
+          <NoriText className="mt-4 text-base font-medium text-content-secondary">{t('bookmarks.noSearchResults')}</NoriText>
+          <NoriText className="mt-1 text-sm text-content-muted">{t('bookmarks.noSearchResultsHint')}</NoriText>
         </View>
       )}
     </GestureDetector>

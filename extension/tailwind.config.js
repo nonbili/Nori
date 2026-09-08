@@ -1,3 +1,5 @@
+const { colors } = require('../lib/design-tokens')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
@@ -9,7 +11,7 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
-      colors: { nori: { 50: '#ecfdf5', 500: '#10b981', 600: '#059669', 700: '#047857', 950: '#022c22' } },
+      colors,
       boxShadow: { panel: '0 18px 60px rgba(28,25,23,.12)' },
     },
   },

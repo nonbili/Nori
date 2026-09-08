@@ -1,3 +1,4 @@
+import type { AccentId } from 'nori-root/lib/accent'
 import type { BookmarkListData, BookmarkRecordData, RowJsonState } from 'nori/lib/nori-data'
 
 export type Theme = 'system' | 'light' | 'dark'
@@ -31,6 +32,7 @@ export interface ProfileData {
 
 export interface Preferences {
   theme: Theme
+  accent: AccentId
   /** null means follow the browser UI language. */
   language: string | null
   lastListId: string

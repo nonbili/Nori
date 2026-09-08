@@ -43,7 +43,7 @@ export const ListEditorSheet: React.FC = () => {
   return (
     <BaseCenterModal onClose={onClose}>
       <View className="p-6 gap-4">
-        <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">
+        <NoriText className="text-xl font-semibold text-content">
           {editor.id ? t('lists.rename') : t('lists.new')}
         </NoriText>
         <TextInput
@@ -52,14 +52,14 @@ export const ListEditorSheet: React.FC = () => {
           onChangeText={(value) => ui$.listEditor.set({ ...editor, name: value })}
           onSubmitEditing={saveList}
           placeholder={t('lists.name')}
-          placeholderTextColor={themeColors.placeholder}
-          className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-stone-900 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-50"
+          placeholderTextColor={themeColors.contentSubtle}
+          className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
         />
         <View className="flex-row justify-end gap-3">
-          <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-stone-200 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700">
-            <NoriText className="text-stone-900 dark:text-stone-100">{t('lists.cancel')}</NoriText>
+          <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-muted active:bg-muted-strong">
+            <NoriText className="text-content">{t('lists.cancel')}</NoriText>
           </Pressable>
-          <Pressable onPress={saveList} className="rounded-full px-5 py-3 bg-emerald-500 active:bg-emerald-600">
+          <Pressable onPress={saveList} className="rounded-full px-5 py-3 bg-accent-600 active:bg-accent-700">
             <NoriText className="font-medium text-white">{t('lists.save')}</NoriText>
           </Pressable>
         </View>

@@ -43,12 +43,12 @@ function TabButton({
     <Pressable
       onPress={onPress}
       className={`flex-1 items-center rounded-xl px-3 py-2 ${
-        active ? 'bg-stone-900 dark:bg-stone-100' : 'bg-transparent'
+        active ? 'bg-contrast' : 'bg-transparent'
       }`}
     >
       <NoriText
         className={`text-xs font-medium ${
-          active ? 'text-stone-50 dark:text-stone-900' : 'text-stone-600 dark:text-stone-400'
+          active ? 'text-content-inverse' : 'text-content-muted'
         }`}
       >
         {label}
@@ -77,7 +77,7 @@ function BookmarkRow({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 dark:border-stone-800 dark:bg-stone-900"
+      className="flex-row items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3"
     >
       <Favicon
         iconUrl={icon}
@@ -85,32 +85,32 @@ function BookmarkRow({
         slotSize={40}
         iconSize={24}
         fallbackIconSize={16}
-        wrapperClassName="items-center justify-center overflow-hidden rounded-xl bg-stone-100 dark:bg-stone-800"
+        wrapperClassName="items-center justify-center overflow-hidden rounded-xl bg-muted"
       />
       <View className="flex-1">
-        <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-100" numberOfLines={1}>
+        <NoriText className="text-sm font-medium text-content" numberOfLines={1}>
           {title}
         </NoriText>
         {listLabel ? (
           <View className="mt-1 flex-row items-center gap-2">
-            <View className="rounded-full bg-emerald-100 px-2 py-1 dark:bg-emerald-950/40">
-              <NoriText className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-800 dark:text-emerald-300">
+            <View className="rounded-full bg-accent-100 px-2 py-1 dark:bg-accent-950/40">
+              <NoriText className="text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-800 dark:text-accent-300">
                 {listLabel}
               </NoriText>
             </View>
-            <NoriText className="min-w-0 flex-1 text-xs text-stone-500" numberOfLines={1}>
+            <NoriText className="min-w-0 flex-1 text-xs text-content-subtle" numberOfLines={1}>
               {subtitle || getHostLabel(url)}
             </NoriText>
           </View>
         ) : (
-          <NoriText className="mt-1 text-xs text-stone-500" numberOfLines={1}>
+          <NoriText className="mt-1 text-xs text-content-subtle" numberOfLines={1}>
             {subtitle || getHostLabel(url)}
           </NoriText>
         )}
       </View>
       {trailing ? (
-        <View className="rounded-full bg-stone-800 px-2 py-1">
-          <NoriText className="text-[10px] font-medium uppercase tracking-[0.12em] text-stone-200 dark:text-stone-400">
+        <View className="rounded-full bg-muted px-2 py-1">
+          <NoriText className="text-[10px] font-medium uppercase tracking-[0.12em] text-content-muted">
             {trailing.label}
           </NoriText>
         </View>
@@ -122,8 +122,8 @@ function BookmarkRow({
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <View className="items-center px-6 py-10">
-      <NoriText className="text-base font-semibold text-stone-900 dark:text-stone-200">{title}</NoriText>
-      <NoriText className="mt-2 text-center text-sm leading-6 text-stone-500">{description}</NoriText>
+      <NoriText className="text-base font-semibold text-content">{title}</NoriText>
+      <NoriText className="mt-2 text-center text-sm leading-6 text-content-subtle">{description}</NoriText>
     </View>
   )
 }
@@ -157,7 +157,7 @@ export function RecentlyUsedSheet() {
       onClose={() => ui$.recentSheetOpen.set(false)}
     >
       <View className="flex-1 gap-4">
-        <View className="flex-row gap-1 rounded-2xl bg-stone-100 p-1 dark:bg-stone-900">
+        <View className="flex-row gap-1 rounded-2xl bg-muted p-1">
           <TabButton label={t('history.used')} active={tab === 'used'} onPress={() => setTab('used')} />
           <TabButton label={t('history.added')} active={tab === 'added'} onPress={() => setTab('added')} />
         </View>
@@ -170,9 +170,9 @@ export function RecentlyUsedSheet() {
                   <View className="flex-row items-center justify-end">
                     <Pressable
                       onPress={clearRecentHistory}
-                      className="rounded-lg px-2 py-1 active:bg-stone-200 dark:active:bg-stone-800"
+                      className="rounded-lg px-2 py-1 active:bg-muted"
                     >
-                      <NoriText className="text-xs font-medium text-stone-500">{t('history.clearAction')}</NoriText>
+                      <NoriText className="text-xs font-medium text-content-subtle">{t('history.clearAction')}</NoriText>
                     </Pressable>
                   </View>
                   <View className="gap-2.5">

@@ -15,7 +15,7 @@ const formatReleaseDate = (value: string) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date)
 }
 
-const cardCls = 'overflow-hidden rounded-[24px] border border-stone-200 bg-white/90 dark:border-stone-800 dark:bg-stone-900/70'
+const cardCls = 'overflow-hidden rounded-[24px] border border-line bg-surface/90 dark:bg-surface/70'
 
 export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVersion }) => {
   const { t } = useTranslation()
@@ -55,8 +55,8 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
   if (loading) {
     return (
       <View className={`${cardCls} flex-row items-center gap-3 px-4 py-6`}>
-        <ActivityIndicator color={themeColors.iconMuted} />
-        <NoriText className="text-sm text-stone-600 dark:text-stone-400">{t('settings.changelog.loading')}</NoriText>
+        <ActivityIndicator color={themeColors.contentMuted} />
+        <NoriText className="text-sm text-content-muted">{t('settings.changelog.loading')}</NoriText>
       </View>
     )
   }
@@ -65,15 +65,15 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
     return (
       <View className="gap-4">
         <View className={cardCls}>
-          <NoriText className="px-4 py-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{t('settings.changelog.error')}</NoriText>
+          <NoriText className="px-4 py-4 text-sm leading-6 text-content-muted">{t('settings.changelog.error')}</NoriText>
         </View>
         <View className="items-end">
           <Pressable
             onPress={() => setAttempt((value) => value + 1)}
             accessibilityRole="button"
-            className="rounded-full border border-stone-200 px-4 py-2 active:opacity-70 dark:border-stone-800"
+            className="rounded-full border border-line px-4 py-2 active:opacity-70"
           >
-            <NoriText className="text-sm font-medium text-stone-900 dark:text-stone-100">{t('settings.changelog.retry')}</NoriText>
+            <NoriText className="text-sm font-medium text-content">{t('settings.changelog.retry')}</NoriText>
           </Pressable>
         </View>
       </View>
@@ -83,7 +83,7 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
   if (!entries?.length) {
     return (
       <View className={cardCls}>
-        <NoriText className="px-4 py-4 text-sm text-stone-600 dark:text-stone-400">{t('settings.changelog.empty')}</NoriText>
+        <NoriText className="px-4 py-4 text-sm text-content-muted">{t('settings.changelog.empty')}</NoriText>
       </View>
     )
   }
@@ -101,33 +101,33 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
             className={`${cardCls} px-4 py-4 active:opacity-70`}
           >
             <View className="flex-row items-start gap-3">
-              <View className="h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
-                <MaterialIcons name="history" color={isCurrent ? themeColors.iconAccent : themeColors.iconMuted} size={18} />
+              <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+                <MaterialIcons name="history" color={isCurrent ? themeColors.accent : themeColors.contentMuted} size={18} />
               </View>
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
-                  <NoriText className="flex-1 font-medium text-stone-900 dark:text-stone-100">{entry.tag}</NoriText>
+                  <NoriText className="flex-1 font-medium text-content">{entry.tag}</NoriText>
                   {isCurrent ? (
-                    <NoriText className="rounded-full border border-stone-200 px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-stone-600 dark:border-stone-800 dark:text-stone-400">
+                    <NoriText className="rounded-full border border-line px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-content-muted">
                       {t('settings.changelog.current')}
                     </NoriText>
                   ) : null}
                 </View>
-                <NoriText className="mt-1 text-sm text-stone-600 dark:text-stone-400">{formatReleaseDate(entry.updatedAt)}</NoriText>
+                <NoriText className="mt-1 text-sm text-content-muted">{formatReleaseDate(entry.updatedAt)}</NoriText>
                 <View className="mt-3 gap-2">
                   {entry.items.length ? (
                     entry.items.map((item) => (
                       <View className="flex-row gap-2" key={`${entry.url}-${item}`}>
-                        <NoriText className="text-sm leading-5 text-stone-600 dark:text-stone-400">{'•'}</NoriText>
-                        <NoriText className="flex-1 text-sm leading-5 text-stone-800 dark:text-stone-200">{item}</NoriText>
+                        <NoriText className="text-sm leading-5 text-content-muted">{'•'}</NoriText>
+                        <NoriText className="flex-1 text-sm leading-5 text-content">{item}</NoriText>
                       </View>
                     ))
                   ) : (
-                    <NoriText className="text-sm leading-5 text-stone-600 dark:text-stone-400">{t('settings.changelog.noNotes')}</NoriText>
+                    <NoriText className="text-sm leading-5 text-content-muted">{t('settings.changelog.noNotes')}</NoriText>
                   )}
                 </View>
               </View>
-              <MaterialIcons name="open-in-new" color={themeColors.iconMuted} size={18} />
+              <MaterialIcons name="open-in-new" color={themeColors.contentMuted} size={18} />
             </View>
           </Pressable>
         )

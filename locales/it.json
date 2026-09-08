@@ -189,6 +189,8 @@
       "system": "Sistema",
       "light": "Chiaro",
       "dark": "Scuro",
+      "accent": "Colore d’accento",
+      "accentHint": "Scegli il colore di evidenziazione usato in tutta l’app.",
       "language": "Lingua",
       "languageHint": "Scegli una lingua oppure utilizza la lingua di sistema.",
       "languageSystem": "Sistema"

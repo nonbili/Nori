@@ -189,6 +189,8 @@
       "system": "System",
       "light": "Ljust",
       "dark": "Mörkt",
+      "accent": "Accentfärg",
+      "accentHint": "Välj markeringsfärgen som används i hela appen.",
       "language": "Språk",
       "languageHint": "Välj ett språk eller följ systemspråket.",
       "languageSystem": "System"

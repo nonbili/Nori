@@ -12,6 +12,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "tokens": "bun scripts/build-tokens.ts",
     "ios": "expo run:ios",
     "lint": "expo lint"
   },

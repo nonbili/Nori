@@ -88,18 +88,18 @@ export const BookmarkImportSheet: React.FC = () => {
     <Sheet visible={pendingImport != null} title={t('settings.transfer.import')} onClose={onClose}>
       {pendingImport ? (
         <View className="gap-5">
-          <View className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
+          <View className="rounded-2xl border border-line bg-surface p-4">
             <View className="flex-row items-center gap-3">
               {isParsing ? <ActivityIndicator size="small" /> : null}
-              <NoriText className="text-base font-semibold text-stone-900 dark:text-stone-50">{title}</NoriText>
+              <NoriText className="text-base font-semibold text-content">{title}</NoriText>
             </View>
             {pendingImport.name ? (
-              <NoriText className="mt-2 text-sm text-stone-500 dark:text-stone-400" numberOfLines={1}>
+              <NoriText className="mt-2 text-sm text-content-muted" numberOfLines={1}>
                 {pendingImport.name}
               </NoriText>
             ) : null}
             {isBackup && !isParsing ? (
-              <NoriText className="mt-2 text-sm text-rose-600 dark:text-rose-400">
+              <NoriText className="mt-2 text-sm text-danger-600 dark:text-danger-400">
                 {t(backup ? 'settings.transfer.restoreBody' : 'settings.transfer.restoreInvalid')}
               </NoriText>
             ) : null}
@@ -108,16 +108,16 @@ export const BookmarkImportSheet: React.FC = () => {
           <View className="flex-row justify-end gap-3">
             <Pressable
               onPress={onClose}
-              className="rounded-full bg-stone-200 px-5 py-3 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
+              className="rounded-full bg-muted px-5 py-3 active:bg-muted-strong"
             >
-              <NoriText className="font-medium text-stone-900 dark:text-stone-100">
+              <NoriText className="font-medium text-content">
                 {isParsing || canSubmit ? t('bookmarks.cancel') : t('settings.transfer.close')}
               </NoriText>
             </Pressable>
             {canSubmit ? (
               <Pressable
                 onPress={onImport}
-                className={`rounded-full px-5 py-3 ${isBackup ? 'bg-rose-600 active:bg-rose-700' : 'bg-emerald-500 active:bg-emerald-600'}`}
+                className={`rounded-full px-5 py-3 ${isBackup ? 'bg-danger-600 active:bg-danger-700' : 'bg-accent-600 active:bg-accent-700'}`}
               >
                 <NoriText className="font-medium text-white">
                   {isBackup ? t('settings.transfer.restoreAction') : t('settings.transfer.importAction')}

@@ -1,6 +1,6 @@
 import { Platform, Pressable, View } from 'react-native'
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
-import { useAppColorScheme } from '@/lib/theme'
+import { useThemeColors } from '@/lib/theme'
 import { noriTextStyle } from '@/components/common/NoriText'
 
 export interface ListChipProps {
@@ -21,15 +21,17 @@ export const ListChip: React.FC<ListChipProps> = ({
   index = 0,
   pageWidth = 0,
 }) => {
-  const colorScheme = useAppColorScheme()
-  const isDark = colorScheme === 'dark'
+  const themeColors = useThemeColors()
   const animatedPagerScrollX = Platform.OS === 'web' ? undefined : pagerScrollX
 
-  // Colors matching original: bg-stone-900 / dark:bg-stone-100 (active), border-stone-200 / dark:border-stone-800 (inactive)
-  const activeBg = isDark ? '#f5f5f4' : '#1c1917'
-  const inactiveBorder = isDark ? '#292524' : '#e7e5e4'
-  const activeText = isDark ? '#0c0a09' : '#fafaf9'
-  const inactiveText = isDark ? '#a8a29e' : '#57534e'
+  // The active pill is driven by a worklet, so these are the token equivalents
+  // of bg-accent-600 / border-line / text-white / text-content-muted. The chip
+  // row is the only always-visible chrome, so it is what makes the accent
+  // setting show up on the home screen.
+  const activeBg = themeColors.accentFill
+  const inactiveBorder = themeColors.line
+  const activeText = themeColors.onAccent
+  const inactiveText = themeColors.contentMuted
 
   // Drive the active indicator directly from scroll position if pagerScrollX is provided
   const activeStyle = useAnimatedStyle(() => {

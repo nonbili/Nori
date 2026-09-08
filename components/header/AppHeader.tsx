@@ -56,9 +56,9 @@ export const AppHeader: React.FC<{
           onPress={() => ui$.openBookmarksDrawer()}
           testID="drawer_button"
           accessibilityLabel={t('bookmarks.openDrawer')}
-          className="h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-stone-100 dark:border-stone-700 dark:bg-stone-800"
+          className="h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-muted"
         >
-          <MaterialIcons name="bookmarks" size={20} color={themeColors.icon} />
+          <MaterialIcons name="bookmarks" size={20} color={themeColors.content} />
         </Pressable>
       </View>
       <View className="flex-row gap-4">
@@ -66,17 +66,17 @@ export const AppHeader: React.FC<{
           onPress={() => ui$.recentSheetOpen.set(true)}
           testID="history_button"
           accessibilityLabel={t('history.openHistory')}
-          className="h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-stone-100 dark:border-stone-700 dark:bg-stone-800"
+          className="h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-muted"
         >
-          <MaterialIcons name="history" size={20} color={themeColors.icon} />
+          <MaterialIcons name="history" size={20} color={themeColors.content} />
         </Pressable>
         <NouMenu
           items={menuItems}
           testID="header_menu_button"
           accessibilityLabel={t('settings.moreOptions')}
           trigger={
-            <View className="h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-stone-100 dark:border-stone-700 dark:bg-stone-800">
-              <MaterialIcons name="more-vert" size={20} color={themeColors.icon} />
+            <View className="h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-muted">
+              <MaterialIcons name="more-vert" size={20} color={themeColors.content} />
             </View>
           }
         />

@@ -4,7 +4,7 @@ import { ScrollView, TextInput, Pressable, View } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
-import { useAppColorScheme, useThemeColors } from '@/lib/theme'
+import { useThemeColors } from '@/lib/theme'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
@@ -26,8 +26,6 @@ const getHostLabel = (url: string) => {
 export const BookmarkEditorSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
-  const colorScheme = useAppColorScheme()
-  const isDark = colorScheme === 'dark'
   const lists = useValue(lists$.lists)
   const editor = useValue(ui$.bookmarkEditor)
   const visibleLists = getVisibleLists(lists)
@@ -149,7 +147,7 @@ export const BookmarkEditorSheet: React.FC = () => {
   return (
     <BaseCenterModal onClose={onClose}>
       <View className="p-6 gap-4">
-        <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">
+        <NoriText className="text-xl font-semibold text-content">
           {editor.id ? t('bookmarks.edit') : t('bookmarks.add')}
         </NoriText>
         <View className="gap-3">
@@ -161,8 +159,8 @@ export const BookmarkEditorSheet: React.FC = () => {
             autoCorrect={false}
             keyboardType="url"
             placeholder={t('bookmarks.url')}
-            placeholderTextColor={themeColors.placeholder}
-            className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-stone-900 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-50"
+            placeholderTextColor={themeColors.contentSubtle}
+            className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
           />
           <TextInput
             value={editor.title}
@@ -170,8 +168,8 @@ export const BookmarkEditorSheet: React.FC = () => {
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={t('bookmarks.titleOptional')}
-            placeholderTextColor={themeColors.placeholder}
-            className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-stone-900 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-50"
+            placeholderTextColor={themeColors.contentSubtle}
+            className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
           />
         </View>
         <View className="gap-2">
@@ -181,10 +179,10 @@ export const BookmarkEditorSheet: React.FC = () => {
                 <Pressable
                   key={tag}
                   onPress={() => removeTag(tag)}
-                  className="h-[32px] flex-row items-center gap-1 rounded-full bg-stone-200 px-3 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700"
+                  className="h-[32px] flex-row items-center gap-1 rounded-full bg-muted px-3 active:bg-muted-strong"
                 >
-                  <NoriText className="text-sm font-medium text-stone-700 dark:text-stone-300">{tag}</NoriText>
-                  <MaterialIcons name="close" size={14} color={themeColors.iconMuted} />
+                  <NoriText className="text-sm font-medium text-content-secondary">{tag}</NoriText>
+                  <MaterialIcons name="close" size={14} color={themeColors.contentMuted} />
                 </Pressable>
               ))}
             </View>
@@ -197,8 +195,8 @@ export const BookmarkEditorSheet: React.FC = () => {
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={t('bookmarks.addTag')}
-            placeholderTextColor={themeColors.placeholder}
-            className="rounded-2xl border border-stone-200 bg-white px-4 py-4 text-stone-900 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-50"
+            placeholderTextColor={themeColors.contentSubtle}
+            className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
           />
           {tagSuggestions.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2" keyboardShouldPersistTaps="handled">
@@ -209,9 +207,9 @@ export const BookmarkEditorSheet: React.FC = () => {
                     addTag(tag)
                     setTagInput('')
                   }}
-                  className="h-[28px] items-center justify-center rounded-full border border-stone-200 px-3 active:bg-stone-100 dark:border-stone-800 dark:active:bg-stone-800"
+                  className="h-[28px] items-center justify-center rounded-full border border-line px-3 active:bg-muted"
                 >
-                  <NoriText className="text-sm text-stone-500 dark:text-stone-400">{tag}</NoriText>
+                  <NoriText className="text-sm text-content-muted">{tag}</NoriText>
                 </Pressable>
               ))}
             </ScrollView>
@@ -243,14 +241,14 @@ export const BookmarkEditorSheet: React.FC = () => {
                   listItemXRef.current[list.id] = event.nativeEvent.layout.x
                 }}
                 style={{
-                  backgroundColor: isActive ? (isDark ? '#f5f5f4' : '#1c1917') : 'transparent',
+                  backgroundColor: isActive ? themeColors.contrast : 'transparent',
                   borderWidth: isActive ? 0 : 1,
-                  borderColor: isDark ? '#292524' : '#e7e5e4',
+                  borderColor: themeColors.line,
                 }}
               >
                 <NoriText
                   className="text-sm font-medium"
-                  style={{ color: isActive ? (isDark ? '#0c0a09' : '#fafaf9') : (isDark ? '#a8a29e' : '#57534e') }}
+                  style={{ color: isActive ? themeColors.contentInverse : themeColors.contentMuted }}
                 >
                   {list.name}
                 </NoriText>
@@ -259,10 +257,10 @@ export const BookmarkEditorSheet: React.FC = () => {
           })}
         </ScrollView>
         <View className="flex-row justify-end gap-3">
-          <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-stone-200 active:bg-stone-300 dark:bg-stone-800 dark:active:bg-stone-700">
-            <NoriText className="text-stone-900 dark:text-stone-100">{t('bookmarks.cancel')}</NoriText>
+          <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-muted active:bg-muted-strong">
+            <NoriText className="text-content">{t('bookmarks.cancel')}</NoriText>
           </Pressable>
-          <Pressable onPress={() => void saveBookmark()} className="rounded-full px-5 py-3 bg-emerald-500 active:bg-emerald-600">
+          <Pressable onPress={() => void saveBookmark()} className="rounded-full px-5 py-3 bg-accent-600 active:bg-accent-700">
             <NoriText className="font-medium text-white">{metadataLoading ? t('bookmarks.saving') : t('bookmarks.save')}</NoriText>
           </Pressable>
         </View>

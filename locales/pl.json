@@ -189,6 +189,8 @@
       "system": "Systemowy",
       "light": "Jasny",
       "dark": "Ciemny",
+      "accent": "Kolor akcentu",
+      "accentHint": "Wybierz kolor wyróżnienia używany w całej aplikacji.",
       "language": "Język",
       "languageHint": "Wybierz język lub użyj języka systemowego.",
       "languageSystem": "Systemowy"

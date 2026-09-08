@@ -1,3 +1,10 @@
+/* nativewind-dark-mode.css first: it makes NativeWind recognise the
+   `.dark:root` block below. Then tokens.css, ahead of the @tailwind
+   directives, since Tailwind folds :root into its own reset if they land in
+   the base layer and drops .dark:root entirely. */
+@import './nativewind-dark-mode.css';
+@import '../lib/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

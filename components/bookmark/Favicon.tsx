@@ -23,7 +23,7 @@ export const Favicon: React.FC<{
   const activeUrl = candidates.find((candidate) => !failedUrls.has(candidate))
   const className = showFavicon === false
     ? 'items-center justify-center overflow-hidden'
-    : wrapperClassName || 'items-center justify-center overflow-hidden rounded-sm bg-stone-100 dark:bg-stone-800'
+    : wrapperClassName || 'items-center justify-center overflow-hidden rounded-sm bg-muted'
 
   return (
     <View
@@ -50,7 +50,7 @@ export const Favicon: React.FC<{
           }}
         />
       ) : (
-        <MaterialIcons name="language" color={themeColors.iconSubtle} size={fallbackIconSize} />
+        <MaterialIcons name="language" color={themeColors.contentSubtle} size={fallbackIconSize} />
       )}
     </View>
   )

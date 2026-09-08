@@ -12,7 +12,7 @@ import { lists$, type BookmarkList } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { showSnackbar, ui$ } from '@/states/ui'
 import { getInactiveLists, getVisibleLists, isDeleted } from '@/lib/nori-data'
-import { useAppColorScheme, useThemeColors } from '@/lib/theme'
+import { useThemeColors } from '@/lib/theme'
 import { ManageRow, SectionLabel } from '@/components/common/Common'
 import { Sheet } from '@/components/modal/BaseModal'
 import { SortableList } from '@/components/common/SortableList'
@@ -22,8 +22,6 @@ export const ManageListsSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const insets = useSafeAreaInsets()
-  const colorScheme = useAppColorScheme()
-  const isDark = colorScheme === 'dark'
   const lists = useValue(lists$.lists)
   const visible = useValue(ui$.listManagerOpen)
   const visibleLists = getVisibleLists(lists)
@@ -73,11 +71,11 @@ export const ManageListsSheet: React.FC = () => {
       headerLeft={
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
-          className="rounded-full bg-stone-900 px-3 py-1.5 active:opacity-70 dark:bg-stone-100"
+          className="rounded-full bg-contrast px-3 py-1.5 active:opacity-70"
         >
           <View className="flex-row items-center gap-1.5">
-            <MaterialIcons name="add" color={isDark ? '#0c0a09' : '#fafaf9'} size={16} />
-            <NoriText className="text-xs font-bold text-stone-50 dark:text-stone-950">{t('lists.new')}</NoriText>
+            <MaterialIcons name="add" color={themeColors.contentInverse} size={16} />
+            <NoriText className="text-xs font-bold text-content-inverse">{t('lists.new')}</NoriText>
           </View>
         </Pressable>
       }
@@ -105,7 +103,7 @@ export const ManageListsSheet: React.FC = () => {
                 left={
                   <GestureDetector gesture={dragGesture}>
                     <View className="mr-1 items-center justify-center p-2">
-                      <MaterialIcons name="drag-handle" size={20} color={themeColors.iconMuted} />
+                      <MaterialIcons name="drag-handle" size={20} color={themeColors.contentMuted} />
                     </View>
                   </GestureDetector>
                 }
@@ -129,8 +127,8 @@ export const ManageListsSheet: React.FC = () => {
                       },
                     ]}
                     trigger={
-                      <View className="rounded-full bg-stone-200 p-2 dark:bg-stone-800">
-                        <MaterialIcons name="more-vert" size={20} color={themeColors.iconMuted} />
+                      <View className="rounded-full bg-muted p-2">
+                        <MaterialIcons name="more-vert" size={20} color={themeColors.contentMuted} />
                       </View>
                     }
                   />
@@ -168,8 +166,8 @@ export const ManageListsSheet: React.FC = () => {
                         },
                       ]}
                       trigger={
-                        <View className="rounded-full bg-stone-200 p-2 dark:bg-stone-800">
-                          <MaterialIcons name="more-vert" size={20} color={themeColors.iconMuted} />
+                        <View className="rounded-full bg-muted p-2">
+                          <MaterialIcons name="more-vert" size={20} color={themeColors.contentMuted} />
                         </View>
                       }
                     />

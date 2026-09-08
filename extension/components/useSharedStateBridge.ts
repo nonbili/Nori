@@ -6,6 +6,7 @@ import { history$ } from 'nori-root/states/history'
 import { lists$ } from 'nori-root/states/lists'
 import { settings$ } from 'nori-root/states/settings'
 import { syncMeta$ } from 'nori-root/states/sync-meta'
+import { normalizeAccent } from 'nori-root/lib/accent'
 import { request } from '../lib/client'
 import type { AppSnapshot, HistoryItem, Preferences } from '../lib/model'
 
@@ -17,6 +18,7 @@ const toHistoryItem = (item: (typeof history$.openedBookmarks)['get'] extends ()
 function currentPayload() {
   const preferences: Preferences = {
     theme: settings$.theme.peek() ?? 'system',
+    accent: normalizeAccent(settings$.accent.peek()),
     language: settings$.language.peek(),
     lastListId: settings$.lastSelectedListId.peek(),
     showFavicons: settings$.showFavicon.peek(),
@@ -76,6 +78,7 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
         snapshot.profile.history.map((item) => ({ ...item, openedAt: Date.parse(item.openedAt) || Date.now() })),
       )
       settings$.theme.set(snapshot.preferences.theme === 'system' ? null : snapshot.preferences.theme)
+      settings$.accent.set(normalizeAccent(snapshot.preferences.accent))
       settings$.language.set(snapshot.preferences.language as any)
       settings$.lastSelectedListId.set(snapshot.preferences.lastListId)
       settings$.showFavicon.set(snapshot.preferences.showFavicons)

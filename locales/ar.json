@@ -189,6 +189,8 @@
       "system": "النظام",
       "light": "فاتح",
       "dark": "داكن",
+      "accent": "لون التمييز",
+      "accentHint": "اختر لون التمييز المستخدم في جميع أنحاء Nori.",
       "language": "اللغة",
       "languageHint": "اختر لغة أو اتبع لغة النظام.",
       "languageSystem": "النظام"

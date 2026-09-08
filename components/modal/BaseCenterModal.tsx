@@ -44,7 +44,7 @@ export const BaseCenterModal: React.FC<{
   const topAligned = align === 'top' || (align === 'keyboard' && keyboardVisible)
 
   const innerCls = clsx(
-    'w-[30rem] max-w-[calc(100%-2rem)] rounded-2xl bg-stone-50 dark:bg-stone-950 lg:w-[40rem] xl:w-[50rem]',
+    'w-[30rem] max-w-[calc(100%-2rem)] rounded-2xl bg-canvas lg:w-[40rem] xl:w-[50rem]',
     containerClassName,
   )
 

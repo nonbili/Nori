@@ -108,7 +108,7 @@ export const NouMenu: React.FC<{
                 width: menuWidth,
                 maxHeight: menuHeight,
                 backgroundColor: themeColors.surface,
-                borderColor: themeColors.surfaceBorder,
+                borderColor: themeColors.line,
               }}
             >
               <ScrollView bounces={false} showsVerticalScrollIndicator={items.length * itemHeight + menuPadding > menuHeight}>
@@ -122,7 +122,7 @@ export const NouMenu: React.FC<{
                     style={{
                       minHeight: itemHeight,
                       borderTopWidth: item.footer ? 1 : 0,
-                      borderTopColor: themeColors.surfaceBorder,
+                      borderTopColor: themeColors.line,
                     }}
                     onPress={() => {
                       pendingItem.current = item
@@ -134,16 +134,16 @@ export const NouMenu: React.FC<{
                         <MaterialIcons
                           name={item.icon}
                           size={18}
-                          color={themeColors.icon}
+                          color={themeColors.content}
                         />
                       ) : null}
                     </View>
-                    <NoriText className="flex-1" style={{ color: themeColors.textPrimary }}>
+                    <NoriText className="flex-1" style={{ color: themeColors.content }}>
                       {item.label}
                     </NoriText>
                     {item.selected ? (
                       <View accessible={false} importantForAccessibility="no-hide-descendants">
-                        <MaterialIcons name="check" size={18} color={themeColors.iconAccentStrong} />
+                        <MaterialIcons name="check" size={18} color={themeColors.accent} />
                       </View>
                     ) : null}
                   </NativePressable>

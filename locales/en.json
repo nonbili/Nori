@@ -190,6 +190,8 @@
       "system": "System",
       "light": "Light",
       "dark": "Dark",
+      "accent": "Accent color",
+      "accentHint": "Pick the highlight color used across Nori.",
       "language": "Language",
       "languageHint": "Choose a language or follow system language.",
       "languageSystem": "System"

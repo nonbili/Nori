@@ -5,6 +5,11 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "paths": {
       "@/*": ["./*"],
+      // The extension and desktop shells import shared code under their own
+      // aliases; mapping them here keeps a root-level tsc from reporting every
+      // shared import as unresolved.
+      "nori/*": ["./*"],
+      "nori-root/*": ["./*"],
       "main/*": ["./desktop/src/main/*"]
     }
   },

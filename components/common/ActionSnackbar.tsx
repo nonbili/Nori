@@ -10,8 +10,8 @@ const SNACKBAR_TOOLBAR_GAP = 8
 
 function SnackbarRow({ snackbar }: { snackbar: SnackbarState }) {
   return (
-    <View className="mt-2 w-full max-w-xl flex-row items-center rounded-2xl bg-stone-900 px-4 py-3 shadow-lg dark:bg-stone-100">
-      <NoriText className="flex-1 text-sm font-medium text-stone-50 dark:text-stone-900">{snackbar.message}</NoriText>
+    <View className="mt-2 w-full max-w-xl flex-row items-center rounded-2xl bg-contrast px-4 py-3 shadow-lg">
+      <NoriText className="flex-1 text-sm font-medium text-content-inverse">{snackbar.message}</NoriText>
       {snackbar.actionLabel && snackbar.onAction ? (
         <Pressable
           accessibilityRole="button"
@@ -22,7 +22,7 @@ function SnackbarRow({ snackbar }: { snackbar: SnackbarState }) {
           }}
           className="ml-4 rounded-lg px-2 py-1 active:opacity-60"
         >
-          <NoriText className="text-sm font-bold text-emerald-300 dark:text-emerald-700">{snackbar.actionLabel}</NoriText>
+          <NoriText className="text-sm font-bold text-accent-300 dark:text-accent-700">{snackbar.actionLabel}</NoriText>
         </Pressable>
       ) : null}
     </View>

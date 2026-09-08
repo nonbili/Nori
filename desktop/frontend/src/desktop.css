@@ -1,7 +1,7 @@
 /* The window itself is the app frame, so the shell fills it edge to edge
    instead of floating in a page like the extension's standalone tab. */
 body {
-  @apply h-screen overflow-hidden bg-stone-50 dark:bg-stone-950;
+  @apply h-screen overflow-hidden bg-canvas;
 }
 #root {
   @apply h-full;

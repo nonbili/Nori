@@ -189,6 +189,8 @@
       "system": "Système",
       "light": "Clair",
       "dark": "Sombre",
+      "accent": "Couleur d'accent",
+      "accentHint": "Choisissez la couleur de mise en avant utilisée dans toute l'application.",
       "language": "Langue",
       "languageHint": "Choisissez une langue ou suivez la langue du système.",
       "languageSystem": "Système"

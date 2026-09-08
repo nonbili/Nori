@@ -7,14 +7,15 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import { useValue } from '@legendapp/state/react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useLocales } from 'expo-localization'
 import i18n from 'i18next'
-import { colorScheme as nativeWindColorScheme } from 'nativewind'
+import { colorScheme as nativeWindColorScheme, vars } from 'nativewind'
 import { onReceiveAuthUrl } from '@/lib/supabase/auth'
 import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
 import { purgeExpiredTombstones } from '@/lib/tombstone-purge'
 import { useAppColorScheme } from '@/lib/theme'
+import { accentVariables, applyAccentToDocument, normalizeAccent } from '@/lib/accent'
 import { auth$, bootstrapAuth } from '@/states/auth'
 import { settings$ } from '@/states/settings'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
@@ -28,10 +29,21 @@ function LayoutContent() {
   const userId = useValue(auth$.userId)
   const plan = useValue(auth$.plan)
   const theme = useValue(settings$.theme)
+  const accent = useValue(settings$.accent)
   const selectedLanguage = useValue(settings$.language)
   const locales = useLocales()
 
   const colorScheme = theme || appColorScheme
+  // Overrides the --nori-accent-* defaults from lib/tokens.css for the native
+  // tree, where NativeWind propagates them through React context so a portalled
+  // sheet still sees the user's accent.
+  const accentStyle = useMemo(() => vars(accentVariables(normalizeAccent(accent))), [accent])
+
+  // On web the cascade resolves them instead, and react-native-web renders
+  // modals outside this View, so the root element has to carry them too.
+  useEffect(() => {
+    applyAccentToDocument(normalizeAccent(accent))
+  }, [accent])
 
   useEffect(() => {
     const systemLanguage = resolveI18nLanguageFromExpoLocale(locales[0]) || 'en'
@@ -82,7 +94,7 @@ function LayoutContent() {
   }, [plan, userId])
 
   return (
-    <View className="flex-1 bg-stone-50 dark:bg-stone-950">
+    <View className="flex-1 bg-canvas" style={accentStyle}>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <Slot />
       <WebViewTitleResolver />

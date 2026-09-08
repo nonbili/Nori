@@ -1,0 +1,11 @@
+/* NativeWind learns `darkMode: "class"` from a flag its preset injects with
+   addBase, i.e. at @tailwind base. Its CSS-to-RN pass reads rules in order and
+   only recognises `.dark:root` once that flag has been seen, so the dark half
+   of lib/tokens.css - which has to sit ahead of the @tailwind directives - was
+   being dropped on native: structural tokens stayed light in dark mode.
+
+   @import is hoisted above everything else, so the flag only lands early
+   enough from its own file imported first. Harmless on web, where the browser
+   resolves `.dark:root` itself and unknown at-rules are ignored. */
+
+@cssInterop set darkMode class dark;

@@ -1,6 +1,7 @@
 import { browser } from 'wxt/browser'
 import { createProfile } from './domain'
 import { normalizeLanguage } from './language'
+import { DEFAULT_ACCENT, normalizeAccent } from 'nori-root/lib/accent'
 import type { StoredState } from './model'
 
 const KEY = 'nori-state'
@@ -11,6 +12,7 @@ export const defaultState = (): StoredState => ({
   profiles: { anonymous: createProfile() },
   preferences: {
     theme: 'system',
+    accent: DEFAULT_ACCENT,
     language: null,
     lastListId: 'builtin-later',
     showFavicons: true,
@@ -23,7 +25,11 @@ export async function loadState(): Promise<StoredState> {
   if (!stored || stored.version !== 1 || !stored.profiles) return defaultState()
   if (!stored.profiles[stored.activeProfileId]) stored.activeProfileId = Object.keys(stored.profiles)[0] || 'anonymous'
   if (!stored.profiles.anonymous) stored.profiles.anonymous = createProfile()
-  if (stored.preferences) stored.preferences.language = normalizeLanguage(stored.preferences.language)
+  if (stored.preferences) {
+    stored.preferences.language = normalizeLanguage(stored.preferences.language)
+    // Added after v1 shipped, so state persisted before then has no accent.
+    stored.preferences.accent = normalizeAccent(stored.preferences.accent)
+  }
   return stored
 }
 

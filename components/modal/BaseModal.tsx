@@ -27,20 +27,20 @@ export const FullScreenModal: React.FC<{
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View
-          className="flex-1 bg-stone-50 px-6 dark:bg-stone-950"
+          className="flex-1 bg-canvas px-6"
           style={{ paddingTop: Math.max(insets.top, 16) }}
         >
           {showHeader ? (
             <View className="mb-6 flex-row items-center justify-between">
-              <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">{title}</NoriText>
+              <NoriText className="text-xl font-semibold text-content">{title}</NoriText>
               {showCloseButton ? (
                 <Pressable
                   onPress={onClose}
                   accessibilityLabel={t('common.close')}
                   accessibilityRole="button"
-                  className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
+                  className="rounded-full bg-muted p-2 active:bg-muted-strong"
                 >
-                  <MaterialIcons name="close" color={themeColors.iconMuted} size={20} />
+                  <MaterialIcons name="close" color={themeColors.contentMuted} size={20} />
                 </Pressable>
               ) : (
                 <View className="h-10 w-10" />
@@ -204,7 +204,7 @@ export const Sheet: React.FC<{
             <Animated.View className="absolute inset-0 bg-black/60" style={backdropAnimatedStyle} />
             <Pressable className="flex-1" onPress={closeWithAnimation} testID="sheet_backdrop" accessibilityLabel={t('common.dismiss')} />
             <Animated.View
-              className="rounded-t-[32px] border-t border-stone-200 bg-stone-50 px-6 dark:border-stone-800 dark:bg-stone-950"
+              className="rounded-t-[32px] border-t border-line bg-canvas px-6"
               accessibilityViewIsModal={true}
               style={[
                 {
@@ -218,12 +218,12 @@ export const Sheet: React.FC<{
             <GestureDetector gesture={dragGesture}>
               <View collapsable={false}>
                 <View className="items-center py-4">
-                  <View className="h-1.5 w-12 rounded-full bg-stone-200 dark:bg-stone-800" />
+                  <View className="h-1.5 w-12 rounded-full bg-muted" />
                 </View>
                 {showHeader ? (
                   <View className="mb-6 flex-row items-center justify-between">
                     <View className="flex-row items-center gap-3">
-                      {title ? <NoriText className="text-xl font-semibold text-stone-900 dark:text-stone-50">{title}</NoriText> : null}
+                      {title ? <NoriText className="text-xl font-semibold text-content">{title}</NoriText> : null}
                       {headerLeft}
                     </View>
                     <View className="flex-row items-center gap-2">
@@ -233,9 +233,9 @@ export const Sheet: React.FC<{
                           onPress={closeWithAnimation}
                           accessibilityLabel={t('common.close')}
                           accessibilityRole="button"
-                          className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
+                          className="rounded-full bg-muted p-2 active:bg-muted-strong"
                         >
-                          <MaterialIcons name="close" color={themeColors.iconMuted} size={20} />
+                          <MaterialIcons name="close" color={themeColors.contentMuted} size={20} />
                         </Pressable>
                       ) : null}
                     </View>

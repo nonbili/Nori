@@ -41,7 +41,7 @@ export function NoriHome({
   )
 
   return (
-    <View className="flex-1 bg-stone-50 dark:bg-stone-950">
+    <View className="flex-1 bg-canvas">
       {renderMain ? renderMain(main) : main}
 
       <AllBookmarksDrawer />

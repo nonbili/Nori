@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { colorScheme } from 'nativewind'
+import { applyAccentToDocument, normalizeAccent } from 'nori-root/lib/accent'
 import { setDynamicLoadingEnabled } from '@react-native-vector-icons/common'
 import { browser } from 'wxt/browser'
 import { useTranslation } from 'react-i18next'
@@ -57,6 +58,12 @@ function ReadyApp({
     )
   }, [state.snapshot.preferences.theme])
 
+  // On the root element rather than a React subtree so the plain-DOM parts of
+  // the popup (app.css) and the react-native-web tree both inherit them.
+  useEffect(() => {
+    applyAccentToDocument(normalizeAccent(state.snapshot.preferences.accent))
+  }, [state.snapshot.preferences.accent])
+
   return (
     <AppProvider value={state}>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -90,7 +97,7 @@ function ReadyApp({
 export function NativeApp({ mode }: { mode: 'popup' | 'tab' }) {
   const state = useSnapshot()
   if (!state.snapshot) {
-    return <View className="flex-1 bg-stone-50 dark:bg-stone-950" />
+    return <View className="flex-1 bg-canvas" />
   }
   return <ReadyApp state={{ ...state, snapshot: state.snapshot }} mode={mode} />
 }

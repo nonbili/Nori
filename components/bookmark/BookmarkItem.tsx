@@ -44,14 +44,14 @@ const AnchorMenu: React.FC<{
       <View className="flex-1" pointerEvents="box-none">
         <Pressable className="absolute inset-0" onPress={onClose} />
         <View
-          className="absolute rounded-xl py-2 border border-stone-300 dark:border-stone-700"
+          className="absolute rounded-xl py-2 border border-line-strong"
           accessibilityViewIsModal={true}
           style={{
             top,
             left,
             width: menuWidth,
             backgroundColor: themeColors.surface,
-            borderColor: themeColors.surfaceBorder,
+            borderColor: themeColors.line,
             shadowColor: '#000',
             shadowOpacity: 0.18,
             shadowRadius: 14,
@@ -66,16 +66,16 @@ const AnchorMenu: React.FC<{
               accessibilityRole="menuitem"
               className="px-4 flex-row items-center gap-3"
               style={{ minHeight: 44 }}
-              android_ripple={{ color: themeColors.surfaceBorder }}
+              android_ripple={{ color: themeColors.line }}
               onPress={() => {
                 onClose()
                 action.handler?.()
               }}
             >
               <View accessible={false} importantForAccessibility="no-hide-descendants">
-                {action.icon ? <MaterialIcons name={action.icon} size={18} color={themeColors.iconMuted} /> : null}
+                {action.icon ? <MaterialIcons name={action.icon} size={18} color={themeColors.contentMuted} /> : null}
               </View>
-              <NoriText className="flex-1 text-sm" style={{ color: themeColors.textPrimary }}>
+              <NoriText className="flex-1 text-sm" style={{ color: themeColors.content }}>
                 {action.label}
               </NoriText>
             </Pressable>
@@ -124,8 +124,8 @@ export const BookmarkTile = memo(({
   }, [])
 
   const titleClassName = selected
-    ? 'text-emerald-900 dark:text-emerald-100'
-    : 'text-stone-800 dark:text-stone-50'
+    ? 'text-accent-900 dark:text-accent-100'
+    : 'text-content'
 
   const handleLongPress = () => {
     tileRef.current?.measureInWindow((x, y, width, height) => {
@@ -168,10 +168,10 @@ export const BookmarkTile = memo(({
         <Pressable
           onPress={editMode ? onEnable || onSelect || undefined : onOpen}
           onLongPress={!editMode ? handleLongPress : undefined}
-          className={`flex-row items-center gap-2 overflow-hidden rounded-full border px-3 py-2.5 active:bg-stone-100 dark:active:bg-stone-800 ${
+          className={`flex-row items-center gap-2 overflow-hidden rounded-full border px-3 py-2.5 active:bg-muted ${
             selected
-              ? 'border-emerald-500 bg-emerald-100/70 dark:bg-emerald-950/20'
-              : 'border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900'
+              ? 'border-accent-500 bg-accent-100/70 dark:bg-accent-950/20'
+              : 'border-line bg-surface'
           } ${isDragging ? 'opacity-50' : ''}`}
         >
           <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={24} iconSize={20} />

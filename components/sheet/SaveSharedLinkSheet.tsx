@@ -105,14 +105,14 @@ export const SaveSharedLinkSheet: React.FC = () => {
             {pendingShare.items.map((item) => (
               <View
                 key={item.url}
-                className="rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900"
+                className="rounded-2xl border border-line bg-surface p-4"
               >
-                <NoriText className="text-base font-semibold text-stone-900 dark:text-stone-50">{item.title}</NoriText>
-                <NoriText className="mt-2 text-sm text-stone-500 dark:text-stone-400" numberOfLines={2}>{item.url}</NoriText>
+                <NoriText className="text-base font-semibold text-content">{item.title}</NoriText>
+                <NoriText className="mt-2 text-sm text-content-muted" numberOfLines={2}>{item.url}</NoriText>
               </View>
             ))}
           </View>
-          <NoriText className="text-sm text-stone-600 dark:text-stone-400">
+          <NoriText className="text-sm text-content-muted">
             {pendingShare.items.length > 1
               ? t('sharing.pickListMultiple', { count: pendingShare.items.length })
               : t('sharing.pickList')}

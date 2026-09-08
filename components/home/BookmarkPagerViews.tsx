@@ -67,10 +67,10 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
       {!pager.bookmarkEditMode ? (
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
-          className="h-[32px] flex-row items-center gap-1.5 rounded-full border border-dashed border-stone-300 bg-transparent px-4 dark:border-stone-700"
+          className="h-[32px] flex-row items-center gap-1.5 rounded-full border border-dashed border-line-strong bg-transparent px-4"
         >
-          <MaterialIcons name="add" size={16} color={pager.themeColors.iconSubtle} />
-          <NoriText className="text-sm font-medium text-stone-600 dark:text-stone-300">
+          <MaterialIcons name="add" size={16} color={pager.themeColors.contentSubtle} />
+          <NoriText className="text-sm font-medium text-content-secondary">
             {t('lists.new')}
           </NoriText>
         </Pressable>
@@ -95,8 +95,8 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
           },
         ]}
         trigger={(
-          <View className="h-[32px] w-[32px] items-center justify-center rounded-full border border-stone-300 bg-stone-100 active:bg-stone-200 dark:border-stone-700 dark:bg-stone-800 dark:active:bg-stone-700">
-            <MaterialIcons name="list" size={18} color={pager.themeColors.icon} />
+          <View className="h-[32px] w-[32px] items-center justify-center rounded-full border border-line-strong bg-muted active:bg-muted-strong">
+            <MaterialIcons name="list" size={18} color={pager.themeColors.content} />
           </View>
         )}
       />

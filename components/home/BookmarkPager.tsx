@@ -370,8 +370,8 @@ export const BookmarkPager: React.FC<{
   }, [t])
 
   const pagerActions = {
-    iconSubtleColor: themeColors.iconSubtle,
-    iconAccentColor: themeColors.iconAccent,
+    iconSubtleColor: themeColors.contentSubtle,
+    iconAccentColor: themeColors.accent,
     themeColors,
     scrollViewRef,
     onOpenBookmark: handleOpenBookmark,

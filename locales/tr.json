@@ -189,6 +189,8 @@
       "system": "Sistem",
       "light": "Açık",
       "dark": "Karanlık",
+      "accent": "Vurgu rengi",
+      "accentHint": "Uygulama genelinde kullanılan vurgu rengini seçin.",
       "language": "Dil",
       "languageHint": "Bir dil seçin veya sistem dilini kullanın.",
       "languageSystem": "Sistem"

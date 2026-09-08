@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { ACCENT_IDS, accentChannels, type AccentId } from 'nori-root/lib/accent'
 import { Icon, type IconName } from './Icon'
 
 export const SectionCard = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -11,7 +12,7 @@ export const SectionCard = ({ title, children }: { title: string; children: Reac
 export const SectionLabel = ({ title, subtitle }: { title: string; subtitle?: string }) => (
   <div className="mb-3 grid justify-items-center gap-1">
     <span className="section-label">{title}</span>
-    {subtitle ? <span className="text-center text-xs text-stone-600 dark:text-stone-400">{subtitle}</span> : null}
+    {subtitle ? <span className="text-center text-xs text-content-muted">{subtitle}</span> : null}
   </div>
 )
 
@@ -37,9 +38,7 @@ export const SettingRow = ({
       </span>
       <span className="min-w-0 flex-1 text-left">
         <span className="block font-medium">{title}</span>
-        {detail ? (
-          <span className="mt-1 block text-sm leading-5 text-stone-600 dark:text-stone-400">{detail}</span>
-        ) : null}
+        {detail ? <span className="mt-1 block text-sm leading-5 text-content-muted">{detail}</span> : null}
       </span>
       {trailing || (onClick ? <Icon name="chevronRight" size={18} /> : null)}
     </>
@@ -103,8 +102,37 @@ export const ManageRow = ({
       <span className="block truncate text-sm font-medium" title={title}>
         {title}
       </span>
-      {subtitle ? <span className="mt-0.5 block truncate text-xs text-stone-500">{subtitle}</span> : null}
+      {subtitle ? <span className="mt-0.5 block truncate text-xs text-content-subtle">{subtitle}</span> : null}
     </button>
     {actions ? <div className="flex shrink-0 items-center gap-1.5">{actions}</div> : null}
+  </div>
+)
+
+/**
+ * Each swatch carries both scheme's channels as custom properties and lets CSS
+ * pick between them (see .accent-swatch in app.css), so the row repaints on a
+ * light/dark flip without re-rendering.
+ */
+export const AccentSwatches = ({ value, onChange }: { value: AccentId; onChange: (accent: AccentId) => void }) => (
+  <div className="flex flex-wrap justify-end gap-1.5" role="radiogroup">
+    {ACCENT_IDS.map((accent) => (
+      <button
+        key={accent}
+        type="button"
+        role="radio"
+        aria-checked={accent === value}
+        aria-label={accent}
+        onClick={() => onChange(accent)}
+        className={`accent-swatch ${accent === value ? 'active' : ''}`}
+        style={
+          {
+            '--accent-swatch-light': accentChannels(accent, 600),
+            '--accent-swatch-dark': accentChannels(accent, 400),
+          } as CSSProperties
+        }
+      >
+        <span>{accent === value ? <Icon name="check" size={14} /> : null}</span>
+      </button>
+    ))}
   </div>
 )

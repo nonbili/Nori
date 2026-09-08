@@ -5,12 +5,13 @@ import { useApp } from '../AppContext'
 import { Icon } from '../Icon'
 import { Menu } from '../Menu'
 import { Sheet } from '../Overlays'
-import { SectionCard, Segmented, SettingRow, Toggle } from '../Rows'
+import { AccentSwatches, SectionCard, Segmented, SettingRow, Toggle } from '../Rows'
 import { showSnackbar } from 'nori-root/states/ui'
 import { languageNativeNames } from 'nori/lib/language'
 import { DONATE_LINKS, PLAN_URL, RELEASES_URL, REPO_URL } from 'nori/lib/product-links'
 import { languages, systemLanguage } from '../../lib/language'
 import { exportBookmarks, readImportFile, type TransferFormat } from '../../lib/transfer'
+import { normalizeAccent } from 'nori-root/lib/accent'
 import type { Theme } from '../../lib/model'
 
 const openTab = (url: string) => void browser.tabs.create({ url })
@@ -25,7 +26,7 @@ function SyncSection() {
     return (
       <SectionCard title={t('settings.sync.label')}>
         <div className="px-5 py-5">
-          <p className="m-0 text-sm leading-6 text-stone-600 dark:text-stone-400">{t('settings.sync.syncHint')}</p>
+          <p className="m-0 text-sm leading-6 text-content-muted">{t('settings.sync.syncHint')}</p>
           <button className="primary-button mt-4" onClick={() => void mutate({ type: 'sign-in' })}>
             {t('settings.sync.signIn')}
           </button>
@@ -41,9 +42,7 @@ function SyncSection() {
           <span className="account-avatar">{(auth.email || 'N').slice(0, 1).toUpperCase()}</span>
           <div className="min-w-0 flex-1">
             <div className="truncate font-medium">{auth.email || t('settings.sync.noriUser')}</div>
-            <div className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-              {t('settings.sync.plan', { plan: planLabel })}
-            </div>
+            <div className="mt-1 text-sm text-content-muted">{t('settings.sync.plan', { plan: planLabel })}</div>
           </div>
           <Menu
             className="round-action"
@@ -60,17 +59,17 @@ function SyncSection() {
       <SectionCard title={t('settings.plan.label')}>
         <div className="px-5 py-5">
           <span className="badge">{planLabel}</span>
-          <p className="mt-4 text-sm leading-6 text-stone-600 dark:text-stone-400">
+          <p className="mt-4 text-sm leading-6 text-content-muted">
             {auth.plan === 'free' ? t('settings.sync.upgradeHint') : t('settings.sync.syncHint')}
           </p>
           {profile.lastSyncAt ? (
-            <p className="mt-2 text-xs text-stone-500">
+            <p className="mt-2 text-xs text-content-subtle">
               {t('settings.sync.lastSynced', { date: new Date(profile.lastSyncAt).toLocaleString() })}
             </p>
           ) : null}
-          {busy ? <p className="mt-2 text-xs text-stone-500">{t('settings.sync.working')}</p> : null}
+          {busy ? <p className="mt-2 text-xs text-content-subtle">{t('settings.sync.working')}</p> : null}
           {snapshot.syncError ? (
-            <p className="mt-3 text-sm text-rose-600 dark:text-rose-400">{snapshot.syncError}</p>
+            <p className="mt-3 text-sm text-danger-600 dark:text-danger-400">{snapshot.syncError}</p>
           ) : null}
         </div>
       </SectionCard>
@@ -141,7 +140,7 @@ function ExperienceSection() {
           </span>
           <span className="min-w-0 flex-1">
             <span className="block font-medium">{t('settings.experience.theme')}</span>
-            <span className="mt-1 block text-sm leading-5 text-stone-600 dark:text-stone-400">
+            <span className="mt-1 block text-sm leading-5 text-content-muted">
               {t('settings.experience.themeHint')}
             </span>
           </span>
@@ -153,6 +152,20 @@ function ExperienceSection() {
             onClick: () => setPreference({ theme }),
           }))}
         />
+      </div>
+      <div className="setting-row column">
+        <div className="flex items-center gap-3">
+          <span className="setting-icon">
+            <Icon name="palette" size={18} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-medium">{t('settings.experience.accent')}</span>
+            <span className="mt-1 block text-sm leading-5 text-content-muted">
+              {t('settings.experience.accentHint')}
+            </span>
+          </span>
+        </div>
+        <AccentSwatches value={normalizeAccent(preferences.accent)} onChange={(accent) => setPreference({ accent })} />
       </div>
     </SectionCard>
   )
@@ -243,9 +256,7 @@ function AboutPage({ version }: { version: string }) {
           last
         />
       </div>
-      <p className="px-1 text-sm leading-6 text-stone-600 dark:text-stone-400">
-        {t('settings.about.extensionPrivacy')}
-      </p>
+      <p className="px-1 text-sm leading-6 text-content-muted">{t('settings.about.extensionPrivacy')}</p>
       <SectionCard title={t('settings.about.code')}>
         <SettingRow
           icon="code"

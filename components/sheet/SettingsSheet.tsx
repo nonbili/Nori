@@ -53,9 +53,9 @@ export const SettingsSheet: React.FC = () => {
         onPress={() => setPage(page === 'changelog' ? 'about' : 'home')}
         accessibilityLabel={t('common.back')}
         accessibilityRole="button"
-        className="rounded-full bg-stone-200 p-2 active:bg-stone-300 dark:bg-stone-900 dark:active:bg-stone-800"
+        className="rounded-full bg-muted p-2 active:bg-muted-strong"
       >
-        <MaterialIcons name="arrow-back" color={themeColors.iconMuted} size={20} />
+        <MaterialIcons name="arrow-back" color={themeColors.contentMuted} size={20} />
       </Pressable>
     )
 

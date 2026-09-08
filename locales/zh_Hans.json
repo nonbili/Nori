@@ -189,6 +189,8 @@
       "system": "系统",
       "light": "浅色",
       "dark": "深色",
+      "accent": "强调色",
+      "accentHint": "选择整个应用使用的强调颜色。",
       "language": "语言",
       "languageHint": "选择一种语言或使用系统语言。",
       "languageSystem": "系统"

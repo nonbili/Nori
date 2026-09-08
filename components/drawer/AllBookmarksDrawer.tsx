@@ -195,7 +195,7 @@ export function AllBookmarksDrawer() {
   return (
     <Animated.View
       pointerEvents={drawerOpen ? 'auto' : 'none'}
-      className="absolute inset-0 z-[100] bg-stone-50 dark:bg-stone-950"
+      className="absolute inset-0 z-[100] bg-canvas"
       style={drawerAnimatedStyle}
     >
         <View className="flex-1 px-6">

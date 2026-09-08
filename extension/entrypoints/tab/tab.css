@@ -1,5 +1,7 @@
+/* Deliberately a step away from the shell's own bg-canvas so the floating
+   panel keeps an edge against the page behind it in both schemes. */
 body {
-  @apply h-screen overflow-hidden bg-stone-100 dark:bg-black;
+  @apply h-screen overflow-hidden bg-well dark:bg-black;
 }
 #root {
   @apply grid h-full place-items-center p-4;
@@ -8,7 +10,7 @@ body {
    keeping the same single-column layout. The viewport caps let it shrink on
    smaller browser windows without introducing page-level scrolling. */
 #root > .app-shell {
-  @apply h-[900px] max-h-full w-[480px] max-w-full rounded-[28px] border border-stone-200 shadow-panel dark:border-stone-800;
+  @apply h-[900px] max-h-full w-[480px] max-w-full rounded-[28px] border border-line shadow-panel;
 }
 
 /* React Native Web portals modals into body, so their internal frame must be

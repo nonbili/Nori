@@ -189,6 +189,8 @@
       "system": "Sistema",
       "light": "Claro",
       "dark": "Oscuro",
+      "accent": "Color de acento",
+      "accentHint": "Elige el color de resalte que se usa en toda la app.",
       "language": "Idioma",
       "languageHint": "Elige un idioma o sigue el idioma del sistema.",
       "languageSystem": "Sistema"
