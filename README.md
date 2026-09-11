@@ -15,6 +15,16 @@ Install from App Store, Google Play, or download APK from GitHub.
       alt="Get it on GitHub"
       height="50">](https://github.com/nonbili/Nori/releases/latest)
 
+The browser extension is on Firefox Add-ons and the Chrome Web Store.
+
+[<img src="https://img.shields.io/badge/Firefox_Add--ons-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white"
+      alt="Get it on Firefox Add-ons"
+      height="50">](https://addons.mozilla.org/addon/nori/)
+[<img src="https://img.shields.io/badge/Chrome_Web_Store-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white"
+      alt="Get it on Chrome Web Store"
+      hspace="16"
+      height="50">](https://chromewebstore.google.com/detail/nori/ojgmnocnegcbhlmfoackgoocnjbfejpg)
+
 <details>
 <summary>AppImage notes</summary>
 
@@ -49,7 +59,9 @@ bun run start
 
 ### Browser extension
 
-Nori also includes a local-first Chrome and Firefox extension whose popup mirrors the Android app: lists, search drawer, history, list management and settings all live in the popup.
+Nori also includes a local-first Chrome and Firefox extension whose popup mirrors the Android app: lists, search drawer, history, list management and settings all live in the popup. Install it from
+[Firefox Add-ons](https://addons.mozilla.org/addon/nori/) or the
+[Chrome Web Store](https://chromewebstore.google.com/detail/nori/ojgmnocnegcbhlmfoackgoocnjbfejpg), or build it locally:
 
 ```sh
 cd extension

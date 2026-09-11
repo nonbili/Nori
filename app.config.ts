@@ -35,6 +35,10 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
         {
           android: {
             usesCleartextTraffic: false,
+            // R8 full mode: shrinks and obfuscates the release build, which Play
+            // Console's app optimization report checks for.
+            enableMinifyInReleaseBuilds: true,
+            enableShrinkResourcesInReleaseBuilds: true,
           },
           ios: {
             deploymentTarget: '17.0',
