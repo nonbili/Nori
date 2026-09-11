@@ -9,6 +9,7 @@ import { settings$ } from '@/states/settings'
 import { ListChip } from '@/components/list/ListChip'
 import { NouMenu } from '@/components/menu/NouMenu'
 import { BookmarkListPage, type BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
+import { SCREEN_TOP_OFFSET } from '@/lib/layout'
 import type { BookmarkRecord } from '@/states/bookmarks'
 import type { ThemeColors } from '@/lib/theme'
 
@@ -37,10 +38,10 @@ export interface BookmarkPagerViewModel {
 export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({ pager }) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
-  // The AppHeader (which provides the top inset) is hidden in edit mode, so the
-  // chips row becomes the topmost element and must clear the status bar itself.
+  // The chips row is the topmost element now that every action lives in the
+  // bottom toolbar, so it clears the status bar itself.
   return (
-  <View className="mb-8 mt-4 px-6" style={pager.bookmarkEditMode ? { paddingTop: insets.top } : undefined}>
+  <View className="mb-8 px-6" style={{ paddingTop: insets.top + SCREEN_TOP_OFFSET }}>
     <View className="flex-row items-center gap-2">
     <ScrollView
       ref={pager.chipScrollViewRef}

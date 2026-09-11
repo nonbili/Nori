@@ -72,7 +72,7 @@ function ReadyApp({
             newBookmarkDefaults={activeTab}
             onOpenSettings={() => setSettingsOpen(true)}
             settingsSheet={settingsOpen ? <SettingsSheet onClose={() => setSettingsOpen(false)} /> : null}
-            headerMenuItems={
+            menuItems={
               mode === 'popup'
                 ? [
                     {

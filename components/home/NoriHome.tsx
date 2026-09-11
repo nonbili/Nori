@@ -1,10 +1,6 @@
 import { View } from 'react-native'
-import { useValue } from '@legendapp/state/react'
-
-import { ui$ } from '@/states/ui'
 import { AllBookmarksDrawer } from '@/components/drawer/AllBookmarksDrawer'
 import { BookmarkImportSheet } from '@/components/sheet/BookmarkImportSheet'
-import { AppHeader } from '@/components/header/AppHeader'
 import { BookmarkPager } from '@/components/home/BookmarkPager'
 import { BookmarkEditorSheet } from '@/components/sheet/BookmarkEditorSheet'
 import { ManageListsSheet } from '@/components/sheet/ManageListsSheet'
@@ -19,24 +15,24 @@ import type { ReactElement } from 'react'
 /** The platform-neutral Nori application surface shared by native and web hosts. */
 export function NoriHome({
   newBookmarkDefaults,
-  headerMenuItems,
+  menuItems,
   onOpenSettings,
   renderMain,
   settingsSheet,
 }: {
   newBookmarkDefaults?: Partial<Pick<BookmarkRecord, 'url' | 'title' | 'icon'>>
-  headerMenuItems?: NouMenuItem[]
+  menuItems?: NouMenuItem[]
   onOpenSettings?: () => void
   renderMain?: (main: ReactElement) => ReactElement
   settingsSheet?: ReactElement | null
 } = {}) {
-  const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const main = (
     <View className="flex-1">
-      {!bookmarkEditMode ? (
-        <AppHeader additionalMenuItems={headerMenuItems} onOpenSettings={onOpenSettings} />
-      ) : null}
-      <BookmarkPager newBookmarkDefaults={newBookmarkDefaults} />
+      <BookmarkPager
+        newBookmarkDefaults={newBookmarkDefaults}
+        menuItems={menuItems}
+        onOpenSettings={onOpenSettings}
+      />
     </View>
   )
 

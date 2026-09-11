@@ -6,7 +6,7 @@ import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-
 import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ui$ } from '@/states/ui'
-import { NouMenu } from '@/components/menu/NouMenu'
+import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { showToast } from '@/lib/toast'
 import type { BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
 
@@ -15,10 +15,12 @@ const ToolbarIconButton: React.FC<{
   color: string
   label: string
   danger?: boolean
+  testID?: string
   onPress: () => void
-}> = ({ icon, color, label, danger, onPress }) => (
+}> = ({ icon, color, label, danger, testID, onPress }) => (
   <Pressable
     onPress={onPress}
+    testID={testID}
     accessibilityLabel={label}
     accessibilityRole="button"
     className={`h-11 w-11 items-center justify-center rounded-full ${
@@ -36,8 +38,18 @@ export const BookmarkPagerToolbar: React.FC<{
   allVisibleSelected: boolean
   hasVisibleBookmarks: boolean
   moveTargetLists: { id: string; name: string }[]
+  additionalMenuItems?: NouMenuItem[]
+  onOpenSettings?: () => void
   actions: BookmarkPagerActions
-}> = ({ selectedCount, allVisibleSelected, hasVisibleBookmarks, moveTargetLists, actions }) => {
+}> = ({
+  selectedCount,
+  allVisibleSelected,
+  hasVisibleBookmarks,
+  moveTargetLists,
+  additionalMenuItems = [],
+  onOpenSettings,
+  actions,
+}) => {
   const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const insets = useSafeAreaInsets()
@@ -62,15 +74,81 @@ export const BookmarkPagerToolbar: React.FC<{
     }
   }
 
+  const toggleEditMode = () => {
+    ui$.bookmarkEditMode.set(!bookmarkEditMode)
+    ui$.selectedBookmarkIds.set([])
+  }
+
+  // Everything the old top header offered lives in this menu now, so the bar
+  // keeps only the actions worth a permanent tap target.
+  const menuItems: NouMenuItem[] = [
+    { label: t('lists.manage'), icon: 'view-list', handler: () => ui$.listManagerOpen.set(true) },
+    ...additionalMenuItems,
+    {
+      label: t('settings.title'),
+      icon: 'settings',
+      handler: onOpenSettings ?? (() => ui$.settingsSheetOpen.set(true)),
+    },
+  ]
+
+  // Browsing: drawer and history on the left, the primary add action in the
+  // middle, then edit mode and the overflow menu.
+  const browseBar = (
+    <View className="flex-1 flex-row items-center justify-between">
+      <ToolbarIconButton
+        icon="bookmarks"
+        color={themeColors.content}
+        label={t('bookmarks.openDrawer')}
+        testID="drawer_button"
+        onPress={() => ui$.openBookmarksDrawer()}
+      />
+      <ToolbarIconButton
+        icon="history"
+        color={themeColors.content}
+        label={t('history.openHistory')}
+        testID="history_button"
+        onPress={() => ui$.recentSheetOpen.set(true)}
+      />
+      <Pressable
+        onPress={actions.onOpenNewBookmark}
+        testID="add_bookmark_button"
+        accessibilityLabel={t('bookmarks.add')}
+        accessibilityRole="button"
+        className="items-center justify-center rounded-full bg-accent-600 active:bg-accent-700"
+        style={{ height: 52, width: 52 }}
+      >
+        <MaterialIcons name="add" size={26} color="#ffffff" />
+      </Pressable>
+      <ToolbarIconButton
+        icon="edit"
+        color={themeColors.content}
+        label={t('bookmarks.editMultiple')}
+        testID="edit_mode_button"
+        onPress={toggleEditMode}
+      />
+      <NouMenu
+        items={menuItems}
+        testID="toolbar_menu_button"
+        accessibilityLabel={t('settings.moreOptions')}
+        trigger={
+          <View className="h-11 w-11 items-center justify-center rounded-full bg-muted">
+            <MaterialIcons name="more-vert" size={20} color={themeColors.content} />
+          </View>
+        }
+      />
+    </View>
+  )
+
   // With a selection the bar turns into a selection bar: a count that doubles as
   // select-all, then icon-only actions, so the row stays readable on narrow phones.
   const selectionBar = (
-    <View className="flex-1 flex-row items-center justify-between pr-3">
+    <View className="flex-1 flex-row items-center justify-between">
       <Pressable
         onPress={actions.onSelectAll}
+        disabled={!hasVisibleBookmarks}
         accessibilityLabel={allVisibleSelected ? t('bookmarks.deselectAll') : t('bookmarks.selectAll')}
         accessibilityRole="button"
-        className="h-11 flex-row items-center gap-1.5 rounded-full bg-muted px-3 active:bg-muted-strong"
+        className={`h-11 flex-row items-center gap-1.5 rounded-full bg-muted px-3 active:bg-muted-strong ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
       >
         <MaterialIcons
           name={allVisibleSelected ? 'check-box' : 'check-box-outline-blank'}
@@ -122,45 +200,30 @@ export const BookmarkPagerToolbar: React.FC<{
         danger
         onPress={actions.onRemoveSelectedBookmark}
       />
+      <Pressable
+        onPress={toggleEditMode}
+        testID="done_editing_button"
+        accessibilityLabel={t('bookmarks.doneEditing')}
+        accessibilityRole="button"
+        className="h-11 w-11 items-center justify-center rounded-full bg-accent-600 active:bg-accent-700"
+      >
+        <MaterialIcons name="check" size={20} color="#ffffff" />
+      </Pressable>
     </View>
   )
 
   return (
-    <View className="absolute left-6 right-6 z-10" style={{ bottom: insets.bottom + 16 }} onLayout={onToolbarLayout}>
+    <View
+      testID="bookmark_toolbar"
+      className="absolute left-6 right-6 z-10"
+      style={{ bottom: insets.bottom + 16 }}
+      onLayout={onToolbarLayout}
+    >
       <View
-        className="flex-row items-center justify-between rounded-full border border-white/70 bg-surface/70 px-3 py-2 shadow-lg dark:border-white/10 dark:bg-canvas/70"
+        className="flex-row items-center rounded-full border border-white/70 bg-surface/70 px-2 py-2 shadow-lg dark:border-white/10 dark:bg-canvas/70"
         style={{ shadowColor: '#000', shadowOpacity: 0.16, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 16 }}
       >
-        {bookmarkEditMode ? (
-          selectedCount > 0 ? selectionBar : (
-            <Pressable
-              onPress={actions.onSelectAll}
-              disabled={!hasVisibleBookmarks}
-              className={`h-10 items-center justify-center rounded-full bg-muted px-4 active:bg-muted-strong ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
-            >
-              <NoriText className="text-sm font-medium text-content">{t('bookmarks.selectAll')}</NoriText>
-            </Pressable>
-          )
-        ) : (
-          <Pressable onPress={actions.onOpenNewBookmark} className="h-10 w-10 items-center justify-center rounded-full bg-white/80 active:bg-white dark:bg-white/10 dark:active:bg-white/15">
-            <MaterialIcons name="add" size={20} color={themeColors.contentMuted} />
-          </Pressable>
-        )}
-        {!bookmarkEditMode ? (
-          <Pressable onPress={() => ui$.openBookmarksDrawer()} className="h-10 items-center justify-center px-4">
-            <View className="h-1 w-12 rounded-full bg-muted-strong/90 dark:bg-white/20" />
-            <MaterialIcons name="keyboard-arrow-up" size={24} color={themeColors.contentMuted} />
-          </Pressable>
-        ) : selectedCount > 0 ? null : <View className="h-10 w-2" />}
-        <Pressable
-          onPress={() => {
-            ui$.bookmarkEditMode.set(!bookmarkEditMode)
-            ui$.selectedBookmarkIds.set([])
-          }}
-          className={`h-10 w-10 items-center justify-center rounded-full ${bookmarkEditMode ? 'bg-accent-600 active:bg-accent-700' : 'bg-white/80 active:bg-white dark:bg-white/10 dark:active:bg-white/15'}`}
-        >
-          <MaterialIcons name={bookmarkEditMode ? 'check' : 'edit'} size={18} color={bookmarkEditMode ? '#ffffff' : themeColors.contentMuted} />
-        </Pressable>
+        {bookmarkEditMode ? selectionBar : browseBar}
       </View>
     </View>
   )

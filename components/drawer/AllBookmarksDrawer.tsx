@@ -12,7 +12,7 @@ import { useThemeColors } from '@/lib/theme'
 import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { showToast } from '@/lib/toast'
 import { getTags } from '@/lib/nori-data'
-import { HEADER_TOP_OFFSET } from '@/components/header/headerLayout'
+import { SCREEN_TOP_OFFSET } from '@/lib/layout'
 import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 import {
   DrawerBookmarkResults,
@@ -199,7 +199,7 @@ export function AllBookmarksDrawer() {
       style={drawerAnimatedStyle}
     >
         <View className="flex-1 px-6">
-          <View className="flex-1" style={{ paddingTop: insets.top + HEADER_TOP_OFFSET }}>
+          <View className="flex-1" style={{ paddingTop: insets.top + SCREEN_TOP_OFFSET }}>
             <DrawerHeader drawer={drawerParts} />
             <DrawerFilterChips drawer={drawerParts} />
             <DrawerTagChips drawer={drawerParts} />

@@ -14,6 +14,7 @@ import { useThemeColors } from '@/lib/theme'
 import { showToast } from '@/lib/toast'
 import { BookmarkPagerToolbar } from '@/components/home/BookmarkPagerToolbar'
 import { BookmarkListChips, BookmarkPagerPages, type BookmarkPagerViewModel } from '@/components/home/BookmarkPagerViews'
+import type { NouMenuItem } from '@/components/menu/NouMenu'
 
 type BookmarkGroups = Map<string, {
   visible: BookmarkRecord[]
@@ -51,7 +52,9 @@ function groupBookmarksByList(bookmarks: BookmarkRecord[]) {
 
 export const BookmarkPager: React.FC<{
   newBookmarkDefaults?: Partial<Pick<BookmarkRecord, 'url' | 'title' | 'icon'>>
-}> = ({ newBookmarkDefaults }) => {
+  menuItems?: NouMenuItem[]
+  onOpenSettings?: () => void
+}> = ({ newBookmarkDefaults, menuItems, onOpenSettings }) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const lists = useValue(lists$.lists)
@@ -440,6 +443,8 @@ export const BookmarkPager: React.FC<{
           moveTargetLists={visibleLists.filter((list) => list.id !== selectedList?.id)}
           allVisibleSelected={allVisibleSelected}
           hasVisibleBookmarks={visibleListBookmarks.length > 0}
+          additionalMenuItems={menuItems}
+          onOpenSettings={onOpenSettings}
           actions={pagerActions}
         />
       </View>
