@@ -20,7 +20,9 @@ export const NouMenu: React.FC<{
   onSelectItem?: (item: NouMenuItem) => void
   testID?: string
   accessibilityLabel?: string
-}> = ({ trigger, items, onSelectItem, testID, accessibilityLabel }) => {
+  /** Styles the trigger Pressable itself; keep the tap target's size here. */
+  triggerClassName?: string
+}> = ({ trigger, items, onSelectItem, testID, accessibilityLabel, triggerClassName }) => {
   const [open, setOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
   const pendingItem = useRef<NouMenuItem | null>(null)
@@ -84,17 +86,22 @@ export const NouMenu: React.FC<{
 
   return (
     <>
-      <View ref={triggerRef} collapsable={false}>
-        <NativePressable
-          onPress={openMenu}
-          hitSlop={12}
-          testID={testID}
-          accessibilityLabel={accessibilityLabel}
-          accessibilityRole="button"
-        >
-          {trigger}
-        </NativePressable>
-      </View>
+      {/* The trigger's shape belongs on this Pressable, not on a nested View:
+          with the size on a child (and the anchor ref on an extra wrapper)
+          Android delivered the touch to the wrapper and the press never fired
+          for the menu in the list chip row. */}
+      <NativePressable
+        ref={triggerRef}
+        collapsable={false}
+        className={triggerClassName}
+        onPress={openMenu}
+        hitSlop={12}
+        testID={testID}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="button"
+      >
+        {trigger}
+      </NativePressable>
       {open && (
         <Modal transparent visible={open} animationType="none" onRequestClose={closeMenu}>
           <View className="flex-1" pointerEvents="box-none">

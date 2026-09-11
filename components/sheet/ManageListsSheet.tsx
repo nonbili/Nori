@@ -71,11 +71,11 @@ export const ManageListsSheet: React.FC = () => {
       headerLeft={
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
-          className="rounded-full bg-contrast px-3 py-1.5 active:opacity-70"
+          className="rounded-full bg-accent-600 px-3 py-1.5 active:bg-accent-700"
         >
           <View className="flex-row items-center gap-1.5">
-            <MaterialIcons name="add" color={themeColors.contentInverse} size={16} />
-            <NoriText className="text-xs font-bold text-content-inverse">{t('lists.new')}</NoriText>
+            <MaterialIcons name="add" color={themeColors.onAccent} size={16} />
+            <NoriText className="text-xs font-bold text-white">{t('lists.new')}</NoriText>
           </View>
         </Pressable>
       }

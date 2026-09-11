@@ -43,8 +43,12 @@ export const BaseCenterModal: React.FC<{
 
   const topAligned = align === 'top' || (align === 'keyboard' && keyboardVisible)
 
+  // `max-w-full` only resolves against a parent with a definite width, so the
+  // keyboard wrapper below stretches and carries the gutter on every platform.
+  // A calc()-based max-width is dropped on native, which let the dialog grow to
+  // the full screen width on phones.
   const innerCls = clsx(
-    'w-[30rem] max-w-[calc(100%-2rem)] rounded-2xl bg-canvas lg:w-[40rem] xl:w-[50rem]',
+    'w-[30rem] max-w-full self-center rounded-2xl bg-canvas lg:w-[40rem] xl:w-[50rem]',
     containerClassName,
   )
 
@@ -62,7 +66,7 @@ export const BaseCenterModal: React.FC<{
           <KeyboardAvoidingView
             behavior={isIos ? 'padding' : 'height'}
             pointerEvents="box-none"
-            style={isWeb ? { alignSelf: 'stretch', marginHorizontal: 16 } : undefined}
+            style={{ alignSelf: 'stretch', marginHorizontal: 16 }}
           >
             <View
               className={innerCls}

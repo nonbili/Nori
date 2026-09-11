@@ -1,4 +1,4 @@
-import { Platform, Pressable, ScrollView, View, type LayoutChangeEvent } from 'react-native'
+import { Pressable, ScrollView, View, type LayoutChangeEvent } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
@@ -77,7 +77,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
         </Pressable>
       ) : null}
     </ScrollView>
-    {Platform.OS === 'web' && !pager.bookmarkEditMode ? (
+    {!pager.bookmarkEditMode ? (
       <NouMenu
         accessibilityLabel={t('lists.manage')}
         items={[
@@ -95,11 +95,8 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
             handler: () => ui$.listEditor.set({ name: '' }),
           },
         ]}
-        trigger={(
-          <View className="h-[32px] w-[32px] items-center justify-center rounded-full border border-line-strong bg-muted active:bg-muted-strong">
-            <MaterialIcons name="list" size={18} color={pager.themeColors.content} />
-          </View>
-        )}
+        triggerClassName="h-[32px] w-[32px] items-center justify-center rounded-full border border-line-strong bg-muted active:bg-muted-strong"
+        trigger={<MaterialIcons name="list" size={18} color={pager.themeColors.content} />}
       />
     ) : null}
     </View>
