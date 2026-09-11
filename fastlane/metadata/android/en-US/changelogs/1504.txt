@@ -1,0 +1,5 @@
+- Redesign bottom toolbar to integrate header actions
+- Add customizable accent colors with a color picker
+- Require a deliberate swipe to open the drawer
+- Improve list picker dialog layout on Android
+- Optimize release build size with R8 shrinking

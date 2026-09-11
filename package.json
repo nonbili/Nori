@@ -6,9 +6,9 @@
   "name": "nori",
   "private": true,
   "main": "expo-router/entry",
-  "version": "0.1.13",
-  "versionCode": 14,
-  "buildNumber": "13",
+  "version": "0.2.0",
+  "versionCode": 15,
+  "buildNumber": "14",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
