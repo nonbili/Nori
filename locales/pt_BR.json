@@ -191,6 +191,11 @@
       "dark": "Escuro",
       "accent": "Cor de destaque",
       "accentHint": "Escolha a cor de destaque usada em todo o app.",
+      "accentCustom": "Cor personalizada",
+      "accentHue": "Matiz",
+      "accentIntensity": "Intensidade",
+      "accentHex": "Código de cor hexadecimal",
+      "accentCustomHint": "O Nori cria uma gama completa de tons a partir desta cor, para continuar legível nos modos claro e escuro.",
       "language": "Idioma",
       "languageHint": "Escolha um idioma ou siga o idioma do sistema.",
       "languageSystem": "Sistema"

@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { ACCENT_IDS, accentChannels, type AccentId } from 'nori-root/lib/accent'
+import { ACCENT_IDS, accentChannels, isCustomAccent, type AccentId } from 'nori-root/lib/accent'
+import { channelsToRgb, hexToRgb, rgbToHex } from 'nori-root/lib/oklch'
 import { Icon, type IconName } from './Icon'
 
 export const SectionCard = ({ title, children }: { title: string; children: ReactNode }) => (
@@ -113,7 +114,15 @@ export const ManageRow = ({
  * pick between them (see .accent-swatch in app.css), so the row repaints on a
  * light/dark flip without re-rendering.
  */
-export const AccentSwatches = ({ value, onChange }: { value: AccentId; onChange: (accent: AccentId) => void }) => (
+export const AccentSwatches = ({
+  value,
+  onChange,
+  customLabel,
+}: {
+  value: AccentId
+  onChange: (accent: AccentId) => void
+  customLabel: string
+}) => (
   <div className="flex flex-wrap justify-end gap-1.5" role="radiogroup">
     {ACCENT_IDS.map((accent) => (
       <button
@@ -134,5 +143,52 @@ export const AccentSwatches = ({ value, onChange }: { value: AccentId; onChange:
         <span>{accent === value ? <Icon name="check" size={14} /> : null}</span>
       </button>
     ))}
+    <CustomAccentSwatch value={value} onChange={onChange} label={customLabel} />
   </div>
 )
+
+/**
+ * The custom accent, as the browser's own colour picker.
+ *
+ * The app builds hue and intensity strips by hand because React Native has no
+ * picker; on the web there is one, and it is the control people already know,
+ * so the shells use it instead of a port of the app's strips. The input is
+ * visually hidden behind the swatch it opens, and updates live while dragging.
+ */
+const CustomAccentSwatch = ({
+  value,
+  onChange,
+  label,
+}: {
+  value: AccentId
+  onChange: (accent: AccentId) => void
+  label: string
+}) => {
+  const custom = isCustomAccent(value)
+  return (
+    <label
+      className={`accent-swatch ${custom ? 'active' : ''}`}
+      aria-label={label}
+      style={
+        {
+          '--accent-swatch-light': custom ? accentChannels(value, 600) : 'var(--nori-muted)',
+          '--accent-swatch-dark': custom ? accentChannels(value, 400) : 'var(--nori-muted)',
+        } as CSSProperties
+      }
+    >
+      <span className={custom ? '' : 'text-content-muted'}>
+        {/* The palette glyph needs more room than the presets' check mark. */}
+        <Icon name={custom ? 'check' : 'palette'} size={custom ? 14 : 18} />
+      </span>
+      <input
+        type="color"
+        className="sr-only"
+        // The stored colour when there is one, rather than the ramp's 600:
+        // generation rescales chroma, so feeding the 600 back would walk the
+        // picker's colour a little further each time it was opened.
+        value={(custom ? hexToRgb(value) : null) ? value : rgbToHex(channelsToRgb(accentChannels(value, 600)))}
+        onChange={(event) => onChange(event.target.value as AccentId)}
+      />
+    </label>
+  )
+}

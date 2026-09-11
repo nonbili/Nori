@@ -98,7 +98,7 @@
   @apply border-accent-500 bg-accent-100/70 text-accent-950 dark:bg-accent-950/30 dark:text-accent-100;
 }
 .selection-check {
-  @apply grid h-5 w-5 shrink-0 place-items-center rounded-full bg-accent-600 text-white;
+  @apply grid h-5 w-5 shrink-0 place-items-center rounded-full bg-accent-600 text-accent-on;
 }
 .favicon {
   @apply grid shrink-0 place-items-center overflow-hidden rounded-full font-bold text-content-muted;
@@ -169,7 +169,7 @@
   @apply bg-danger-100 text-danger-600 dark:bg-danger-900/40 dark:text-danger-400;
 }
 .toolbar-action.done {
-  @apply bg-accent-600 text-white hover:bg-accent-700;
+  @apply bg-accent-600 text-accent-on hover:bg-accent-700;
 }
 .search-handle {
   @apply flex h-11 w-24 flex-col items-center justify-center border-0 bg-transparent text-content-subtle;
@@ -376,7 +376,7 @@ button.setting-row:hover {
   @apply rounded-full bg-muted px-5 py-3 text-sm text-content hover:bg-muted-strong;
 }
 .dialog-button.primary {
-  @apply bg-accent-600 font-medium text-white hover:bg-accent-700;
+  @apply bg-accent-600 font-medium text-accent-on hover:bg-accent-700;
 }
 
 /* Snackbars */

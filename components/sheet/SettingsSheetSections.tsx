@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Linking, Pressable, View } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
@@ -12,11 +12,12 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { syncMeta$ } from '@/states/sync-meta'
 import { useAppColorScheme, useThemeColors } from '@/lib/theme'
-import { ACCENT_IDS, accentColor, normalizeAccent } from '@/lib/accent'
+import { ACCENT_IDS, accentColor, isCustomAccent, normalizeAccent } from '@/lib/accent'
 import { isIos } from '@/lib/utils'
 import { signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
 import { AboutRow } from '@/components/sheet/SettingsSheetAbout'
+import { CustomAccentPicker } from '@/components/sheet/AccentPicker'
 import { useLocales } from 'expo-localization'
 import { resolveI18nLanguageFromExpoLocale, supportedI18nLanguages } from '@/lib/i18n'
 import { languageNativeNames } from '@/lib/language'
@@ -249,7 +250,7 @@ const IosPlanActions: React.FC<{
           disabled={loadingProduct || !productPrice}
           className="items-center rounded-2xl bg-accent-600 px-4 py-3 active:opacity-80 disabled:opacity-50"
         >
-          <NoriText className="font-medium text-white">
+          <NoriText className="font-medium text-accent-on">
             {busyAction === 'buy'
               ? t('settings.ios.purchasing')
               : productPrice
@@ -496,6 +497,10 @@ const AccentRow: React.FC = () => {
   const themeColors = useThemeColors()
   const isDark = useAppColorScheme() === 'dark'
   const accent = normalizeAccent(useValue(settings$.accent))
+  const custom = isCustomAccent(accent)
+  // Opens showing the picker when a custom accent is already in use, so the
+  // strips are where the current colour came from rather than a hidden state.
+  const [pickerOpen, setPickerOpen] = useState(custom)
 
   return (
     <View className="px-4 py-4">
@@ -533,7 +538,32 @@ const AccentRow: React.FC = () => {
             </Pressable>
           )
         })}
+        <Pressable
+          onPress={() => setPickerOpen((open) => !open)}
+          accessibilityRole="radio"
+          accessibilityState={{ selected: custom, expanded: pickerOpen }}
+          accessibilityLabel={t('settings.experience.accentCustom')}
+          className={`h-9 w-9 items-center justify-center rounded-full border-2 active:opacity-70 ${
+            custom ? 'border-content' : 'border-transparent'
+          }`}
+        >
+          <View
+            className="h-6 w-6 items-center justify-center rounded-full border border-line"
+            style={custom ? { backgroundColor: accentColor(accent, isDark ? 400 : 600) } : undefined}
+          >
+            <MaterialIcons
+              name={custom ? 'check' : 'palette'}
+              // The check is a single stroke and reads at the preset swatches'
+              // 14; the palette glyph carries far more detail in the same box.
+              size={custom ? 14 : 18}
+              color={custom ? themeColors.contentInverse : themeColors.contentMuted}
+            />
+          </View>
+        </Pressable>
       </View>
+      {pickerOpen ? (
+        <CustomAccentPicker value={accent} onChange={(next) => settings$.setAccent(next)} />
+      ) : null}
     </View>
   )
 }

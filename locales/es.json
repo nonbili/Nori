@@ -191,6 +191,11 @@
       "dark": "Oscuro",
       "accent": "Color de acento",
       "accentHint": "Elige el color de resalte que se usa en toda la app.",
+      "accentCustom": "Color personalizado",
+      "accentHue": "Tono",
+      "accentIntensity": "Intensidad",
+      "accentHex": "Código de color hexadecimal",
+      "accentCustomHint": "Nori crea una gama completa de tonos a partir de este color, para que se lea bien en modo claro y oscuro.",
       "language": "Idioma",
       "languageHint": "Elige un idioma o sigue el idioma del sistema.",
       "languageSystem": "Sistema"

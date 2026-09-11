@@ -191,6 +191,11 @@
       "dark": "Scuro",
       "accent": "Colore d’accento",
       "accentHint": "Scegli il colore di evidenziazione usato in tutta l’app.",
+      "accentCustom": "Colore personalizzato",
+      "accentHue": "Tonalità",
+      "accentIntensity": "Intensità",
+      "accentHex": "Codice colore esadecimale",
+      "accentCustomHint": "Nori crea una gamma completa di sfumature da questo colore, così resta leggibile sia in chiaro sia in scuro.",
       "language": "Lingua",
       "languageHint": "Scegli una lingua oppure utilizza la lingua di sistema.",
       "languageSystem": "Sistema"

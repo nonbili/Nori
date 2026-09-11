@@ -191,6 +191,11 @@
       "dark": "深色",
       "accent": "強調色",
       "accentHint": "選擇整個應用程式使用的強調顏色。",
+      "accentCustom": "自訂顏色",
+      "accentHue": "色相",
+      "accentIntensity": "濃度",
+      "accentHex": "十六進位顏色代碼",
+      "accentCustomHint": "Nori 會依據此顏色產生完整色階，因此淺色與深色模式下都維持清晰易讀。",
       "language": "語言",
       "languageHint": "選擇一種語言或使用系統語言。",
       "languageSystem": "系統"

@@ -42,6 +42,7 @@ ${light.join('\n')}
 
   /* Default accent: ${DEFAULT_ACCENT}. Replaced at runtime by the user's choice. */
 ${ramp('accent', ACCENT_RAMPS[DEFAULT_ACCENT])}
+  --nori-accent-on: 255 255 255;
 
 ${ramp('danger', DANGER_RAMP)}
 }

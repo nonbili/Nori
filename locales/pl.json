@@ -191,6 +191,11 @@
       "dark": "Ciemny",
       "accent": "Kolor akcentu",
       "accentHint": "Wybierz kolor wyróżnienia używany w całej aplikacji.",
+      "accentCustom": "Kolor niestandardowy",
+      "accentHue": "Odcień",
+      "accentIntensity": "Intensywność",
+      "accentHex": "Szesnastkowy kod koloru",
+      "accentCustomHint": "Nori tworzy z tego koloru pełną gamę odcieni, dzięki czemu pozostaje czytelny w trybie jasnym i ciemnym.",
       "language": "Język",
       "languageHint": "Wybierz język lub użyj języka systemowego.",
       "languageSystem": "Systemowy"

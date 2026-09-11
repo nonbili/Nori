@@ -191,6 +191,11 @@
       "dark": "داكن",
       "accent": "لون التمييز",
       "accentHint": "اختر لون التمييز المستخدم في جميع أنحاء Nori.",
+      "accentCustom": "لون مخصص",
+      "accentHue": "درجة اللون",
+      "accentIntensity": "الشدة",
+      "accentHex": "رمز اللون السداسي",
+      "accentCustomHint": "ينشئ Nori مجموعة كاملة من الدرجات من هذا اللون، لتظل الواجهة واضحة في الوضعين الفاتح والداكن.",
       "language": "اللغة",
       "languageHint": "اختر لغة أو اتبع لغة النظام.",
       "languageSystem": "النظام"

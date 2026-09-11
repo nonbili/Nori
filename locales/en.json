@@ -192,6 +192,11 @@
       "dark": "Dark",
       "accent": "Accent color",
       "accentHint": "Pick the highlight color used across Nori.",
+      "accentCustom": "Custom color",
+      "accentHue": "Hue",
+      "accentIntensity": "Intensity",
+      "accentHex": "Hex color code",
+      "accentCustomHint": "Nori builds a full range of shades from this color, so light and dark both stay readable.",
       "language": "Language",
       "languageHint": "Choose a language or follow system language.",
       "languageSystem": "System"

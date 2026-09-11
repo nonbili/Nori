@@ -191,6 +191,11 @@
       "dark": "Mörkt",
       "accent": "Accentfärg",
       "accentHint": "Välj markeringsfärgen som används i hela appen.",
+      "accentCustom": "Anpassad färg",
+      "accentHue": "Nyans",
+      "accentIntensity": "Intensitet",
+      "accentHex": "Hexadecimal färgkod",
+      "accentCustomHint": "Nori bygger en hel skala av toner från den här färgen, så att den förblir läsbar i både ljust och mörkt läge.",
       "language": "Språk",
       "languageHint": "Välj ett språk eller följ systemspråket.",
       "languageSystem": "System"

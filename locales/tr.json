@@ -191,6 +191,11 @@
       "dark": "Karanlık",
       "accent": "Vurgu rengi",
       "accentHint": "Uygulama genelinde kullanılan vurgu rengini seçin.",
+      "accentCustom": "Özel renk",
+      "accentHue": "Renk tonu",
+      "accentIntensity": "Yoğunluk",
+      "accentHex": "Onaltılık renk kodu",
+      "accentCustomHint": "Nori bu renkten tam bir ton aralığı oluşturur; böylece açık ve koyu temada okunaklı kalır.",
       "language": "Dil",
       "languageHint": "Bir dil seçin veya sistem dilini kullanın.",
       "languageSystem": "Sistem"

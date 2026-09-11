@@ -165,7 +165,11 @@ function ExperienceSection() {
             </span>
           </span>
         </div>
-        <AccentSwatches value={normalizeAccent(preferences.accent)} onChange={(accent) => setPreference({ accent })} />
+        <AccentSwatches
+          value={normalizeAccent(preferences.accent)}
+          onChange={(accent) => setPreference({ accent })}
+          customLabel={t('settings.experience.accentCustom')}
+        />
       </div>
     </SectionCard>
   )

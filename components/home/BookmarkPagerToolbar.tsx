@@ -117,7 +117,7 @@ export const BookmarkPagerToolbar: React.FC<{
         className="items-center justify-center rounded-full bg-accent-600 active:bg-accent-700"
         style={{ height: 52, width: 52 }}
       >
-        <MaterialIcons name="add" size={26} color="#ffffff" />
+        <MaterialIcons name="add" size={26} color={themeColors.onAccent} />
       </Pressable>
       <ToolbarIconButton
         icon="edit"
@@ -207,7 +207,7 @@ export const BookmarkPagerToolbar: React.FC<{
         accessibilityRole="button"
         className="h-11 w-11 items-center justify-center rounded-full bg-accent-600 active:bg-accent-700"
       >
-        <MaterialIcons name="check" size={20} color="#ffffff" />
+        <MaterialIcons name="check" size={20} color={themeColors.onAccent} />
       </Pressable>
     </View>
   )

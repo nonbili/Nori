@@ -24,6 +24,7 @@ export type StructuralTokenName =
   | 'content-subtle'
   | 'content-inverse'
 
+/** The curated ramps; a user may also pick any colour, see lib/accent.ts. */
 export type AccentName = 'emerald' | 'teal' | 'sky' | 'indigo' | 'violet' | 'fuchsia' | 'rose' | 'amber'
 
 export declare const RAMP_STEPS: readonly RampStep[]

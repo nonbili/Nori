@@ -75,7 +75,7 @@ export const ManageListsSheet: React.FC = () => {
         >
           <View className="flex-row items-center gap-1.5">
             <MaterialIcons name="add" color={themeColors.onAccent} size={16} />
-            <NoriText className="text-xs font-bold text-white">{t('lists.new')}</NoriText>
+            <NoriText className="text-xs font-bold text-accent-on">{t('lists.new')}</NoriText>
           </View>
         </Pressable>
       }

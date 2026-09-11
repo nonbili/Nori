@@ -25,7 +25,7 @@ export const ListChip: React.FC<ListChipProps> = ({
   const animatedPagerScrollX = Platform.OS === 'web' ? undefined : pagerScrollX
 
   // The active pill is driven by a worklet, so these are the token equivalents
-  // of bg-accent-600 / border-line / text-white / text-content-muted. The chip
+  // of bg-accent-600 / border-line / text-accent-on / text-content-muted. The chip
   // row is the only always-visible chrome, so it is what makes the accent
   // setting show up on the home screen.
   const activeBg = themeColors.accentFill

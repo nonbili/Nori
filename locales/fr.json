@@ -191,6 +191,11 @@
       "dark": "Sombre",
       "accent": "Couleur d'accent",
       "accentHint": "Choisissez la couleur de mise en avant utilisée dans toute l'application.",
+      "accentCustom": "Couleur personnalisée",
+      "accentHue": "Teinte",
+      "accentIntensity": "Intensité",
+      "accentHex": "Code couleur hexadécimal",
+      "accentCustomHint": "Nori construit une gamme complète de nuances à partir de cette couleur, pour rester lisible en clair comme en sombre.",
       "language": "Langue",
       "languageHint": "Choisissez une langue ou suivez la langue du système.",
       "languageSystem": "Système"
