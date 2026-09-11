@@ -114,10 +114,9 @@ export const BookmarkPagerToolbar: React.FC<{
         testID="add_bookmark_button"
         accessibilityLabel={t('bookmarks.add')}
         accessibilityRole="button"
-        className="items-center justify-center rounded-full bg-accent-600 active:bg-accent-700"
-        style={{ height: 52, width: 52 }}
+        className="h-11 w-11 items-center justify-center rounded-full bg-accent-fill active:bg-accent-fill-pressed"
       >
-        <MaterialIcons name="add" size={26} color={themeColors.onAccent} />
+        <MaterialIcons name="add" size={24} color={themeColors.onAccent} />
       </Pressable>
       <ToolbarIconButton
         icon="edit"
@@ -205,7 +204,7 @@ export const BookmarkPagerToolbar: React.FC<{
         testID="done_editing_button"
         accessibilityLabel={t('bookmarks.doneEditing')}
         accessibilityRole="button"
-        className="h-11 w-11 items-center justify-center rounded-full bg-accent-600 active:bg-accent-700"
+        className="h-11 w-11 items-center justify-center rounded-full bg-accent-fill active:bg-accent-fill-pressed"
       >
         <MaterialIcons name="check" size={20} color={themeColors.onAccent} />
       </Pressable>

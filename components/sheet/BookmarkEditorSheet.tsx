@@ -260,7 +260,7 @@ export const BookmarkEditorSheet: React.FC = () => {
           <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-muted active:bg-muted-strong">
             <NoriText className="text-content">{t('bookmarks.cancel')}</NoriText>
           </Pressable>
-          <Pressable onPress={() => void saveBookmark()} className="rounded-full px-5 py-3 bg-accent-600 active:bg-accent-700">
+          <Pressable onPress={() => void saveBookmark()} className="rounded-full px-5 py-3 bg-accent-fill active:bg-accent-fill-pressed">
             <NoriText className="font-medium text-accent-on">{metadataLoading ? t('bookmarks.saving') : t('bookmarks.save')}</NoriText>
           </Pressable>
         </View>

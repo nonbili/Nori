@@ -8,7 +8,10 @@
    Structural tokens flip with the color scheme, so a component writes
    bg-surface once instead of "bg-white dark:bg-stone-900". The accent and
    danger ramps do not flip - components pick the step they want with a dark:
-   variant - which is what lets an accent swap be one flat set of overrides. */
+   variant - which is what lets an accent swap be one flat set of overrides.
+   The exception is --nori-accent-fill / --nori-accent-fill-pressed, which
+   lib/accent.ts resolves per scheme so a near-black accent can come back as
+   near-white on the dark canvas. */
 
 :root {
   --nori-canvas: 250 250 249;
@@ -39,6 +42,8 @@
   --nori-accent-900: 6 78 59;
   --nori-accent-950: 2 44 34;
   --nori-accent-on: 255 255 255;
+  --nori-accent-fill: 5 150 105;
+  --nori-accent-fill-pressed: 4 120 87;
 
   --nori-danger-50: 255 241 242;
   --nori-danger-100: 255 228 230;

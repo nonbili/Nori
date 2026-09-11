@@ -37,13 +37,13 @@ function LayoutContent() {
   // Overrides the --nori-accent-* defaults from lib/tokens.css for the native
   // tree, where NativeWind propagates them through React context so a portalled
   // sheet still sees the user's accent.
-  const accentStyle = useMemo(() => vars(accentVariables(normalizeAccent(accent))), [accent])
+  const accentStyle = useMemo(() => vars(accentVariables(normalizeAccent(accent), colorScheme)), [accent, colorScheme])
 
   // On web the cascade resolves them instead, and react-native-web renders
   // modals outside this View, so the root element has to carry them too.
   useEffect(() => {
-    applyAccentToDocument(normalizeAccent(accent))
-  }, [accent])
+    applyAccentToDocument(normalizeAccent(accent), colorScheme)
+  }, [accent, colorScheme])
 
   useEffect(() => {
     const systemLanguage = resolveI18nLanguageFromExpoLocale(locales[0]) || 'en'

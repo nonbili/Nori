@@ -2,7 +2,7 @@ import { useColorScheme } from 'nativewind'
 import { Appearance, useColorScheme as useRNColorScheme } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { DANGER_RAMP, RAMP_STEPS, STRUCTURAL, type RampStep, type StructuralTokenName } from '@/lib/design-tokens'
-import { accentColor, normalizeAccent, onAccentColor, type AccentId } from '@/lib/accent'
+import { accentColor, accentFillColor, normalizeAccent, onAccentColor, type AccentId } from '@/lib/accent'
 import { settings$ } from '@/states/settings'
 
 /**
@@ -42,7 +42,9 @@ export interface ThemeColors {
   contentInverse: string
   /** Readable on canvas, surface and an accent tint alike. */
   accent: string
-  /** A solid accent fill, matching the `bg-accent-600` buttons. */
+  /** A solid accent fill, matching the `bg-accent-fill` buttons. Unlike the
+   *  ramp steps this one does flip with the scheme, so a near-black accent
+   *  still reads as a fill on the dark canvas - see lib/accent.ts. */
   accentFill: string
   /** For anything drawn on `accentFill`. The accent ramps do not flip with the
    *  scheme, so this never follows `contentInverse`; it is white for every
@@ -83,8 +85,8 @@ export const getThemeColors = (
     contentInverse: token('content-inverse'),
     // Mirrors what the classNames pick for accent text.
     accent: accentColor(accent, isDark ? 300 : 700),
-    accentFill: accentColor(accent, 600),
-    onAccent: onAccentColor(accent),
+    accentFill: accentFillColor(accent, scheme),
+    onAccent: onAccentColor(accent, scheme),
     danger: danger(isDark ? 400 : 600),
   }
 }

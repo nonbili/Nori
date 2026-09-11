@@ -68,7 +68,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
       {!pager.bookmarkEditMode ? (
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
-          className="h-[32px] flex-row items-center gap-1.5 rounded-full border border-dashed border-line-strong bg-transparent px-4"
+          className="h-[36px] flex-row items-center gap-1.5 rounded-full border border-dashed border-line-strong bg-transparent px-4"
         >
           <MaterialIcons name="add" size={16} color={pager.themeColors.contentSubtle} />
           <NoriText className="text-sm font-medium text-content-secondary">
@@ -95,7 +95,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
             handler: () => ui$.listEditor.set({ name: '' }),
           },
         ]}
-        triggerClassName="h-[32px] w-[32px] items-center justify-center rounded-full border border-line-strong bg-muted active:bg-muted-strong"
+        triggerClassName="h-[36px] w-[36px] items-center justify-center rounded-full border border-line-strong bg-muted active:bg-muted-strong"
         trigger={<MaterialIcons name="list" size={18} color={pager.themeColors.content} />}
       />
     ) : null}

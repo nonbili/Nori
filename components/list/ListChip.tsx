@@ -25,7 +25,7 @@ export const ListChip: React.FC<ListChipProps> = ({
   const animatedPagerScrollX = Platform.OS === 'web' ? undefined : pagerScrollX
 
   // The active pill is driven by a worklet, so these are the token equivalents
-  // of bg-accent-600 / border-line / text-accent-on / text-content-muted. The chip
+  // of bg-accent-fill / border-line / text-accent-on / text-content-muted. The chip
   // row is the only always-visible chrome, so it is what makes the accent
   // setting show up on the home screen.
   const activeBg = themeColors.accentFill
@@ -107,7 +107,7 @@ export const ListChip: React.FC<ListChipProps> = ({
         testID={`list_chip_${name}`}
         accessibilityLabel={name}
         accessibilityRole="tab"
-        className="relative h-[32px] items-center justify-center overflow-hidden rounded-full px-4"
+        className="relative h-[36px] items-center justify-center overflow-hidden rounded-full px-4"
       >
         <Animated.View style={[activeStyle, { backgroundColor: activeBg }]} />
         <Animated.View style={inactiveStyle} />

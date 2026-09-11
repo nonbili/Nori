@@ -76,9 +76,9 @@ export const SegmentedOption: React.FC<{
 }> = ({ active, label, onPress }) => (
   <Pressable
     onPress={onPress}
-    className={`rounded-full px-4 py-2 ${active ? 'bg-contrast' : 'bg-muted'}`}
+    className={`rounded-full px-4 py-2 ${active ? 'bg-accent-fill' : 'bg-muted'}`}
   >
-    <NoriText className={`text-sm font-medium ${active ? 'text-content-inverse' : 'text-content-secondary'}`}>{label}</NoriText>
+    <NoriText className={`text-sm font-medium ${active ? 'text-accent-on' : 'text-content-secondary'}`}>{label}</NoriText>
   </Pressable>
 )
 

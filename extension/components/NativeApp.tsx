@@ -49,20 +49,30 @@ function ReadyApp({
     }
   }, [state.snapshot.preferences.language])
 
+  // Tracked in state rather than read where it is needed: the accent's fill
+  // flips with the scheme, so a system-scheme change has to re-apply it and
+  // not only re-toggle the class.
+  const [isDark, setIsDark] = useState(false)
   useEffect(() => {
     const theme = state.snapshot.preferences.theme
     colorScheme.set(theme)
-    document.documentElement.classList.toggle(
-      'dark',
-      theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches),
-    )
+    const systemDark = matchMedia('(prefers-color-scheme: dark)')
+    const resolve = () => setIsDark(theme === 'dark' || (theme === 'system' && systemDark.matches))
+    resolve()
+    if (theme !== 'system') return
+    systemDark.addEventListener('change', resolve)
+    return () => systemDark.removeEventListener('change', resolve)
   }, [state.snapshot.preferences.theme])
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark)
+  }, [isDark])
 
   // On the root element rather than a React subtree so the plain-DOM parts of
   // the popup (app.css) and the react-native-web tree both inherit them.
   useEffect(() => {
-    applyAccentToDocument(normalizeAccent(state.snapshot.preferences.accent))
-  }, [state.snapshot.preferences.accent])
+    applyAccentToDocument(normalizeAccent(state.snapshot.preferences.accent), isDark ? 'dark' : 'light')
+  }, [state.snapshot.preferences.accent, isDark])
 
   return (
     <AppProvider value={state}>

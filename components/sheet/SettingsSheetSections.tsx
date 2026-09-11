@@ -97,9 +97,9 @@ const SyncSignInSection: React.FC = () => {
         <View className="mt-5">
           <Pressable
             onPress={() => void startHostedSignIn()}
-            className="items-center rounded-full bg-contrast px-5 py-2.5 active:opacity-80"
+            className="items-center rounded-full bg-accent-fill px-5 py-2.5 active:bg-accent-fill-pressed"
           >
-            <NoriText className="text-sm font-medium text-content-inverse">{t('settings.sync.signIn')}</NoriText>
+            <NoriText className="text-sm font-medium text-accent-on">{t('settings.sync.signIn')}</NoriText>
           </Pressable>
         </View>
       </View>
@@ -248,7 +248,7 @@ const IosPlanActions: React.FC<{
         <Pressable
           onPress={onPurchase}
           disabled={loadingProduct || !productPrice}
-          className="items-center rounded-2xl bg-accent-600 px-4 py-3 active:opacity-80 disabled:opacity-50"
+          className="items-center rounded-2xl bg-accent-fill px-4 py-3 active:opacity-80 disabled:opacity-50"
         >
           <NoriText className="font-medium text-accent-on">
             {busyAction === 'buy'

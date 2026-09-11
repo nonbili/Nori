@@ -59,7 +59,7 @@ export const ListEditorSheet: React.FC = () => {
           <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-muted active:bg-muted-strong">
             <NoriText className="text-content">{t('lists.cancel')}</NoriText>
           </Pressable>
-          <Pressable onPress={saveList} className="rounded-full px-5 py-3 bg-accent-600 active:bg-accent-700">
+          <Pressable onPress={saveList} className="rounded-full px-5 py-3 bg-accent-fill active:bg-accent-fill-pressed">
             <NoriText className="font-medium text-accent-on">{t('lists.save')}</NoriText>
           </Pressable>
         </View>

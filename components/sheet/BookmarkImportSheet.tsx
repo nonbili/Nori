@@ -117,7 +117,7 @@ export const BookmarkImportSheet: React.FC = () => {
             {canSubmit ? (
               <Pressable
                 onPress={onImport}
-                className={`rounded-full px-5 py-3 ${isBackup ? 'bg-danger-600 active:bg-danger-700' : 'bg-accent-600 active:bg-accent-700'}`}
+                className={`rounded-full px-5 py-3 ${isBackup ? 'bg-danger-600 active:bg-danger-700' : 'bg-accent-fill active:bg-accent-fill-pressed'}`}
               >
                 <NoriText className={`font-medium ${isBackup ? 'text-white' : 'text-accent-on'}`}>
                   {isBackup ? t('settings.transfer.restoreAction') : t('settings.transfer.importAction')}

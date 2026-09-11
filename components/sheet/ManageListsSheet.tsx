@@ -71,7 +71,7 @@ export const ManageListsSheet: React.FC = () => {
       headerLeft={
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
-          className="rounded-full bg-accent-600 px-3 py-1.5 active:bg-accent-700"
+          className="rounded-full bg-accent-fill px-3 py-1.5 active:bg-accent-fill-pressed"
         >
           <View className="flex-row items-center gap-1.5">
             <MaterialIcons name="add" color={themeColors.onAccent} size={16} />
