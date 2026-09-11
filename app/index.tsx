@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { BackHandler } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
@@ -7,6 +7,12 @@ import { ui$ } from '@/states/ui'
 import { NoriHome } from '@/components/home/NoriHome'
 import { usePendingShareIntent } from '@/hooks/usePendingShareIntent'
 import { useQuickShare } from '@/hooks/useQuickShare'
+
+// Distance (px) a slow drag must cover before the drawer opens.
+const DRAWER_OPEN_DISTANCE = 110
+// A quick flick opens earlier, but still needs some travel and real speed.
+const DRAWER_OPEN_FLICK_DISTANCE = 48
+const DRAWER_OPEN_VELOCITY = 900
 
 export default function HomeScreen() {
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
@@ -19,13 +25,35 @@ export default function HomeScreen() {
     }
   }, [])
 
+  // A short nudge upward used to be enough to open the drawer, which fired by
+  // accident while scrolling. Opening now needs a deliberate swipe: either a
+  // long enough drag or a fast flick.
+  const openTriggered = useRef(false)
   const openDrawerGesture = Gesture.Pan()
     .enabled(!bookmarkEditMode && bookmarkListAtBottom)
-    .activeOffsetY([-18, 10000])
-    .failOffsetX([-80, 80])
+    .activeOffsetY([-24, 10000])
+    .failOffsetX([-60, 60])
     .runOnJS(true)
-    .onStart(() => {
-      toggleDrawer(true)
+    .onBegin(() => {
+      openTriggered.current = false
+    })
+    .onUpdate((event) => {
+      if (openTriggered.current) {
+        return
+      }
+      if (event.translationY <= -DRAWER_OPEN_DISTANCE) {
+        openTriggered.current = true
+        toggleDrawer(true)
+      }
+    })
+    .onEnd((event) => {
+      if (openTriggered.current) {
+        return
+      }
+      if (event.velocityY <= -DRAWER_OPEN_VELOCITY && event.translationY <= -DRAWER_OPEN_FLICK_DISTANCE) {
+        openTriggered.current = true
+        toggleDrawer(true)
+      }
     })
 
   useEffect(() => {
