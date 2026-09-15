@@ -1,0 +1,4 @@
+- Accent color setting: pick any hue, or use the blue, orange and black presets
+- Redesigned bottom toolbar that replaces the header, split into glass pills
+- More breathing room at the top of the page
+- Fixed dialog width and the accent color in Manage lists
