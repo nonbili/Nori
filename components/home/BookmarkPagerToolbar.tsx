@@ -31,15 +31,16 @@ const ToolbarIconButton: React.FC<{
   </Pressable>
 )
 
-// A frosted, translucent pill with a light rim instead of a drop shadow. Web
-// gets a real backdrop blur; native keeps the translucent tint and rim.
+// A frosted, translucent pill with a light rim and, in light mode only, a faint
+// shadow so it reads against the canvas. Web gets a real backdrop blur; native
+// keeps the translucent tint and rim.
 const GlassPill: React.FC<{ gap?: string; className?: string; children: React.ReactNode }> = ({
   gap = 'gap-1',
   className = '',
   children,
 }) => (
   <View
-    className={`flex-row items-center ${gap} ${className} rounded-full border border-white/60 bg-surface/60 p-1 web:backdrop-blur-xl web:backdrop-saturate-150 dark:border-white/15 dark:bg-canvas/50`}
+    className={`flex-row items-center ${gap} ${className} rounded-full border border-white/60 bg-surface/60 p-1 shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:shadow-none web:backdrop-blur-xl web:backdrop-saturate-150 dark:border-white/15 dark:bg-canvas/50`}
   >
     {children}
   </View>
