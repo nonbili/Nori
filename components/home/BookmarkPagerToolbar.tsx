@@ -23,14 +23,26 @@ const ToolbarIconButton: React.FC<{
     testID={testID}
     accessibilityLabel={label}
     accessibilityRole="button"
-    className={`h-11 w-11 items-center justify-center rounded-full ${
-      danger
-        ? 'bg-danger-100 active:bg-danger-200 dark:bg-danger-900/40 dark:active:bg-danger-900/60'
-        : 'bg-muted active:bg-muted-strong'
+    className={`h-10 w-10 items-center justify-center rounded-full ${
+      danger ? 'active:bg-danger-100 dark:active:bg-danger-900/40' : 'active:bg-muted'
     }`}
   >
     <MaterialIcons name={icon} size={20} color={color} />
   </Pressable>
+)
+
+// A frosted, translucent pill with a light rim instead of a drop shadow. Web
+// gets a real backdrop blur; native keeps the translucent tint and rim.
+const GlassPill: React.FC<{ gap?: string; className?: string; children: React.ReactNode }> = ({
+  gap = 'gap-1',
+  className = '',
+  children,
+}) => (
+  <View
+    className={`flex-row items-center ${gap} ${className} rounded-full border border-white/60 bg-surface/60 p-1 web:backdrop-blur-xl web:backdrop-saturate-150 dark:border-white/15 dark:bg-canvas/50`}
+  >
+    {children}
+  </View>
 )
 
 export const BookmarkPagerToolbar: React.FC<{
@@ -91,139 +103,151 @@ export const BookmarkPagerToolbar: React.FC<{
     },
   ]
 
-  // Browsing: drawer and history on the left, the primary add action in the
-  // middle, then edit mode and the overflow menu.
+  // Browsing, split 1-3-1: the drawer alone, history/add/edit grouped in the
+  // middle, and the overflow menu alone.
   const browseBar = (
-    <View className="flex-1 flex-row items-center justify-between">
-      <ToolbarIconButton
-        icon="bookmarks"
-        color={themeColors.content}
-        label={t('bookmarks.openDrawer')}
-        testID="drawer_button"
-        onPress={() => ui$.openBookmarksDrawer()}
-      />
-      <ToolbarIconButton
-        icon="history"
-        color={themeColors.content}
-        label={t('history.openHistory')}
-        testID="history_button"
-        onPress={() => ui$.recentSheetOpen.set(true)}
-      />
-      <Pressable
-        onPress={actions.onOpenNewBookmark}
-        testID="add_bookmark_button"
-        accessibilityLabel={t('bookmarks.add')}
-        accessibilityRole="button"
-        className="h-11 w-11 items-center justify-center rounded-full bg-accent-fill active:bg-accent-fill-pressed"
-      >
-        <MaterialIcons name="add" size={24} color={themeColors.onAccent} />
-      </Pressable>
-      <ToolbarIconButton
-        icon="edit"
-        color={themeColors.content}
-        label={t('bookmarks.editMultiple')}
-        testID="edit_mode_button"
-        onPress={toggleEditMode}
-      />
-      <NouMenu
-        items={menuItems}
-        testID="toolbar_menu_button"
-        accessibilityLabel={t('settings.moreOptions')}
-        trigger={
-          <View className="h-11 w-11 items-center justify-center rounded-full bg-muted">
-            <MaterialIcons name="more-vert" size={20} color={themeColors.content} />
-          </View>
-        }
-      />
-    </View>
+    <>
+      <GlassPill>
+        <ToolbarIconButton
+          icon="bookmarks"
+          color={themeColors.content}
+          label={t('bookmarks.openDrawer')}
+          testID="drawer_button"
+          onPress={() => ui$.openBookmarksDrawer()}
+        />
+      </GlassPill>
+      <GlassPill gap="gap-4">
+        <ToolbarIconButton
+          icon="history"
+          color={themeColors.content}
+          label={t('history.openHistory')}
+          testID="history_button"
+          onPress={() => ui$.recentSheetOpen.set(true)}
+        />
+        <Pressable
+          onPress={actions.onOpenNewBookmark}
+          testID="add_bookmark_button"
+          accessibilityLabel={t('bookmarks.add')}
+          accessibilityRole="button"
+          className="h-10 w-10 items-center justify-center rounded-full bg-accent-fill active:bg-accent-fill-pressed"
+        >
+          <MaterialIcons name="add" size={22} color={themeColors.onAccent} />
+        </Pressable>
+        <ToolbarIconButton
+          icon="edit"
+          color={themeColors.content}
+          label={t('bookmarks.editMultiple')}
+          testID="edit_mode_button"
+          onPress={toggleEditMode}
+        />
+      </GlassPill>
+      <GlassPill>
+        <NouMenu
+          items={menuItems}
+          testID="toolbar_menu_button"
+          accessibilityLabel={t('settings.moreOptions')}
+          trigger={
+            <View className="h-10 w-10 items-center justify-center rounded-full">
+              <MaterialIcons name="more-vert" size={20} color={themeColors.content} />
+            </View>
+          }
+        />
+      </GlassPill>
+    </>
   )
 
-  // With a selection the bar turns into a selection bar: a count that doubles as
-  // select-all, then icon-only actions, so the row stays readable on narrow phones.
+  // With a selection the bar turns into a selection bar, split the same way: a
+  // count that doubles as select-all, the icon-only actions, then done. Its six
+  // targets are packed tight (no gaps, narrower margins) so it fits 320px screens.
+  // Only the count pill may shrink, so a long count or large text never pushes
+  // Done out of the toolbar.
   const selectionBar = (
-    <View className="flex-1 flex-row items-center justify-between">
-      <Pressable
-        onPress={actions.onSelectAll}
-        disabled={!hasVisibleBookmarks}
-        accessibilityLabel={allVisibleSelected ? t('bookmarks.deselectAll') : t('bookmarks.selectAll')}
-        accessibilityRole="button"
-        className={`h-11 flex-row items-center gap-1.5 rounded-full bg-muted px-3 active:bg-muted-strong ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
-      >
-        <MaterialIcons
-          name={allVisibleSelected ? 'check-box' : 'check-box-outline-blank'}
-          size={20}
-          color={themeColors.content}
-        />
-        <NoriText className="text-sm font-medium text-content">{selectedCount}</NoriText>
-      </Pressable>
-      {moveTargetLists.length ? (
-        <NouMenu
-          accessibilityLabel={t('bookmarks.moveTo')}
-          items={moveTargetLists.map((list) => ({
-            id: list.id,
-            label: list.name,
-            handler: () => actions.onMoveSelectedToList(list.id),
-          }))}
-          trigger={(
-            <View className="h-11 w-11 items-center justify-center rounded-full bg-muted">
-              <MaterialIcons name="drive-file-move" size={20} color={themeColors.content} />
-            </View>
-          )}
-        />
-      ) : (
-        <View className="opacity-40">
-          <ToolbarIconButton
-            icon="drive-file-move"
+    <>
+      <GlassPill className="min-w-0 shrink">
+        <Pressable
+          onPress={actions.onSelectAll}
+          disabled={!hasVisibleBookmarks}
+          accessibilityLabel={allVisibleSelected ? t('bookmarks.deselectAll') : t('bookmarks.selectAll')}
+          accessibilityRole="button"
+          className={`h-10 min-w-0 shrink flex-row items-center gap-1 rounded-full px-2 active:bg-muted ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
+        >
+          <MaterialIcons
+            name={allVisibleSelected ? 'check-box' : 'check-box-outline-blank'}
+            size={20}
             color={themeColors.content}
-            label={t('bookmarks.moveTo')}
-            onPress={() => showToast(t('bookmarks.noOtherLists'))}
           />
-        </View>
-      )}
-      <ToolbarIconButton
-        icon="visibility-off"
-        color={themeColors.content}
-        label={t('bookmarks.hide')}
-        onPress={actions.onHideSelected}
-      />
-      <ToolbarIconButton
-        icon="share"
-        color={themeColors.content}
-        label={t('bookmarks.share')}
-        onPress={actions.onShareSelected}
-      />
-      <ToolbarIconButton
-        icon="delete"
-        color={themeColors.danger}
-        label={t('bookmarks.delete')}
-        danger
-        onPress={actions.onRemoveSelectedBookmark}
-      />
-      <Pressable
-        onPress={toggleEditMode}
-        testID="done_editing_button"
-        accessibilityLabel={t('bookmarks.doneEditing')}
-        accessibilityRole="button"
-        className="h-11 w-11 items-center justify-center rounded-full bg-accent-fill active:bg-accent-fill-pressed"
-      >
-        <MaterialIcons name="check" size={20} color={themeColors.onAccent} />
-      </Pressable>
-    </View>
+          <NoriText numberOfLines={1} className="shrink text-sm font-medium text-content">
+            {selectedCount > 99 ? '99+' : selectedCount}
+          </NoriText>
+        </Pressable>
+      </GlassPill>
+      <GlassPill gap="gap-0">
+        {moveTargetLists.length ? (
+          <NouMenu
+            accessibilityLabel={t('bookmarks.moveTo')}
+            items={moveTargetLists.map((list) => ({
+              id: list.id,
+              label: list.name,
+              handler: () => actions.onMoveSelectedToList(list.id),
+            }))}
+            trigger={
+              <View className="h-10 w-10 items-center justify-center rounded-full">
+                <MaterialIcons name="drive-file-move" size={20} color={themeColors.content} />
+              </View>
+            }
+          />
+        ) : (
+          <View className="opacity-40">
+            <ToolbarIconButton
+              icon="drive-file-move"
+              color={themeColors.content}
+              label={t('bookmarks.moveTo')}
+              onPress={() => showToast(t('bookmarks.noOtherLists'))}
+            />
+          </View>
+        )}
+        <ToolbarIconButton
+          icon="visibility-off"
+          color={themeColors.content}
+          label={t('bookmarks.hide')}
+          onPress={actions.onHideSelected}
+        />
+        <ToolbarIconButton
+          icon="share"
+          color={themeColors.content}
+          label={t('bookmarks.share')}
+          onPress={actions.onShareSelected}
+        />
+        <ToolbarIconButton
+          icon="delete"
+          color={themeColors.danger}
+          label={t('bookmarks.delete')}
+          danger
+          onPress={actions.onRemoveSelectedBookmark}
+        />
+      </GlassPill>
+      <GlassPill>
+        <Pressable
+          onPress={toggleEditMode}
+          testID="done_editing_button"
+          accessibilityLabel={t('bookmarks.doneEditing')}
+          accessibilityRole="button"
+          className="h-10 w-10 items-center justify-center rounded-full bg-accent-fill active:bg-accent-fill-pressed"
+        >
+          <MaterialIcons name="check" size={20} color={themeColors.onAccent} />
+        </Pressable>
+      </GlassPill>
+    </>
   )
 
   return (
     <View
       testID="bookmark_toolbar"
-      className="absolute left-6 right-6 z-10"
+      className={`absolute z-10 ${bookmarkEditMode ? 'left-4 right-4' : 'left-6 right-6'}`}
       style={{ bottom: insets.bottom + 16 }}
       onLayout={onToolbarLayout}
     >
-      <View
-        className="flex-row items-center rounded-full border border-white/70 bg-surface/70 px-2 py-2 shadow-lg dark:border-white/10 dark:bg-canvas/70"
-        style={{ shadowColor: '#000', shadowOpacity: 0.16, shadowRadius: 20, shadowOffset: { width: 0, height: 10 }, elevation: 16 }}
-      >
-        {bookmarkEditMode ? selectionBar : browseBar}
-      </View>
+      <View className="flex-row items-center justify-between">{bookmarkEditMode ? selectionBar : browseBar}</View>
     </View>
   )
 }
