@@ -1,9 +1,14 @@
 import { defineConfig } from 'wxt'
-import { resolve } from 'node:path'
+import { createRequire } from 'node:module'
+import { dirname, resolve } from 'node:path'
 import reactNativeWeb from 'vite-plugin-react-native-web'
 
 const extensionDir = process.cwd()
 const rootDir = resolve(extensionDir, '..')
+// Resolve from the extension so a nested copy wins, but fall back to the
+// hoisted root copy that a clean install (CI, AMO source review) produces.
+const requireFromExtension = createRequire(resolve(extensionDir, 'package.json'))
+const packageDir = (name: string) => dirname(requireFromExtension.resolve(`${name}/package.json`))
 const rewriteRootAliases = {
   name: 'rewrite-nori-root-aliases',
   enforce: 'pre' as const,
@@ -46,16 +51,19 @@ export default defineConfig({
           replacement: resolve(extensionDir, 'lib/legend-react.ts'),
         },
         { find: 'nori-root', replacement: rootDir },
-        { find: /^react(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react') },
-        { find: /^react-dom(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-dom') },
-        { find: /^i18next(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/i18next') },
-        { find: /^react-i18next(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/react-i18next') },
-        { find: /^@legendapp\/state(?=$|\/)/, replacement: resolve(process.cwd(), 'node_modules/@legendapp/state') },
+        { find: /^react(?=$|\/)/, replacement: packageDir('react') },
+        { find: /^react-dom(?=$|\/)/, replacement: packageDir('react-dom') },
+        { find: /^i18next(?=$|\/)/, replacement: packageDir('i18next') },
+        { find: /^react-i18next(?=$|\/)/, replacement: packageDir('react-i18next') },
+        { find: /^@legendapp\/state(?=$|\/)/, replacement: packageDir('@legendapp/state') },
       ],
     },
     plugins: [rewriteRootAliases, reactNativeWeb()],
   }),
   publicDir: '../assets/images',
+  // AMO reviewers must be able to rebuild the submission from the sources zip,
+  // so it carries every root directory the extension imports plus the
+  // workspace manifests `bun install` needs to honor bun.lock.
   zip: {
     sourcesRoot: resolve(process.cwd(), '..'),
     includeSources: [
@@ -63,9 +71,16 @@ export default defineConfig({
       'bun.lock',
       'bunfig.toml',
       'tsconfig.json',
+      'tailwind.config.js',
+      'env.d.ts',
+      'desktop/frontend/package.json',
       'assets/images/**',
+      'components/**',
       'lib/**',
+      'locales/**',
+      'modules/**',
       'patches/**',
+      'states/**',
       'extension/**',
     ],
   },

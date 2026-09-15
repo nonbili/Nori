@@ -13,6 +13,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Each store is skipped until its secrets are configured. Secrets can't be
+    # read in `if`, so their presence is exposed through job env.
+    env:
+      HAS_CHROME: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY != '' }}
+      HAS_FIREFOX: ${{ secrets.FIREFOX_JWT_SECRET != '' }}
 
     steps:
       - uses: actions/checkout@v5
@@ -21,8 +26,10 @@ jobs:
 
       # extension/ imports the repo-root components/, so the workspace install
       # has to happen at the root.
+      # --frozen-lockfile always reports lockfile changes in this repo, even on
+      # a clean checkout, so it can't gate the install.
       - name: install
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: zip chrome & firefox
         run: bun run zip:all
@@ -58,3 +65,26 @@ jobs:
           files: extension/.output/*.zip
           # The `latest` pointer belongs to the mobile app's `v*` releases.
           make_latest: "false"
+
+      - name: submit to Chrome Web Store
+        if: startsWith(github.ref, 'refs/tags/extension/v') && env.HAS_CHROME == 'true'
+        run: bunx wxt submit --chrome-zip ".output/nori-extension-$VER-chrome.zip"
+        working-directory: extension
+        env:
+          CHROME_API_VERSION: v2
+          CHROME_EXTENSION_ID: ojgmnocnegcbhlmfoackgoocnjbfejpg
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+          CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_CLIENT_EMAIL }}
+          CHROME_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_PRIVATE_KEY }}
+
+      - name: submit to Firefox Add-ons
+        if: startsWith(github.ref, 'refs/tags/extension/v') && env.HAS_FIREFOX == 'true'
+        run: |
+          bunx wxt submit \
+            --firefox-zip ".output/nori-extension-$VER-firefox.zip" \
+            --firefox-sources-zip ".output/nori-extension-$VER-sources.zip"
+        working-directory: extension
+        env:
+          FIREFOX_EXTENSION_ID: browser-extension@nori.inks.page
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
