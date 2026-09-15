@@ -1,4 +1,4 @@
-/** Types for lib/design-tokens.js, which stays CommonJS so Tailwind can require it. */
+/** Types for lib/design-tokens.js, which stays plain JS so Tailwind configs can require it. */
 
 export type RampStep = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950
 
