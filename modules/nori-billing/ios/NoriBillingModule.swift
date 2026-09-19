@@ -1,7 +1,6 @@
 import ExpoModulesCore
 import StoreKit
 import UIKit
-
 struct NoriBillingProductRecord: Record {
   @Field
   var id: String = ""
@@ -46,8 +45,26 @@ struct NoriBillingEntitlementRecord: Record {
 }
 
 public class NoriBillingModule: Module {
+  private var updatesTask: Task<Void, Never>?
+
   public func definition() -> ModuleDefinition {
     Name("NoriBilling")
+
+    Events("onTransactionUpdated")
+
+    // Ask to Buy approvals, renewals, refunds and purchases made on other
+    // devices arrive here rather than as a purchase() result. They stay
+    // unfinished until JS has synced them to the backend and calls
+    // finishTransaction, so a missed event is picked up again by
+    // getUnfinishedTransactions.
+    OnStartObserving {
+      self.startObservingUpdates()
+    }
+
+    OnStopObserving {
+      self.updatesTask?.cancel()
+      self.updatesTask = nil
+    }
 
     AsyncFunction("getProducts") { (productIds: [String]) async throws -> [NoriBillingProductRecord] in
       let products = try await Product.products(for: productIds)
@@ -73,8 +90,8 @@ public class NoriBillingModule: Module {
       let result = try await product.purchase(options: [.appAccountToken(token)])
       switch result {
       case .success(let verification):
-        let transaction = try self.unwrap(verification)
-        await transaction.finish()
+        // Finished by finishTransaction once the backend has the purchase.
+        _ = try self.unwrap(verification)
         return self.serialize(verification)
       case .pending:
         throw NSError(domain: "NoriBilling", code: 202, userInfo: [NSLocalizedDescriptionKey: "Purchase pending approval"])
@@ -90,8 +107,23 @@ public class NoriBillingModule: Module {
       return try await self.collectCurrentEntitlements()
     }
 
-    AsyncFunction("getCurrentEntitlements") { () async throws -> [NoriBillingEntitlementRecord] in
-      try await self.collectCurrentEntitlements()
+    AsyncFunction("getUnfinishedTransactions") { () async -> [NoriBillingEntitlementRecord] in
+      var records: [NoriBillingEntitlementRecord] = []
+      for await verification in StoreKit.Transaction.unfinished {
+        if case .verified = verification {
+          records.append(self.serialize(verification))
+        }
+      }
+      return records
+    }
+
+    AsyncFunction("finishTransaction") { (transactionId: String) async in
+      for await verification in StoreKit.Transaction.unfinished {
+        if case .verified(let transaction) = verification, String(transaction.id) == transactionId {
+          await transaction.finish()
+          return
+        }
+      }
     }
 
     AsyncFunction("manageSubscriptions") { () async throws in
@@ -99,6 +131,18 @@ public class NoriBillingModule: Module {
         throw NSError(domain: "NoriBilling", code: 500, userInfo: [NSLocalizedDescriptionKey: "No active scene"])
       }
       try await AppStore.showManageSubscriptions(in: scene)
+    }
+  }
+
+  private func startObservingUpdates() {
+    updatesTask?.cancel()
+    updatesTask = Task { [weak self] in
+      for await verification in StoreKit.Transaction.updates {
+        guard let self, case .verified = verification else {
+          continue
+        }
+        self.sendEvent("onTransactionUpdated", self.serialize(verification).toDictionary())
+      }
     }
   }
 
@@ -137,7 +181,7 @@ public class NoriBillingModule: Module {
       expirationDate: transaction.expirationDate?.ISO8601Format(),
       revocationDate: transaction.revocationDate?.ISO8601Format(),
       appAccountToken: transaction.appAccountToken?.uuidString.lowercased(),
-      environment: transaction.environmentStringRepresentation,
+      environment: transaction.environment.rawValue,
       signedTransactionInfo: verification.jwsRepresentation
     )
   }

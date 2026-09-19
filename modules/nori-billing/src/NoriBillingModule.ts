@@ -20,11 +20,17 @@ export interface NoriBillingEntitlement {
   signedTransactionInfo: string
 }
 
-declare class NoriBillingModule extends NativeModule {
+type NoriBillingEvents = {
+  onTransactionUpdated: (transaction: NoriBillingEntitlement) => void
+}
+
+declare class NoriBillingModule extends NativeModule<NoriBillingEvents> {
   getProducts(productIds: string[]): Promise<NoriBillingProduct[]>
+  /* Resolves with an unfinished transaction; call finishTransaction once the backend has it. */
   purchase(productId: string, appAccountToken: string): Promise<NoriBillingEntitlement>
   restore(): Promise<NoriBillingEntitlement[]>
-  getCurrentEntitlements(): Promise<NoriBillingEntitlement[]>
+  getUnfinishedTransactions(): Promise<NoriBillingEntitlement[]>
+  finishTransaction(transactionId: string): Promise<void>
   manageSubscriptions(): Promise<void>
 }
 
@@ -36,8 +42,10 @@ const NoriBilling = isIos
       getProducts: unsupportedError,
       purchase: unsupportedError,
       restore: unsupportedError,
-      getCurrentEntitlements: unsupportedError,
+      getUnfinishedTransactions: unsupportedError,
+      finishTransaction: unsupportedError,
       manageSubscriptions: unsupportedError,
+      addListener: () => ({ remove: () => {} }),
     } as unknown as NoriBillingModule)
 
 export default NoriBilling

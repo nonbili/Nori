@@ -31,6 +31,7 @@ export type SettingsBusyAction =
 
 export interface SettingsActions {
   actionError?: string
+  notice?: string
   busyAction: SettingsBusyAction
   loadingProduct: boolean
   productPrice?: string
@@ -198,6 +199,7 @@ const PlanSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => {
         {authRefreshing || syncInFlight ? (
           <NoriText className="mt-1 text-xs text-content-muted">{t('settings.sync.working')}</NoriText>
         ) : null}
+        {actions.notice ? <NoriText className="mt-3 text-sm text-content-muted">{actions.notice}</NoriText> : null}
         {authError || syncError || actions.actionError ? (
           <NoriText className="mt-3 text-sm text-danger-600 dark:text-danger-400">
             {authError || syncError || actions.actionError}

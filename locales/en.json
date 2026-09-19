@@ -125,7 +125,8 @@
       "errorSignInBuy": "Sign in to buy Nori Sync",
       "errorSignInRestore": "Sign in to restore purchases",
       "errorNoPurchase": "No Nori Sync purchase found to restore",
-      "errorPending": "Your latest changes are still syncing. Try again in a moment."
+      "errorPending": "Your latest changes are still syncing. Try again in a moment.",
+      "purchasePending": "Purchase pending approval. Sync unlocks once it is approved."
     },
     "plan": {
       "label": "Current plan",

@@ -19,7 +19,8 @@ import {
   restoreBookmarksFromBackup,
 } from '@/lib/bookmark-import'
 import { confirmAction } from '@/lib/confirm'
-import { prepareIosPurchase, syncIosTransaction } from '@/lib/nori-api'
+import { prepareIosPurchase } from '@/lib/nori-api'
+import { deliverIosTransaction, IOS_SYNC_PRODUCT_ID } from '@/lib/ios-billing'
 import { openDeleteAccount, openManagePlan } from '@/lib/supabase/auth'
 import { syncSupabase, SYNC_PENDING_ERROR } from '@/lib/supabase/sync'
 import { bookmarks$ } from '@/states/bookmarks'
@@ -28,8 +29,6 @@ import { auth$, refreshEntitlement } from '@/states/auth'
 import { isIos, isWeb } from '@/lib/utils'
 import { showToast } from '@/lib/toast'
 import type { SettingsBusyAction } from '@/components/sheet/SettingsSheetSections'
-
-const IOS_SYNC_PRODUCT_ID = process.env.EXPO_PUBLIC_NORI_IOS_SYNC_PRODUCT_ID || 'jp.nonbili.nori.sync'
 
 const TRANSFER_MIME = {
   html: 'text/html',
@@ -74,6 +73,7 @@ export function useSettingsSheetActions() {
   const [loadingProduct, setLoadingProduct] = useState(isIos)
   const [productPrice, setProductPrice] = useState<string>()
   const [actionError, setActionError] = useState<string>()
+  const [notice, setNotice] = useState<string>()
   const [busyAction, setBusyAction] = useState<SettingsBusyAction>(null)
   const [pendingExternalAction, setPendingExternalAction] = useState<'delete-account' | null>(null)
 
@@ -123,10 +123,18 @@ export function useSettingsSheetActions() {
   const runAction = async (name: Exclude<SettingsBusyAction, null>, fn: () => Promise<void>) => {
     setBusyAction(name)
     setActionError(undefined)
+    setNotice(undefined)
     try {
       await fn()
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : String(error))
+      const message = error instanceof Error ? error.message : String(error)
+      if (message.includes('Purchase pending approval')) {
+        // Ask to Buy: the approved transaction arrives via Transaction.updates.
+        setNotice(t('settings.sync.purchasePending'))
+      } else if (!message.includes('Purchase cancelled')) {
+        // StoreKit reports a dismissed payment sheet as an error.
+        setActionError(message)
+      }
     } finally {
       setBusyAction(null)
     }
@@ -161,9 +169,8 @@ export function useSettingsSheetActions() {
         return
       }
       const prepared = await prepareIosPurchase(accessToken)
-      const result = await NoriBilling.purchase(IOS_SYNC_PRODUCT_ID, prepared.appAccountToken)
-      await syncIosTransaction(accessToken, result.signedTransactionInfo)
-      await refreshEntitlement()
+      const transaction = await NoriBilling.purchase(IOS_SYNC_PRODUCT_ID, prepared.appAccountToken)
+      await deliverIosTransaction(accessToken, transaction)
       await requestSync()
     })
 
@@ -181,8 +188,7 @@ export function useSettingsSheetActions() {
       if (!restored) {
         throw new Error(t('settings.sync.errorNoPurchase'))
       }
-      await syncIosTransaction(accessToken, restored.signedTransactionInfo)
-      await refreshEntitlement()
+      await deliverIosTransaction(accessToken, restored)
       await requestSync()
     })
 
@@ -280,6 +286,7 @@ export function useSettingsSheetActions() {
 
   return {
     actionError,
+    notice,
     busyAction,
     loadingProduct,
     productPrice,

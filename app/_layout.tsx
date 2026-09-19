@@ -17,6 +17,7 @@ import { purgeExpiredTombstones } from '@/lib/tombstone-purge'
 import { useAppColorScheme } from '@/lib/theme'
 import { accentVariables, applyAccentToDocument, normalizeAccent } from '@/lib/accent'
 import { auth$, bootstrapAuth } from '@/states/auth'
+import { listenIosTransactions, reconcileIosTransactions } from '@/lib/ios-billing'
 import { settings$ } from '@/states/settings'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
@@ -56,6 +57,15 @@ function LayoutContent() {
   useEffect(() => {
     nativeWindColorScheme.set(theme || 'system')
   }, [theme])
+
+  useEffect(() => listenIosTransactions(), [])
+
+  // Deliver purchases a failed sync or a killed app left unfinished.
+  useEffect(() => {
+    if (userId) {
+      void reconcileIosTransactions()
+    }
+  }, [userId])
 
   useEffect(() => {
     // Before the watchers start, so compacting old tombstones does not mark every
