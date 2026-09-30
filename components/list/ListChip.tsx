@@ -25,11 +25,11 @@ export const ListChip: React.FC<ListChipProps> = ({
   const animatedPagerScrollX = Platform.OS === 'web' ? undefined : pagerScrollX
 
   // The active pill is driven by a worklet, so these are the token equivalents
-  // of bg-accent-fill / border-line / text-accent-on / text-content-muted. The chip
+  // of bg-accent-fill / bg-surface / text-accent-on / text-content-muted. The chip
   // row is the only always-visible chrome, so it is what makes the accent
   // setting show up on the home screen.
   const activeBg = themeColors.accentFill
-  const inactiveBorder = themeColors.line
+  const inactiveBg = themeColors.surface
   const activeText = themeColors.onAccent
   const inactiveText = themeColors.contentMuted
 
@@ -66,8 +66,7 @@ export const ListChip: React.FC<ListChipProps> = ({
         position: 'absolute',
         inset: 0,
         borderRadius: 9999,
-        borderWidth: 1,
-        borderColor: inactiveBorder,
+        backgroundColor: inactiveBg,
       }
     }
     const progress = interpolate(
@@ -81,10 +80,9 @@ export const ListChip: React.FC<ListChipProps> = ({
       position: 'absolute',
       inset: 0,
       borderRadius: 9999,
-      borderWidth: 1,
-      borderColor: inactiveBorder,
+      backgroundColor: inactiveBg,
     }
-  }, [isActive, animatedPagerScrollX, pageWidth, index, inactiveBorder])
+  }, [isActive, animatedPagerScrollX, pageWidth, index, inactiveBg])
 
   const textStyle = useAnimatedStyle(() => {
     'worklet'

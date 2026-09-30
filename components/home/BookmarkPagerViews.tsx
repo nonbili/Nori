@@ -106,7 +106,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel; extraM
           },
           ...extraMenuItems.map((item) => ({ ...item, footer: true })),
         ]}
-        triggerClassName="h-[36px] w-[36px] items-center justify-center rounded-full border border-line-strong bg-muted active:bg-muted-strong"
+        triggerClassName="h-[36px] w-[36px] items-center justify-center rounded-full bg-muted active:bg-muted-strong"
         trigger={<MaterialIcons name="list" size={18} color={pager.themeColors.content} />}
       />
     ) : null}

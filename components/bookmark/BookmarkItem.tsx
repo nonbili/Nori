@@ -164,14 +164,19 @@ export const BookmarkTile = memo(({
 
   return (
     <View className="w-full gap-2">
-      <View ref={tileRef} collapsable={false} {...webContextMenuProps}>
+      <View
+        ref={tileRef}
+        collapsable={false}
+        className="rounded-full shadow-[0_1px_3px_rgba(20,24,40,0.12)] dark:shadow-none"
+        {...webContextMenuProps}
+      >
         <Pressable
           onPress={editMode ? onEnable || onSelect || undefined : onOpen}
           onLongPress={!editMode ? handleLongPress : undefined}
           className={`flex-row items-center gap-2 overflow-hidden rounded-full border px-3 py-2.5 active:bg-muted ${
             selected
               ? 'border-accent-500 bg-accent-100/70 dark:bg-accent-950/20'
-              : 'border-line bg-surface'
+              : 'border-transparent bg-surface'
           } ${isDragging ? 'opacity-50' : ''}`}
         >
           <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={24} iconSize={20} />
