@@ -15,7 +15,7 @@ const formatReleaseDate = (value: string) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date)
 }
 
-const cardCls = 'overflow-hidden rounded-[24px] border border-line bg-surface/90 dark:bg-surface/70'
+const cardCls = 'overflow-hidden rounded-[24px] bg-surface'
 
 export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVersion }) => {
   const { t } = useTranslation()
@@ -101,7 +101,7 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
             className={`${cardCls} px-4 py-4 active:opacity-70`}
           >
             <View className="flex-row items-start gap-3">
-              <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+              <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
                 <MaterialIcons name="history" color={isCurrent ? themeColors.accent : themeColors.contentMuted} size={18} />
               </View>
               <View className="flex-1">

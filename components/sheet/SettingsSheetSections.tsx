@@ -50,14 +50,14 @@ export interface SettingsActions {
 const SectionCard: React.FC<{ title: string; children: ReactNode }> = ({ title, children }) => (
   <View className="gap-3">
     <NoriText className="px-1 text-xs uppercase tracking-[0.18em] text-content-subtle">{title}</NoriText>
-    <View className="overflow-hidden rounded-[24px] border border-line bg-surface/90 dark:bg-surface/70">
+    <View className="overflow-hidden rounded-[24px] bg-surface">
       {children}
     </View>
   </View>
 )
 
 const SettingsBadge: React.FC<{ label: string }> = ({ label }) => (
-  <View className="rounded-full border border-line-strong bg-well px-3 py-1">
+  <View className="rounded-full bg-well px-3 py-1">
     <NoriText className="text-xs text-content-secondary">{label}</NoriText>
   </View>
 )
@@ -262,7 +262,7 @@ const IosPlanActions: React.FC<{
           </NoriText>
         </Pressable>
       )}
-      <View className="gap-2 rounded-2xl border border-line-strong bg-well/80 px-4 py-3 dark:border-line dark:bg-well/70">
+      <View className="gap-2 rounded-2xl bg-well px-4 py-3">
         <NoriText className="text-xs leading-5 text-content-muted">{t('settings.ios.legalHint')}</NoriText>
         <View className="flex-row flex-wrap gap-3">
           <NoriText
@@ -354,9 +354,9 @@ export const ExperienceSection: React.FC = () => {
 
   return (
     <SectionCard title={t('settings.experience.label')}>
-      <View className="border-b border-line px-4 py-4">
+      <View className="border-b-2 border-well px-4 py-4">
         <View className="flex-row items-center gap-3">
-          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
             <MaterialIcons name="open-in-browser" color={themeColors.contentMuted} size={18} />
           </View>
           <View className="flex-1">
@@ -375,9 +375,9 @@ export const ExperienceSection: React.FC = () => {
           </Pressable>
         </View>
       </View>
-      <View className="border-b border-line px-4 py-4">
+      <View className="border-b-2 border-well px-4 py-4">
         <View className="flex-row items-center gap-3">
-          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
             <MaterialIcons name="save-alt" color={themeColors.contentMuted} size={18} />
           </View>
           <View className="flex-1">
@@ -412,9 +412,9 @@ export const ExperienceSection: React.FC = () => {
           </View>
         ) : null}
       </View>
-      <View className="border-b border-line px-4 py-4">
+      <View className="border-b-2 border-well px-4 py-4">
         <View className="flex-row items-center gap-3">
-          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
             <MaterialIcons name="image" color={themeColors.contentMuted} size={18} />
           </View>
           <View className="flex-1">
@@ -433,9 +433,9 @@ export const ExperienceSection: React.FC = () => {
           </Pressable>
         </View>
       </View>
-      <View className="border-b border-line px-4 py-4">
+      <View className="border-b-2 border-well px-4 py-4">
         <View className="flex-row items-center gap-3">
-          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
             <MaterialIcons name="translate" color={themeColors.contentMuted} size={18} />
           </View>
           <View className="flex-1">
@@ -455,9 +455,9 @@ export const ExperienceSection: React.FC = () => {
           />
         </View>
       </View>
-      <View className="border-b border-line px-4 py-4">
+      <View className="border-b-2 border-well px-4 py-4">
         <View className="mb-3 flex-row items-center gap-3">
-          <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
             <MaterialIcons name="palette" color={themeColors.contentMuted} size={18} />
           </View>
           <View className="flex-1">
@@ -509,7 +509,7 @@ const AccentRow: React.FC = () => {
   return (
     <View className="px-4 py-4">
       <View className="mb-3 flex-row items-center gap-3">
-        <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+        <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
           <MaterialIcons name="color-lens" color={themeColors.contentMuted} size={18} />
         </View>
         <View className="flex-1">

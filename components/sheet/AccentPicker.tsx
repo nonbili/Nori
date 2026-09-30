@@ -153,7 +153,7 @@ export const CustomAccentPicker: React.FC<{
   }
 
   return (
-    <View className="mt-3 gap-3 rounded-2xl border border-line bg-inset p-3">
+    <View className="mt-3 gap-3 rounded-2xl bg-well p-3">
       <Strip
         label={t('settings.experience.accentHue')}
         colorAt={hueAt}

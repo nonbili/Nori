@@ -51,10 +51,10 @@ export const SettingsRow: React.FC<{
     <Pressable
       onPress={onPress}
       className={`flex-row items-center gap-3 px-4 py-4 active:bg-muted ${
-        !isLast ? 'border-b border-line' : ''
+        !isLast ? 'border-b-2 border-well' : ''
       }`}
     >
-      <View className="h-10 w-10 items-center justify-center rounded-2xl border border-line bg-inset">
+      <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
         <MaterialIcons name={icon} color={themeColors.contentMuted} size={18} />
       </View>
       <View className="flex-1">
