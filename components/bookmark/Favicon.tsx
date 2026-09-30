@@ -23,7 +23,7 @@ export const Favicon: React.FC<{
   const activeUrl = candidates.find((candidate) => !failedUrls.has(candidate))
   const className = showFavicon === false
     ? 'items-center justify-center overflow-hidden'
-    : wrapperClassName || 'items-center justify-center overflow-hidden rounded-sm bg-muted'
+    : wrapperClassName || 'items-center justify-center overflow-hidden rounded-lg bg-black/[0.04] dark:bg-white/[0.08]'
 
   return (
     <View
