@@ -1,0 +1,4 @@
+- Add System accent that follows your wallpaper with Material You on Android
+- Redesign bottom toolbar with liquid glass pills and quick settings access
+- Move list management into the list dropdown menu
+- Refresh interface with filled bookmark tiles, list chips, and settings rows
