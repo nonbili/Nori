@@ -192,6 +192,8 @@
       "accent": "Accentfärg",
       "accentHint": "Välj markeringsfärgen som används i hela appen.",
       "accentCustom": "Anpassad färg",
+      "accentSystem": "Systemfärg (bakgrundsbild)",
+      "accentSystemHint": "Matchar bakgrundsbilden, även bakgrunderna",
       "accentHue": "Nyans",
       "accentIntensity": "Intensitet",
       "accentHex": "Hexadecimal färgkod",

@@ -192,6 +192,8 @@
       "accent": "強調色",
       "accentHint": "選擇整個應用程式使用的強調顏色。",
       "accentCustom": "自訂顏色",
+      "accentSystem": "系統顏色（桌布）",
+      "accentSystemHint": "跟隨桌布配色，包括背景",
       "accentHue": "色相",
       "accentIntensity": "濃度",
       "accentHex": "十六進位顏色代碼",

@@ -1,4 +1,13 @@
-import { ACCENT_RAMPS, DEFAULT_ACCENT, RAMP_STEPS, STRUCTURAL, type AccentName, type RampStep } from '@/lib/design-tokens'
+import {
+  ACCENT_RAMPS,
+  DEFAULT_ACCENT,
+  RAMP_STEPS,
+  STRUCTURAL,
+  type AccentName,
+  type RampStep,
+  type StructuralTokenName,
+} from '@/lib/design-tokens'
+import { systemPalette$ } from '@/lib/system-palette'
 import {
   channelsToRgb,
   contrastRatio,
@@ -25,7 +34,17 @@ import {
 /** A colour the user picked, normalised to lowercase `#rrggbb`. */
 export type CustomAccent = `#${string}`
 
-export type AccentId = AccentName | CustomAccent
+/**
+ * Follow the wallpaper (Material You). Stored as this word rather than a colour,
+ * because the colour belongs to the device and can change under the app. It
+ * resolves through lib/system-palette.ts, and to the default accent wherever
+ * there is no palette - the browser extension, the desktop shell, iOS.
+ */
+export const SYSTEM_ACCENT = 'system'
+
+export type SystemAccent = typeof SYSTEM_ACCENT
+
+export type AccentId = AccentName | CustomAccent | SystemAccent
 
 /** Which color scheme an accent is being resolved for. */
 export type AccentScheme = 'light' | 'dark'
@@ -37,11 +56,13 @@ export { DEFAULT_ACCENT }
 export const isPresetAccent = (value: unknown): value is AccentName =>
   typeof value === 'string' && value in ACCENT_RAMPS
 
+export const isSystemAccent = (value: unknown): value is SystemAccent => value === SYSTEM_ACCENT
+
 export const isCustomAccent = (value: unknown): value is CustomAccent =>
   typeof value === 'string' && value.startsWith('#') && hexToRgb(value) !== null
 
 export const isAccentId = (value: unknown): value is AccentId =>
-  isPresetAccent(value) || isCustomAccent(value)
+  isPresetAccent(value) || isCustomAccent(value) || isSystemAccent(value)
 
 /**
  * Coerces stored or bridged input to a usable accent.
@@ -52,7 +73,7 @@ export const isAccentId = (value: unknown): value is AccentId =>
  * ramp cache and the picker's selected check agree on one form.
  */
 export const normalizeAccent = (value: unknown): AccentId => {
-  if (isPresetAccent(value)) return value
+  if (isPresetAccent(value) || isSystemAccent(value)) return value
   if (typeof value === 'string') {
     const rgb = hexToRgb(value)
     if (rgb) return rgbToHex(rgb) as CustomAccent
@@ -153,7 +174,8 @@ const generatedRamps = new Map<string, string[]>()
 
 /** The eleven steps of an accent, as `"r g b"` channels in RAMP_STEPS order. */
 export const accentRamp = (accent: AccentId): readonly string[] => {
-  const id = normalizeAccent(accent)
+  const normalized = normalizeAccent(accent)
+  const id = isSystemAccent(normalized) ? systemPalette$.peek()?.accent ?? DEFAULT_ACCENT : normalized
   if (isPresetAccent(id)) return ACCENT_RAMPS[id]
   const cached = generatedRamps.get(id)
   if (cached) return cached
@@ -229,10 +251,28 @@ export const onAccentChannels = (accent: AccentId, scheme: AccentScheme): string
   return rgbToChannels(dark)
 }
 
+/**
+ * One structural token as `"r g b"`. Only the System accent re-tints them, with
+ * the wallpaper's neutral palette; every other accent leaves the stone values.
+ */
+export const structuralChannels = (name: StructuralTokenName, scheme: AccentScheme, accent: AccentId): string => {
+  const tinted = isSystemAccent(normalizeAccent(accent)) ? systemPalette$.peek()?.structural[name] : undefined
+  return (tinted ?? STRUCTURAL[name])[scheme === 'dark' ? 1 : 0]
+}
+
 /** CSS custom properties for one accent, keyed as lib/tokens.css declares them. */
 export const accentVariables = (accent: AccentId, scheme: AccentScheme): Record<string, string> => {
   const ramp = accentRamp(accent)
+  const palette = isSystemAccent(normalizeAccent(accent)) ? systemPalette$.peek() : null
   return {
+    ...(palette
+      ? Object.fromEntries(
+          (Object.keys(palette.structural) as StructuralTokenName[]).map((name) => [
+            `--nori-${name}`,
+            structuralChannels(name, scheme, accent),
+          ]),
+        )
+      : {}),
     ...Object.fromEntries(RAMP_STEPS.map((step, index) => [`--nori-accent-${step}`, ramp[index]!])),
     '--nori-accent-on': onAccentChannels(accent, scheme),
     '--nori-accent-fill': accentFillChannels(accent, scheme),

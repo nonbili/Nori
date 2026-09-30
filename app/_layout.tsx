@@ -1,7 +1,7 @@
 import '@/lib/i18n'
 import './global.css'
 
-import { Appearance, Linking, LogBox, View } from 'react-native'
+import { AppState, Appearance, Linking, LogBox, View } from 'react-native'
 import { Slot } from 'expo-router'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
@@ -16,6 +16,8 @@ import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
 import { purgeExpiredTombstones } from '@/lib/tombstone-purge'
 import { useAppColorScheme } from '@/lib/theme'
 import { accentVariables, applyAccentToDocument, normalizeAccent } from '@/lib/accent'
+import { readSystemPalette } from '@/lib/dynamic-palette'
+import { systemPalette$ } from '@/lib/system-palette'
 import { auth$, bootstrapAuth } from '@/states/auth'
 import { listenIosTransactions, reconcileIosTransactions } from '@/lib/ios-billing'
 import { settings$ } from '@/states/settings'
@@ -38,13 +40,35 @@ function LayoutContent() {
   // Overrides the --nori-accent-* defaults from lib/tokens.css for the native
   // tree, where NativeWind propagates them through React context so a portalled
   // sheet still sees the user's accent.
-  const accentStyle = useMemo(() => vars(accentVariables(normalizeAccent(accent), colorScheme)), [accent, colorScheme])
+  const systemPalette = useValue(systemPalette$)
+  const accentStyle = useMemo(
+    () => vars(accentVariables(normalizeAccent(accent), colorScheme)),
+    // The palette is read inside accentVariables, so it has to be a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [accent, colorScheme, systemPalette],
+  )
 
   // On web the cascade resolves them instead, and react-native-web renders
   // modals outside this View, so the root element has to carry them too.
   useEffect(() => {
     applyAccentToDocument(normalizeAccent(accent), colorScheme)
-  }, [accent, colorScheme])
+  }, [accent, colorScheme, systemPalette])
+
+  // The wallpaper can change while the app is in the background, so read it
+  // again on return. Compared by value: a new object would repaint everything.
+  useEffect(() => {
+    const refresh = () => {
+      const next = readSystemPalette()
+      if (JSON.stringify(next) !== JSON.stringify(systemPalette$.peek())) {
+        systemPalette$.set(next)
+      }
+    }
+    refresh()
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refresh()
+    })
+    return () => subscription.remove()
+  }, [])
 
   useEffect(() => {
     const systemLanguage = resolveI18nLanguageFromExpoLocale(locales[0]) || 'en'

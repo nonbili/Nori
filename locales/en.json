@@ -194,6 +194,8 @@
       "accent": "Accent color",
       "accentHint": "Pick the highlight color used across Nori.",
       "accentCustom": "Custom color",
+      "accentSystem": "System color (wallpaper)",
+      "accentSystemHint": "Match your wallpaper, including backgrounds",
       "accentHue": "Hue",
       "accentIntensity": "Intensity",
       "accentHex": "Hex color code",

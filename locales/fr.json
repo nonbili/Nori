@@ -192,6 +192,8 @@
       "accent": "Couleur d'accent",
       "accentHint": "Choisissez la couleur de mise en avant utilisée dans toute l'application.",
       "accentCustom": "Couleur personnalisée",
+      "accentSystem": "Couleur du système (fond d’écran)",
+      "accentSystemHint": "S’adapte au fond d’écran, y compris les arrière-plans",
       "accentHue": "Teinte",
       "accentIntensity": "Intensité",
       "accentHex": "Code couleur hexadécimal",

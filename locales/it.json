@@ -192,6 +192,8 @@
       "accent": "Colore d’accento",
       "accentHint": "Scegli il colore di evidenziazione usato in tutta l’app.",
       "accentCustom": "Colore personalizzato",
+      "accentSystem": "Colore di sistema (sfondo)",
+      "accentSystemHint": "Si adatta allo sfondo, compresi i colori di fondo",
       "accentHue": "Tonalità",
       "accentIntensity": "Intensità",
       "accentHex": "Codice colore esadecimale",

@@ -192,6 +192,8 @@
       "accent": "Vurgu rengi",
       "accentHint": "Uygulama genelinde kullanılan vurgu rengini seçin.",
       "accentCustom": "Özel renk",
+      "accentSystem": "Sistem rengi (duvar kâğıdı)",
+      "accentSystemHint": "Duvar kâğıdına uyar, arka planlar dahil",
       "accentHue": "Renk tonu",
       "accentIntensity": "Yoğunluk",
       "accentHex": "Onaltılık renk kodu",

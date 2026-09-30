@@ -192,6 +192,8 @@
       "accent": "Color de acento",
       "accentHint": "Elige el color de resalte que se usa en toda la app.",
       "accentCustom": "Color personalizado",
+      "accentSystem": "Color del sistema (fondo de pantalla)",
+      "accentSystemHint": "Se adapta al fondo de pantalla, incluidos los fondos de la app",
       "accentHue": "Tono",
       "accentIntensity": "Intensidad",
       "accentHex": "Código de color hexadecimal",

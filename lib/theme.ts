@@ -1,8 +1,16 @@
 import { useColorScheme } from 'nativewind'
 import { Appearance, useColorScheme as useRNColorScheme } from 'react-native'
 import { useValue } from '@legendapp/state/react'
-import { DANGER_RAMP, RAMP_STEPS, STRUCTURAL, type RampStep, type StructuralTokenName } from '@/lib/design-tokens'
-import { accentColor, accentFillColor, normalizeAccent, onAccentColor, type AccentId } from '@/lib/accent'
+import { DANGER_RAMP, RAMP_STEPS, type RampStep, type StructuralTokenName } from '@/lib/design-tokens'
+import {
+  accentColor,
+  accentFillColor,
+  normalizeAccent,
+  onAccentColor,
+  structuralChannels,
+  type AccentId,
+} from '@/lib/accent'
+import { systemPalette$ } from '@/lib/system-palette'
 import { settings$ } from '@/states/settings'
 
 /**
@@ -20,8 +28,6 @@ type ColorScheme = 'light' | 'dark'
 /** Channels are stored space-separated for Tailwind; native props want rgb(). */
 const rgb = (channels: string) => `rgb(${channels.split(' ').join(', ')})`
 
-const structural = (name: StructuralTokenName, scheme: ColorScheme) =>
-  rgb(STRUCTURAL[name][scheme === 'dark' ? 1 : 0])
 
 const danger = (step: RampStep) => rgb(DANGER_RAMP[RAMP_STEPS.indexOf(step)]!)
 
@@ -67,7 +73,7 @@ export const getThemeColors = (
 ): ThemeColors => {
   const scheme: ColorScheme = (colorScheme ?? Appearance.getColorScheme()) === 'dark' ? 'dark' : 'light'
   const isDark = scheme === 'dark'
-  const token = (name: StructuralTokenName) => structural(name, scheme)
+  const token = (name: StructuralTokenName) => rgb(structuralChannels(name, scheme, accent))
 
   return {
     canvas: token('canvas'),
@@ -94,5 +100,8 @@ export const getThemeColors = (
 export const useThemeColors = (): ThemeColors => {
   const colorScheme = useAppColorScheme()
   const accent = useValue(settings$.accent)
+  // The System accent reads the wallpaper palette, which can arrive or change
+  // without the setting moving.
+  useValue(systemPalette$)
   return getThemeColors(colorScheme, normalizeAccent(accent))
 }

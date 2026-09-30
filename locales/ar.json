@@ -192,6 +192,8 @@
       "accent": "لون التمييز",
       "accentHint": "اختر لون التمييز المستخدم في جميع أنحاء Nori.",
       "accentCustom": "لون مخصص",
+      "accentSystem": "لون النظام (الخلفية)",
+      "accentSystemHint": "مطابقة خلفية الشاشة، بما في ذلك الخلفيات",
       "accentHue": "درجة اللون",
       "accentIntensity": "الشدة",
       "accentHex": "رمز اللون السداسي",

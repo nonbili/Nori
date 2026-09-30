@@ -12,7 +12,8 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { syncMeta$ } from '@/states/sync-meta'
 import { useAppColorScheme, useThemeColors } from '@/lib/theme'
-import { ACCENT_IDS, accentColor, isCustomAccent, normalizeAccent } from '@/lib/accent'
+import { ACCENT_IDS, SYSTEM_ACCENT, accentColor, isCustomAccent, normalizeAccent } from '@/lib/accent'
+import { isDynamicColorAvailable } from '@/lib/dynamic-palette'
 import { isIos } from '@/lib/utils'
 import { signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
@@ -500,6 +501,7 @@ const AccentRow: React.FC = () => {
   const isDark = useAppColorScheme() === 'dark'
   const accent = normalizeAccent(useValue(settings$.accent))
   const custom = isCustomAccent(accent)
+  const system = accent === SYSTEM_ACCENT
   // Opens showing the picker when a custom accent is already in use, so the
   // strips are where the current colour came from rather than a hidden state.
   const [pickerOpen, setPickerOpen] = useState(custom)
@@ -517,6 +519,30 @@ const AccentRow: React.FC = () => {
           </NoriText>
         </View>
       </View>
+      {isDynamicColorAvailable ? (
+        <Pressable
+          onPress={() => settings$.setAccent(SYSTEM_ACCENT)}
+          accessibilityRole="radio"
+          accessibilityState={{ selected: system }}
+          className={`mb-3 flex-row items-center gap-3 rounded-2xl border-2 px-3 py-2.5 active:opacity-70 ${
+            system ? 'border-content' : 'border-line'
+          }`}
+        >
+          <View
+            className="h-8 w-8 items-center justify-center rounded-full"
+            style={{ backgroundColor: accentColor(SYSTEM_ACCENT, isDark ? 400 : 600) }}
+          >
+            <MaterialIcons name="wallpaper" size={16} color={themeColors.contentInverse} />
+          </View>
+          <View className="flex-1">
+            <NoriText className="font-medium text-content">{t('settings.experience.accentSystem')}</NoriText>
+            <NoriText className="text-sm leading-5 text-content-muted">
+              {t('settings.experience.accentSystemHint')}
+            </NoriText>
+          </View>
+          {system ? <MaterialIcons name="check" size={20} color={themeColors.content} /> : null}
+        </Pressable>
+      ) : null}
       <View className="flex-row flex-wrap justify-end gap-1.5">
         {ACCENT_IDS.map((id) => {
           const selected = id === accent

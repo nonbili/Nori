@@ -192,6 +192,8 @@
       "accent": "Kolor akcentu",
       "accentHint": "Wybierz kolor wyróżnienia używany w całej aplikacji.",
       "accentCustom": "Kolor niestandardowy",
+      "accentSystem": "Kolor systemowy (tapeta)",
+      "accentSystemHint": "Dopasowuje się do tapety, także tła",
       "accentHue": "Odcień",
       "accentIntensity": "Intensywność",
       "accentHex": "Szesnastkowy kod koloru",
