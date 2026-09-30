@@ -435,7 +435,7 @@ export const BookmarkPager: React.FC<{
         }
       }}
     >
-        <BookmarkListChips pager={pagerView} />
+        <BookmarkListChips pager={pagerView} extraMenuItems={menuItems} />
         <BookmarkPagerPages pager={pagerView} actions={pagerActions} />
 
         <BookmarkPagerToolbar
@@ -443,7 +443,6 @@ export const BookmarkPager: React.FC<{
           moveTargetLists={visibleLists.filter((list) => list.id !== selectedList?.id)}
           allVisibleSelected={allVisibleSelected}
           hasVisibleBookmarks={visibleListBookmarks.length > 0}
-          additionalMenuItems={menuItems}
           onOpenSettings={onOpenSettings}
           actions={pagerActions}
         />

@@ -128,7 +128,7 @@ export const NouMenu: React.FC<{
                     className="flex-row items-center px-4"
                     style={{
                       minHeight: itemHeight,
-                      borderTopWidth: item.footer ? 1 : 0,
+                      borderTopWidth: item.footer && !items[index - 1]?.footer ? 1 : 0,
                       borderTopColor: themeColors.line,
                     }}
                     onPress={() => {

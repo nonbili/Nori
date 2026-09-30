@@ -7,7 +7,7 @@ import Animated from 'react-native-reanimated'
 import { ui$ } from '@/states/ui'
 import { settings$ } from '@/states/settings'
 import { ListChip } from '@/components/list/ListChip'
-import { NouMenu } from '@/components/menu/NouMenu'
+import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { BookmarkListPage, type BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
 import { SCREEN_TOP_OFFSET } from '@/lib/layout'
 import type { BookmarkRecord } from '@/states/bookmarks'
@@ -35,7 +35,10 @@ export interface BookmarkPagerViewModel {
   onMomentumSettled: (event: any) => void
 }
 
-export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({ pager }) => {
+export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel; extraMenuItems?: NouMenuItem[] }> = ({
+  pager,
+  extraMenuItems = [],
+}) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   // The chips row is the topmost element now that every action lives in the
@@ -94,6 +97,14 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel }> = ({
             footer: true,
             handler: () => ui$.listEditor.set({ name: '' }),
           },
+          {
+            id: 'manage-lists',
+            label: t('lists.manage'),
+            icon: 'view-list' as const,
+            footer: true,
+            handler: () => ui$.listManagerOpen.set(true),
+          },
+          ...extraMenuItems.map((item) => ({ ...item, footer: true })),
         ]}
         triggerClassName="h-[36px] w-[36px] items-center justify-center rounded-full border border-line-strong bg-muted active:bg-muted-strong"
         trigger={<MaterialIcons name="list" size={18} color={pager.themeColors.content} />}

@@ -6,7 +6,8 @@ import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-
 import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ui$ } from '@/states/ui'
-import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
+import { NouMenu } from '@/components/menu/NouMenu'
+import { GlassPill } from '@/components/home/GlassPill'
 import { showToast } from '@/lib/toast'
 import type { BookmarkPagerActions } from '@/components/home/BookmarkPagerParts'
 
@@ -27,23 +28,8 @@ const ToolbarIconButton: React.FC<{
       danger ? 'active:bg-danger-100 dark:active:bg-danger-900/40' : 'active:bg-muted'
     }`}
   >
-    <MaterialIcons name={icon} size={20} color={color} />
+    <MaterialIcons name={icon} size={22} color={color} />
   </Pressable>
-)
-
-// A frosted, translucent pill with a light rim and, in light mode only, a faint
-// shadow so it reads against the canvas. Web gets a real backdrop blur; native
-// keeps the translucent tint and rim.
-const GlassPill: React.FC<{ gap?: string; className?: string; children: React.ReactNode }> = ({
-  gap = 'gap-1',
-  className = '',
-  children,
-}) => (
-  <View
-    className={`flex-row items-center ${gap} ${className} rounded-full border border-white/60 bg-surface/60 p-1 shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:shadow-none web:backdrop-blur-xl web:backdrop-saturate-150 dark:border-white/15 dark:bg-canvas/50`}
-  >
-    {children}
-  </View>
 )
 
 export const BookmarkPagerToolbar: React.FC<{
@@ -51,7 +37,6 @@ export const BookmarkPagerToolbar: React.FC<{
   allVisibleSelected: boolean
   hasVisibleBookmarks: boolean
   moveTargetLists: { id: string; name: string }[]
-  additionalMenuItems?: NouMenuItem[]
   onOpenSettings?: () => void
   actions: BookmarkPagerActions
 }> = ({
@@ -59,7 +44,6 @@ export const BookmarkPagerToolbar: React.FC<{
   allVisibleSelected,
   hasVisibleBookmarks,
   moveTargetLists,
-  additionalMenuItems = [],
   onOpenSettings,
   actions,
 }) => {
@@ -92,20 +76,8 @@ export const BookmarkPagerToolbar: React.FC<{
     ui$.selectedBookmarkIds.set([])
   }
 
-  // Everything the old top header offered lives in this menu now, so the bar
-  // keeps only the actions worth a permanent tap target.
-  const menuItems: NouMenuItem[] = [
-    { label: t('lists.manage'), icon: 'view-list', handler: () => ui$.listManagerOpen.set(true) },
-    ...additionalMenuItems,
-    {
-      label: t('settings.title'),
-      icon: 'settings',
-      handler: onOpenSettings ?? (() => ui$.settingsSheetOpen.set(true)),
-    },
-  ]
-
   // Browsing, split 1-3-1: the drawer alone, history/add/edit grouped in the
-  // middle, and the overflow menu alone.
+  // middle, and settings alone.
   const browseBar = (
     <>
       <GlassPill>
@@ -143,15 +115,12 @@ export const BookmarkPagerToolbar: React.FC<{
         />
       </GlassPill>
       <GlassPill>
-        <NouMenu
-          items={menuItems}
-          testID="toolbar_menu_button"
-          accessibilityLabel={t('settings.moreOptions')}
-          trigger={
-            <View className="h-10 w-10 items-center justify-center rounded-full">
-              <MaterialIcons name="more-vert" size={20} color={themeColors.content} />
-            </View>
-          }
+        <ToolbarIconButton
+          icon="settings"
+          color={themeColors.content}
+          label={t('settings.title')}
+          testID="toolbar_settings_button"
+          onPress={onOpenSettings ?? (() => ui$.settingsSheetOpen.set(true))}
         />
       </GlassPill>
     </>
@@ -193,7 +162,7 @@ export const BookmarkPagerToolbar: React.FC<{
             }))}
             trigger={
               <View className="h-10 w-10 items-center justify-center rounded-full">
-                <MaterialIcons name="drive-file-move" size={20} color={themeColors.content} />
+                <MaterialIcons name="drive-file-move" size={22} color={themeColors.content} />
               </View>
             }
           />
