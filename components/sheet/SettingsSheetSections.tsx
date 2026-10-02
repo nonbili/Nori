@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { Linking, Pressable, View } from 'react-native'
+import { Linking, Platform, Pressable, View } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { Image } from 'expo-image'
@@ -311,6 +311,7 @@ export const ExperienceSection: React.FC = () => {
   const theme = useValue(settings$.theme)
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
   const showFavicon = useValue(settings$.showFavicon)
+  const loadPagesForTitles = useValue(settings$.loadPagesForTitles)
   const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
   const quickSaveShareListId = useValue(settings$.quickSaveShareListId)
   const selectedLanguage = useValue(settings$.language)
@@ -354,6 +355,28 @@ export const ExperienceSection: React.FC = () => {
 
   return (
     <SectionCard title={t('settings.experience.label')}>
+      {Platform.OS !== 'web' ? (
+        <View className="border-b-2 border-well px-4 py-4">
+          <View className="flex-row items-center gap-3">
+            <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
+              <MaterialIcons name="web" color={themeColors.contentMuted} size={18} />
+            </View>
+            <View className="flex-1">
+              <NoriText className="font-medium text-content">{t('settings.experience.loadPagesForTitles')}</NoriText>
+              <NoriText className="mt-1 text-sm leading-5 text-content-muted">{t('settings.experience.loadPagesForTitlesHint')}</NoriText>
+            </View>
+            <Pressable
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.experience.loadPagesForTitles')}
+              accessibilityState={{ checked: loadPagesForTitles }}
+              onPress={() => settings$.setLoadPagesForTitles(!loadPagesForTitles)}
+              className={`h-8 w-14 rounded-full p-1 ${loadPagesForTitles ? 'bg-accent-500' : 'bg-muted-strong'}`}
+            >
+              <View className={`h-6 w-6 rounded-full bg-white ${loadPagesForTitles ? 'ml-auto' : ''}`} />
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
       <View className="border-b-2 border-well px-4 py-4">
         <View className="flex-row items-center gap-3">
           <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">

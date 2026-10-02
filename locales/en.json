@@ -186,6 +186,8 @@
       "showFaviconHint": "Use each bookmark's site icon. Turn this off to show the Nori logo instead.",
       "quickShare": "Quick save shared links",
       "quickShareHint": "Save shared URLs to a target list without picking a list.",
+      "loadPagesForTitles": "Load pages to get titles",
+      "loadPagesForTitlesHint": "Load each saved link to read its title. Uses more data; background saves update when Nori opens.",
       "theme": "Theme",
       "themeHint": "Switch between system, light, and dark appearance.",
       "system": "System",

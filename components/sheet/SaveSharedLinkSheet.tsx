@@ -12,8 +12,7 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { getFallbackIcon } from '@/lib/bookmark'
-import { getPrefetchedBookmarkMeta } from '@/lib/bookmark-meta-cache'
-import { backfillMissingTitles } from '@/lib/title-backfill'
+import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
 import { getVisibleLists } from '@/lib/nori-data'
 import { showToast } from '@/lib/toast'
 
@@ -64,23 +63,7 @@ export const SaveSharedLinkSheet: React.FC = () => {
         : t('sharing.savedToList', { name }),
     )
 
-    void Promise.all(saved.map(({ id, share }) => (
-      getPrefetchedBookmarkMeta(share.url)
-        .then((meta) => {
-          if (meta.title || meta.icon) {
-            bookmarks$.update(id, {
-              title: meta.title || share.title,
-              icon: meta.icon || share.icon || getFallbackIcon(share.url),
-            })
-          }
-        })
-        .catch(() => {})
-    )))
-      // If the fetch couldn't get a real title (e.g. a client-rendered SPA), fall
-      // back to the hidden WebView to resolve it.
-      .finally(() => {
-        void backfillMissingTitles()
-      })
+    saved.forEach(({ id }) => void enrichSavedBookmark(id))
   }
 
   return (

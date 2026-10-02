@@ -184,6 +184,8 @@
       "showFaviconHint": "Använd varje bokmärkes webbplatsikon. Stäng av detta för att visa Nori-logotypen istället.",
       "quickShare": "Snabbspara delade länkar",
       "quickShareHint": "Spara delade URL:er i en mållista utan att välja en lista.",
+      "loadPagesForTitles": "Läs in sidor för att hämta titlar",
+      "loadPagesForTitlesHint": "Läser in varje sparad länk för att hämta titeln. Använder mer data; länkar sparade i bakgrunden uppdateras när Nori öppnas.",
       "theme": "Tema",
       "themeHint": "Växla mellan systemets, ljust och mörkt utseende.",
       "system": "System",

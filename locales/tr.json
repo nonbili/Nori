@@ -184,6 +184,8 @@
       "showFaviconHint": "Her yer iminin site simgesini kullanın. Bunun yerine Nori logosunu göstermek için bunu kapatın.",
       "quickShare": "Paylaşılan bağlantıları hızlı kaydet",
       "quickShareHint": "Paylaşılan URL'leri liste seçmeden hedef listeye kaydet.",
+      "loadPagesForTitles": "Başlıkları almak için sayfaları yükle",
+      "loadPagesForTitlesHint": "Başlığını okumak için kaydedilen her bağlantıyı yükler. Daha fazla veri kullanır; arka planda kaydedilen bağlantılar Nori açıldığında güncellenir.",
       "theme": "Tema",
       "themeHint": "Sistem, açık ve karanlık görünüm arasında geçiş yapın.",
       "system": "Sistem",

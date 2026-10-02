@@ -184,6 +184,8 @@
       "showFaviconHint": "Usa el icono del sitio de cada marcador. Desactiva esto para mostrar el logo de Nori en su lugar.",
       "quickShare": "Guardar enlaces compartidos rápido",
       "quickShareHint": "Guarda URLs compartidas en una lista de destino sin elegir una lista.",
+      "loadPagesForTitles": "Cargar páginas para obtener títulos",
+      "loadPagesForTitlesHint": "Carga cada enlace guardado para leer su título. Usa más datos; los enlaces guardados en segundo plano se actualizan al abrir Nori.",
       "theme": "Tema",
       "themeHint": "Cambia entre la apariencia del sistema, clara y oscura.",
       "system": "Sistema",

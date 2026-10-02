@@ -2,7 +2,7 @@ import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { getFallbackIcon, getFallbackTitle } from '@/lib/bookmark'
-import { getPrefetchedBookmarkMeta } from '@/lib/bookmark-meta-cache'
+import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
 import { isValidQuickShareHttpUrl, resolveQuickShareTargetListIdFromLists } from '@/lib/quick-share-utils'
 import {
   configureQuickShare,
@@ -35,16 +35,7 @@ export function saveQuickSharedLink(url: string, targetListId = resolveQuickShar
     return null
   }
 
-  void getPrefetchedBookmarkMeta(url)
-    .then((meta) => {
-      if (meta.title || meta.icon) {
-        bookmarks$.update(id, {
-          title: meta.title || title,
-          icon: meta.icon || icon,
-        })
-      }
-    })
-    .catch(() => {})
+  void enrichSavedBookmark(id)
 
   return id
 }

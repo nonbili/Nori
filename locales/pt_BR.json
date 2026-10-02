@@ -184,6 +184,8 @@
       "showFaviconHint": "Usar o ícone de cada site nos favoritos. Desative para mostrar o logotipo do Nori.",
       "quickShare": "Salvar links compartilhados rapidamente",
       "quickShareHint": "Salve URLs compartilhados em uma lista de destino sem escolher uma lista.",
+      "loadPagesForTitles": "Carregar páginas para obter títulos",
+      "loadPagesForTitlesHint": "Carrega cada link salvo para ler seu título. Usa mais dados; links salvos em segundo plano são atualizados ao abrir o Nori.",
       "theme": "Tema",
       "themeHint": "Alternar entre aparência do sistema, clara e escura.",
       "system": "Sistema",

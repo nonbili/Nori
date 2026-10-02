@@ -184,6 +184,8 @@
       "showFaviconHint": "Używaj ikony strony zakładki. Wyłącz, aby wyświetlać zamiast tego logo Nori.",
       "quickShare": "Szybkie zapisywanie udostępnionych linków",
       "quickShareHint": "Zapisuj udostępnione adresy URL na wybranej liście bez wybierania listy.",
+      "loadPagesForTitles": "Wczytuj strony, aby pobrać tytuły",
+      "loadPagesForTitlesHint": "Wczytuje każdy zapisany link, aby odczytać jego tytuł. Zużywa więcej danych; linki zapisane w tle są aktualizowane po otwarciu Nori.",
       "theme": "Motyw",
       "themeHint": "Przełączaj między motywem systemowym, jasnym i ciemnym.",
       "system": "Systemowy",

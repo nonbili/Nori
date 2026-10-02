@@ -1,11 +1,12 @@
 import { useValue } from '@legendapp/state/react'
 import { useEffect, useRef } from 'react'
-import { View } from 'react-native'
+import { AppState, View } from 'react-native'
 import { WebView, type WebViewMessageEvent } from 'react-native-webview'
 import {
   completeActiveJob,
   INJECTED_TITLE_SCRIPT,
   webViewResolver$,
+  setWebViewTitleResolverAvailable,
   type WebViewTitleResult,
 } from '@/lib/webview-title-resolver'
 
@@ -23,6 +24,17 @@ export const WebViewTitleResolver: React.FC = () => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const activeId = active?.id
+
+  useEffect(() => {
+    setWebViewTitleResolverAvailable(AppState.currentState === 'active')
+    const subscription = AppState.addEventListener('change', (state) => {
+      setWebViewTitleResolverAvailable(state === 'active')
+    })
+    return () => {
+      subscription.remove()
+      setWebViewTitleResolverAvailable(false)
+    }
+  }, [])
 
   useEffect(() => {
     if (activeId == null) {

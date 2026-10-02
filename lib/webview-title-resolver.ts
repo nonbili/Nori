@@ -14,6 +14,22 @@ export interface PendingJob {
 // Resolver callbacks are kept out of the observable store on purpose — legend-state
 // would otherwise proxy them. Keyed by job id.
 const resolvers = new Map<number, (result: WebViewTitleResult | null) => void>()
+const pendingUrls = new Map<string, Promise<WebViewTitleResult | null>>()
+let available = false
+
+/** The host pauses work in the background and cancels jobs on unmount. */
+export function setWebViewTitleResolverAvailable(value: boolean) {
+  available = value
+  if (value) {
+    pumpQueue()
+  } else {
+    webViewResolver$.active.set(null)
+    webViewResolver$.queue.set([])
+    for (const resolve of resolvers.values()) resolve(null)
+    resolvers.clear()
+    pendingUrls.clear()
+  }
+}
 
 // Some sites (e.g. fifa.com) are pure client-side SPAs whose <title>/og:title are
 // injected by JavaScript, so a plain fetch only ever sees an empty HTML shell. We
@@ -35,7 +51,7 @@ export const webViewResolver$ = observable<{
 })
 
 function pumpQueue() {
-  if (webViewResolver$.active.peek()) {
+  if (!available || webViewResolver$.active.peek()) {
     return
   }
 
@@ -54,12 +70,20 @@ function pumpQueue() {
  * extracted metadata, or `null` if no host is mounted / it times out / it errors.
  */
 export function resolveTitleWithWebView(url: string): Promise<WebViewTitleResult | null> {
-  return new Promise((resolve) => {
+  if (!available) return Promise.resolve(null)
+  const pending = pendingUrls.get(url)
+  if (pending) return pending
+  const request = new Promise<WebViewTitleResult | null>((resolve) => {
     const job: PendingJob = { id: nextJobId++, url }
     resolvers.set(job.id, resolve)
     webViewResolver$.queue.set([...webViewResolver$.queue.peek(), job])
     pumpQueue()
   })
+  pendingUrls.set(url, request)
+  void request.then(() => {
+    if (pendingUrls.get(url) === request) pendingUrls.delete(url)
+  })
+  return request
 }
 
 /** Called by the host component when a job finishes (or fails/times out). */
@@ -104,9 +128,9 @@ export const INJECTED_TITLE_SCRIPT = `
       post && post.getAttribute('post-title'),
       heading && heading.textContent,
       oldTitle && oldTitle.textContent,
+      document.title,
       metaContent('meta[property="og:title"]'),
       metaContent('meta[name="twitter:title"]'),
-      document.title,
       metaContent('meta[property="og:site_name"]')
     ];
     var placeholders = ${JSON.stringify(REDDIT_PLACEHOLDER_TITLES)};
@@ -130,9 +154,16 @@ export const INJECTED_TITLE_SCRIPT = `
     } catch (e) {}
   }
   var tries = 0;
+  var lastTitle = '';
+  var stableTicks = 0;
   function tick() {
     tries += 1;
-    if (readTitle() || tries >= 25) {
+    var title = readTitle();
+    stableTicks = title && title === lastTitle ? stableTicks + 1 : 0;
+    lastTitle = title;
+    // Allow at least 1.6 seconds for hydration, then require one second without
+    // a title change. Stop after five seconds even if the page never settles.
+    if ((tries >= 9 && stableTicks >= 5) || tries >= 26) {
       post();
     } else {
       setTimeout(tick, 200);

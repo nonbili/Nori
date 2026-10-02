@@ -1,15 +1,16 @@
-import { afterEach, describe, expect, it } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { runInNewContext } from 'node:vm'
 import {
   completeActiveJob,
   resolveTitleWithWebView,
   webViewResolver$,
   INJECTED_TITLE_SCRIPT,
+  setWebViewTitleResolverAvailable,
 } from './webview-title-resolver'
 
+beforeEach(() => setWebViewTitleResolverAvailable(true))
 afterEach(() => {
-  webViewResolver$.active.set(null)
-  webViewResolver$.queue.set([])
+  setWebViewTitleResolverAvailable(false)
 })
 
 describe('webview title probe', () => {
@@ -22,7 +23,7 @@ describe('webview title probe', () => {
         ReactNativeWebView: { postMessage: (message: string) => messages.push(JSON.parse(message)) },
       },
       document: {
-        title: pageTitle,
+        get title() { return pageTitle },
         querySelector: (selector: string) => {
           if (selector === 'shreddit-post[id="t3_abc123"]' && readPostTitle()) {
             return { getAttribute: () => readPostTitle(), querySelector: () => null }
@@ -32,7 +33,7 @@ describe('webview title probe', () => {
       },
       setTimeout: (callback: () => void) => timers.push(callback),
     })
-    return { messages, timers }
+    return { messages, timers, setPageTitle: (value: string) => { pageTitle = value } }
   }
 
   it('waits past the Reddit loading title until the post renders', () => {
@@ -40,7 +41,7 @@ describe('webview title probe', () => {
     const { messages, timers } = probe(() => title)
     expect(messages).toHaveLength(0)
     title = 'Actual post title'
-    timers.shift()!()
+    while (timers.length) timers.shift()!()
     expect(messages).toEqual([{ title, icon: '' }])
   })
 
@@ -51,11 +52,47 @@ describe('webview title probe', () => {
   })
 
   it('preserves normal titles on other sites', () => {
-    expect(probe(() => '', 'Reddit', 'example.com').messages).toEqual([{ title: 'Reddit', icon: '' }])
+    const { messages, timers } = probe(() => '', 'Reddit', 'example.com')
+    expect(messages).toHaveLength(0)
+    while (timers.length) timers.shift()!()
+    expect(messages).toEqual([{ title: 'Reddit', icon: '' }])
+  })
+
+  it('waits for an initially plausible title to change during hydration', () => {
+    const { messages, timers, setPageTitle } = probe(() => '', 'Example site', 'example.com')
+    for (let i = 0; i < 7; i++) timers.shift()!()
+    expect(messages).toHaveLength(0)
+    setPageTitle('Actual article title')
+    while (timers.length) timers.shift()!()
+    expect(messages).toEqual([{ title: 'Actual article title', icon: '' }])
   })
 })
 
 describe('webview title resolver queue', () => {
+  it('returns null when no foreground host is available', async () => {
+    setWebViewTitleResolverAvailable(false)
+    await expect(resolveTitleWithWebView('https://example.com')).resolves.toBeNull()
+    expect(webViewResolver$.active.peek()).toBeNull()
+  })
+
+  it('cancels active and queued jobs when the host goes away', async () => {
+    const first = resolveTitleWithWebView('https://a.com')
+    const second = resolveTitleWithWebView('https://b.com')
+    setWebViewTitleResolverAvailable(false)
+    await expect(first).resolves.toBeNull()
+    await expect(second).resolves.toBeNull()
+    expect(webViewResolver$.active.peek()).toBeNull()
+    expect(webViewResolver$.queue.peek()).toEqual([])
+  })
+
+  it('shares simultaneous requests for the same URL', async () => {
+    const first = resolveTitleWithWebView('https://a.com')
+    const second = resolveTitleWithWebView('https://a.com')
+    expect(second).toBe(first)
+    expect(webViewResolver$.queue.peek()).toEqual([])
+    completeActiveJob(webViewResolver$.active.peek()!.id, { title: 'A', icon: '' })
+    await expect(second).resolves.toEqual({ title: 'A', icon: '' })
+  })
   it('activates the first queued job and resolves it on completion', async () => {
     const promise = resolveTitleWithWebView('https://example.com/page')
 

@@ -3,6 +3,10 @@ import { getFallbackIcon } from '@/lib/bookmark'
 import { isDeleted } from '@/lib/nori-data'
 import { maxJobsPerRun, resolveTitleWithWebView } from '@/lib/webview-title-resolver'
 import { hasPlaceholderTitle } from '@/lib/bookmark-title'
+import { AppState, Platform } from 'react-native'
+import { settings$ } from '@/states/settings'
+import { getPrefetchedBookmarkMeta } from '@/lib/bookmark-meta-cache'
+import { resolveBookmarkMetadata } from '@/lib/bookmark-metadata-utils'
 
 // URLs we've already handed to the WebView this session, so repeated foreground
 // passes don't keep re-loading sites that genuinely have no better title.
@@ -19,7 +23,7 @@ let running = false
  * Must be called while the app is foregrounded — the WebView can't run otherwise.
  */
 export async function backfillMissingTitles() {
-  if (running) {
+  if (running || Platform.OS === 'web' || AppState.currentState !== 'active') {
     return
   }
   running = true
@@ -28,25 +32,32 @@ export async function backfillMissingTitles() {
     const pending = bookmarks$.bookmarks
       .peek()
       .filter((item) => !isDeleted(item) && hasPlaceholderTitle(item.title, item.url) && !attempted.has(item.url))
-      .slice(0, maxJobsPerRun)
+      .slice(0, settings$.loadPagesForTitles.peek() ? undefined : maxJobsPerRun)
 
     for (const item of pending) {
+      if (AppState.currentState !== 'active') break
       attempted.add(item.url)
 
-      const result = await resolveTitleWithWebView(item.url)
+      const result = settings$.loadPagesForTitles.peek()
+        ? await resolveBookmarkMetadata(item.url, true, getPrefetchedBookmarkMeta, resolveTitleWithWebView)
+        : await resolveTitleWithWebView(item.url)
+      if (AppState.currentState !== 'active') {
+        attempted.delete(item.url)
+        break
+      }
       if (!result?.title || hasPlaceholderTitle(result.title, item.url)) {
         continue
       }
 
       // The row may have been edited/removed while we were resolving; re-check.
       const current = bookmarks$.bookmarks.peek().find((row) => row.id === item.id)
-      if (!current || isDeleted(current) || !hasPlaceholderTitle(current.title, current.url)) {
+      if (!current || isDeleted(current) || current.url !== item.url || current.title !== item.title || AppState.currentState !== 'active') {
         continue
       }
 
       bookmarks$.update(item.id, {
         title: result.title,
-        icon: result.icon || current.icon || getFallbackIcon(item.url),
+        icon: current.icon === item.icon ? result.icon || current.icon || getFallbackIcon(item.url) : current.icon,
       })
     }
   } finally {

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
-import { ScrollView, TextInput, Pressable, View } from 'react-native'
+import { Platform, ScrollView, TextInput, Pressable, View } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
@@ -14,6 +14,7 @@ import { getAllTags, getVisibleLists } from '@/lib/nori-data'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { showToast } from '@/lib/toast'
 import { parseHttpUrl } from '@/lib/url'
+import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
 
 const getHostLabel = (url: string) => {
   try {
@@ -113,14 +114,16 @@ export const BookmarkEditorSheet: React.FC = () => {
 
     let title = editor.title.trim()
     let icon = editor.icon.trim()
+    const resolveAfterSaving = !title && Platform.OS !== 'web' && settings$.loadPagesForTitles.peek()
 
-    if (!title) {
+    if (!title && !resolveAfterSaving) {
       setMetadataLoading(true)
       const meta = await getMeta(url.toString())
       setMetadataLoading(false)
       title = meta.title || getHostLabel(url.toString())
       icon = meta.icon || ''
     }
+    title ||= getHostLabel(url.toString())
 
     const payload = {
       listId: editor.listId,
@@ -130,16 +133,18 @@ export const BookmarkEditorSheet: React.FC = () => {
       tags: editor.tags,
     }
 
+    let savedId: string | null = editor.id || null
     if (editor.id) {
       bookmarks$.update(editor.id, payload)
       showToast(t('bookmarks.updated'))
     } else {
-      bookmarks$.add(payload)
+      savedId = bookmarks$.add(payload)
       showToast(t('bookmarks.saved'))
     }
 
     settings$.setLastSelectedListId(payload.listId)
     ui$.bookmarkEditor.set(null)
+    if (resolveAfterSaving && savedId) void enrichSavedBookmark(savedId)
   }
 
   const onClose = () => ui$.bookmarkEditor.set(null)
