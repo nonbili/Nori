@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Pressable, View, type LayoutChangeEvent } from 'react-native'
+import { Pressable, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
@@ -50,6 +50,8 @@ export const BookmarkPagerToolbar: React.FC<{
   const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const insets = useSafeAreaInsets()
+  const { width } = useWindowDimensions()
+  const narrowScreen = width < 360
   const { themeColors } = actions
   const toolbarResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // The snackbar stack reads this so an undo action never lands on the toolbar.
@@ -89,7 +91,7 @@ export const BookmarkPagerToolbar: React.FC<{
           onPress={() => ui$.openBookmarksDrawer()}
         />
       </GlassPill>
-      <GlassPill gap="gap-4">
+      <GlassPill gap={narrowScreen ? 'gap-3' : 'gap-5'}>
         <ToolbarIconButton
           icon="history"
           color={themeColors.content}
@@ -128,7 +130,7 @@ export const BookmarkPagerToolbar: React.FC<{
 
   // With a selection the bar turns into a selection bar, split the same way: a
   // count that doubles as select-all, the icon-only actions, then done. Its six
-  // targets are packed tight (no gaps, narrower margins) so it fits 320px screens.
+  // targets use small gaps, with no gaps on narrow screens so it fits at 320px.
   // Only the count pill may shrink, so a long count or large text never pushes
   // Done out of the toolbar.
   const selectionBar = (
@@ -151,7 +153,7 @@ export const BookmarkPagerToolbar: React.FC<{
           </NoriText>
         </Pressable>
       </GlassPill>
-      <GlassPill gap="gap-0">
+      <GlassPill gap={narrowScreen ? 'gap-0' : 'gap-1'}>
         {moveTargetLists.length ? (
           <NouMenu
             accessibilityLabel={t('bookmarks.moveTo')}

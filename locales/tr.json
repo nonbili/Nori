@@ -177,6 +177,9 @@
       "importAction": "İçe aktar"
     },
     "experience": {
+      "bookmarkLayout": "Yer imi düzeni",
+      "oneColumn": "1 sütun",
+      "twoColumns": "2 sütun",
       "label": "Deneyim",
       "defaultBrowser": "Bağlantıları varsayılan tarayıcıda aç",
       "defaultBrowserHint": "Nori'den çıkıp bağlantıları telefonunuzun tarayıcı uygulamasında açmak için bunu açın.",

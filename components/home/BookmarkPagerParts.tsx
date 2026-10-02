@@ -8,13 +8,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated, { type AnimatedRef } from 'react-native-reanimated'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { ui$ } from '@/states/ui'
+import { settings$ } from '@/states/settings'
 import { BookmarkTile } from '@/components/bookmark/BookmarkItem'
 import { SortableGrid } from '@/components/bookmark/SortableGrid'
 import { SectionLabel } from '@/components/common/Common'
 import type { ThemeColors } from '@/lib/theme'
 
 const TILE_HEIGHT = 46
-const GRID_COLUMNS = 2
 const GRID_GAP = 16
 const PAGE_HORIZONTAL_PADDING = 24
 const PAGE_BOTTOM_PADDING = 96
@@ -105,11 +105,12 @@ export const BookmarkListPage = memo(({
 }) => {
   const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
+  const columns = useValue(settings$.bookmarkColumns) === 1 ? 1 : 2
   const selectedBookmarkIds = useValue(ui$.selectedBookmarkIds)
   const selectedIdSet = useMemo(() => new Set(selectedBookmarkIds), [selectedBookmarkIds])
   const insets = useSafeAreaInsets()
   const bottomPadding = PAGE_BOTTOM_PADDING + insets.bottom
-  const itemWidth = (width - PAGE_HORIZONTAL_PADDING * 2 - (GRID_COLUMNS - 1) * GRID_GAP) / GRID_COLUMNS
+  const itemWidth = (width - PAGE_HORIZONTAL_PADDING * 2 - (columns - 1) * GRID_GAP) / columns
   const viewportHeightRef = useRef(0)
   const contentHeightRef = useRef(0)
   const offsetYRef = useRef(0)
@@ -157,7 +158,7 @@ export const BookmarkListPage = memo(({
   }, [bookmarkEditMode, isActive, updateBottomState])
 
   const renderTile = useCallback(({ item: bookmark }: { item: BookmarkRecord }) => (
-    <View style={{ width: itemWidth }}>
+    <View style={{ width: itemWidth, marginBottom: columns === 1 ? GRID_GAP : 0 }}>
       <BookmarkTile
         bookmark={bookmark}
         editMode={bookmarkEditMode}
@@ -170,21 +171,22 @@ export const BookmarkListPage = memo(({
         onDelete={() => actions.onDeleteBookmark(bookmark)}
       />
     </View>
-  ), [actions, bookmarkEditMode, itemWidth, selectedIdSet])
+  ), [actions, bookmarkEditMode, columns, itemWidth, selectedIdSet])
 
   const getItemLayout = useCallback((_: ArrayLike<BookmarkRecord> | null | undefined, index: number) => {
     const rowHeight = TILE_HEIGHT + GRID_GAP
-    return { length: rowHeight, offset: Math.floor(index / GRID_COLUMNS) * rowHeight, index }
-  }, [])
+    return { length: rowHeight, offset: Math.floor(index / columns) * rowHeight, index }
+  }, [columns])
 
   if (!bookmarkEditMode || listBookmarks.length > LARGE_EDIT_LIST_THRESHOLD) {
     return (
       <View className="flex-1" style={{ width }}>
         <FlatList
+          key={columns}
           data={listBookmarks}
           renderItem={renderTile}
           keyExtractor={(item) => item.id}
-          numColumns={GRID_COLUMNS}
+          numColumns={columns}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
@@ -193,7 +195,7 @@ export const BookmarkListPage = memo(({
             paddingTop: 16,
             paddingBottom: bottomPadding,
           }}
-          columnWrapperStyle={{ gap: GRID_GAP, marginBottom: GRID_GAP }}
+          columnWrapperStyle={columns === 2 ? { gap: GRID_GAP, marginBottom: GRID_GAP } : undefined}
           ListHeaderComponent={
             bookmarkEditMode
               ? <EditModeHint iconColor={actions.iconAccentColor} canReorder={false} />
@@ -239,6 +241,7 @@ export const BookmarkListPage = memo(({
           <SortableGrid
             items={listBookmarks}
             containerWidth={width}
+            columns={columns}
             itemHeight={TILE_HEIGHT}
             editMode={true}
             scrollViewRef={actions.scrollViewRef}
@@ -275,22 +278,26 @@ const HiddenBookmarksGrid: React.FC<{
   items: BookmarkRecord[]
   containerWidth: number
   scrollViewRef: AnimatedRef<Animated.ScrollView>
-}> = ({ items, containerWidth, scrollViewRef }) => (
-  <SortableGrid
-    items={items}
-    containerWidth={containerWidth}
-    itemHeight={TILE_HEIGHT}
-    editMode={false}
-    scrollViewRef={scrollViewRef}
-    renderItem={(bookmark) => (
-      <BookmarkTile
-        key={bookmark.id}
-        bookmark={bookmark}
-        editMode={true}
-        onSelect={() => bookmarks$.setVisible(bookmark.id, true)}
-        onOpen={() => {}}
-      />
-    )}
-    onReorder={() => {}}
-  />
-)
+}> = ({ items, containerWidth, scrollViewRef }) => {
+  const columns = useValue(settings$.bookmarkColumns) === 1 ? 1 : 2
+  return (
+    <SortableGrid
+      items={items}
+      containerWidth={containerWidth}
+      columns={columns}
+      itemHeight={TILE_HEIGHT}
+      editMode={false}
+      scrollViewRef={scrollViewRef}
+      renderItem={(bookmark) => (
+        <BookmarkTile
+          key={bookmark.id}
+          bookmark={bookmark}
+          editMode={true}
+          onSelect={() => bookmarks$.setVisible(bookmark.id, true)}
+          onOpen={() => {}}
+        />
+      )}
+      onReorder={() => {}}
+    />
+  )
+}

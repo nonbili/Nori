@@ -177,6 +177,9 @@
       "importAction": "Importer"
     },
     "experience": {
+      "bookmarkLayout": "Disposition des favoris",
+      "oneColumn": "1 colonne",
+      "twoColumns": "2 colonnes",
       "label": "Expérience",
       "defaultBrowser": "Ouvrir les liens dans le navigateur par défaut",
       "defaultBrowserHint": "Activez cette option pour quitter Nori et ouvrir les liens dans le navigateur de votre téléphone.",

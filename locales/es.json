@@ -177,6 +177,9 @@
       "importAction": "Importar"
     },
     "experience": {
+      "bookmarkLayout": "Diseño de marcadores",
+      "oneColumn": "1 columna",
+      "twoColumns": "2 columnas",
       "label": "Experiencia",
       "defaultBrowser": "Abrir enlaces en el navegador predeterminado",
       "defaultBrowserHint": "Activa esto para salir de Nori y abrir los enlaces en el navegador de tu teléfono.",

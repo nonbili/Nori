@@ -17,14 +17,6 @@ import { ListChip } from '@/components/list/ListChip'
 import { type ThemeColors } from '@/lib/theme'
 import { getAllTags, getLiveBookmarks, getTags, getVisibleLists } from '@/lib/nori-data'
 
-const getHostLabel = (url: string) => {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '')
-  } catch {
-    return url
-  }
-}
-
 const getCreatedAtMs = (value?: string) => {
   const parsed = value ? Date.parse(value) : Number.NaN
   return Number.isNaN(parsed) ? 0 : parsed
@@ -66,7 +58,7 @@ export interface DrawerPartsState {
 const BookmarkItem = memo(({ bookmark, drawer }: { bookmark: BookmarkRecord; drawer: DrawerPartsState }) => (
   <ManageRow
     title={bookmark.title}
-    subtitle={getHostLabel(bookmark.url)}
+    subtitle={bookmark.url}
     left={
       <Favicon
         iconUrl={bookmark.icon}

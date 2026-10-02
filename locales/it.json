@@ -177,6 +177,9 @@
       "importAction": "Importa"
     },
     "experience": {
+      "bookmarkLayout": "Disposizione dei segnalibri",
+      "oneColumn": "1 colonna",
+      "twoColumns": "2 colonne",
       "label": "Esperienza",
       "defaultBrowser": "Apri i link nel browser predefinito",
       "defaultBrowserHint": "Attiva per uscire da Nori e aprire i link nel browser del telefono.",

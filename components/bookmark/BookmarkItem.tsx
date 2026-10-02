@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react'
-import { Modal, Platform, Pressable, View, useWindowDimensions } from 'react-native'
+import { Modal, Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -14,22 +14,26 @@ const AnchorMenu: React.FC<{
   anchor: { x: number; y: number; width: number; height: number } | null
   onClose: () => void
   actions: NouMenuItem[]
-}> = ({ visible, anchor, onClose, actions }) => {
+  title: string
+  url: string
+}> = ({ visible, anchor, onClose, actions, title, url }) => {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const insets = useSafeAreaInsets()
   const themeColors = useThemeColors()
 
-  const menuWidth = 200
-  const menuHeight = actions.length * 44 + 16
   const padding = 8
   const gap = 4
+  const menuWidth = Math.min(280, screenWidth - padding * 2)
+  const maxHeight = screenHeight - insets.top - insets.bottom - padding * 2
+  const [measuredHeight, setMeasuredHeight] = useState(actions.length * 44 + 16)
+  const menuHeight = Math.min(measuredHeight, maxHeight)
 
   const top = anchor
     ? (() => {
         const below = anchor.y + anchor.height + gap
         const above = anchor.y - menuHeight - gap
         const maxTop = screenHeight - insets.bottom - menuHeight - padding
-        return below <= maxTop ? below : Math.max(above, insets.top + padding)
+        return Math.max(insets.top + padding, Math.min(below <= maxTop ? below : above, maxTop))
       })()
     : 0
   const left = anchor
@@ -44,12 +48,13 @@ const AnchorMenu: React.FC<{
       <View className="flex-1" pointerEvents="box-none">
         <Pressable className="absolute inset-0" onPress={onClose} />
         <View
-          className="absolute rounded-xl py-2 border border-line-strong"
+          className="absolute overflow-hidden rounded-xl border border-line-strong"
           accessibilityViewIsModal={true}
           style={{
             top,
             left,
             width: menuWidth,
+            maxHeight,
             backgroundColor: themeColors.surface,
             borderColor: themeColors.line,
             shadowColor: '#000',
@@ -59,27 +64,35 @@ const AnchorMenu: React.FC<{
             elevation: 12,
           }}
         >
-          {actions.map((action, index) => (
-            <Pressable
-              key={index}
-              accessibilityLabel={action.label}
-              accessibilityRole="menuitem"
-              className="px-4 flex-row items-center gap-3"
-              style={{ minHeight: 44 }}
-              android_ripple={{ color: themeColors.line }}
-              onPress={() => {
-                onClose()
-                action.handler?.()
-              }}
-            >
-              <View accessible={false} importantForAccessibility="no-hide-descendants">
-                {action.icon ? <MaterialIcons name={action.icon} size={18} color={themeColors.contentMuted} /> : null}
+          <ScrollView bounces={false}>
+            <View className="py-2" onLayout={(event) => setMeasuredHeight(event.nativeEvent.layout.height)}>
+              <View className="mx-4 mb-2 border-b border-line pb-3 pt-1">
+                <NoriText className="text-sm font-medium text-content" numberOfLines={2} ellipsizeMode="tail">{title}</NoriText>
+                <NoriText className="mt-2 text-xs text-content-muted" numberOfLines={2} ellipsizeMode="tail" selectable>{url}</NoriText>
               </View>
-              <NoriText className="flex-1 text-sm" style={{ color: themeColors.content }}>
-                {action.label}
-              </NoriText>
-            </Pressable>
-          ))}
+              {actions.map((action, index) => (
+                <Pressable
+                  key={index}
+                  accessibilityLabel={action.label}
+                  accessibilityRole="menuitem"
+                  className="px-4 flex-row items-center gap-3"
+                  style={{ minHeight: 44 }}
+                  android_ripple={{ color: themeColors.line }}
+                  onPress={() => {
+                    onClose()
+                    action.handler?.()
+                  }}
+                >
+                  <View accessible={false} importantForAccessibility="no-hide-descendants">
+                    {action.icon ? <MaterialIcons name={action.icon} size={18} color={themeColors.contentMuted} /> : null}
+                  </View>
+                  <NoriText className="flex-1 text-sm" style={{ color: themeColors.content }}>
+                    {action.label}
+                  </NoriText>
+                </Pressable>
+              ))}
+            </View>
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -118,6 +131,7 @@ export const BookmarkTile = memo(({
   const isMounted = useRef(true)
 
   useEffect(() => {
+    isMounted.current = true
     return () => {
       isMounted.current = false
     }
@@ -190,6 +204,8 @@ export const BookmarkTile = memo(({
         anchor={anchor}
         onClose={() => setMenuOpen(false)}
         actions={actions}
+        title={bookmark.title}
+        url={bookmark.url}
       />
     </View>
   )

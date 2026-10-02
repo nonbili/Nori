@@ -177,6 +177,9 @@
       "importAction": "استيراد"
     },
     "experience": {
+      "bookmarkLayout": "تخطيط الإشارات المرجعية",
+      "oneColumn": "عمود واحد",
+      "twoColumns": "عمودان",
       "label": "التجربة",
       "defaultBrowser": "فتح الروابط في المتصفح الافتراضي",
       "defaultBrowserHint": "فعّل هذا الخيار لمغادرة Nori وفتح الروابط في متصفح هاتفك.",

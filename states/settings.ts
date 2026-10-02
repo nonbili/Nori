@@ -15,6 +15,7 @@ export interface Settings {
   customSearchProviders: any[]
   openInSystemBrowser: boolean
   showFavicon: boolean
+  bookmarkColumns: 1 | 2
   loadPagesForTitles: boolean
   quickSaveSharedLinks: boolean
   quickSaveShareListId: string
@@ -28,6 +29,7 @@ interface Store extends Settings {
   setSelectedSearchProvider: (id: string) => void
   setOpenInSystemBrowser: (enabled: boolean) => void
   setShowFavicon: (enabled: boolean) => void
+  setBookmarkColumns: (columns: 1 | 2) => void
   setLoadPagesForTitles: (enabled: boolean) => void
   setQuickSaveSharedLinks: (enabled: boolean) => void
   setQuickSaveShareListId: (id: string) => void
@@ -45,6 +47,7 @@ export const settings$: Observable<Store> = observable<Store>({
   customSearchProviders: [],
   openInSystemBrowser: false,
   showFavicon: true,
+  bookmarkColumns: 2,
   loadPagesForTitles: false,
   quickSaveSharedLinks: false,
   quickSaveShareListId: '',
@@ -70,6 +73,9 @@ export const settings$: Observable<Store> = observable<Store>({
   },
   setShowFavicon: (enabled) => {
     settings$.showFavicon.set(enabled)
+  },
+  setBookmarkColumns: (columns) => {
+    settings$.bookmarkColumns.set(columns)
   },
   setLoadPagesForTitles: (enabled) => {
     settings$.loadPagesForTitles.set(enabled)

@@ -177,6 +177,9 @@
       "importAction": "匯入"
     },
     "experience": {
+      "bookmarkLayout": "書籤版面配置",
+      "oneColumn": "單欄",
+      "twoColumns": "雙欄",
       "label": "體驗",
       "defaultBrowser": "在預設瀏覽器中開啟連結",
       "defaultBrowserHint": "開啟此項以離開 Nori 並使用您手機的瀏覽器應用程式開啟連結。",

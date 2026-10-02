@@ -311,6 +311,7 @@ export const ExperienceSection: React.FC = () => {
   const theme = useValue(settings$.theme)
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
   const showFavicon = useValue(settings$.showFavicon)
+  const bookmarkColumns = useValue(settings$.bookmarkColumns) === 1 ? 1 : 2
   const loadPagesForTitles = useValue(settings$.loadPagesForTitles)
   const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
   const quickSaveShareListId = useValue(settings$.quickSaveShareListId)
@@ -355,6 +356,31 @@ export const ExperienceSection: React.FC = () => {
 
   return (
     <SectionCard title={t('settings.experience.label')}>
+      {Platform.OS !== 'web' ? (
+        <View className="border-b-2 border-well px-4 py-4">
+          <View className="mb-3 flex-row items-center gap-3">
+            <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
+              <MaterialIcons name="view-agenda" color={themeColors.contentMuted} size={18} />
+            </View>
+            <NoriText className="flex-1 font-medium text-content">{t('settings.experience.bookmarkLayout')}</NoriText>
+          </View>
+          <View className="flex-row flex-wrap justify-end gap-2">
+            {([1, 2] as const).map((columns) => (
+              <Pressable
+                key={columns}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: bookmarkColumns === columns }}
+                onPress={() => settings$.setBookmarkColumns(columns)}
+                className={`rounded-full px-4 py-2 ${bookmarkColumns === columns ? 'bg-accent-fill' : 'bg-muted'}`}
+              >
+                <NoriText className={`text-sm font-medium ${bookmarkColumns === columns ? 'text-accent-on' : 'text-content-secondary'}`}>
+                  {t(`settings.experience.${columns === 1 ? 'oneColumn' : 'twoColumns'}`)}
+                </NoriText>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
       {Platform.OS !== 'web' ? (
         <View className="border-b-2 border-well px-4 py-4">
           <View className="flex-row items-center gap-3">

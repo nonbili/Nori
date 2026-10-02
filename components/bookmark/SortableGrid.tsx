@@ -10,13 +10,13 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated'
 
-const COLUMNS = 2
 const GAP = 16
 const MARGIN_HORIZONTAL = 24
 
 interface SortableGridProps<T extends { id: string }> {
   items: T[]
   containerWidth?: number
+  columns?: 1 | 2
   itemHeight: number
   renderItem: (item: T, isDragging: boolean) => React.ReactNode
   onReorder: (newOrder: string[]) => void
@@ -29,6 +29,7 @@ interface SortableGridProps<T extends { id: string }> {
 export function SortableGrid<T extends { id: string }>({
   items,
   containerWidth,
+  columns = 2,
   itemHeight,
   renderItem,
   onReorder,
@@ -40,7 +41,7 @@ export function SortableGrid<T extends { id: string }>({
   const { width: windowWidth } = useWindowDimensions()
   const width = containerWidth ?? windowWidth
   const gridWidth = width - MARGIN_HORIZONTAL * 2
-  const itemWidth = (gridWidth - (COLUMNS - 1) * GAP) / COLUMNS
+  const itemWidth = (gridWidth - (columns - 1) * GAP) / columns
 
   // Map item ID to its current index
   const positions = useSharedValue<Record<string, number>>(
@@ -85,7 +86,7 @@ export function SortableGrid<T extends { id: string }>({
   return (
     <View
       style={{
-        height: Math.ceil(items.length / COLUMNS) * (itemHeight + GAP),
+        height: Math.ceil(items.length / columns) * (itemHeight + GAP),
         width: gridWidth,
         alignSelf: 'center',
       }}
@@ -99,7 +100,7 @@ export function SortableGrid<T extends { id: string }>({
           positions={positions}
           itemWidth={itemWidth}
           itemHeight={itemHeight}
-          columns={COLUMNS}
+          columns={columns}
           gap={GAP}
           renderItem={renderItem}
           onDragEnd={handleReorder}
@@ -171,7 +172,7 @@ function DraggableTile<T extends { id: string }>({
       const centerX = startX.value + event.translationX + itemWidth / 2
       const centerY = startY.value + event.translationY + itemHeight / 2
 
-      const col = Math.floor(centerX / (itemWidth + gap))
+      const col = Math.max(0, Math.min(columns - 1, Math.floor(centerX / (itemWidth + gap))))
       const row = Math.floor(centerY / (itemHeight + gap))
       const newIndex = Math.min(
         Math.max(row * columns + col, 0),

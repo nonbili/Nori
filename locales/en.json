@@ -179,6 +179,9 @@
       "importAction": "Import"
     },
     "experience": {
+      "bookmarkLayout": "Bookmark layout",
+      "oneColumn": "1 column",
+      "twoColumns": "2 columns",
       "label": "Experience",
       "defaultBrowser": "Open links in default browser",
       "defaultBrowserHint": "Turn this on to leave Nori and open links in your phone's browser app.",

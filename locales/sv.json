@@ -177,6 +177,9 @@
       "importAction": "Importera"
     },
     "experience": {
+      "bookmarkLayout": "Bokmärkeslayout",
+      "oneColumn": "1 kolumn",
+      "twoColumns": "2 kolumner",
       "label": "Upplevelse",
       "defaultBrowser": "Öppna länkar i standardwebbläsare",
       "defaultBrowserHint": "Aktivera detta för att lämna Nori och öppna länkar i din telefons webbläsarapp.",
