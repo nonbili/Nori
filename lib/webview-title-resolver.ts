@@ -1,4 +1,5 @@
 import { observable } from '@legendapp/state'
+import { REDDIT_PLACEHOLDER_TITLES } from './bookmark-title'
 
 export interface WebViewTitleResult {
   title: string
@@ -90,13 +91,32 @@ export const INJECTED_TITLE_SCRIPT = `
     return el && el.getAttribute('content');
   }
   function readTitle() {
-    return (
-      metaContent('meta[property="og:title"]') ||
-      metaContent('meta[name="twitter:title"]') ||
-      (document.title || '') ||
-      metaContent('meta[property="og:site_name"]') ||
-      ''
-    ).trim();
+    var hostname = window.location.hostname;
+    var isReddit = hostname === 'redd.it' || hostname === 'reddit.com' || /\\.reddit\\.com$/.test(hostname);
+    var match = isReddit && (hostname === 'redd.it'
+      ? window.location.pathname.match(/^\\/([a-z0-9]+)\\/?$/i)
+      : window.location.pathname.match(/\\/comments\\/([a-z0-9]+)(?:\\/|$)/i));
+    var postId = match ? match[1].toLowerCase() : '';
+    var post = postId && document.querySelector('shreddit-post[id="t3_' + postId + '"]');
+    var heading = post && post.querySelector('[slot="title"]');
+    var oldTitle = postId && document.querySelector('.thing[data-fullname="t3_' + postId + '"] a.title');
+    var candidates = [
+      post && post.getAttribute('post-title'),
+      heading && heading.textContent,
+      oldTitle && oldTitle.textContent,
+      metaContent('meta[property="og:title"]'),
+      metaContent('meta[name="twitter:title"]'),
+      document.title,
+      metaContent('meta[property="og:site_name"]')
+    ];
+    var placeholders = ${JSON.stringify(REDDIT_PLACEHOLDER_TITLES)};
+    for (var i = 0; i < candidates.length; i++) {
+      var title = (candidates[i] || '').trim();
+      if (!title || title === hostname.replace(/^www\\./, '')) { continue; }
+      if (isReddit && placeholders.some(function (value) { return value.toLowerCase() === title.toLowerCase(); })) { continue; }
+      return title;
+    }
+    return '';
   }
   function readIcon() {
     var el = document.querySelector('link[rel*="icon"]');

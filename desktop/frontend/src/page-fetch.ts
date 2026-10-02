@@ -10,14 +10,16 @@ import { setPageFetch } from 'nori/lib/bookmark'
 
 const PAGE = 'main.PageService'
 
-type PageResponse = { status: number; contentType: string; body: string }
+type PageResponse = { url: string; status: number; contentType: string; body: string }
 
 export function installDesktopPageFetch() {
   setPageFetch(async (url, init) => {
     const res: PageResponse = await Call.ByName(`${PAGE}.Fetch`, url, init.method, init.headers ?? {})
-    return new Response(init.method === 'HEAD' ? null : res.body, {
+    const response = new Response(init.method === 'HEAD' ? null : res.body, {
       status: res.status,
       headers: res.contentType ? { 'content-type': res.contentType } : {},
     })
+    Object.defineProperty(response, 'url', { value: res.url })
+    return response
   })
 }

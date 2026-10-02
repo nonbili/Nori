@@ -41,3 +41,22 @@ func TestPageServiceFetch(t *testing.T) {
 		t.Fatalf("unexpected head response: %+v", head)
 	}
 }
+
+func TestPageServicePreservesRedirectURL(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/share" {
+			http.Redirect(w, r, "/comments/abc123/", http.StatusFound)
+			return
+		}
+		w.Write([]byte("<title>Post</title>"))
+	}))
+	defer server.Close()
+
+	res, err := NewPageService().Fetch(server.URL+"/share", "GET", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.URL != server.URL+"/comments/abc123/" {
+		t.Fatalf("unexpected resolved URL: %q", res.URL)
+	}
+}

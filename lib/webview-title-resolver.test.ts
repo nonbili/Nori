@@ -1,13 +1,58 @@
 import { afterEach, describe, expect, it } from 'bun:test'
+import { runInNewContext } from 'node:vm'
 import {
   completeActiveJob,
   resolveTitleWithWebView,
   webViewResolver$,
+  INJECTED_TITLE_SCRIPT,
 } from './webview-title-resolver'
 
 afterEach(() => {
   webViewResolver$.active.set(null)
   webViewResolver$.queue.set([])
+})
+
+describe('webview title probe', () => {
+  function probe(readPostTitle: () => string, pageTitle = 'Reddit', hostname = 'www.reddit.com') {
+    const messages: { title: string; icon: string }[] = []
+    const timers: (() => void)[] = []
+    runInNewContext(INJECTED_TITLE_SCRIPT, {
+      window: {
+        location: { hostname, pathname: '/r/test/comments/abc123/' },
+        ReactNativeWebView: { postMessage: (message: string) => messages.push(JSON.parse(message)) },
+      },
+      document: {
+        title: pageTitle,
+        querySelector: (selector: string) => {
+          if (selector === 'shreddit-post[id="t3_abc123"]' && readPostTitle()) {
+            return { getAttribute: () => readPostTitle(), querySelector: () => null }
+          }
+          return null
+        },
+      },
+      setTimeout: (callback: () => void) => timers.push(callback),
+    })
+    return { messages, timers }
+  }
+
+  it('waits past the Reddit loading title until the post renders', () => {
+    let title = ''
+    const { messages, timers } = probe(() => title)
+    expect(messages).toHaveLength(0)
+    title = 'Actual post title'
+    timers.shift()!()
+    expect(messages).toEqual([{ title, icon: '' }])
+  })
+
+  it('returns an empty title when Reddit stays on a loading page', () => {
+    const { messages, timers } = probe(() => '')
+    while (timers.length) timers.shift()!()
+    expect(messages).toEqual([{ title: '', icon: '' }])
+  })
+
+  it('preserves normal titles on other sites', () => {
+    expect(probe(() => '', 'Reddit', 'example.com').messages).toEqual([{ title: 'Reddit', icon: '' }])
+  })
 })
 
 describe('webview title resolver queue', () => {

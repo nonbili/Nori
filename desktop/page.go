@@ -23,6 +23,7 @@ func NewPageService() *PageService {
 
 // PageResponse mirrors the sliver of `Response` the frontend rebuilds.
 type PageResponse struct {
+	URL         string `json:"url"`
 	Status      int    `json:"status"`
 	ContentType string `json:"contentType"`
 	Body        string `json:"body"`
@@ -53,6 +54,7 @@ func (s *PageService) Fetch(url string, method string, headers map[string]string
 	}
 
 	return PageResponse{
+		URL:         res.Request.URL.String(),
 		Status:      res.StatusCode,
 		ContentType: res.Header.Get("Content-Type"),
 		Body:        string(body),

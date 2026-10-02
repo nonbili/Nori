@@ -99,6 +99,53 @@ describe('bookmark helpers', () => {
     })
   })
 
+  it('keeps Reddit loading pages eligible for title backfill', async () => {
+    globalThis.fetch = (async () => new Response('<title>Reddit</title><link rel="icon" href="/favicon.ico">')) as unknown as typeof fetch
+
+    expect((await getMeta('https://www.reddit.com/r/expo/comments/1j4v323/')).title).toBe('reddit.com')
+  })
+
+  it('reads the requested Reddit post title instead of generic metadata or recommended posts', async () => {
+    globalThis.fetch = (async () => new Response(`
+      <meta property="og:title" content="Reddit - Dive into anything">
+      <shreddit-post id="t3_other" post-title="Recommended post"></shreddit-post>
+      <shreddit-post id="t3_1j4v323" post-title="Actual &amp; complete title"></shreddit-post>
+      <link rel="icon" href="/favicon.ico">
+    `)) as unknown as typeof fetch
+
+    expect((await getMeta('https://www.reddit.com/r/expo/comments/1j4v323/comment/mit9b2a/')).title).toBe('Actual & complete title')
+  })
+
+  it('reads rendered Reddit headings and old Reddit post titles', async () => {
+    for (const html of [
+      '<shreddit-post id="t3_abc123"><h1 slot="title">Actual title</h1></shreddit-post>',
+      '<div class="thing" data-fullname="t3_abc123"><a class="title">Actual title</a></div>',
+    ]) {
+      globalThis.fetch = (async () => new Response(`<title>Reddit</title>${html}<link rel="icon" href="/favicon.ico">`)) as unknown as typeof fetch
+      expect((await getMeta('https://old.reddit.com/r/test/comments/abc123/')).title).toBe('Actual title')
+    }
+  })
+
+  it('uses the resolved permalink to extract titles from Reddit share links', async () => {
+    setPageFetch(async () => {
+      const response = new Response('<title>Reddit</title><shreddit-post id="t3_abc123" post-title="Shared post"></shreddit-post><link rel="icon" href="/favicon.ico">')
+      Object.defineProperty(response, 'url', { value: 'https://www.reddit.com/r/test/comments/abc123/title/' })
+      return response
+    })
+
+    expect((await getMeta('https://www.reddit.com/r/test/s/shareToken')).title).toBe('Shared post')
+  })
+
+  it('skips blank or generic metadata and tries the next title candidate', async () => {
+    globalThis.fetch = (async () => new Response('<meta property="og:title" content="  "><title>Actual title</title><link rel="icon" href="/favicon.ico">')) as unknown as typeof fetch
+    expect((await getMeta('https://example.com/page')).title).toBe('Actual title')
+  })
+
+  it('does not apply Reddit title rules to other hosts', async () => {
+    globalThis.fetch = (async () => new Response('<title>Reddit</title><link rel="icon" href="/favicon.ico">')) as unknown as typeof fetch
+    expect((await getMeta('https://reddit.com.example.com/page')).title).toBe('Reddit')
+  })
+
   it('does not parse non-document responses as html', async () => {
     globalThis.fetch = (async () =>
       new Response('binary', { status: 200, headers: { 'content-type': 'image/png' } })) as unknown as typeof fetch

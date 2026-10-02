@@ -1,16 +1,14 @@
 import { bookmarks$ } from '@/states/bookmarks'
-import { getFallbackIcon, getFallbackTitle } from '@/lib/bookmark'
+import { getFallbackIcon } from '@/lib/bookmark'
 import { isDeleted } from '@/lib/nori-data'
 import { maxJobsPerRun, resolveTitleWithWebView } from '@/lib/webview-title-resolver'
+import { hasPlaceholderTitle } from '@/lib/bookmark-title'
 
 // URLs we've already handed to the WebView this session, so repeated foreground
 // passes don't keep re-loading sites that genuinely have no better title.
 const attempted = new Set<string>()
 
 let running = false
-
-const hasPlaceholderTitle = (title: string, url: string) =>
-  !title.trim() || title === getFallbackTitle(url)
 
 /**
  * Find bookmarks whose title is still just the hostname placeholder (typically
@@ -36,7 +34,7 @@ export async function backfillMissingTitles() {
       attempted.add(item.url)
 
       const result = await resolveTitleWithWebView(item.url)
-      if (!result?.title) {
+      if (!result?.title || hasPlaceholderTitle(result.title, item.url)) {
         continue
       }
 

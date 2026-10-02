@@ -1,15 +1,10 @@
 import * as cheerio from 'cheerio/slim'
 import { getDirectFavicon, getGoogleFavicon } from './favicon'
+import { getFallbackTitle, getRedditPostId, hasPlaceholderTitle } from './bookmark-title'
 
 export { getDirectFavicon, getDuckDuckGoIcon, getGoogleFavicon, getRuntimeFaviconCandidates } from './favicon'
 
-export const getFallbackTitle = (url: string) => {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '')
-  } catch {
-    return url
-  }
-}
+export { getFallbackTitle } from './bookmark-title'
 
 export const getFallbackIcon = (url: string) =>
   getGoogleFavicon(url)
@@ -57,13 +52,19 @@ const BROWSER_HEADERS = {
 }
 
 const extractTitle = ($: cheerio.CheerioAPI, url: string) => {
-  const candidate =
-    $('meta[property="og:title"]').attr('content') ||
-    $('meta[name="twitter:title"]').attr('content') ||
-    $('title').text() ||
-    $('meta[property="og:site_name"]').attr('content')
+  const postId = getRedditPostId(url)
+  const post = postId ? $(`shreddit-post[id="t3_${postId}"]`) : null
+  const candidates = [
+    post?.attr('post-title'),
+    post?.find('[slot="title"]').first().text(),
+    postId ? $(`.thing[data-fullname="t3_${postId}"] a.title`).first().text() : '',
+    $('meta[property="og:title"]').attr('content'),
+    $('meta[name="twitter:title"]').attr('content'),
+    $('title').text(),
+    $('meta[property="og:site_name"]').attr('content'),
+  ]
 
-  return candidate?.trim() || getFallbackTitle(url)
+  return candidates.find((candidate) => candidate && !hasPlaceholderTitle(candidate, url))?.trim()
 }
 
 export async function getMeta(url: string) {
@@ -83,7 +84,8 @@ export async function getMeta(url: string) {
 
     const html = await res.text()
     const $ = cheerio.load(html)
-    const title = extractTitle($, url)
+    // Share links (redd.it and /s/...) can redirect to the post permalink.
+    const title = extractTitle($, res.url || url) || getFallbackTitle(url)
     const icon = $('link[rel*=icon]').attr('href')
     const directFavicon = getDirectFavicon(url)
 
