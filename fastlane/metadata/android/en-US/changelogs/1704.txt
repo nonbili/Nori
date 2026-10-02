@@ -1,0 +1,4 @@
+- Add bookmark layout options (1 vs 2 columns) and improve URL visibility
+- Add setting to resolve bookmark titles using WebView
+- Fix Reddit bookmark post title extraction
+- Add 11 new languages (German, Japanese, Korean, Portuguese, Russian, and more)
