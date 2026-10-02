@@ -1,0 +1,13 @@
+<h2>Fitur</h2>
+<ul>
+  <li>Atur markah ke dalam beberapa daftar</li>
+  <li>Buka markah yang disimpan di browser sistem</li>
+  <li>Terima tautan yang dibagikan dari aplikasi lain</li>
+  <li>Pilih daftar tujuan sebelum menyimpan tautan yang dibagikan</li>
+</ul>
+
+<h2>Cara kerja</h2>
+<ul>
+  <li>Nori membantu Anda menyimpan tautan menarik dari aplikasi apa pun dan mengaturnya ke dalam daftar.</li>
+  <li>Saat Anda siap membaca, Nori membuka tautan di browser sistem untuk pengalaman terbaik.</li>
+</ul>

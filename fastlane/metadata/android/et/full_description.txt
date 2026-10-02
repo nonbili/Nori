@@ -1,0 +1,13 @@
+<h2>Funktsioonid</h2>
+<ul>
+  <li>Järjehoidjate korraldamine mitmesse loendisse</li>
+  <li>Salvestatud järjehoidjate avamine süsteemibrauseris</li>
+  <li>Teistest rakendustest jagatud linkide vastuvõtmine</li>
+  <li>Sihtloendi valimine enne jagatud lingi salvestamist</li>
+</ul>
+
+<h2>Kuidas see töötab</h2>
+<ul>
+  <li>Nori aitab salvestada huvitavaid linke mis tahes rakendusest ja korraldada need loenditesse.</li>
+  <li>Kui olete lugemiseks valmis, avab Nori lingi teie süsteemibrauseris parima kasutuskogemuse tagamiseks.</li>
+</ul>

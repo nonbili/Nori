@@ -1,0 +1,13 @@
+<h2>Funkciók</h2>
+<ul>
+  <li>Könyvjelzők rendszerezése több listába</li>
+  <li>Mentett könyvjelzők megnyitása a rendszerböngészőben</li>
+  <li>Más alkalmazásokból megosztott hivatkozások fogadása</li>
+  <li>Céllista kiválasztása a megosztott hivatkozás mentése előtt</li>
+</ul>
+
+<h2>Hogyan működik</h2>
+<ul>
+  <li>A Nori segít elmenteni az érdekes hivatkozásokat bármely alkalmazásból, és listákba rendezni őket.</li>
+  <li>Amikor készen áll az olvasásra, a Nori a legjobb élmény érdekében a rendszerböngészőben nyitja meg a hivatkozást.</li>
+</ul>

@@ -1,0 +1,13 @@
+<h2>Tính năng</h2>
+<ul>
+  <li>Sắp xếp dấu trang vào nhiều danh sách</li>
+  <li>Mở dấu trang đã lưu trong trình duyệt hệ thống</li>
+  <li>Nhận liên kết được chia sẻ từ các ứng dụng khác</li>
+  <li>Chọn danh sách đích trước khi lưu liên kết được chia sẻ</li>
+</ul>
+
+<h2>Cách hoạt động</h2>
+<ul>
+  <li>Nori giúp bạn lưu các liên kết thú vị từ bất kỳ ứng dụng nào và sắp xếp chúng vào các danh sách.</li>
+  <li>Khi bạn sẵn sàng đọc, Nori sẽ mở liên kết trong trình duyệt hệ thống để mang lại trải nghiệm tốt nhất.</li>
+</ul>

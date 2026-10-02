@@ -5,15 +5,26 @@ describe('i18n language resolution', () => {
   it('keeps the supported locale list in sync with app config expectations', () => {
     expect(supportedI18nLanguages).toEqual([
       'ar',
+      'de',
       'el',
       'en',
       'es',
+      'et',
       'fr',
+      'hu',
+      'id',
       'it',
+      'ja',
+      'ko',
+      'lv',
       'pl',
+      'pt',
       'pt_BR',
+      'ru',
       'sv',
       'tr',
+      'uk',
+      'vi',
       'zh_Hans',
       'zh_Hant',
     ])
@@ -21,7 +32,10 @@ describe('i18n language resolution', () => {
 
   it('resolves supported base language codes', () => {
     expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'fr' } as any)).toBe('fr')
-    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'ja' } as any)).toBeUndefined()
+    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'de' } as any)).toBe('de')
+    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'ja' } as any)).toBe('ja')
+    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'jp' } as any)).toBe('ja')
+    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'fi' } as any)).toBeUndefined()
   })
 
   it('resolves Chinese by script before region fallback', () => {
@@ -31,14 +45,18 @@ describe('i18n language resolution', () => {
     expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'zh', regionCode: 'US' } as any)).toBe('zh_Hans')
   })
 
-  it('only resolves Portuguese for Brazil', () => {
+  it('resolves Portuguese for Brazil and Portugal', () => {
     expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'pt', regionCode: 'BR' } as any)).toBe('pt_BR')
-    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'pt', regionCode: 'PT' } as any)).toBeUndefined()
+    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'pt', regionCode: 'PT' } as any)).toBe('pt')
+    expect(resolveI18nLanguageFromExpoLocale({ languageCode: 'pt' } as any)).toBe('pt')
   })
 
   it('normalizes explicit language settings', () => {
     expect(normalizeI18nLanguage(null)).toBeNull()
     expect(normalizeI18nLanguage('en')).toBe('en')
-    expect(normalizeI18nLanguage('ja')).toBeNull()
+    expect(normalizeI18nLanguage('de')).toBe('de')
+    expect(normalizeI18nLanguage('ja')).toBe('ja')
+    expect(normalizeI18nLanguage('jp')).toBe('ja')
+    expect(normalizeI18nLanguage('fi')).toBeNull()
   })
 })

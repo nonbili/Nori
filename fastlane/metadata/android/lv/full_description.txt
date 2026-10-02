@@ -1,0 +1,13 @@
+<h2>Funkcijas</h2>
+<ul>
+  <li>Kārtot grāmatzīmes vairākos sarakstos</li>
+  <li>Atvērt saglabātās grāmatzīmes sistēmas pārlūkprogrammā</li>
+  <li>Saņemt kopīgotās saites no citām lietotnēm</li>
+  <li>Izvēlēties mērķa sarakstu pirms kopīgotās saites saglabāšanas</li>
+</ul>
+
+<h2>Kā tas darbojas</h2>
+<ul>
+  <li>Nori palīdz saglabāt interesantas saites no jebkuras lietotnes un kārtot tās sarakstos.</li>
+  <li>Kad esat gatavs lasīt, Nori atver saiti jūsu sistēmas pārlūkprogrammā vislabākajai lietošanas pieredzei.</li>
+</ul>

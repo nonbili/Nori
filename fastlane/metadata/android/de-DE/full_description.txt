@@ -1,0 +1,13 @@
+<h2>Funktionen</h2>
+<ul>
+  <li>Lesezeichen in mehreren Listen organisieren</li>
+  <li>Gespeicherte Lesezeichen im Systembrowser öffnen</li>
+  <li>Geteilte Links aus anderen Apps empfangen</li>
+  <li>Zielliste vor dem Speichern eines geteilten Links auswählen</li>
+</ul>
+
+<h2>So funktioniert es</h2>
+<ul>
+  <li>Nori hilft Ihnen, interessante Links aus jeder App zu speichern und in Listen zu organisieren.</li>
+  <li>Wenn Sie bereit zum Lesen sind, öffnet Nori den Link in Ihrem Systembrowser für das beste Erlebnis.</li>
+</ul>

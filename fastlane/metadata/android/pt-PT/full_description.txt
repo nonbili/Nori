@@ -1,0 +1,13 @@
+<h2>Funcionalidades</h2>
+<ul>
+  <li>Organize os favoritos em várias listas</li>
+  <li>Abra os favoritos guardados no navegador do sistema</li>
+  <li>Receba ligações partilhadas a partir de outras aplicações</li>
+  <li>Escolha a lista de destino antes de guardar uma ligação partilhada</li>
+</ul>
+
+<h2>Como funciona</h2>
+<ul>
+  <li>O Nori ajuda-o a guardar ligações interessantes de qualquer aplicação e a organizá-las em listas.</li>
+  <li>Quando estiver pronto para ler, o Nori abre a ligação no navegador do seu sistema para a melhor experiência.</li>
+</ul>
