@@ -63,17 +63,19 @@ export interface ThemeColors {
 export const useAppColorScheme = (): ColorScheme => {
   const { colorScheme: nativeWindScheme } = useColorScheme()
   const rnScheme = useRNColorScheme()
-  const scheme = nativeWindScheme ?? rnScheme
+  const theme = useValue(settings$.theme)
+  const scheme = theme === 'amoled' ? 'dark' : theme ?? nativeWindScheme ?? rnScheme
   return scheme === 'dark' ? 'dark' : 'light'
 }
 
 export const getThemeColors = (
   colorScheme: ColorScheme | null | undefined,
   accent: AccentId,
+  amoled = false,
 ): ThemeColors => {
   const scheme: ColorScheme = (colorScheme ?? Appearance.getColorScheme()) === 'dark' ? 'dark' : 'light'
   const isDark = scheme === 'dark'
-  const token = (name: StructuralTokenName) => rgb(structuralChannels(name, scheme, accent))
+  const token = (name: StructuralTokenName) => rgb(structuralChannels(name, scheme, accent, amoled))
 
   return {
     canvas: token('canvas'),
@@ -100,8 +102,9 @@ export const getThemeColors = (
 export const useThemeColors = (): ThemeColors => {
   const colorScheme = useAppColorScheme()
   const accent = useValue(settings$.accent)
+  const amoled = useValue(settings$.theme) === 'amoled'
   // The System accent reads the wallpaper palette, which can arrive or change
   // without the setting moving.
   useValue(systemPalette$)
-  return getThemeColors(colorScheme, normalizeAccent(accent))
+  return getThemeColors(colorScheme, normalizeAccent(accent), amoled)
 }

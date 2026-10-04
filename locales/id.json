@@ -192,7 +192,7 @@
       "loadPagesForTitles": "Muat halaman untuk mendapatkan judul",
       "loadPagesForTitlesHint": "Memuat setiap tautan yang disimpan untuk membaca judulnya. Membutuhkan lebih banyak kuota; penyimpanan latar belakang diperbarui saat Nori dibuka.",
       "theme": "Tema",
-      "themeHint": "Beralih antara tema sistem, terang, dan gelap.",
+      "themeHint": "Pilih tampilan sistem, terang, gelap, atau AMOLED.",
       "system": "Sistem",
       "light": "Terang",
       "dark": "Gelap",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori membuat rentang nuansa warna lengkap dari warna ini, sehingga tetap mudah dibaca dalam mode terang maupun gelap.",
       "language": "Bahasa",
       "languageHint": "Pilih bahasa atau ikuti bahasa sistem.",
-      "languageSystem": "Sistem"
+      "languageSystem": "Sistem",
+      "amoled": "AMOLED",
+      "fontSize": "Ukuran teks",
+      "fontFamily": "Jenis huruf",
+      "fontSystem": "Bawaan",
+      "fontSerif": "Serif",
+      "fontMonospace": "Monospace",
+      "fontPreview": "Buat senyaman rumah sendiri. Markah Anda, sesuai keinginan Anda.",
+      "fontReset": "Atur ulang pengaturan huruf",
+      "fontDecrease": "Perkecil ukuran teks",
+      "fontIncrease": "Perbesar ukuran teks"
     },
     "changelog": {
       "label": "Catatan rilis",

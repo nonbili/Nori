@@ -60,3 +60,20 @@ describe('i18n language resolution', () => {
     expect(normalizeI18nLanguage('fi')).toBeNull()
   })
 })
+
+
+describe('appearance translations', () => {
+  it('includes typography labels and the AMOLED hint in every supported locale', async () => {
+    const keys = ['amoled', 'fontSize', 'fontFamily', 'fontSystem', 'fontSerif', 'fontMonospace',
+      'fontPreview', 'fontReset', 'fontDecrease', 'fontIncrease']
+    for (const language of supportedI18nLanguages) {
+      const locale = await Bun.file(new URL(`../locales/${language}.json`, import.meta.url)).json()
+      const experience = locale.settings.experience
+      for (const key of keys) {
+        expect(typeof experience[key]).toBe('string')
+        expect(experience[key].trim().length).toBeGreaterThan(0)
+      }
+      expect(experience.themeHint).toContain('AMOLED')
+    }
+  })
+})

@@ -94,7 +94,7 @@ function BookmarkRow({
         {listLabel ? (
           <View className="mt-1 flex-row items-center gap-2">
             <View className="rounded-full bg-accent-100 px-2 py-1 dark:bg-accent-950/40">
-              <NoriText className="text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-800 dark:text-accent-300">
+              <NoriText className="text-2xs font-semibold uppercase tracking-[0.12em] text-accent-800 dark:text-accent-300">
                 {listLabel}
               </NoriText>
             </View>
@@ -110,7 +110,7 @@ function BookmarkRow({
       </View>
       {trailing ? (
         <View className="rounded-full bg-muted px-2 py-1">
-          <NoriText className="text-[10px] font-medium uppercase tracking-[0.12em] text-content-muted">
+          <NoriText className="text-2xs font-medium uppercase tracking-[0.12em] text-content-muted">
             {trailing.label}
           </NoriText>
         </View>

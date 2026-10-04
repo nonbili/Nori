@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pressable, ScrollView as NativeScrollView, TextInput, View } from 'react-native'
-import { NoriText } from '@/components/common/NoriText'
+import { Pressable, ScrollView as NativeScrollView, View } from 'react-native'
+import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { FlashList } from '@shopify/flash-list'
 import { GestureDetector, ScrollView } from 'react-native-gesture-handler'
@@ -113,9 +113,9 @@ export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer })
       >
         <MaterialIcons name="arrow-back" size={20} color={drawer.themeColors.contentMuted} />
       </Pressable>
-      <View className="h-12 flex-1 flex-row items-center gap-2 rounded-2xl border border-line bg-surface px-4">
+      <View className="min-h-12 py-2 flex-1 flex-row items-center gap-2 rounded-2xl border border-line bg-surface px-4">
         <MaterialIcons name="search" size={20} color={drawer.themeColors.contentMuted} />
-        <TextInput
+        <NoriTextInput
           value={drawer.searchQuery}
           onChangeText={drawer.setSearchQuery}
           placeholder={t('bookmarks.searchPlaceholder')}
@@ -129,7 +129,7 @@ export const DrawerHeader: React.FC<{ drawer: DrawerPartsState }> = ({ drawer })
       <NouMenu
         items={sortMenuItems}
         trigger={
-          <View className="h-12 flex-row items-center gap-1.5 rounded-2xl border border-line bg-surface px-3">
+          <View className="min-h-12 py-2 flex-row items-center gap-1.5 rounded-2xl border border-line bg-surface px-3">
             <MaterialIcons name="sort" size={18} color={drawer.themeColors.contentMuted} />
             <NoriText className="text-sm font-medium text-content-secondary">{sortLabel}</NoriText>
             <MaterialIcons name="arrow-drop-down" size={18} color={drawer.themeColors.contentMuted} />
@@ -208,7 +208,7 @@ export const DrawerTagChips: React.FC<{ drawer: DrawerPartsState }> = ({ drawer 
               <Pressable
                 key={tag}
                 onPress={() => toggleTag(tag)}
-                className={`h-[32px] flex-row items-center gap-1 rounded-full border px-3.5 ${
+                className={`min-h-[32px] py-1.5 flex-row items-center gap-1 rounded-full border px-3.5 ${
                   isActive
                     ? 'border-accent-300 bg-accent-50 dark:border-accent-800/60 dark:bg-accent-950/40'
                     : 'border-line'

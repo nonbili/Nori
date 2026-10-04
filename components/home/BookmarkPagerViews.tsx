@@ -71,7 +71,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel; extraM
       {!pager.bookmarkEditMode ? (
         <Pressable
           onPress={() => ui$.listEditor.set({ name: '' })}
-          className="h-[36px] flex-row items-center gap-1.5 rounded-full border border-dashed border-line-strong bg-transparent px-4"
+          className="min-h-[36px] py-2 flex-row items-center gap-1.5 rounded-full border border-dashed border-line-strong bg-transparent px-4"
         >
           <MaterialIcons name="add" size={16} color={pager.themeColors.contentSubtle} />
           <NoriText className="text-sm font-medium text-content-secondary">

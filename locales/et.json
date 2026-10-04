@@ -192,7 +192,7 @@
       "loadPagesForTitles": "Laadi lehed pealkirjade hankimiseks",
       "loadPagesForTitlesHint": "Laadi iga salvestatud link selle pealkirja lugemiseks. Kasutab rohkem andmesidet; taustal salvestatud lingid uuenevad Nori avamisel.",
       "theme": "Teema",
-      "themeHint": "Vali süsteemi, heleda või tumeda välimuse vahel.",
+      "themeHint": "Vali süsteemi, hele, tume või AMOLED-kujundus.",
       "system": "Süsteem",
       "light": "Hele",
       "dark": "Tume",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori loob sellest värvist täieliku varjundivaliku, tagades loetavuse nii heledas kui ka tumedas režiimis.",
       "language": "Keel",
       "languageHint": "Vali keel või järgi süsteemi keelt.",
-      "languageSystem": "Süsteem"
+      "languageSystem": "Süsteem",
+      "amoled": "AMOLED",
+      "fontSize": "Kirja suurus",
+      "fontFamily": "Kirjatüüp",
+      "fontSystem": "Vaikimisi",
+      "fontSerif": "Seriifidega",
+      "fontMonospace": "Püsilaiusega",
+      "fontPreview": "Tunne end nagu kodus. Sinu järjehoidjad, sinu moodi.",
+      "fontReset": "Lähtesta kirja seaded",
+      "fontDecrease": "Vähenda kirja suurust",
+      "fontIncrease": "Suurenda kirja suurust"
     },
     "changelog": {
       "label": "Muudatuste logi",

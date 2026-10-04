@@ -192,7 +192,7 @@
       "loadPagesForTitles": "Tải trang để lấy tiêu đề",
       "loadPagesForTitlesHint": "Tải từng liên kết đã lưu để đọc tiêu đề. Sử dụng nhiều dữ liệu hơn; các liên kết lưu trong nền sẽ cập nhật khi mở Nori.",
       "theme": "Giao diện",
-      "themeHint": "Chuyển đổi giữa giao diện hệ thống, sáng và tối.",
+      "themeHint": "Chọn giao diện hệ thống, sáng, tối hoặc AMOLED.",
       "system": "Hệ thống",
       "light": "Sáng",
       "dark": "Tối",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori tạo ra một dải sắc thái đầy đủ từ màu này, giúp dễ đọc ở cả chế độ sáng và tối.",
       "language": "Ngôn ngữ",
       "languageHint": "Chọn ngôn ngữ hoặc theo ngôn ngữ hệ thống.",
-      "languageSystem": "Hệ thống"
+      "languageSystem": "Hệ thống",
+      "amoled": "AMOLED",
+      "fontSize": "Cỡ chữ",
+      "fontFamily": "Phông chữ",
+      "fontSystem": "Mặc định",
+      "fontSerif": "Có chân",
+      "fontMonospace": "Đơn cách",
+      "fontPreview": "Hãy tạo không gian quen thuộc. Dấu trang của bạn, theo cách của bạn.",
+      "fontReset": "Đặt lại cài đặt phông chữ",
+      "fontDecrease": "Giảm cỡ chữ",
+      "fontIncrease": "Tăng cỡ chữ"
     },
     "changelog": {
       "label": "Nhật ký thay đổi",

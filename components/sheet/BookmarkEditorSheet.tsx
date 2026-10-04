@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
-import { Platform, ScrollView, TextInput, Pressable, View } from 'react-native'
-import { NoriText } from '@/components/common/NoriText'
+import { Platform, ScrollView, Pressable, View } from 'react-native'
+import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
 import { useThemeColors } from '@/lib/theme'
@@ -156,7 +156,7 @@ export const BookmarkEditorSheet: React.FC = () => {
           {editor.id ? t('bookmarks.edit') : t('bookmarks.add')}
         </NoriText>
         <View className="gap-3">
-          <TextInput
+          <NoriTextInput
             autoFocus={!editor.id}
             value={editor.url}
             onChangeText={(value) => ui$.bookmarkEditor.set({ ...editor, url: value })}
@@ -167,7 +167,7 @@ export const BookmarkEditorSheet: React.FC = () => {
             placeholderTextColor={themeColors.contentSubtle}
             className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
           />
-          <TextInput
+          <NoriTextInput
             value={editor.title}
             onChangeText={(value) => ui$.bookmarkEditor.set({ ...editor, title: value })}
             autoCapitalize="none"
@@ -184,7 +184,7 @@ export const BookmarkEditorSheet: React.FC = () => {
                 <Pressable
                   key={tag}
                   onPress={() => removeTag(tag)}
-                  className="h-[32px] flex-row items-center gap-1 rounded-full bg-muted px-3 active:bg-muted-strong"
+                  className="min-h-[32px] py-1.5 flex-row items-center gap-1 rounded-full bg-muted px-3 active:bg-muted-strong"
                 >
                   <NoriText className="text-sm font-medium text-content-secondary">{tag}</NoriText>
                   <MaterialIcons name="close" size={14} color={themeColors.contentMuted} />
@@ -192,7 +192,7 @@ export const BookmarkEditorSheet: React.FC = () => {
               ))}
             </View>
           )}
-          <TextInput
+          <NoriTextInput
             value={tagInput}
             onChangeText={onChangeTagInput}
             onSubmitEditing={commitTagInput}
@@ -212,7 +212,7 @@ export const BookmarkEditorSheet: React.FC = () => {
                     addTag(tag)
                     setTagInput('')
                   }}
-                  className="h-[28px] items-center justify-center rounded-full border border-line px-3 active:bg-muted"
+                  className="min-h-[28px] py-1 items-center justify-center rounded-full border border-line px-3 active:bg-muted"
                 >
                   <NoriText className="text-sm text-content-muted">{tag}</NoriText>
                 </Pressable>
@@ -241,7 +241,7 @@ export const BookmarkEditorSheet: React.FC = () => {
               <Pressable
                 key={list.id}
                 onPress={() => ui$.bookmarkEditor.set({ ...editor, listId: list.id })}
-                className="h-[32px] items-center justify-center rounded-full px-4"
+                className="min-h-[32px] py-1.5 items-center justify-center rounded-full px-4"
                 onLayout={(event) => {
                   listItemXRef.current[list.id] = event.nativeEvent.layout.x
                 }}

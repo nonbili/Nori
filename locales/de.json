@@ -192,7 +192,7 @@
       "loadPagesForTitles": "Seiten laden, um Titel abzurufen",
       "loadPagesForTitlesHint": "Jeden gespeicherten Link laden, um seinen Titel zu ermitteln. Verbraucht mehr Daten; im Hintergrund gespeicherte Links werden beim Öffnen von Nori aktualisiert.",
       "theme": "Design",
-      "themeHint": "Zwischen Systemeinstellung, hellem und dunklem Design wechseln.",
+      "themeHint": "Zwischen System, Hell, Dunkel und AMOLED wechseln.",
       "system": "System",
       "light": "Hell",
       "dark": "Dunkel",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori generiert eine vollständige Farbpalette aus dieser Farbe, sodass sowohl im hellen als auch im dunklen Modus alles gut lesbar bleibt.",
       "language": "Sprache",
       "languageHint": "Eine Sprache auswählen oder der Systemsprache folgen.",
-      "languageSystem": "System"
+      "languageSystem": "System",
+      "amoled": "AMOLED",
+      "fontSize": "Schriftgröße",
+      "fontFamily": "Schriftart",
+      "fontSystem": "Standard",
+      "fontSerif": "Serifenschrift",
+      "fontMonospace": "Festbreitenschrift",
+      "fontPreview": "Mach es dir gemütlich. Deine Lesezeichen, auf deine Art.",
+      "fontReset": "Schrifteinstellungen zurücksetzen",
+      "fontDecrease": "Schrift verkleinern",
+      "fontIncrease": "Schrift vergrößern"
     },
     "changelog": {
       "label": "Versionsverlauf",

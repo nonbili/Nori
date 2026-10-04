@@ -192,7 +192,7 @@
       "loadPagesForTitles": "Ielādēt lapas, lai iegūtu virsrakstus",
       "loadPagesForTitlesHint": "Ielādē katru saglabāto saiti, lai nolasītu tās virsrakstu. Patērē vairāk datu; fonā saglabātās saites tiek atjauninātas, atverot Nori.",
       "theme": "Motīvs",
-      "themeHint": "Pārslēgties starp sistēmas, gaišo un tumšo izskatu.",
+      "themeHint": "Izvēlies sistēmas, gaišo, tumšo vai AMOLED izskatu.",
       "system": "Sistēmas",
       "light": "Gaišs",
       "dark": "Tumšs",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori izveido pilnu toņu gammu no šīs krāsas, saglabājot lasāmību gan gaišajā, gan tumšajā režīmā.",
       "language": "Valoda",
       "languageHint": "Izvēlieties valodu vai izmantojiet sistēmas valodu.",
-      "languageSystem": "Sistēmas"
+      "languageSystem": "Sistēmas",
+      "amoled": "AMOLED",
+      "fontSize": "Teksta izmērs",
+      "fontFamily": "Fonts",
+      "fontSystem": "Noklusējums",
+      "fontSerif": "Ar serifiem",
+      "fontMonospace": "Vienplatuma",
+      "fontPreview": "Jūties kā mājās. Tavas grāmatzīmes, tavā stilā.",
+      "fontReset": "Atiestatīt fonta iestatījumus",
+      "fontDecrease": "Samazināt teksta izmēru",
+      "fontIncrease": "Palielināt teksta izmēru"
     },
     "changelog": {
       "label": "Izmaiņu žurnāls",

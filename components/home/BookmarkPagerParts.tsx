@@ -78,7 +78,7 @@ const EditModeHint = memo(({ iconColor, canReorder = true }: { iconColor: string
         </View>
         <View className="flex-1">
           <NoriText className="text-xs font-semibold text-accent-950 dark:text-accent-100">{t('bookmarks.editing')}</NoriText>
-          <NoriText className="mt-0.5 text-[11px] leading-4 text-accent-900 dark:text-accent-50">
+          <NoriText className="mt-0.5 text-tiny leading-4 text-accent-900 dark:text-accent-50">
             {canReorder ? t('bookmarks.editHint') : t('bookmarks.editHintNoReorder')}
           </NoriText>
         </View>

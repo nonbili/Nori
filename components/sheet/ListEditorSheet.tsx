@@ -1,6 +1,6 @@
 import { useValue } from '@legendapp/state/react'
-import { TextInput, Pressable, View } from 'react-native'
-import { NoriText } from '@/components/common/NoriText'
+import { Pressable, View } from 'react-native'
+import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
 import { useThemeColors } from '@/lib/theme'
@@ -46,7 +46,7 @@ export const ListEditorSheet: React.FC = () => {
         <NoriText className="text-xl font-semibold text-content">
           {editor.id ? t('lists.rename') : t('lists.new')}
         </NoriText>
-        <TextInput
+        <NoriTextInput
           autoFocus={!editor.id}
           value={editor.name}
           onChangeText={(value) => ui$.listEditor.set({ ...editor, name: value })}

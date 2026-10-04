@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { TextInput, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native'
-import { NoriText } from '@/components/common/NoriText'
+import { View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native'
+import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { useThemeColors } from '@/lib/theme'
 import {
@@ -175,7 +175,7 @@ export const CustomAccentPicker: React.FC<{
       />
       <View className="flex-row items-center gap-3">
         <View className="h-9 w-9 rounded-full border border-line" style={{ backgroundColor: currentHex }} />
-        <TextInput
+        <NoriTextInput
           value={draftHex ?? currentHex}
           onChangeText={setDraftHex}
           // Only an edited draft commits. Committing the displayed value would

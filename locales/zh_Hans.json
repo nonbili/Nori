@@ -190,7 +190,7 @@
       "loadPagesForTitles": "加载网页以获取标题",
       "loadPagesForTitlesHint": "加载每个保存的链接以读取标题。这会使用更多流量；后台保存的链接会在打开 Nori 时更新。",
       "theme": "主题",
-      "themeHint": "在系统、浅色和深色外观之间切换。",
+      "themeHint": "在系统、浅色、深色和 AMOLED 外观之间切换。",
       "system": "系统",
       "light": "浅色",
       "dark": "深色",
@@ -205,7 +205,17 @@
       "accentCustomHint": "Nori 会基于该颜色生成完整的色阶，因此浅色和深色模式下都保持清晰易读。",
       "language": "语言",
       "languageHint": "选择一种语言或使用系统语言。",
-      "languageSystem": "系统"
+      "languageSystem": "系统",
+      "amoled": "AMOLED",
+      "fontSize": "字号",
+      "fontFamily": "字体",
+      "fontSystem": "默认",
+      "fontSerif": "衬线字体",
+      "fontMonospace": "等宽字体",
+      "fontPreview": "打造你的专属空间。以自己的方式管理书签。",
+      "fontReset": "重置字体设置",
+      "fontDecrease": "缩小字号",
+      "fontIncrease": "增大字号"
     },
     "changelog": {
       "label": "更新日志",

@@ -3,10 +3,13 @@ import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
 import { Platform } from 'react-native'
 import { normalizeI18nLanguage, type SupportedI18nLanguage } from '@/lib/i18n'
+import { type FontFamily } from '@/lib/typography'
 import { DEFAULT_ACCENT, normalizeAccent, type AccentId } from '@/lib/accent'
 
 export interface Settings {
-  theme: null | 'dark' | 'light'
+  theme: null | 'dark' | 'light' | 'amoled'
+  fontScale: number
+  fontFamily: FontFamily
   accent: AccentId
   language: SupportedI18nLanguage | null
   lastSelectedListId: string
@@ -35,10 +38,12 @@ interface Store extends Settings {
   setQuickSaveShareListId: (id: string) => void
 }
 
-const themes: Settings['theme'][] = [null, 'light', 'dark']
+const themes: Settings['theme'][] = [null, 'light', 'dark', 'amoled']
 
 export const settings$: Observable<Store> = observable<Store>({
   theme: null,
+  fontScale: 1,
+  fontFamily: 'system',
   accent: DEFAULT_ACCENT,
   language: null,
   lastSelectedListId: 'default',

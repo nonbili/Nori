@@ -192,7 +192,7 @@
       "loadPagesForTitles": "ページを読み込んでタイトルを取得",
       "loadPagesForTitlesHint": "保存した各リンクを読み込んでタイトルを取得します。データ通信量が増加します。バックグラウンド保存分は Nori を開いたときに更新されます。",
       "theme": "テーマ",
-      "themeHint": "システム、ライト、ダークの表示を切り替えます。",
+      "themeHint": "システム、ライト、ダーク、AMOLED の表示を切り替えます。",
       "system": "システム",
       "light": "ライト",
       "dark": "ダーク",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori はこの色から完全なシェードパレットを生成するため、ライトモードでもダークモードでも見やすさを維持します。",
       "language": "言語",
       "languageHint": "言語を選択するか、システムの言語に従います。",
-      "languageSystem": "システム"
+      "languageSystem": "システム",
+      "amoled": "AMOLED",
+      "fontSize": "文字サイズ",
+      "fontFamily": "フォント",
+      "fontSystem": "標準",
+      "fontSerif": "セリフ",
+      "fontMonospace": "等幅",
+      "fontPreview": "自分らしく使いましょう。ブックマークを、あなたのスタイルで。",
+      "fontReset": "フォント設定をリセット",
+      "fontDecrease": "文字サイズを小さくする",
+      "fontIncrease": "文字サイズを大きくする"
     },
     "changelog": {
       "label": "更新履歴",

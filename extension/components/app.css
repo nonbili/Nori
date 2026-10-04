@@ -28,10 +28,10 @@
   @apply grid h-9 w-9 shrink-0 place-items-center rounded-full bg-muted text-content-muted transition hover:bg-muted-strong;
 }
 .pill-button {
-  @apply flex h-8 items-center gap-1.5 rounded-full bg-contrast px-3 text-xs font-bold text-content-inverse hover:opacity-80;
+  @apply flex min-h-8 py-1 items-center gap-1.5 rounded-full bg-contrast px-3 text-xs font-bold text-content-inverse hover:opacity-80;
 }
 .primary-button {
-  @apply flex h-10 w-full items-center justify-center rounded-full bg-contrast px-5 text-sm font-medium text-content-inverse hover:opacity-80;
+  @apply flex min-h-10 py-2 w-full items-center justify-center rounded-full bg-contrast px-5 text-sm font-medium text-content-inverse hover:opacity-80;
 }
 .text-button {
   @apply rounded-lg px-2 py-1 text-xs font-medium text-content-subtle hover:bg-muted;
@@ -39,16 +39,16 @@
 
 /* List chips */
 .list-chip {
-  @apply flex h-8 shrink-0 items-center rounded-full border border-line bg-transparent px-4 text-sm font-medium text-content-muted transition hover:bg-muted;
+  @apply flex min-h-8 py-1 shrink-0 items-center rounded-full border border-line bg-transparent px-4 text-sm font-medium text-content-muted transition hover:bg-muted;
 }
 .list-chip.active {
   @apply border-contrast bg-contrast text-content-inverse;
 }
 .new-list-chip {
-  @apply flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-line-strong bg-transparent px-4 text-sm font-medium text-content-secondary transition hover:bg-muted;
+  @apply flex min-h-8 py-1 shrink-0 items-center gap-1.5 rounded-full border border-dashed border-line-strong bg-transparent px-4 text-sm font-medium text-content-secondary transition hover:bg-muted;
 }
 .tag-chip {
-  @apply flex h-8 shrink-0 items-center gap-1 rounded-full border border-line px-3.5 text-sm font-medium text-content-muted transition hover:bg-muted;
+  @apply flex min-h-8 py-1 shrink-0 items-center gap-1 rounded-full border border-line px-3.5 text-sm font-medium text-content-muted transition hover:bg-muted;
 }
 .tag-chip > span {
   @apply text-xs font-bold text-content-subtle;
@@ -89,7 +89,7 @@
   @apply z-50 scale-[1.01] cursor-grabbing shadow-2xl ring-2 ring-accent-500/30;
 }
 .bookmark-pill {
-  @apply flex h-[46px] w-full min-w-0 select-none items-center gap-2 overflow-hidden rounded-full border border-line bg-surface px-3 text-left text-sm font-medium text-content transition hover:bg-muted active:scale-[0.98];
+  @apply flex min-h-[46px] py-2 w-full min-w-0 select-none items-center gap-2 overflow-hidden rounded-full border border-line bg-surface px-3 text-left text-sm font-medium text-content transition hover:bg-muted active:scale-[0.98];
 }
 .bookmark-pill > span:nth-child(2) {
   @apply min-w-0 flex-1 truncate;
@@ -179,7 +179,7 @@
 }
 .select-all,
 .selection-count {
-  @apply flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-muted px-3.5 text-sm font-medium text-content hover:bg-muted-strong;
+  @apply flex min-h-10 py-2 shrink-0 items-center justify-center gap-1.5 rounded-full bg-muted px-3.5 text-sm font-medium text-content hover:bg-muted-strong;
 }
 
 /* Anchored menus (the Android NouMenu) */
@@ -267,13 +267,13 @@
 
 /* Search drawer */
 .drawer-search {
-  @apply flex h-11 min-w-0 flex-1 items-center gap-2 rounded-2xl border border-line bg-surface px-3 text-content-muted;
+  @apply flex min-h-11 py-2 min-w-0 flex-1 items-center gap-2 rounded-2xl border border-line bg-surface px-3 text-content-muted;
 }
 .drawer-search input {
   @apply min-w-0 flex-1 border-0 bg-transparent text-sm text-content outline-none placeholder:text-content-subtle;
 }
 .sort-trigger {
-  @apply flex h-11 shrink-0 items-center gap-1 rounded-2xl border border-line bg-surface px-2.5 text-sm font-medium text-content-secondary;
+  @apply flex min-h-11 py-2 shrink-0 items-center gap-1 rounded-2xl border border-line bg-surface px-2.5 text-sm font-medium text-content-secondary;
 }
 .drawer-results {
   @apply min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-6 pb-6 pt-4;
@@ -367,10 +367,10 @@ button.setting-row:hover {
   @apply w-full rounded-2xl border border-line bg-surface px-4 py-3.5 text-sm text-content outline-none focus:border-accent-500 focus:ring-4 focus:ring-accent-500/10;
 }
 .tag-token {
-  @apply flex h-8 items-center gap-1 rounded-full bg-muted px-3 text-sm font-medium text-content-secondary hover:bg-muted-strong;
+  @apply flex min-h-8 py-1 items-center gap-1 rounded-full bg-muted px-3 text-sm font-medium text-content-secondary hover:bg-muted-strong;
 }
 .suggestion-chip {
-  @apply h-7 shrink-0 rounded-full border border-line px-3 text-sm text-content-subtle hover:bg-muted;
+  @apply min-h-7 py-1 shrink-0 rounded-full border border-line px-3 text-sm text-content-subtle hover:bg-muted;
 }
 .dialog-button {
   @apply rounded-full bg-muted px-5 py-3 text-sm text-content hover:bg-muted-strong;

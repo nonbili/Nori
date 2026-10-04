@@ -20,7 +20,7 @@
       BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   body {
-    @apply m-0;
+    @apply m-0 text-base;
   }
   button {
     @apply cursor-pointer disabled:cursor-default disabled:opacity-50;

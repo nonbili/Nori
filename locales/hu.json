@@ -192,7 +192,7 @@
       "loadPagesForTitles": "Oldalak betöltése címekhez",
       "loadPagesForTitlesHint": "Minden mentett hivatkozás betöltése a cím lekéréséhez. Több adatot használ; a háttérben mentett linkek a Nori megnyitásakor frissülnek.",
       "theme": "Téma",
-      "themeHint": "Váltás a rendszer, világos és sötét megjelenés között.",
+      "themeHint": "Válassz a rendszer, a világos, a sötét és az AMOLED megjelenés közül.",
       "system": "Rendszer",
       "light": "Világos",
       "dark": "Sötét",
@@ -207,7 +207,17 @@
       "accentCustomHint": "A Nori a teljes árnyalatpalettát ebből a színből képezi, így világos és sötét módban is olvasható marad.",
       "language": "Nyelv",
       "languageHint": "Válasszon nyelvet, vagy kövesse a rendszer nyelvét.",
-      "languageSystem": "Rendszer"
+      "languageSystem": "Rendszer",
+      "amoled": "AMOLED",
+      "fontSize": "Betűméret",
+      "fontFamily": "Betűtípus",
+      "fontSystem": "Alapértelmezett",
+      "fontSerif": "Talpas",
+      "fontMonospace": "Egyenlő szélességű",
+      "fontPreview": "Érezd magad otthon. A könyvjelzőid, a te ízlésed szerint.",
+      "fontReset": "Betűbeállítások visszaállítása",
+      "fontDecrease": "Betűméret csökkentése",
+      "fontIncrease": "Betűméret növelése"
     },
     "changelog": {
       "label": "Változási napló",

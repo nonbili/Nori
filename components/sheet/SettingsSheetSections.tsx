@@ -18,6 +18,7 @@ import { isIos } from '@/lib/utils'
 import { signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
 import { AboutRow } from '@/components/sheet/SettingsSheetAbout'
+import { TypographyRow } from '@/components/sheet/TypographyRow'
 import { CustomAccentPicker } from '@/components/sheet/AccentPicker'
 import { useLocales } from 'expo-localization'
 import { resolveI18nLanguageFromExpoLocale, supportedI18nLanguages } from '@/lib/i18n'
@@ -516,7 +517,7 @@ export const ExperienceSection: React.FC = () => {
             </NoriText>
           </View>
         </View>
-        <View className="flex-row justify-end gap-2">
+        <View className="flex-row flex-wrap justify-end gap-2">
           <SegmentedOption
             label={t('settings.experience.system')}
             active={theme === null}
@@ -532,8 +533,14 @@ export const ExperienceSection: React.FC = () => {
             active={theme === 'dark'}
             onPress={() => settings$.theme.set('dark')}
           />
+          <SegmentedOption
+            label={t('settings.experience.amoled')}
+            active={theme === 'amoled'}
+            onPress={() => settings$.theme.set('amoled')}
+          />
         </View>
       </View>
+      <TypographyRow />
       <AccentRow />
     </SectionCard>
   )

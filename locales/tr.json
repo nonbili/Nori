@@ -190,7 +190,7 @@
       "loadPagesForTitles": "Başlıkları almak için sayfaları yükle",
       "loadPagesForTitlesHint": "Başlığını okumak için kaydedilen her bağlantıyı yükler. Daha fazla veri kullanır; arka planda kaydedilen bağlantılar Nori açıldığında güncellenir.",
       "theme": "Tema",
-      "themeHint": "Sistem, açık ve karanlık görünüm arasında geçiş yapın.",
+      "themeHint": "Sistem, açık, koyu ve AMOLED görünümleri arasında geçiş yapın.",
       "system": "Sistem",
       "light": "Açık",
       "dark": "Karanlık",
@@ -205,7 +205,17 @@
       "accentCustomHint": "Nori bu renkten tam bir ton aralığı oluşturur; böylece açık ve koyu temada okunaklı kalır.",
       "language": "Dil",
       "languageHint": "Bir dil seçin veya sistem dilini kullanın.",
-      "languageSystem": "Sistem"
+      "languageSystem": "Sistem",
+      "amoled": "AMOLED",
+      "fontSize": "Yazı boyutu",
+      "fontFamily": "Yazı tipi",
+      "fontSystem": "Varsayılan",
+      "fontSerif": "Serif",
+      "fontMonospace": "Eş aralıklı",
+      "fontPreview": "Kendinizi evinizde hissedin. Yer imleriniz, sizin tarzınız.",
+      "fontReset": "Yazı tipi ayarlarını sıfırla",
+      "fontDecrease": "Yazı boyutunu küçült",
+      "fontIncrease": "Yazı boyutunu büyüt"
     },
     "changelog": {
       "label": "Değişiklik günlüğü",

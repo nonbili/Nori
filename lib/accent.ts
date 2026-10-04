@@ -254,25 +254,30 @@ export const onAccentChannels = (accent: AccentId, scheme: AccentScheme): string
 /**
  * One structural token as `"r g b"`. Only the System accent re-tints them, with
  * the wallpaper's neutral palette; every other accent leaves the stone values.
+ * AMOLED overrides background tokens after resolving the selected palette.
  */
-export const structuralChannels = (name: StructuralTokenName, scheme: AccentScheme, accent: AccentId): string => {
+export const structuralChannels = (name: StructuralTokenName, scheme: AccentScheme, accent: AccentId, amoled = false): string => {
+  if (amoled && scheme === 'dark') {
+    if (name === 'canvas') return '0 0 0'
+    // Neutral elevations keep borderless cards and recessed controls distinct,
+    // including when Android supplies a tinted wallpaper palette.
+    if (['surface', 'inset', 'well'].includes(name)) return STRUCTURAL[name][1]
+  }
   const tinted = isSystemAccent(normalizeAccent(accent)) ? systemPalette$.peek()?.structural[name] : undefined
   return (tinted ?? STRUCTURAL[name])[scheme === 'dark' ? 1 : 0]
 }
 
 /** CSS custom properties for one accent, keyed as lib/tokens.css declares them. */
-export const accentVariables = (accent: AccentId, scheme: AccentScheme): Record<string, string> => {
+export const accentVariables = (accent: AccentId, scheme: AccentScheme, amoled = false): Record<string, string> => {
   const ramp = accentRamp(accent)
-  const palette = isSystemAccent(normalizeAccent(accent)) ? systemPalette$.peek() : null
   return {
-    ...(palette
-      ? Object.fromEntries(
-          (Object.keys(palette.structural) as StructuralTokenName[]).map((name) => [
-            `--nori-${name}`,
-            structuralChannels(name, scheme, accent),
-          ]),
-        )
-      : {}),
+    // Write every token so changing themes or accents clears earlier overrides.
+    ...Object.fromEntries(
+      (Object.keys(STRUCTURAL) as StructuralTokenName[]).map((name) => [
+        `--nori-${name}`,
+        structuralChannels(name, scheme, accent, amoled),
+      ]),
+    ),
     ...Object.fromEntries(RAMP_STEPS.map((step, index) => [`--nori-accent-${step}`, ramp[index]!])),
     '--nori-accent-on': onAccentChannels(accent, scheme),
     '--nori-accent-fill': accentFillChannels(accent, scheme),
@@ -289,9 +294,9 @@ export const accentVariables = (accent: AccentId, scheme: AccentScheme): Record<
  * the modal boundary and the sheet falls back to the default accent from
  * lib/tokens.css. No-op where there is no document.
  */
-export const applyAccentToDocument = (accent: AccentId, scheme: AccentScheme): void => {
+export const applyAccentToDocument = (accent: AccentId, scheme: AccentScheme, amoled = false): void => {
   if (typeof document === 'undefined') return
-  for (const [name, channels] of Object.entries(accentVariables(accent, scheme))) {
+  for (const [name, channels] of Object.entries(accentVariables(accent, scheme, amoled))) {
     document.documentElement.style.setProperty(name, channels)
   }
 }

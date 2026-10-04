@@ -6,6 +6,7 @@ import { Icon } from '../Icon'
 import { Menu } from '../Menu'
 import { Sheet } from '../Overlays'
 import { AccentSwatches, SectionCard, Segmented, SettingRow, Toggle } from '../Rows'
+import { TypographyRow } from 'nori-root/components/sheet/TypographyRow'
 import { showSnackbar } from 'nori-root/states/ui'
 import { languageNativeNames } from 'nori/lib/language'
 import { DONATE_LINKS, PLAN_URL, RELEASES_URL, REPO_URL } from 'nori/lib/product-links'
@@ -146,13 +147,14 @@ function ExperienceSection() {
           </span>
         </div>
         <Segmented
-          options={(['system', 'light', 'dark'] as Theme[]).map((theme) => ({
+          options={(['system', 'light', 'dark', 'amoled'] as Theme[]).map((theme) => ({
             label: t(`settings.experience.${theme}`),
             active: preferences.theme === theme,
             onClick: () => setPreference({ theme }),
           }))}
         />
       </div>
+      <TypographyRow />
       <div className="setting-row column">
         <div className="flex items-center gap-3">
           <span className="setting-icon">

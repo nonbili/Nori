@@ -141,7 +141,7 @@ export const BookmarkPagerToolbar: React.FC<{
           disabled={!hasVisibleBookmarks}
           accessibilityLabel={allVisibleSelected ? t('bookmarks.deselectAll') : t('bookmarks.selectAll')}
           accessibilityRole="button"
-          className={`h-10 min-w-0 shrink flex-row items-center gap-1 rounded-full px-2 active:bg-muted ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
+          className={`min-h-10 py-2 min-w-0 shrink flex-row items-center gap-1 rounded-full px-2 active:bg-muted ${hasVisibleBookmarks ? '' : 'opacity-40'}`}
         >
           <MaterialIcons
             name={allVisibleSelected ? 'check-box' : 'check-box-outline-blank'}

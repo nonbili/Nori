@@ -1,7 +1,7 @@
 import { Platform, Pressable, View } from 'react-native'
 import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
 import { useThemeColors } from '@/lib/theme'
-import { noriTextStyle } from '@/components/common/NoriText'
+import { useTypographyStyle } from '@/components/common/NoriText'
 
 export interface ListChipProps {
   name: string
@@ -22,6 +22,7 @@ export const ListChip: React.FC<ListChipProps> = ({
   pageWidth = 0,
 }) => {
   const themeColors = useThemeColors()
+  const typography = useTypographyStyle({ fontSize: 14, lineHeight: 20 })
   const animatedPagerScrollX = Platform.OS === 'web' ? undefined : pagerScrollX
 
   // The active pill is driven by a worklet, so these are the token equivalents
@@ -105,11 +106,11 @@ export const ListChip: React.FC<ListChipProps> = ({
         testID={`list_chip_${name}`}
         accessibilityLabel={name}
         accessibilityRole="tab"
-        className="relative h-[36px] items-center justify-center overflow-hidden rounded-full px-4"
+        className="relative min-h-[36px] py-2 items-center justify-center overflow-hidden rounded-full px-4"
       >
         <Animated.View style={[activeStyle, { backgroundColor: activeBg }]} />
         <Animated.View style={inactiveStyle} />
-        <Animated.Text className="relative text-sm font-medium" style={[noriTextStyle, textStyle]}>
+        <Animated.Text className="relative text-sm font-medium" style={[typography, textStyle]}>
           {name}
         </Animated.Text>
       </Pressable>

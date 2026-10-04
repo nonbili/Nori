@@ -108,7 +108,7 @@ export const SettingsChangelogPage: React.FC<{ appVersion: string }> = ({ appVer
                 <View className="flex-row items-center gap-2">
                   <NoriText className="flex-1 font-medium text-content">{entry.tag}</NoriText>
                   {isCurrent ? (
-                    <NoriText className="rounded-full border border-line px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-content-muted">
+                    <NoriText className="rounded-full border border-line px-2 py-1 text-2xs uppercase tracking-[0.16em] text-content-muted">
                       {t('settings.changelog.current')}
                     </NoriText>
                   ) : null}

@@ -192,7 +192,7 @@
       "loadPagesForTitles": "Load pages to get titles",
       "loadPagesForTitlesHint": "Load each saved link to read its title. Uses more data; background saves update when Nori opens.",
       "theme": "Theme",
-      "themeHint": "Switch between system, light, and dark appearance.",
+      "themeHint": "Switch between system, light, dark, and AMOLED appearance.",
       "system": "System",
       "light": "Light",
       "dark": "Dark",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori builds a full range of shades from this color, so light and dark both stay readable.",
       "language": "Language",
       "languageHint": "Choose a language or follow system language.",
-      "languageSystem": "System"
+      "languageSystem": "System",
+      "amoled": "AMOLED",
+      "fontSize": "Font size",
+      "fontFamily": "Font",
+      "fontSystem": "Default",
+      "fontSerif": "Serif",
+      "fontMonospace": "Monospace",
+      "fontPreview": "Make yourself at home. Your bookmarks, your way.",
+      "fontReset": "Reset font settings",
+      "fontDecrease": "Decrease font size",
+      "fontIncrease": "Increase font size"
     },
     "changelog": {
       "label": "Changelog",

@@ -1,7 +1,8 @@
+import type { FontFamily } from 'nori-root/lib/typography'
 import type { AccentId } from 'nori-root/lib/accent'
 import type { BookmarkListData, BookmarkRecordData, RowJsonState } from 'nori/lib/nori-data'
 
-export type Theme = 'system' | 'light' | 'dark'
+export type Theme = 'system' | 'light' | 'dark' | 'amoled'
 
 export type RowState = RowJsonState
 export type NoriList = BookmarkListData
@@ -32,6 +33,8 @@ export interface ProfileData {
 
 export interface Preferences {
   theme: Theme
+  fontScale: number
+  fontFamily: FontFamily
   accent: AccentId
   /** null means follow the browser UI language. */
   language: string | null

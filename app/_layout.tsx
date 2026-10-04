@@ -20,6 +20,7 @@ import { readSystemPalette } from '@/lib/dynamic-palette'
 import { systemPalette$ } from '@/lib/system-palette'
 import { auth$, bootstrapAuth } from '@/states/auth'
 import { listenIosTransactions, reconcileIosTransactions } from '@/lib/ios-billing'
+import { normalizeFontScale } from '@/lib/typography'
 import { settings$ } from '@/states/settings'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
@@ -33,26 +34,33 @@ function LayoutContent() {
   const plan = useValue(auth$.plan)
   const theme = useValue(settings$.theme)
   const accent = useValue(settings$.accent)
+  const fontScale = useValue(settings$.fontScale)
   const selectedLanguage = useValue(settings$.language)
   const locales = useLocales()
 
-  const colorScheme = theme || appColorScheme
+  const colorScheme = theme === 'amoled' ? 'dark' : theme || appColorScheme
   // Overrides the --nori-accent-* defaults from lib/tokens.css for the native
   // tree, where NativeWind propagates them through React context so a portalled
   // sheet still sees the user's accent.
   const systemPalette = useValue(systemPalette$)
   const accentStyle = useMemo(
-    () => vars(accentVariables(normalizeAccent(accent), colorScheme)),
+    () => vars(accentVariables(normalizeAccent(accent), colorScheme, theme === 'amoled')),
     // The palette is read inside accentVariables, so it has to be a dependency.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [accent, colorScheme, systemPalette],
+    [accent, colorScheme, systemPalette, theme],
   )
 
   // On web the cascade resolves them instead, and react-native-web renders
   // modals outside this View, so the root element has to carry them too.
   useEffect(() => {
-    applyAccentToDocument(normalizeAccent(accent), colorScheme)
-  }, [accent, colorScheme, systemPalette])
+    applyAccentToDocument(normalizeAccent(accent), colorScheme, theme === 'amoled')
+  }, [accent, colorScheme, systemPalette, theme])
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--nori-font-scale', String(normalizeFontScale(fontScale)))
+    }
+  }, [fontScale])
 
   // The wallpaper can change while the app is in the background, so read it
   // again on return. Compared by value: a new object would repaint everything.
@@ -79,7 +87,7 @@ function LayoutContent() {
   }, [locales, selectedLanguage])
 
   useEffect(() => {
-    nativeWindColorScheme.set(theme || 'system')
+    nativeWindColorScheme.set(theme === 'amoled' ? 'dark' : theme || 'system')
   }, [theme])
 
   useEffect(() => listenIosTransactions(), [])

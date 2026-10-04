@@ -190,7 +190,7 @@
       "loadPagesForTitles": "Läs in sidor för att hämta titlar",
       "loadPagesForTitlesHint": "Läser in varje sparad länk för att hämta titeln. Använder mer data; länkar sparade i bakgrunden uppdateras när Nori öppnas.",
       "theme": "Tema",
-      "themeHint": "Växla mellan systemets, ljust och mörkt utseende.",
+      "themeHint": "Välj mellan systemets utseende, ljust, mörkt och AMOLED.",
       "system": "System",
       "light": "Ljust",
       "dark": "Mörkt",
@@ -205,7 +205,17 @@
       "accentCustomHint": "Nori bygger en hel skala av toner från den här färgen, så att den förblir läsbar i både ljust och mörkt läge.",
       "language": "Språk",
       "languageHint": "Välj ett språk eller följ systemspråket.",
-      "languageSystem": "System"
+      "languageSystem": "System",
+      "amoled": "AMOLED",
+      "fontSize": "Textstorlek",
+      "fontFamily": "Typsnitt",
+      "fontSystem": "Standard",
+      "fontSerif": "Seriff",
+      "fontMonospace": "Fast bredd",
+      "fontPreview": "Känn dig som hemma. Dina bokmärken, på ditt sätt.",
+      "fontReset": "Återställ typsnittsinställningar",
+      "fontDecrease": "Minska textstorleken",
+      "fontIncrease": "Öka textstorleken"
     },
     "changelog": {
       "label": "Ändringslogg",

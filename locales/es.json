@@ -190,7 +190,7 @@
       "loadPagesForTitles": "Cargar páginas para obtener títulos",
       "loadPagesForTitlesHint": "Carga cada enlace guardado para leer su título. Usa más datos; los enlaces guardados en segundo plano se actualizan al abrir Nori.",
       "theme": "Tema",
-      "themeHint": "Cambia entre la apariencia del sistema, clara y oscura.",
+      "themeHint": "Alterna entre la apariencia del sistema, clara, oscura y AMOLED.",
       "system": "Sistema",
       "light": "Claro",
       "dark": "Oscuro",
@@ -205,7 +205,17 @@
       "accentCustomHint": "Nori crea una gama completa de tonos a partir de este color, para que se lea bien en modo claro y oscuro.",
       "language": "Idioma",
       "languageHint": "Elige un idioma o sigue el idioma del sistema.",
-      "languageSystem": "Sistema"
+      "languageSystem": "Sistema",
+      "amoled": "AMOLED",
+      "fontSize": "Tamaño de letra",
+      "fontFamily": "Fuente",
+      "fontSystem": "Predeterminada",
+      "fontSerif": "Con serifas",
+      "fontMonospace": "Monoespaciada",
+      "fontPreview": "Siéntete como en casa. Tus marcadores, a tu manera.",
+      "fontReset": "Restablecer ajustes de fuente",
+      "fontDecrease": "Reducir el tamaño de letra",
+      "fontIncrease": "Aumentar el tamaño de letra"
     },
     "changelog": {
       "label": "Registro de cambios",

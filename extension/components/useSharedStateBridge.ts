@@ -7,6 +7,7 @@ import { lists$ } from 'nori-root/states/lists'
 import { settings$ } from 'nori-root/states/settings'
 import { syncMeta$ } from 'nori-root/states/sync-meta'
 import { normalizeAccent } from 'nori-root/lib/accent'
+import { normalizeFontScale, normalizeFontFamily } from 'nori-root/lib/typography'
 import { request } from '../lib/client'
 import type { AppSnapshot, HistoryItem, Preferences } from '../lib/model'
 
@@ -18,6 +19,8 @@ const toHistoryItem = (item: (typeof history$.openedBookmarks)['get'] extends ()
 function currentPayload() {
   const preferences: Preferences = {
     theme: settings$.theme.peek() ?? 'system',
+    fontScale: normalizeFontScale(settings$.fontScale.peek()),
+    fontFamily: normalizeFontFamily(settings$.fontFamily.peek()),
     accent: normalizeAccent(settings$.accent.peek()),
     language: settings$.language.peek(),
     lastListId: settings$.lastSelectedListId.peek(),
@@ -78,6 +81,8 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
         snapshot.profile.history.map((item) => ({ ...item, openedAt: Date.parse(item.openedAt) || Date.now() })),
       )
       settings$.theme.set(snapshot.preferences.theme === 'system' ? null : snapshot.preferences.theme)
+      settings$.fontScale.set(normalizeFontScale(snapshot.preferences.fontScale))
+      settings$.fontFamily.set(normalizeFontFamily(snapshot.preferences.fontFamily))
       settings$.accent.set(normalizeAccent(snapshot.preferences.accent))
       settings$.language.set(snapshot.preferences.language as any)
       settings$.lastSelectedListId.set(snapshot.preferences.lastListId)
@@ -158,6 +163,8 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
       bookmarks$.bookmarks.onChange(commit),
       history$.openedBookmarks.onChange(commit),
       settings$.theme.onChange(commit),
+      settings$.fontScale.onChange(commit),
+      settings$.fontFamily.onChange(commit),
       settings$.language.onChange(commit),
       settings$.lastSelectedListId.onChange(commit),
       settings$.showFavicon.onChange(commit),

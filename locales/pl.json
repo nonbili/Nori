@@ -190,7 +190,7 @@
       "loadPagesForTitles": "Wczytuj strony, aby pobrać tytuły",
       "loadPagesForTitlesHint": "Wczytuje każdy zapisany link, aby odczytać jego tytuł. Zużywa więcej danych; linki zapisane w tle są aktualizowane po otwarciu Nori.",
       "theme": "Motyw",
-      "themeHint": "Przełączaj między motywem systemowym, jasnym i ciemnym.",
+      "themeHint": "Wybierz wygląd systemowy, jasny, ciemny lub AMOLED.",
       "system": "Systemowy",
       "light": "Jasny",
       "dark": "Ciemny",
@@ -205,7 +205,17 @@
       "accentCustomHint": "Nori tworzy z tego koloru pełną gamę odcieni, dzięki czemu pozostaje czytelny w trybie jasnym i ciemnym.",
       "language": "Język",
       "languageHint": "Wybierz język lub użyj języka systemowego.",
-      "languageSystem": "Systemowy"
+      "languageSystem": "Systemowy",
+      "amoled": "AMOLED",
+      "fontSize": "Rozmiar tekstu",
+      "fontFamily": "Czcionka",
+      "fontSystem": "Domyślna",
+      "fontSerif": "Szeryfowa",
+      "fontMonospace": "O stałej szerokości",
+      "fontPreview": "Poczuj się jak u siebie. Twoje zakładki, na Twój sposób.",
+      "fontReset": "Zresetuj ustawienia czcionki",
+      "fontDecrease": "Zmniejsz rozmiar tekstu",
+      "fontIncrease": "Zwiększ rozmiar tekstu"
     },
     "changelog": {
       "label": "Lista zmian",

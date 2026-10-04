@@ -192,7 +192,7 @@
       "loadPagesForTitles": "페이지를 로드하여 제목 가져오기",
       "loadPagesForTitlesHint": "제목을 읽기 위해 각 저장된 링크를 로드합니다. 데이터를 더 사용하며, 백그라운드 저장은 Nori가 열릴 때 업데이트됩니다.",
       "theme": "테마",
-      "themeHint": "시스템, 라이트, 다크 테마 간에 전환합니다.",
+      "themeHint": "시스템, 밝게, 어둡게, AMOLED 테마 중에서 선택하세요.",
       "system": "시스템",
       "light": "라이트",
       "dark": "다크",
@@ -207,7 +207,17 @@
       "accentCustomHint": "Nori는 이 색상에서 전체 색조 범위를 생성하여 라이트 및 다크 모드 모두에서 가독성을 유지합니다.",
       "language": "언어",
       "languageHint": "언어를 선택하거나 시스템 설정을 따릅니다.",
-      "languageSystem": "시스템"
+      "languageSystem": "시스템",
+      "amoled": "AMOLED",
+      "fontSize": "글자 크기",
+      "fontFamily": "글꼴",
+      "fontSystem": "기본",
+      "fontSerif": "세리프",
+      "fontMonospace": "고정폭",
+      "fontPreview": "편안하게 꾸며 보세요. 나만의 방식으로 관리하는 북마크.",
+      "fontReset": "글꼴 설정 초기화",
+      "fontDecrease": "글자 크기 줄이기",
+      "fontIncrease": "글자 크기 늘리기"
     },
     "changelog": {
       "label": "변경 로그",

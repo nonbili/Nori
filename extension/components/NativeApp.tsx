@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { colorScheme } from 'nativewind'
 import { applyAccentToDocument, normalizeAccent } from 'nori-root/lib/accent'
+import { normalizeFontScale, normalizeFontFamily } from 'nori-root/lib/typography'
 import { setDynamicLoadingEnabled } from '@react-native-vector-icons/common'
 import { browser } from 'wxt/browser'
 import { useTranslation } from 'react-i18next'
@@ -55,9 +56,9 @@ function ReadyApp({
   const [isDark, setIsDark] = useState(false)
   useEffect(() => {
     const theme = state.snapshot.preferences.theme
-    colorScheme.set(theme)
+    colorScheme.set(theme === 'amoled' ? 'dark' : theme)
     const systemDark = matchMedia('(prefers-color-scheme: dark)')
-    const resolve = () => setIsDark(theme === 'dark' || (theme === 'system' && systemDark.matches))
+    const resolve = () => setIsDark(theme === 'amoled' || theme === 'dark' || (theme === 'system' && systemDark.matches))
     resolve()
     if (theme !== 'system') return
     systemDark.addEventListener('change', resolve)
@@ -71,8 +72,14 @@ function ReadyApp({
   // On the root element rather than a React subtree so the plain-DOM parts of
   // the popup (app.css) and the react-native-web tree both inherit them.
   useEffect(() => {
-    applyAccentToDocument(normalizeAccent(state.snapshot.preferences.accent), isDark ? 'dark' : 'light')
-  }, [state.snapshot.preferences.accent, isDark])
+    applyAccentToDocument(normalizeAccent(state.snapshot.preferences.accent), isDark ? 'dark' : 'light', state.snapshot.preferences.theme === 'amoled')
+  }, [state.snapshot.preferences.accent, state.snapshot.preferences.theme, isDark])
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--nori-font-scale', String(normalizeFontScale(state.snapshot.preferences.fontScale)))
+    const family = normalizeFontFamily(state.snapshot.preferences.fontFamily)
+    document.documentElement.style.fontFamily = family === 'system' ? '' : family
+  }, [state.snapshot.preferences.fontScale, state.snapshot.preferences.fontFamily])
 
   return (
     <AppProvider value={state}>
