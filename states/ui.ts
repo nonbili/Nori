@@ -9,6 +9,7 @@ export interface BookmarkEditorState {
   title: string
   icon: string
   listId: string
+  previewSource?: 'default' | 'page-image' | 'screenshot'
   tags: string[]
 }
 

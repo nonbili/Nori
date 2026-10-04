@@ -1,4 +1,5 @@
 import { batch } from '@legendapp/state'
+import { updatePreviewBookmarks } from 'nori-root/lib/bookmark-preview'
 import { useEffect, useRef } from 'react'
 import { auth$ } from 'nori-root/states/auth'
 import { bookmarks$ } from 'nori-root/states/bookmarks'
@@ -24,6 +25,8 @@ function currentPayload() {
     accent: normalizeAccent(settings$.accent.peek()),
     language: settings$.language.peek(),
     lastListId: settings$.lastSelectedListId.peek(),
+    bookmarkView: settings$.bookmarkView.peek(),
+    previewImageSource: settings$.previewImageSource.peek(),
     showFavicons: settings$.showFavicon.peek(),
   }
   return {
@@ -65,6 +68,19 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
   const write = useRef<WriteState>({ flushing: false, inFlight: false })
 
   useEffect(() => {
+    const prune = () => {
+      const urls = bookmarks$.bookmarks.peek().map((row) => row.url)
+      const durableUrls = snapshot.profile.bookmarks.map((row) => row.url)
+      void updatePreviewBookmarks([...urls, ...durableUrls, ...(snapshot.otherProfilePreviewUrls || [])]).catch(() => {})
+    }
+    // The projection effect below installs the initial snapshot before this
+    // deferred pass runs. Subsequent local edits and sync replacements prune too.
+    const timer = setTimeout(prune, 0)
+    const unsubscribe = bookmarks$.bookmarks.onChange(prune)
+    return () => { clearTimeout(timer); unsubscribe() }
+  }, [snapshot.otherProfilePreviewUrls, snapshot.profileId, snapshot.profile.bookmarks])
+
+  useEffect(() => {
     // A background snapshot can arrive while a local edit is still debouncing or
     // in flight, before replace-data has entered the operation queue. Preserve
     // the local stores until that write settles, then re-read once it has.
@@ -86,6 +102,8 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
       settings$.accent.set(normalizeAccent(snapshot.preferences.accent))
       settings$.language.set(snapshot.preferences.language as any)
       settings$.lastSelectedListId.set(snapshot.preferences.lastListId)
+      settings$.bookmarkView.set(snapshot.preferences.bookmarkView ?? 'compact')
+      settings$.previewImageSource.set(snapshot.preferences.previewImageSource ?? 'page-image')
       settings$.showFavicon.set(snapshot.preferences.showFavicons)
       auth$.assign({
         loaded: snapshot.auth.loaded,
@@ -168,6 +186,8 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
       settings$.language.onChange(commit),
       settings$.lastSelectedListId.onChange(commit),
       settings$.showFavicon.onChange(commit),
+      settings$.bookmarkView.onChange(commit),
+      settings$.previewImageSource.onChange(commit),
     ]
     return () => {
       stopped = true

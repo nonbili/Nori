@@ -243,5 +243,21 @@
     "close": "關閉",
     "dismiss": "關閉",
     "undo": "復原"
+  },
+  "preview": {
+    "view": "書籤檢視",
+    "compact": "精簡",
+    "preview": "預覽",
+    "imageSource": "圖片來源",
+    "page-image": "網頁圖片",
+    "screenshot": "截圖",
+    "default": "使用預設設定",
+    "refresh": "重新整理預覽",
+    "refreshing": "重新整理中…",
+    "cacheHint": "預覽快取在本機，可離線檢視。使用「重新整理預覽」擷取網頁。",
+    "refreshFailed": "無法重新整理預覽，請重試。",
+    "screenshotFailed": "無法截圖，請重試。",
+    "openPage": "在瀏覽器分頁中開啟此書籤，然後透過 Nori 擴充功能彈出視窗截圖。",
+    "browserMissing": "請安裝 Chrome、Chromium 或 Edge 以擷取網頁。"
   }
 }

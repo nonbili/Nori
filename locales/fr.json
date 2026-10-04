@@ -243,5 +243,21 @@
     "close": "Fermer",
     "dismiss": "Fermer",
     "undo": "Annuler"
+  },
+  "preview": {
+    "view": "Affichage des favoris",
+    "compact": "Compact",
+    "preview": "Aperçu",
+    "imageSource": "Source de l’image",
+    "page-image": "Image de la page",
+    "screenshot": "Capture d’écran",
+    "default": "Par défaut",
+    "refresh": "Actualiser l’aperçu",
+    "refreshing": "Actualisation…",
+    "cacheHint": "Les aperçus sont stockés localement pour une utilisation hors ligne. Utilisez « Actualiser l’aperçu » pour les captures.",
+    "refreshFailed": "Impossible d’actualiser l’aperçu. Réessayez.",
+    "screenshotFailed": "Impossible de faire la capture. Réessayez.",
+    "openPage": "Ouvrez ce favori dans un onglet, puis faites la capture depuis la fenêtre de l’extension Nori.",
+    "browserMissing": "Installez Chrome, Chromium ou Edge pour faire des captures."
   }
 }

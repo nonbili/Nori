@@ -20,7 +20,10 @@ function enqueue<T>(run: () => Promise<T>) {
 async function snapshot(): Promise<AppSnapshot> {
   const state = await loadState()
   const profile = state.profiles[state.activeProfileId] || (state.profiles[state.activeProfileId] = createProfile())
-  return { profile, profileId: state.activeProfileId, preferences: state.preferences, auth, syncing, syncError }
+  const otherProfilePreviewUrls = Object.entries(state.profiles)
+    .filter(([id]) => id !== state.activeProfileId)
+    .flatMap(([, other]) => other.bookmarks.map((row) => row.url))
+  return { profile, profileId: state.activeProfileId, otherProfilePreviewUrls, preferences: state.preferences, auth, syncing, syncError }
 }
 
 function notifyStateChanged() {

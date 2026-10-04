@@ -246,5 +246,21 @@
     "close": "Fechar",
     "dismiss": "Dispensar",
     "undo": "Anular"
+  },
+  "preview": {
+    "view": "Vista dos favoritos",
+    "compact": "Compacta",
+    "preview": "Pré-visualização",
+    "imageSource": "Origem da imagem",
+    "page-image": "Imagem da página",
+    "screenshot": "Captura de ecrã",
+    "default": "Usar predefinição",
+    "refresh": "Atualizar pré-visualização",
+    "refreshing": "A atualizar…",
+    "cacheHint": "As pré-visualizações são guardadas localmente para utilização offline. Capture o ecrã com Atualizar pré-visualização.",
+    "refreshFailed": "Não foi possível atualizar a pré-visualização. Tente novamente.",
+    "screenshotFailed": "Não foi possível capturar o ecrã. Tente novamente.",
+    "openPage": "Abra este favorito num separador e capture-o através da janela da extensão Nori.",
+    "browserMissing": "Instale Chrome, Chromium ou Edge para capturar o ecrã."
   }
 }

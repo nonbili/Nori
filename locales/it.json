@@ -243,5 +243,21 @@
     "close": "Chiudi",
     "dismiss": "Chiudi",
     "undo": "Annulla"
+  },
+  "preview": {
+    "view": "Vista segnalibri",
+    "compact": "Compatta",
+    "preview": "Anteprima",
+    "imageSource": "Origine immagine",
+    "page-image": "Immagine della pagina",
+    "screenshot": "Screenshot",
+    "default": "Usa predefinito",
+    "refresh": "Aggiorna anteprima",
+    "refreshing": "Aggiornamento…",
+    "cacheHint": "Le anteprime sono salvate localmente per l’uso offline. Usa Aggiorna anteprima per gli screenshot.",
+    "refreshFailed": "Impossibile aggiornare l’anteprima. Riprova.",
+    "screenshotFailed": "Impossibile acquisire lo screenshot. Riprova.",
+    "openPage": "Apri questo segnalibro in una scheda e acquisiscilo dal popup dell’estensione Nori.",
+    "browserMissing": "Installa Chrome, Chromium o Edge per acquisire screenshot."
   }
 }

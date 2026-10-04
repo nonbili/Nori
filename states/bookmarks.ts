@@ -1,4 +1,5 @@
-import { observable, type Observable } from '@legendapp/state'
+import { observable, observe, syncState, type Observable } from '@legendapp/state'
+import { updatePreviewBookmarks } from '@/lib/bookmark-preview'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
 import { Platform } from 'react-native'
@@ -24,6 +25,7 @@ export interface BookmarkDraft {
   url: string
   title?: string
   icon?: string
+  previewSource?: 'default' | 'page-image' | 'screenshot'
   tags?: string[]
 }
 
@@ -97,7 +99,11 @@ export const bookmarks$: Observable<Store> = observable<Store>({
       return
     }
 
-    const withTags = draft.tags ? patchRowState(previous, { tags: draft.tags }) : previous
+    const withTags = patchRowState(previous, {
+      ...(draft.tags ? { tags: draft.tags } : {}),
+      ...(draft.previewSource ? { previewSource: draft.previewSource } : {}),
+    })
+    if (draft.previewSource === 'default') delete withTags.json.previewSource
     const nextItems = [...items]
     nextItems[index] = {
       ...withTags,
@@ -320,5 +326,11 @@ if (Platform.OS !== 'web') {
         }
       },
     },
+  })
+  observe(() => {
+    const bookmarks = bookmarks$.bookmarks.get()
+    if (!syncState(bookmarks$.bookmarks).isPersistLoaded.get()) return
+    // Tombstones remain live until purged so Undo and sync retain screenshots.
+    void updatePreviewBookmarks(bookmarks.map((row) => row.url)).catch(() => {})
   })
 }

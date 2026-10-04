@@ -246,5 +246,21 @@
     "close": "Tutup",
     "dismiss": "Tutup",
     "undo": "Batal"
+  },
+  "preview": {
+    "view": "Tampilan markah",
+    "compact": "Ringkas",
+    "preview": "Pratinjau",
+    "imageSource": "Sumber gambar",
+    "page-image": "Gambar halaman",
+    "screenshot": "Tangkapan layar",
+    "default": "Gunakan bawaan",
+    "refresh": "Segarkan pratinjau",
+    "refreshing": "Menyegarkan…",
+    "cacheHint": "Pratinjau disimpan secara lokal untuk penggunaan offline. Ambil tangkapan layar dengan Segarkan pratinjau.",
+    "refreshFailed": "Tidak dapat menyegarkan pratinjau. Coba lagi.",
+    "screenshotFailed": "Tidak dapat mengambil tangkapan layar. Coba lagi.",
+    "openPage": "Buka markah ini di tab browser, lalu ambil gambar dari popup ekstensi Nori.",
+    "browserMissing": "Instal Chrome, Chromium, atau Edge untuk mengambil tangkapan layar."
   }
 }

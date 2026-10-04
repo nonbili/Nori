@@ -1,3 +1,4 @@
+import { previewSourceOverride } from '@/lib/bookmark-preview-types'
 import { InteractionManager, ScrollView, Share, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -147,6 +148,7 @@ export const BookmarkPager: React.FC<{
       title: bookmark.title,
       icon: bookmark.icon || '',
       listId: bookmark.listId || selectedList?.id || '',
+      previewSource: previewSourceOverride(bookmark.json.previewSource),
       tags: getTags(bookmark),
     })
   }, [selectedList?.id])

@@ -246,5 +246,21 @@
     "close": "Bezárás",
     "dismiss": "Bezárás",
     "undo": "Visszavonás"
+  },
+  "preview": {
+    "view": "Könyvjelzők nézete",
+    "compact": "Kompakt",
+    "preview": "Előnézet",
+    "imageSource": "Kép forrása",
+    "page-image": "Oldal képe",
+    "screenshot": "Képernyőkép",
+    "default": "Alapértelmezett",
+    "refresh": "Előnézet frissítése",
+    "refreshing": "Frissítés…",
+    "cacheHint": "Az előnézetek helyben tárolódnak offline használathoz. Képernyőkép készítéséhez frissítsd az előnézetet.",
+    "refreshFailed": "Az előnézet nem frissíthető. Próbáld újra.",
+    "screenshotFailed": "Nem sikerült képernyőképet készíteni. Próbáld újra.",
+    "openPage": "Nyisd meg ezt a könyvjelzőt egy böngészőlapon, majd készíts képet a Nori bővítmény felugró ablakában.",
+    "browserMissing": "Képernyőképekhez telepítsd a Chrome, Chromium vagy Edge böngészőt."
   }
 }

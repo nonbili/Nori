@@ -4,11 +4,13 @@ import { REDDIT_PLACEHOLDER_TITLES } from './bookmark-title'
 export interface WebViewTitleResult {
   title: string
   icon: string
+  screenshotUri?: string
 }
 
 export interface PendingJob {
   id: number
   url: string
+  screenshot?: boolean
 }
 
 // Resolver callbacks are kept out of the observable store on purpose — legend-state
@@ -69,19 +71,21 @@ function pumpQueue() {
  * Queue a URL to have its title resolved by the hidden WebView. Resolves with the
  * extracted metadata, or `null` if no host is mounted / it times out / it errors.
  */
-export function resolveTitleWithWebView(url: string): Promise<WebViewTitleResult | null> {
+export function resolveTitleWithWebView(url: string, screenshot = false): Promise<WebViewTitleResult | null> {
   if (!available) return Promise.resolve(null)
-  const pending = pendingUrls.get(url)
+  const key = `${screenshot ? 'screenshot:' : ''}${url}`
+  const pending = pendingUrls.get(key)
   if (pending) return pending
   const request = new Promise<WebViewTitleResult | null>((resolve) => {
-    const job: PendingJob = { id: nextJobId++, url }
+    const job: PendingJob = { id: nextJobId++, url, ...(screenshot ? { screenshot: true } : {}) }
     resolvers.set(job.id, resolve)
-    webViewResolver$.queue.set([...webViewResolver$.queue.peek(), job])
+    const queue = webViewResolver$.queue.peek()
+    webViewResolver$.queue.set(screenshot ? [job, ...queue] : [...queue, job])
     pumpQueue()
   })
-  pendingUrls.set(url, request)
+  pendingUrls.set(key, request)
   void request.then(() => {
-    if (pendingUrls.get(url) === request) pendingUrls.delete(url)
+    if (pendingUrls.get(key) === request) pendingUrls.delete(key)
   })
   return request
 }

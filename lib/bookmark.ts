@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from './fetch-with-timeout'
+import { PreviewResponseError, persistentPreviewStatus } from './bookmark-preview-types'
 import * as cheerio from 'cheerio/slim'
 import { getDirectFavicon, getGoogleFavicon } from './favicon'
 import { getFallbackTitle, getRedditPostId, hasPlaceholderTitle } from './bookmark-title'
@@ -6,16 +8,18 @@ export { getDirectFavicon, getDuckDuckGoIcon, getGoogleFavicon, getRuntimeFavico
 
 export { getFallbackTitle } from './bookmark-title'
 
-export const getFallbackIcon = (url: string) =>
-  getGoogleFavicon(url)
+export const getFallbackIcon = (url: string) => getGoogleFavicon(url)
 
 // The desktop app's webview is a normal web origin, so a plain `fetch` of some
 // other site is blocked by CORS and every bookmark falls back to its hostname.
 // It swaps in a fetch that goes through Go instead; Android and the extension
 // (which holds host permissions) keep the global one.
-type PageFetch = (url: string, init: { method: 'GET' | 'HEAD'; headers?: Record<string, string> }) => Promise<Response>
+type PageFetch = (
+  url: string,
+  init: { method: 'GET' | 'HEAD'; headers?: Record<string, string>; signal?: AbortSignal },
+) => Promise<Response>
 
-let pageFetch: PageFetch = (url, init) => fetch(url, { ...init, redirect: 'follow' })
+let pageFetch: PageFetch = (url, init) => fetchWithTimeout(url, { ...init, redirect: 'follow' })
 
 export const setPageFetch = (fetcher: PageFetch) => {
   pageFetch = fetcher
@@ -91,7 +95,7 @@ export async function getMeta(url: string) {
 
     let resolvedIcon = icon ? new URL(icon, url).href : ''
 
-    if (!resolvedIcon && await canLoadImageUrl(directFavicon)) {
+    if (!resolvedIcon && (await canLoadImageUrl(directFavicon))) {
       resolvedIcon = directFavicon
     }
 
@@ -105,4 +109,36 @@ export async function getMeta(url: string) {
       icon: getGoogleFavicon(url),
     }
   }
+}
+
+/** Preview metadata is cached separately from editable bookmark titles. */
+export async function getPreviewMeta(url: string, signal?: AbortSignal) {
+  const res = await pageFetch(url, { method: 'GET', headers: BROWSER_HEADERS, signal })
+  if (!res.ok || !/text\/html|application\/xhtml\+xml/i.test(res.headers.get('content-type') || 'text/html')) {
+    throw new PreviewResponseError('preview_page_failed', res.ok || persistentPreviewStatus(res.status))
+  }
+  const $ = cheerio.load(await res.text())
+  const description = (
+    $('meta[property="og:description"]').attr('content') ||
+    $('meta[name="description"]').attr('content') ||
+    $('meta[name="twitter:description"]').attr('content') ||
+    ''
+  )
+    .trim()
+    .slice(0, 2000)
+  let imageUrl = ''
+  for (const value of [
+    $('meta[property="og:image"]').attr('content'),
+    $('meta[name="twitter:image"]').attr('content'),
+    $('meta[property="twitter:image"]').attr('content'),
+  ]) {
+    try {
+      const resolved = new URL(value || '', res.url || url)
+      if (value && /^https?:$/.test(resolved.protocol)) {
+        imageUrl = resolved.href
+        break
+      }
+    } catch {}
+  }
+  return { description, imageUrl }
 }

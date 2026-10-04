@@ -243,5 +243,21 @@
     "close": "Stäng",
     "dismiss": "Stäng",
     "undo": "Ångra"
+  },
+  "preview": {
+    "view": "Bokmärkesvy",
+    "compact": "Kompakt",
+    "preview": "Förhandsvisning",
+    "imageSource": "Bildkälla",
+    "page-image": "Sidbild",
+    "screenshot": "Skärmbild",
+    "default": "Använd standard",
+    "refresh": "Uppdatera förhandsvisning",
+    "refreshing": "Uppdaterar…",
+    "cacheHint": "Förhandsvisningar sparas lokalt för användning offline. Ta skärmbilder med Uppdatera förhandsvisning.",
+    "refreshFailed": "Kunde inte uppdatera förhandsvisningen. Försök igen.",
+    "screenshotFailed": "Kunde inte ta skärmbilden. Försök igen.",
+    "openPage": "Öppna bokmärket i en webbläsarflik och ta bilden från Nori-tilläggets popup.",
+    "browserMissing": "Installera Chrome, Chromium eller Edge för att ta skärmbilder."
   }
 }

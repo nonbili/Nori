@@ -243,5 +243,21 @@
     "close": "Cerrar",
     "dismiss": "Descartar",
     "undo": "Deshacer"
+  },
+  "preview": {
+    "view": "Vista de marcadores",
+    "compact": "Compacta",
+    "preview": "Vista previa",
+    "imageSource": "Fuente de imagen",
+    "page-image": "Imagen de la página",
+    "screenshot": "Captura de pantalla",
+    "default": "Usar predeterminado",
+    "refresh": "Actualizar vista previa",
+    "refreshing": "Actualizando…",
+    "cacheHint": "Las vistas previas se guardan localmente para usarlas sin conexión. Capture pantallas con «Actualizar vista previa».",
+    "refreshFailed": "No se pudo actualizar la vista previa. Inténtelo de nuevo.",
+    "screenshotFailed": "No se pudo capturar la pantalla. Inténtelo de nuevo.",
+    "openPage": "Abra este marcador en una pestaña y capture desde la ventana de la extensión Nori.",
+    "browserMissing": "Instale Chrome, Chromium o Edge para capturar pantallas."
   }
 }

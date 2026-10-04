@@ -10,6 +10,7 @@ import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { auth$ } from '@/states/auth'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
+import { PreviewSettings } from '@/components/bookmark/PreviewSettings'
 import { syncMeta$ } from '@/states/sync-meta'
 import { useAppColorScheme, useThemeColors } from '@/lib/theme'
 import { ACCENT_IDS, SYSTEM_ACCENT, accentColor, isCustomAccent, normalizeAccent } from '@/lib/accent'
@@ -473,6 +474,7 @@ export const AppearanceSection: React.FC = () => {
   const theme = useValue(settings$.theme)
   const showFavicon = useValue(settings$.showFavicon)
   const bookmarkColumns = useValue(settings$.bookmarkColumns) === 1 ? 1 : 2
+  const preview = useValue(settings$.bookmarkView) === 'preview'
   return (
     <View className="overflow-hidden rounded-[24px] bg-surface">
       <View className="border-b-2 border-well px-4 py-4">
@@ -512,7 +514,8 @@ export const AppearanceSection: React.FC = () => {
       </View>
       <AccentRow />
       <TypographyRow />
-      {Platform.OS !== 'web' ? (
+      <PreviewSettings />
+      {Platform.OS !== 'web' && !preview ? (
         <View className="border-b-2 border-well px-4 py-4">
           <View className="mb-3 flex-row items-center gap-3">
             <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">

@@ -243,5 +243,21 @@
     "close": "Kapat",
     "dismiss": "Kapat",
     "undo": "Geri al"
+  },
+  "preview": {
+    "view": "Yer imi görünümü",
+    "compact": "Kompakt",
+    "preview": "Önizleme",
+    "imageSource": "Görsel kaynağı",
+    "page-image": "Sayfa görseli",
+    "screenshot": "Ekran görüntüsü",
+    "default": "Varsayılanı kullan",
+    "refresh": "Önizlemeyi yenile",
+    "refreshing": "Yenileniyor…",
+    "cacheHint": "Önizlemeler çevrimdışı kullanım için yerel olarak saklanır. Ekran görüntüsü için Önizlemeyi yenile seçeneğini kullanın.",
+    "refreshFailed": "Önizleme yenilenemedi. Tekrar deneyin.",
+    "screenshotFailed": "Ekran görüntüsü alınamadı. Tekrar deneyin.",
+    "openPage": "Bu yer imini bir tarayıcı sekmesinde açın ve Nori uzantısının açılır penceresinden görüntü alın.",
+    "browserMissing": "Ekran görüntüsü almak için Chrome, Chromium veya Edge yükleyin."
   }
 }

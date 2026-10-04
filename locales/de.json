@@ -246,5 +246,21 @@
     "close": "Schließen",
     "dismiss": "Verwerfen",
     "undo": "Rückgängig"
+  },
+  "preview": {
+    "view": "Lesezeichenansicht",
+    "compact": "Kompakt",
+    "preview": "Vorschau",
+    "imageSource": "Bildquelle",
+    "page-image": "Seitenbild",
+    "screenshot": "Screenshot",
+    "default": "Standard verwenden",
+    "refresh": "Vorschau aktualisieren",
+    "refreshing": "Wird aktualisiert…",
+    "cacheHint": "Vorschauen werden lokal für die Offline-Nutzung gespeichert. Screenshots mit „Vorschau aktualisieren“ aufnehmen.",
+    "refreshFailed": "Vorschau konnte nicht aktualisiert werden. Erneut versuchen.",
+    "screenshotFailed": "Screenshot konnte nicht aufgenommen werden. Erneut versuchen.",
+    "openPage": "Dieses Lesezeichen in einem Browser-Tab öffnen und über das Popup der Nori-Erweiterung aufnehmen.",
+    "browserMissing": "Chrome, Chromium oder Edge installieren, um Screenshots aufzunehmen."
   }
 }

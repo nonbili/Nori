@@ -19,6 +19,8 @@ export const defaultState = (): StoredState => ({
     accent: DEFAULT_ACCENT,
     language: null,
     lastListId: 'builtin-later',
+    bookmarkView: 'compact',
+    previewImageSource: 'page-image',
     showFavicons: true,
   },
 })
@@ -30,6 +32,8 @@ export async function loadState(): Promise<StoredState> {
   if (!stored.profiles[stored.activeProfileId]) stored.activeProfileId = Object.keys(stored.profiles)[0] || 'anonymous'
   if (!stored.profiles.anonymous) stored.profiles.anonymous = createProfile()
   if (stored.preferences) {
+    stored.preferences.bookmarkView = stored.preferences.bookmarkView === 'preview' ? 'preview' : 'compact'
+    stored.preferences.previewImageSource = stored.preferences.previewImageSource === 'screenshot' ? 'screenshot' : 'page-image'
     stored.preferences.fontScale = normalizeFontScale(stored.preferences.fontScale)
     stored.preferences.fontFamily = normalizeFontFamily(stored.preferences.fontFamily)
     stored.preferences.language = normalizeLanguage(stored.preferences.language)

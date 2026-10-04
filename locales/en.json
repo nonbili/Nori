@@ -246,5 +246,21 @@
     "close": "Close",
     "dismiss": "Dismiss",
     "undo": "Undo"
+  },
+  "preview": {
+    "view": "Bookmark view",
+    "compact": "Compact",
+    "preview": "Preview",
+    "imageSource": "Image source",
+    "page-image": "Page image",
+    "screenshot": "Screenshot",
+    "default": "Use default",
+    "refresh": "Refresh preview",
+    "refreshing": "Refreshing…",
+    "cacheHint": "Previews are cached locally for offline use. Capture screenshots with Refresh preview.",
+    "refreshFailed": "Could not refresh the preview. Try again.",
+    "screenshotFailed": "Could not capture the screenshot. Try again.",
+    "openPage": "Open this bookmark in a browser tab, then use the Nori extension popup to capture it.",
+    "browserMissing": "Install Chrome, Chromium or Edge to capture screenshots."
   }
 }

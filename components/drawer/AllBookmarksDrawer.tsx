@@ -1,3 +1,4 @@
+import { previewSourceOverride } from '@/lib/bookmark-preview-types'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Share, View, useWindowDimensions } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
@@ -127,6 +128,7 @@ export function AllBookmarksDrawer() {
       title: bookmark.title,
       icon: bookmark.icon || '',
       listId: bookmark.listId,
+      previewSource: previewSourceOverride(bookmark.json.previewSource),
       tags: getTags(bookmark),
     })
   }, [])

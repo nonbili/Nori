@@ -13,6 +13,7 @@ import { DONATE_LINKS, PLAN_URL, RELEASES_URL, REPO_URL } from 'nori/lib/product
 import { languages, systemLanguage } from '../../lib/language'
 import { exportBookmarks, readImportFile, type TransferFormat } from '../../lib/transfer'
 import { normalizeAccent } from 'nori-root/lib/accent'
+import { PreviewSettings } from 'nori-root/components/bookmark/PreviewSettings'
 import type { Theme } from '../../lib/model'
 
 const openTab = (url: string) => void browser.tabs.create({ url })
@@ -180,6 +181,7 @@ function AppearanceSection() {
           />
         </div>
         <TypographyRow />
+        <PreviewSettings />
         <SettingRow
           last
           icon="image"

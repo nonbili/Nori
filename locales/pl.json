@@ -243,5 +243,21 @@
     "close": "Zamknij",
     "dismiss": "Zamknij",
     "undo": "Cofnij"
+  },
+  "preview": {
+    "view": "Widok zakładek",
+    "compact": "Kompaktowy",
+    "preview": "Podgląd",
+    "imageSource": "Źródło obrazu",
+    "page-image": "Obraz strony",
+    "screenshot": "Zrzut ekranu",
+    "default": "Użyj domyślnego",
+    "refresh": "Odśwież podgląd",
+    "refreshing": "Odświeżanie…",
+    "cacheHint": "Podglądy są zapisywane lokalnie do użytku offline. Zrzuty ekranu wykonuj przez Odśwież podgląd.",
+    "refreshFailed": "Nie udało się odświeżyć podglądu. Spróbuj ponownie.",
+    "screenshotFailed": "Nie udało się wykonać zrzutu ekranu. Spróbuj ponownie.",
+    "openPage": "Otwórz tę zakładkę w przeglądarce i wykonaj zrzut w oknie rozszerzenia Nori.",
+    "browserMissing": "Zainstaluj Chrome, Chromium lub Edge, aby wykonywać zrzuty ekranu."
   }
 }

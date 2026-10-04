@@ -35,6 +35,12 @@ describe('bookmark mutations', () => {
     })
   })
 
+  it('omits the default preview source from new bookmark rows', () => {
+    const lists = normalizeLists([{ id: 'read', name: 'Read' }])
+    const result = addBookmarkRecord(lists, [], { listId: 'read', url: 'https://example.com', previewSource: 'default' }, 'new', '2026-10-04T00:00:00.000Z')
+    expect(result!.bookmarks[0].json).not.toHaveProperty('previewSource')
+  })
+
   it('rejects blank urls and missing list ids', () => {
     const lists = normalizeLists([{ id: 'read', name: 'Read', json: { visible: true } }])
     const bookmarks = normalizeBookmarks(lists, [])

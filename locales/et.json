@@ -246,5 +246,21 @@
     "close": "Sulge",
     "dismiss": "Sulge",
     "undo": "Võta tagasi"
+  },
+  "preview": {
+    "view": "Järjehoidjate vaade",
+    "compact": "Kompaktne",
+    "preview": "Eelvaade",
+    "imageSource": "Pildi allikas",
+    "page-image": "Lehe pilt",
+    "screenshot": "Kuvatõmmis",
+    "default": "Kasuta vaikeseadet",
+    "refresh": "Värskenda eelvaadet",
+    "refreshing": "Värskendamine…",
+    "cacheHint": "Eelvaated salvestatakse seadmesse võrguühenduseta kasutamiseks. Kuvatõmmise tegemiseks värskenda eelvaadet.",
+    "refreshFailed": "Eelvaadet ei saanud värskendada. Proovi uuesti.",
+    "screenshotFailed": "Kuvatõmmist ei saanud teha. Proovi uuesti.",
+    "openPage": "Ava see järjehoidja brauseri vahekaardil ja tee kuvatõmmis Nori laienduse hüpikaknas.",
+    "browserMissing": "Kuvatõmmiste tegemiseks paigalda Chrome, Chromium või Edge."
   }
 }

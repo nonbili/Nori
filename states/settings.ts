@@ -18,6 +18,8 @@ export interface Settings {
   customSearchProviders: any[]
   openInSystemBrowser: boolean
   showFavicon: boolean
+  bookmarkView: 'compact' | 'preview'
+  previewImageSource: 'page-image' | 'screenshot'
   bookmarkColumns: 1 | 2
   loadPagesForTitles: boolean
   quickSaveSharedLinks: boolean
@@ -52,6 +54,8 @@ export const settings$: Observable<Store> = observable<Store>({
   customSearchProviders: [],
   openInSystemBrowser: false,
   showFavicon: true,
+  bookmarkView: 'compact',
+  previewImageSource: 'page-image',
   bookmarkColumns: 2,
   loadPagesForTitles: false,
   quickSaveSharedLinks: false,

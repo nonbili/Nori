@@ -246,5 +246,21 @@
     "close": "닫기",
     "dismiss": "닫기",
     "undo": "실행 취소"
+  },
+  "preview": {
+    "view": "북마크 보기",
+    "compact": "간결하게",
+    "preview": "미리보기",
+    "imageSource": "이미지 소스",
+    "page-image": "페이지 이미지",
+    "screenshot": "스크린샷",
+    "default": "기본값 사용",
+    "refresh": "미리보기 새로고침",
+    "refreshing": "새로고침 중…",
+    "cacheHint": "미리보기는 오프라인 사용을 위해 기기에 저장됩니다. 미리보기 새로고침으로 스크린샷을 촬영하세요.",
+    "refreshFailed": "미리보기를 새로고침하지 못했습니다. 다시 시도하세요.",
+    "screenshotFailed": "스크린샷을 촬영하지 못했습니다. 다시 시도하세요.",
+    "openPage": "이 북마크를 브라우저 탭에서 열고 Nori 확장 프로그램 팝업에서 촬영하세요.",
+    "browserMissing": "스크린샷 촬영을 위해 Chrome, Chromium 또는 Edge를 설치하세요."
   }
 }

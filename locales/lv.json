@@ -246,5 +246,21 @@
     "close": "Aizvērt",
     "dismiss": "Aizvērt",
     "undo": "Atsaukt"
+  },
+  "preview": {
+    "view": "Grāmatzīmju skats",
+    "compact": "Kompakts",
+    "preview": "Priekšskatījums",
+    "imageSource": "Attēla avots",
+    "page-image": "Lapas attēls",
+    "screenshot": "Ekrānuzņēmums",
+    "default": "Izmantot noklusējumu",
+    "refresh": "Atsvaidzināt priekšskatījumu",
+    "refreshing": "Atsvaidzina…",
+    "cacheHint": "Priekšskatījumi tiek glabāti lokāli lietošanai bezsaistē. Ekrānuzņēmumiem izmantojiet Atsvaidzināt priekšskatījumu.",
+    "refreshFailed": "Neizdevās atsvaidzināt priekšskatījumu. Mēģiniet vēlreiz.",
+    "screenshotFailed": "Neizdevās uzņemt ekrānuzņēmumu. Mēģiniet vēlreiz.",
+    "openPage": "Atveriet šo grāmatzīmi pārlūka cilnē un uzņemiet attēlu Nori paplašinājuma uznirstošajā logā.",
+    "browserMissing": "Ekrānuzņēmumiem instalējiet Chrome, Chromium vai Edge."
   }
 }

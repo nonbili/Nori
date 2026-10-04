@@ -14,7 +14,7 @@ import { colorScheme as nativeWindColorScheme, vars } from 'nativewind'
 import { onReceiveAuthUrl } from '@/lib/supabase/auth'
 import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
 import { purgeExpiredTombstones } from '@/lib/tombstone-purge'
-import { useAppColorScheme } from '@/lib/theme'
+import { useAppColorScheme, useThemeColors } from '@/lib/theme'
 import { accentVariables, applyAccentToDocument, normalizeAccent } from '@/lib/accent'
 import { readSystemPalette } from '@/lib/dynamic-palette'
 import { systemPalette$ } from '@/lib/system-palette'
@@ -30,6 +30,7 @@ LogBox.ignoreAllLogs()
 
 function LayoutContent() {
   const appColorScheme = useAppColorScheme()
+  const themeColors = useThemeColors()
   const userId = useValue(auth$.userId)
   const plan = useValue(auth$.plan)
   const theme = useValue(settings$.theme)
@@ -138,8 +139,8 @@ function LayoutContent() {
   return (
     <View className="flex-1 bg-canvas" style={accentStyle}>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <WebViewTitleResolver canvasColor={themeColors.canvas} />
       <Slot />
-      <WebViewTitleResolver />
       <ActionSnackbar />
     </View>
   )

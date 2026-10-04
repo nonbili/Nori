@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { getBookmarkActionMenuItems } from '@/components/bookmark/BookmarkActionsMenu'
 import { type NouMenuItem } from '@/components/menu/NouMenu'
 import { Favicon } from './Favicon'
+import { BookmarkPreviewContent } from './BookmarkPreviewContent'
 
 const AnchorMenu: React.FC<{
   visible: boolean
@@ -101,6 +102,8 @@ const AnchorMenu: React.FC<{
 
 export const BookmarkTile = memo(({
   bookmark,
+  preview = false,
+  previewHeight = 148,
   editMode,
   onOpen,
   selected,
@@ -112,7 +115,9 @@ export const BookmarkTile = memo(({
   onDelete,
   isDragging,
 }: {
-  bookmark: { id: string; url: string; title: string; icon?: string }
+  bookmark: { id: string; url: string; title: string; icon?: string; json?: Record<string, unknown> }
+  preview?: boolean
+  previewHeight?: number
   editMode: boolean
   onOpen: () => void
   selected?: boolean
@@ -181,22 +186,25 @@ export const BookmarkTile = memo(({
       <View
         ref={tileRef}
         collapsable={false}
-        className="rounded-full shadow-[0_1px_3px_rgba(20,24,40,0.12)] dark:shadow-none"
+        className={`${preview ? 'rounded-2xl' : 'rounded-full'} shadow-[0_1px_3px_rgba(20,24,40,0.12)] dark:shadow-none`}
         {...webContextMenuProps}
       >
         <Pressable
+          style={preview ? { height: previewHeight } : undefined}
           onPress={editMode ? onEnable || onSelect || undefined : onOpen}
           onLongPress={!editMode ? handleLongPress : undefined}
-          className={`flex-row items-center gap-2 overflow-hidden rounded-full border px-3 py-2.5 active:bg-muted ${
+          className={`flex-row items-center gap-2 overflow-hidden border active:bg-muted ${preview ? 'rounded-2xl p-4' : 'rounded-full px-3 py-2.5'} ${
             selected
               ? 'border-accent-500 bg-accent-100/70 dark:bg-accent-950/20'
               : 'border-transparent bg-surface'
           } ${isDragging ? 'opacity-50' : ''}`}
         >
-          <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={24} iconSize={20} />
-          <NoriText className={`flex-1 text-sm font-medium ${titleClassName}`} numberOfLines={1}>
-            {bookmark.title}
-          </NoriText>
+          {preview ? <BookmarkPreviewContent bookmark={bookmark} titleClassName={titleClassName} /> : <>
+            <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={24} iconSize={20} />
+            <NoriText className={`flex-1 text-sm font-medium ${titleClassName}`} numberOfLines={1}>
+              {bookmark.title}
+            </NoriText>
+          </>}
         </Pressable>
       </View>
       <AnchorMenu

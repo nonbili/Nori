@@ -6,6 +6,7 @@ import { useValue } from '@legendapp/state/react'
 import { useThemeColors } from '@/lib/theme'
 import { getRuntimeFaviconCandidates } from '@/lib/bookmark'
 import { settings$ } from '@/states/settings'
+import adaptiveIcon from '@/assets/images/adaptive-icon.png'
 
 export const Favicon: React.FC<{
   iconUrl?: string
@@ -32,7 +33,7 @@ export const Favicon: React.FC<{
     >
       {showFavicon === false ? (
         <Image
-          source={require('../../assets/images/adaptive-icon.png')}
+          source={adaptiveIcon}
           style={{ width: iconSize * 1.4, height: iconSize * 1.4 }}
           contentFit="contain"
         />

@@ -246,5 +246,21 @@
     "close": "閉じる",
     "dismiss": "閉じる",
     "undo": "元に戻す"
+  },
+  "preview": {
+    "view": "ブックマーク表示",
+    "compact": "コンパクト",
+    "preview": "プレビュー",
+    "imageSource": "画像の種類",
+    "page-image": "ページ画像",
+    "screenshot": "スクリーンショット",
+    "default": "既定を使用",
+    "refresh": "プレビューを更新",
+    "refreshing": "更新中…",
+    "cacheHint": "プレビューは端末に保存され、オフラインでも表示できます。スクリーンショットは「プレビューを更新」で撮影します。",
+    "refreshFailed": "プレビューを更新できませんでした。もう一度お試しください。",
+    "screenshotFailed": "スクリーンショットを撮影できませんでした。もう一度お試しください。",
+    "openPage": "このブックマークをブラウザーのタブで開き、Nori 拡張機能のポップアップから撮影してください。",
+    "browserMissing": "撮影には Chrome、Chromium または Edge をインストールしてください。"
   }
 }

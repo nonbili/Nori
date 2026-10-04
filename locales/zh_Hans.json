@@ -243,5 +243,21 @@
     "close": "关闭",
     "dismiss": "关闭",
     "undo": "撤销"
+  },
+  "preview": {
+    "view": "书签视图",
+    "compact": "紧凑",
+    "preview": "预览",
+    "imageSource": "图片来源",
+    "page-image": "网页图片",
+    "screenshot": "截图",
+    "default": "使用默认设置",
+    "refresh": "刷新预览",
+    "refreshing": "刷新中…",
+    "cacheHint": "预览缓存在本地，可离线查看。使用“刷新预览”截取网页。",
+    "refreshFailed": "无法刷新预览，请重试。",
+    "screenshotFailed": "无法截图，请重试。",
+    "openPage": "在浏览器标签页中打开此书签，然后通过 Nori 扩展弹出窗口截图。",
+    "browserMissing": "请安装 Chrome、Chromium 或 Edge 以截取网页。"
   }
 }

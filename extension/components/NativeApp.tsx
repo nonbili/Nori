@@ -15,11 +15,13 @@ import { AppProvider } from './AppContext'
 import { SettingsSheet } from './SharedSettingsSheet'
 import { useSnapshot } from './useSnapshot'
 import { useSharedStateBridge } from './useSharedStateBridge'
+import { installPreviewCapture } from '../lib/preview-capture'
 import { systemLanguage } from '../lib/language'
 import './native-fonts.css'
 import './nativewind-interop'
 
 setDynamicLoadingEnabled(false)
+installPreviewCapture()
 
 function ReadyApp({
   state,

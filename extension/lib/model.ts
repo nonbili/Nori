@@ -39,6 +39,8 @@ export interface Preferences {
   /** null means follow the browser UI language. */
   language: string | null
   lastListId: string
+  bookmarkView: 'compact' | 'preview'
+  previewImageSource: 'page-image' | 'screenshot'
   showFavicons: boolean
 }
 
@@ -58,6 +60,8 @@ export interface AuthState {
 }
 
 export interface AppSnapshot {
+  /** URLs in inactive profiles, including tombstones awaiting purge/Undo. */
+  otherProfilePreviewUrls?: string[]
   profile: ProfileData
   profileId: string
   preferences: Preferences

@@ -246,5 +246,21 @@
     "close": "Đóng",
     "dismiss": "Đóng",
     "undo": "Hoàn tác"
+  },
+  "preview": {
+    "view": "Chế độ xem dấu trang",
+    "compact": "Gọn",
+    "preview": "Xem trước",
+    "imageSource": "Nguồn ảnh",
+    "page-image": "Ảnh trang",
+    "screenshot": "Ảnh chụp màn hình",
+    "default": "Dùng mặc định",
+    "refresh": "Làm mới bản xem trước",
+    "refreshing": "Đang làm mới…",
+    "cacheHint": "Bản xem trước được lưu cục bộ để dùng ngoại tuyến. Chụp màn hình bằng Làm mới bản xem trước.",
+    "refreshFailed": "Không thể làm mới bản xem trước. Hãy thử lại.",
+    "screenshotFailed": "Không thể chụp màn hình. Hãy thử lại.",
+    "openPage": "Mở dấu trang này trong thẻ trình duyệt, rồi chụp từ cửa sổ bật lên của tiện ích Nori.",
+    "browserMissing": "Cài Chrome, Chromium hoặc Edge để chụp màn hình."
   }
 }

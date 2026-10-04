@@ -1,6 +1,8 @@
-import { useRef, useState } from 'react'
+import { previewSourceOverride } from '@/lib/bookmark-preview-types'
+import { retainEditorPreview } from '@/lib/bookmark-preview'
+import { useEffect, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
-import { Platform, ScrollView, Pressable, View } from 'react-native'
+import { Keyboard, Platform, ScrollView, Pressable, View, useWindowDimensions } from 'react-native'
 import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
@@ -14,6 +16,9 @@ import { getAllTags, getVisibleLists } from '@/lib/nori-data'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { showToast } from '@/lib/toast'
 import { parseHttpUrl } from '@/lib/url'
+import { Choice } from '@/components/bookmark/PreviewSettings'
+import { BookmarkPreviewContent } from '@/components/bookmark/BookmarkPreviewContent'
+import { loadBookmarkPreview, previewSource } from '@/lib/bookmark-preview'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
 
 const getHostLabel = (url: string) => {
@@ -26,12 +31,28 @@ const getHostLabel = (url: string) => {
 
 export const BookmarkEditorSheet: React.FC = () => {
   const { t } = useTranslation()
+  const { height } = useWindowDimensions()
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', (event) => setKeyboardHeight(event.endCoordinates.height))
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardHeight(0))
+    return () => { show.remove(); hide.remove() }
+  }, [])
+
   const themeColors = useThemeColors()
   const lists = useValue(lists$.lists)
   const editor = useValue(ui$.bookmarkEditor)
   const visibleLists = getVisibleLists(lists)
   const [metadataLoading, setMetadataLoading] = useState(false)
   const [tagInput, setTagInput] = useState('')
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState('')
+  const defaultImageSource = useValue(settings$.previewImageSource)
+  const previewMode = useValue(settings$.bookmarkView) === 'preview'
+  useEffect(() => {
+    if (editor?.url) return retainEditorPreview(editor.url)
+  }, [editor?.url])
+  useEffect(() => { setPreviewError('') }, [editor?.id, editor?.url])
   const bookmarks = useValue(bookmarks$.bookmarks)
   const editorTags = editor?.tags ?? []
   const tagSuggestions = getAllTags(bookmarks).filter((tag) => {
@@ -130,6 +151,7 @@ export const BookmarkEditorSheet: React.FC = () => {
       url: url.toString(),
       title,
       icon,
+      ...(editor.previewSource ? { previewSource: previewSourceOverride(editor.previewSource) ?? ('default' as const) } : {}),
       tags: editor.tags,
     }
 
@@ -151,6 +173,7 @@ export const BookmarkEditorSheet: React.FC = () => {
 
   return (
     <BaseCenterModal onClose={onClose}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: Math.max(220, height - keyboardHeight - 120) }}>
       <View className="p-6 gap-4">
         <NoriText className="text-xl font-semibold text-content">
           {editor.id ? t('bookmarks.edit') : t('bookmarks.add')}
@@ -177,6 +200,36 @@ export const BookmarkEditorSheet: React.FC = () => {
             className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
           />
         </View>
+        {previewMode ? <View className="gap-3">
+          <NoriText className="font-medium text-content">{t('preview.imageSource')}</NoriText>
+          <View className="flex-row flex-wrap gap-2">
+            {(['default', 'page-image', 'screenshot'] as const).map((source) => <Choice
+              key={source}
+              label={t(`preview.${source}`)}
+              active={(editor.previewSource ?? 'default') === source}
+              onPress={() => { setPreviewError(''); ui$.bookmarkEditor.set({ ...editor, previewSource: source }) }}
+            />)}
+          </View>
+          {/^https?:\/\//i.test(editor.url) ? <View className="flex-row rounded-2xl bg-surface p-3">
+            <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource } }} />
+          </View> : null}
+          <Pressable disabled={previewLoading} className="self-start rounded-full bg-muted px-4 py-2" onPress={async () => {
+            setPreviewLoading(true)
+            setPreviewError('')
+            try {
+              const url = parseHttpUrl(editor.url).href
+              await loadBookmarkPreview(url, previewSource(editor.previewSource, defaultImageSource), true)
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error)
+              if (message.includes('preview_open_bookmarked_page')) setPreviewError(t('preview.openPage'))
+              else if (message.includes('install Chrome')) setPreviewError(t('preview.browserMissing'))
+              else setPreviewError(t(previewSource(editor.previewSource, defaultImageSource) === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed'))
+            } finally { setPreviewLoading(false) }
+          }}>
+            <NoriText className="text-sm text-content">{t(previewLoading ? 'preview.refreshing' : 'preview.refresh')}</NoriText>
+          </Pressable>
+          {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}
+        </View> : null}
         <View className="gap-2">
           {editor.tags.length > 0 && (
             <View className="flex-row flex-wrap gap-2">
@@ -265,11 +318,12 @@ export const BookmarkEditorSheet: React.FC = () => {
           <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-muted active:bg-muted-strong">
             <NoriText className="text-content">{t('bookmarks.cancel')}</NoriText>
           </Pressable>
-          <Pressable onPress={() => void saveBookmark()} className="rounded-full px-5 py-3 bg-accent-fill active:bg-accent-fill-pressed">
+          <Pressable disabled={metadataLoading || previewLoading} onPress={() => void saveBookmark()} className="rounded-full px-5 py-3 bg-accent-fill active:bg-accent-fill-pressed">
             <NoriText className="font-medium text-accent-on">{metadataLoading ? t('bookmarks.saving') : t('bookmarks.save')}</NoriText>
           </Pressable>
         </View>
       </View>
+      </ScrollView>
     </BaseCenterModal>
   )
 }

@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, ScrollView, View, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
+import { FlatList, Platform, ScrollView, View, useWindowDimensions, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'
@@ -12,6 +12,8 @@ import { settings$ } from '@/states/settings'
 import { BookmarkTile } from '@/components/bookmark/BookmarkItem'
 import { SortableGrid } from '@/components/bookmark/SortableGrid'
 import { SectionLabel } from '@/components/common/Common'
+import { previewHeight } from '@/lib/bookmark-preview-types'
+import { normalizeFontScale } from '@/lib/typography'
 import type { ThemeColors } from '@/lib/theme'
 
 const TILE_HEIGHT = 46
@@ -105,7 +107,12 @@ export const BookmarkListPage = memo(({
 }) => {
   const { t } = useTranslation()
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
-  const columns = useValue(settings$.bookmarkColumns) === 1 ? 1 : 2
+  const preview = useValue(settings$.bookmarkView) === 'preview'
+  const { fontScale: systemFontScale } = useWindowDimensions()
+  const fontScale = normalizeFontScale(useValue(settings$.fontScale))
+  const itemHeight = preview ? previewHeight(fontScale, Platform.OS === 'web' ? 1 : systemFontScale) : TILE_HEIGHT
+  const preferredColumns = useValue(settings$.bookmarkColumns)
+  const columns = preview || preferredColumns === 1 ? 1 : 2
   const selectedBookmarkIds = useValue(ui$.selectedBookmarkIds)
   const selectedIdSet = useMemo(() => new Set(selectedBookmarkIds), [selectedBookmarkIds])
   const insets = useSafeAreaInsets()
@@ -160,6 +167,8 @@ export const BookmarkListPage = memo(({
   const renderTile = useCallback(({ item: bookmark }: { item: BookmarkRecord }) => (
     <View style={{ width: itemWidth, marginBottom: columns === 1 ? GRID_GAP : 0 }}>
       <BookmarkTile
+        preview={preview}
+        previewHeight={itemHeight}
         bookmark={bookmark}
         editMode={bookmarkEditMode}
         selected={selectedIdSet.has(bookmark.id)}
@@ -171,18 +180,18 @@ export const BookmarkListPage = memo(({
         onDelete={() => actions.onDeleteBookmark(bookmark)}
       />
     </View>
-  ), [actions, bookmarkEditMode, columns, itemWidth, selectedIdSet])
+  ), [actions, bookmarkEditMode, columns, itemWidth, selectedIdSet, preview, itemHeight])
 
   const getItemLayout = useCallback((_: ArrayLike<BookmarkRecord> | null | undefined, index: number) => {
-    const rowHeight = TILE_HEIGHT + GRID_GAP
+    const rowHeight = itemHeight + GRID_GAP
     return { length: rowHeight, offset: Math.floor(index / columns) * rowHeight, index }
-  }, [columns])
+  }, [columns, itemHeight])
 
   if (!bookmarkEditMode || listBookmarks.length > LARGE_EDIT_LIST_THRESHOLD) {
     return (
       <View className="flex-1" style={{ width }}>
         <FlatList
-          key={columns}
+          key={`${columns}:${itemHeight}`}
           data={listBookmarks}
           renderItem={renderTile}
           keyExtractor={(item) => item.id}
@@ -242,12 +251,14 @@ export const BookmarkListPage = memo(({
             items={listBookmarks}
             containerWidth={width}
             columns={columns}
-            itemHeight={TILE_HEIGHT}
+            itemHeight={itemHeight}
             editMode={true}
             scrollViewRef={actions.scrollViewRef}
             onReorder={(newOrder) => bookmarks$.reorder(list.id, newOrder)}
             renderItem={(bookmark, isDragging) => (
               <BookmarkTile
+                preview={preview}
+                previewHeight={itemHeight}
                 bookmark={bookmark}
                 editMode={true}
                 selected={selectedIdSet.has(bookmark.id)}
@@ -279,18 +290,25 @@ const HiddenBookmarksGrid: React.FC<{
   containerWidth: number
   scrollViewRef: AnimatedRef<Animated.ScrollView>
 }> = ({ items, containerWidth, scrollViewRef }) => {
-  const columns = useValue(settings$.bookmarkColumns) === 1 ? 1 : 2
+  const preview = useValue(settings$.bookmarkView) === 'preview'
+  const { fontScale: systemFontScale } = useWindowDimensions()
+  const fontScale = normalizeFontScale(useValue(settings$.fontScale))
+  const itemHeight = preview ? previewHeight(fontScale, Platform.OS === 'web' ? 1 : systemFontScale) : TILE_HEIGHT
+  const preferredColumns = useValue(settings$.bookmarkColumns)
+  const columns = preview || preferredColumns === 1 ? 1 : 2
   return (
     <SortableGrid
       items={items}
       containerWidth={containerWidth}
       columns={columns}
-      itemHeight={TILE_HEIGHT}
+      itemHeight={itemHeight}
       editMode={false}
       scrollViewRef={scrollViewRef}
       renderItem={(bookmark) => (
         <BookmarkTile
           key={bookmark.id}
+          preview={preview}
+          previewHeight={itemHeight}
           bookmark={bookmark}
           editMode={true}
           onSelect={() => bookmarks$.setVisible(bookmark.id, true)}

@@ -243,5 +243,21 @@
     "close": "Fechar",
     "dismiss": "Dispensar",
     "undo": "Desfazer"
+  },
+  "preview": {
+    "view": "Visualização dos favoritos",
+    "compact": "Compacta",
+    "preview": "Prévia",
+    "imageSource": "Origem da imagem",
+    "page-image": "Imagem da página",
+    "screenshot": "Captura de tela",
+    "default": "Usar padrão",
+    "refresh": "Atualizar prévia",
+    "refreshing": "Atualizando…",
+    "cacheHint": "As prévias são salvas localmente para uso offline. Capture a tela com Atualizar prévia.",
+    "refreshFailed": "Não foi possível atualizar a prévia. Tente novamente.",
+    "screenshotFailed": "Não foi possível capturar a tela. Tente novamente.",
+    "openPage": "Abra este favorito em uma aba e capture pela janela da extensão Nori.",
+    "browserMissing": "Instale Chrome, Chromium ou Edge para capturar a tela."
   }
 }

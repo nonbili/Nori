@@ -13,6 +13,7 @@ export interface BookmarkDraftData {
   url: string
   title?: string
   icon?: string
+  previewSource?: 'default' | 'page-image' | 'screenshot'
   tags?: string[]
 }
 
@@ -80,7 +81,7 @@ export function addBookmarkRecord(
       url,
       title: draft.title?.trim() || url,
       icon: draft.icon?.trim() || '',
-      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null, tags: draft.tags }),
+      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null, tags: draft.tags, ...(draft.previewSource && draft.previewSource !== 'default' ? { previewSource: draft.previewSource } : {}) }),
       createdAt: now,
       updatedAt: now,
     }],
