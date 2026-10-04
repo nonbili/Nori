@@ -182,7 +182,7 @@
       "bookmarkLayout": "Bố cục dấu trang",
       "oneColumn": "1 cột",
       "twoColumns": "2 cột",
-      "label": "Trải nghiệm",
+      "label": "Chung",
       "defaultBrowser": "Mở liên kết bằng trình duyệt mặc định",
       "defaultBrowserHint": "Bật tính năng này để rời khỏi Nori và mở liên kết trong ứng dụng trình duyệt của điện thoại.",
       "showFavicon": "Hiện biểu tượng trang web (favicon)",
@@ -235,6 +235,10 @@
       "code": "Mã nguồn",
       "donate": "Ủng hộ",
       "extensionPrivacy": "Không đọc nội dung trang. Nori chỉ nhận các liên kết mà bạn chọn lưu."
+    },
+    "appearance": {
+      "label": "Giao diện",
+      "hint": "Chủ đề, màu nhấn, phông chữ và cách hiển thị dấu trang."
     }
   },
   "common": {

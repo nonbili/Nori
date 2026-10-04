@@ -182,7 +182,7 @@
       "bookmarkLayout": "ブックマークのレイアウト",
       "oneColumn": "1列",
       "twoColumns": "2列",
-      "label": "エクスペリエンス",
+      "label": "一般",
       "defaultBrowser": "デフォルトのブラウザでリンクを開く",
       "defaultBrowserHint": "オンにすると Nori を離れ、スマートフォンのブラウザアプリでリンクを開きます。",
       "showFavicon": "ファビコンを表示",
@@ -235,6 +235,10 @@
       "code": "ソースコード",
       "donate": "寄付",
       "extensionPrivacy": "ページのコンテンツは読み取られません。Nori はあなたが保存を選択したリンクのみを受信します。"
+    },
+    "appearance": {
+      "label": "外観",
+      "hint": "テーマ、アクセントカラー、フォント、ブックマークの表示。"
     }
   },
   "common": {

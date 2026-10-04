@@ -9,6 +9,7 @@ import { ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
 import { Sheet } from '@/components/modal/BaseModal'
 import {
+  AppearanceSection,
   ExperienceSection,
   SyncSettingsSections,
   TransferSection,
@@ -23,12 +24,13 @@ export const SettingsSheet: React.FC = () => {
   const themeColors = useThemeColors()
   const visible = useValue(ui$.settingsSheetOpen)
   const scrollOffset = useSharedValue(0)
-  const scrollRef = useRef(null)
-  const [page, setPage] = useState<'home' | 'about' | 'changelog'>('home')
+  const scrollRef = useRef<React.ElementRef<typeof ScrollView>>(null)
+  const [page, setPage] = useState<'home' | 'appearance' | 'about' | 'changelog'>('home')
   const settingsActions = useSettingsSheetActions()
 
   useEffect(() => {
     scrollOffset.value = 0
+    scrollRef.current?.scrollTo({ y: 0, animated: false })
   }, [page, scrollOffset])
 
   const handleScroll = (event: any) => {
@@ -62,7 +64,15 @@ export const SettingsSheet: React.FC = () => {
   return (
     <Sheet
       visible={visible}
-      title={page === 'about' ? t('settings.about.label') : page === 'changelog' ? t('settings.changelog.label') : t('settings.title')}
+      title={
+        page === 'appearance'
+          ? t('settings.appearance.label')
+          : page === 'about'
+            ? t('settings.about.label')
+            : page === 'changelog'
+              ? t('settings.changelog.label')
+              : t('settings.title')
+      }
       height="85%"
       onClose={page === 'home' ? onClose : () => setPage(page === 'changelog' ? 'about' : 'home')}
       headerLeft={headerLeft}
@@ -78,14 +88,16 @@ export const SettingsSheet: React.FC = () => {
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-        {page === 'changelog' ? (
+        {page === 'appearance' ? (
+          <AppearanceSection />
+        ) : page === 'changelog' ? (
           <SettingsChangelogPage appVersion={appVersion} />
         ) : page === 'about' ? (
           <SettingsAboutPage appVersion={appVersion} actions={actions} />
         ) : (
           <>
             <SyncSettingsSections actions={actions} />
-            <ExperienceSection />
+            <ExperienceSection onOpenAppearance={() => setPage('appearance')} />
             <TransferSection actions={actions} />
             <AboutSettingsSection appVersion={appVersion} actions={actions} />
           </>

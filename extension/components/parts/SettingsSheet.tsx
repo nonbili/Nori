@@ -78,7 +78,7 @@ function SyncSection() {
   )
 }
 
-function ExperienceSection() {
+function ExperienceSection({ onOpenAppearance }: { onOpenAppearance: () => void }) {
   const { t } = useTranslation()
   const { snapshot, mutate } = useApp()
   const { preferences } = snapshot
@@ -94,16 +94,10 @@ function ExperienceSection() {
   return (
     <SectionCard title={t('settings.experience.label')}>
       <SettingRow
-        icon="image"
-        title={t('settings.experience.showFavicon')}
-        detail={t('settings.experience.showFaviconHint')}
-        trailing={
-          <Toggle
-            label={t('settings.experience.showFavicon')}
-            checked={preferences.showFavicons}
-            onChange={() => setPreference({ showFavicons: !preferences.showFavicons })}
-          />
-        }
+        icon="palette"
+        title={t('settings.appearance.label')}
+        detail={t('settings.appearance.hint')}
+        onClick={onOpenAppearance}
       />
       <SettingRow
         icon="translate"
@@ -134,46 +128,73 @@ function ExperienceSection() {
           />
         }
       />
-      <div className="setting-row column">
-        <div className="flex items-center gap-3">
-          <span className="setting-icon">
-            <Icon name="palette" size={18} />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block font-medium">{t('settings.experience.theme')}</span>
-            <span className="mt-1 block text-sm leading-5 text-content-muted">
-              {t('settings.experience.themeHint')}
-            </span>
-          </span>
-        </div>
-        <Segmented
-          options={(['system', 'light', 'dark', 'amoled'] as Theme[]).map((theme) => ({
-            label: t(`settings.experience.${theme}`),
-            active: preferences.theme === theme,
-            onClick: () => setPreference({ theme }),
-          }))}
-        />
-      </div>
-      <TypographyRow />
-      <div className="setting-row column">
-        <div className="flex items-center gap-3">
-          <span className="setting-icon">
-            <Icon name="palette" size={18} />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block font-medium">{t('settings.experience.accent')}</span>
-            <span className="mt-1 block text-sm leading-5 text-content-muted">
-              {t('settings.experience.accentHint')}
-            </span>
-          </span>
-        </div>
-        <AccentSwatches
-          value={normalizeAccent(preferences.accent)}
-          onChange={(accent) => setPreference({ accent })}
-          customLabel={t('settings.experience.accentCustom')}
-        />
-      </div>
     </SectionCard>
+  )
+}
+
+function AppearanceSection() {
+  const { t } = useTranslation()
+  const { snapshot, mutate } = useApp()
+  const { preferences } = snapshot
+  const setPreference = (patch: Partial<typeof preferences>) =>
+    void mutate({ type: 'set-preferences', preferences: patch })
+  return (
+    <section className="grid">
+      <div className="section-body">
+        <div className="setting-row column border-b-2 border-well">
+          <div className="flex items-center gap-3">
+            <span className="setting-icon">
+              <Icon name="palette" size={18} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-medium">{t('settings.experience.theme')}</span>
+              <span className="mt-1 block text-sm leading-5 text-content-muted">
+                {t('settings.experience.themeHint')}
+              </span>
+            </span>
+          </div>
+          <Segmented
+            options={(['system', 'light', 'dark', 'amoled'] as Theme[]).map((theme) => ({
+              label: t(`settings.experience.${theme}`),
+              active: preferences.theme === theme,
+              onClick: () => setPreference({ theme }),
+            }))}
+          />
+        </div>
+        <div className="setting-row column border-b-2 border-well">
+          <div className="flex items-center gap-3">
+            <span className="setting-icon">
+              <Icon name="colorLens" size={18} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-medium">{t('settings.experience.accent')}</span>
+              <span className="mt-1 block text-sm leading-5 text-content-muted">
+                {t('settings.experience.accentHint')}
+              </span>
+            </span>
+          </div>
+          <AccentSwatches
+            value={normalizeAccent(preferences.accent)}
+            onChange={(accent) => setPreference({ accent })}
+            customLabel={t('settings.experience.accentCustom')}
+          />
+        </div>
+        <TypographyRow />
+        <SettingRow
+          last
+          icon="image"
+          title={t('settings.experience.showFavicon')}
+          detail={t('settings.experience.showFaviconHint')}
+          trailing={
+            <Toggle
+              label={t('settings.experience.showFavicon')}
+              checked={preferences.showFavicons}
+              onChange={() => setPreference({ showFavicons: !preferences.showFavicons })}
+            />
+          }
+        />
+      </div>
+    </section>
   )
 }
 
@@ -290,7 +311,7 @@ function AboutPage({ version }: { version: string }) {
 
 export function SettingsSheet({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation()
-  const [page, setPage] = useState<'home' | 'about'>('home')
+  const [page, setPage] = useState<'home' | 'appearance' | 'about'>('home')
   const version = browser.runtime.getManifest().version
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -301,7 +322,13 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
 
   return (
     <Sheet
-      title={page === 'about' ? t('settings.about.label') : t('settings.title')}
+      title={
+        page === 'appearance'
+          ? t('settings.appearance.label')
+          : page === 'about'
+            ? t('settings.about.label')
+            : t('settings.title')
+      }
       onClose={page === 'home' ? onClose : () => setPage('home')}
       showCloseButton={page === 'home'}
       headerLeft={
@@ -313,12 +340,14 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
       }
     >
       <div ref={scrollRef} className="grid min-h-0 flex-1 content-start gap-6 overflow-y-auto px-6 pb-4">
-        {page === 'about' ? (
+        {page === 'appearance' ? (
+          <AppearanceSection />
+        ) : page === 'about' ? (
           <AboutPage version={version} />
         ) : (
           <>
             <SyncSection />
-            <ExperienceSection />
+            <ExperienceSection onOpenAppearance={() => setPage('appearance')} />
             <TransferSection />
             <SectionCard title={t('settings.about.label')}>
               <SettingRow

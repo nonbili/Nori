@@ -180,7 +180,7 @@
       "bookmarkLayout": "Layout dos favoritos",
       "oneColumn": "1 coluna",
       "twoColumns": "2 colunas",
-      "label": "Experiência",
+      "label": "Geral",
       "defaultBrowser": "Abrir links no navegador padrão",
       "defaultBrowserHint": "Ative para sair do Nori e abrir links no aplicativo de navegador do seu telefone.",
       "showFavicon": "Mostrar ícone do site",
@@ -232,6 +232,10 @@
       "version": "Versão",
       "code": "Código-fonte",
       "donate": "Doar"
+    },
+    "appearance": {
+      "label": "Aparência",
+      "hint": "Tema, cor de destaque, fontes e exibição dos favoritos."
     }
   },
   "common": {

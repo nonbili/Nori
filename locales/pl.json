@@ -180,7 +180,7 @@
       "bookmarkLayout": "Układ zakładek",
       "oneColumn": "1 kolumna",
       "twoColumns": "2 kolumny",
-      "label": "Wygląd i zachowanie",
+      "label": "Ogólne",
       "defaultBrowser": "Otwieraj linki w domyślnej przeglądarce",
       "defaultBrowserHint": "Włącz, aby opuszczać Nori i otwierać linki w przeglądarce telefonu.",
       "showFavicon": "Pokaż favicon",
@@ -232,6 +232,10 @@
       "version": "Wersja",
       "code": "Kod źródłowy",
       "donate": "Wesprzyj"
+    },
+    "appearance": {
+      "label": "Wygląd",
+      "hint": "Motyw, kolor akcentu, czcionki i wyświetlanie zakładek."
     }
   },
   "common": {

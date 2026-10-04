@@ -180,7 +180,7 @@
       "bookmarkLayout": "Diseño de marcadores",
       "oneColumn": "1 columna",
       "twoColumns": "2 columnas",
-      "label": "Experiencia",
+      "label": "General",
       "defaultBrowser": "Abrir enlaces en el navegador predeterminado",
       "defaultBrowserHint": "Activa esto para salir de Nori y abrir los enlaces en el navegador de tu teléfono.",
       "showFavicon": "Mostrar favicon",
@@ -232,6 +232,10 @@
       "version": "Versión",
       "code": "Código",
       "donate": "Donar"
+    },
+    "appearance": {
+      "label": "Apariencia",
+      "hint": "Tema, color de acento, fuentes y visualización de marcadores."
     }
   },
   "common": {

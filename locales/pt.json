@@ -182,7 +182,7 @@
       "bookmarkLayout": "Esquema dos favoritos",
       "oneColumn": "1 coluna",
       "twoColumns": "2 colunas",
-      "label": "Experiência",
+      "label": "Geral",
       "defaultBrowser": "Abrir ligações no navegador predefinido",
       "defaultBrowserHint": "Ative para sair do Nori e abrir as ligações na aplicação de navegador do seu telemóvel.",
       "showFavicon": "Mostrar ícone do site",
@@ -235,6 +235,10 @@
       "code": "Código-fonte",
       "donate": "Doar",
       "extensionPrivacy": "Nenhum conteúdo da página é lido. O Nori recebe apenas as ligações que decidir guardar."
+    },
+    "appearance": {
+      "label": "Aspeto",
+      "hint": "Tema, cor de destaque, tipos de letra e apresentação dos marcadores."
     }
   },
   "common": {

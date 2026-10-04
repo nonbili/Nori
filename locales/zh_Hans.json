@@ -180,7 +180,7 @@
       "bookmarkLayout": "书签布局",
       "oneColumn": "单列",
       "twoColumns": "双列",
-      "label": "体验",
+      "label": "常规",
       "defaultBrowser": "在默认浏览器中打开链接",
       "defaultBrowserHint": "开启此项以离开 Nori 并使用您手机的浏览器应用打开链接。",
       "showFavicon": "显示网站图标",
@@ -232,6 +232,10 @@
       "version": "版本",
       "code": "源代码",
       "donate": "捐赠"
+    },
+    "appearance": {
+      "label": "外观",
+      "hint": "主题、强调色、字体和书签显示。"
     }
   },
   "common": {

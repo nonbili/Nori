@@ -180,7 +180,7 @@
       "bookmarkLayout": "書籤版面配置",
       "oneColumn": "單欄",
       "twoColumns": "雙欄",
-      "label": "體驗",
+      "label": "一般",
       "defaultBrowser": "在預設瀏覽器中開啟連結",
       "defaultBrowserHint": "開啟此項以離開 Nori 並使用您手機的瀏覽器應用程式開啟連結。",
       "showFavicon": "顯示網站圖示",
@@ -232,6 +232,10 @@
       "version": "版本",
       "code": "原始碼",
       "donate": "捐助"
+    },
+    "appearance": {
+      "label": "外觀",
+      "hint": "主題、強調色、字體和書籤顯示。"
     }
   },
   "common": {

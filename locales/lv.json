@@ -182,7 +182,7 @@
       "bookmarkLayout": "Grāmatzīmju izkārtojums",
       "oneColumn": "1 kolonna",
       "twoColumns": "2 kolonnas",
-      "label": "Lietošana",
+      "label": "Vispārīgi",
       "defaultBrowser": "Atvērt saites noklusējuma pārlūkā",
       "defaultBrowserHint": "Ieslēdziet, lai atstātu Nori un atvērtu saites tālruņa pārlūkprogrammas lietotnē.",
       "showFavicon": "Rādīt vietnes ikonu",
@@ -235,6 +235,10 @@
       "code": "Pirmkods",
       "donate": "Ziedot",
       "extensionPrivacy": "Lapas saturs netiek nolasīts. Nori saņem tikai tās saites, kuras izvēlaties saglabāt."
+    },
+    "appearance": {
+      "label": "Izskats",
+      "hint": "Motīvs, akcenta krāsa, fonti un grāmatzīmju attēlojums."
     }
   },
   "common": {

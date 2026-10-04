@@ -74,6 +74,8 @@ describe('appearance translations', () => {
         expect(experience[key].trim().length).toBeGreaterThan(0)
       }
       expect(experience.themeHint).toContain('AMOLED')
+      expect(locale.settings.appearance.label.trim().length).toBeGreaterThan(0)
+      expect(locale.settings.appearance.hint.trim().length).toBeGreaterThan(0)
     }
   })
 })

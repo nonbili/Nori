@@ -182,7 +182,7 @@
       "bookmarkLayout": "Bookmark layout",
       "oneColumn": "1 column",
       "twoColumns": "2 columns",
-      "label": "Experience",
+      "label": "General",
       "defaultBrowser": "Open links in default browser",
       "defaultBrowserHint": "Turn this on to leave Nori and open links in your phone's browser app.",
       "showFavicon": "Show favicon",
@@ -235,6 +235,10 @@
       "code": "Code",
       "donate": "Donate",
       "extensionPrivacy": "No page content is read. Nori only receives links you choose to save."
+    },
+    "appearance": {
+      "label": "Appearance",
+      "hint": "Theme, accent color, fonts, and bookmark display."
     }
   },
   "common": {

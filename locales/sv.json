@@ -180,7 +180,7 @@
       "bookmarkLayout": "Bokmärkeslayout",
       "oneColumn": "1 kolumn",
       "twoColumns": "2 kolumner",
-      "label": "Upplevelse",
+      "label": "Allmänt",
       "defaultBrowser": "Öppna länkar i standardwebbläsare",
       "defaultBrowserHint": "Aktivera detta för att lämna Nori och öppna länkar i din telefons webbläsarapp.",
       "showFavicon": "Visa favicon",
@@ -232,6 +232,10 @@
       "version": "Version",
       "code": "Källkod",
       "donate": "Donera"
+    },
+    "appearance": {
+      "label": "Utseende",
+      "hint": "Tema, accentfärg, typsnitt och visning av bokmärken."
     }
   },
   "common": {

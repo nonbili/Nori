@@ -182,7 +182,7 @@
       "bookmarkLayout": "Lesezeichen-Layout",
       "oneColumn": "1 Spalte",
       "twoColumns": "2 Spalten",
-      "label": "Bedienung",
+      "label": "Allgemein",
       "defaultBrowser": "Links im Standardbrowser öffnen",
       "defaultBrowserHint": "Aktivieren, um Nori zu verlassen und Links in der Browser-App Ihres Telefons zu öffnen.",
       "showFavicon": "Favicon anzeigen",
@@ -235,6 +235,10 @@
       "code": "Quellcode",
       "donate": "Spenden",
       "extensionPrivacy": "Es werden keine Seiteninhalte gelesen. Nori erhält nur Links, die Sie speichern möchten."
+    },
+    "appearance": {
+      "label": "Darstellung",
+      "hint": "Design, Akzentfarbe, Schriftarten und Lesezeichenanzeige."
     }
   },
   "common": {

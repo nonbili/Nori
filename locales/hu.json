@@ -182,7 +182,7 @@
       "bookmarkLayout": "Könyvjelzők elrendezése",
       "oneColumn": "1 oszlop",
       "twoColumns": "2 oszlop",
-      "label": "Élmény",
+      "label": "Általános",
       "defaultBrowser": "Hivatkozások megnyitása az alapértelmezett böngészőben",
       "defaultBrowserHint": "Kapcsolja be a Nori elhagyásához és a hivatkozások megnyitásához a telefon böngészőjében.",
       "showFavicon": "Favicon megjelenítése",
@@ -235,6 +235,10 @@
       "code": "Forráskód",
       "donate": "Támogatás",
       "extensionPrivacy": "Az oldalak tartalma nem kerül beolvasásra. A Nori csak azokat a hivatkozásokat kapja meg, amelyeket elment."
+    },
+    "appearance": {
+      "label": "Megjelenés",
+      "hint": "Téma, kiemelőszín, betűtípusok és könyvjelzők megjelenítése."
     }
   },
   "common": {

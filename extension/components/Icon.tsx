@@ -118,6 +118,13 @@ const paths: Record<string, ReactNode> = {
       <circle cx="15" cy="8.5" r="1" fill="currentColor" stroke="none" />
     </>
   ),
+  colorLens: (
+    <>
+      <circle cx="9" cy="8" r="4" />
+      <circle cx="15" cy="8" r="4" />
+      <circle cx="12" cy="14" r="4" />
+    </>
+  ),
   translate: (
     <>
       <path d="M3 6h9M7.5 6v-2M9.5 6c0 4-3 7-6 8" />

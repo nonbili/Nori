@@ -182,7 +182,7 @@
       "bookmarkLayout": "Järjehoidjate paigutus",
       "oneColumn": "1 veerg",
       "twoColumns": "2 veergu",
-      "label": "Kasutuskogemus",
+      "label": "Üldine",
       "defaultBrowser": "Ava lingid vaikebrauseris",
       "defaultBrowserHint": "Lülita see sisse, et väljuda Norist ja avada lingid telefoni brauserirakenduses.",
       "showFavicon": "Näita saidiikooni",
@@ -235,6 +235,10 @@
       "code": "Lähtekood",
       "donate": "Toeta",
       "extensionPrivacy": "Lehe sisu ei loeta. Nori võtab vastu ainult need lingid, mille otsustad salvestada."
+    },
+    "appearance": {
+      "label": "Välimus",
+      "hint": "Kujundus, aktsentvärv, kirjatüübid ja järjehoidjate kuvamine."
     }
   },
   "common": {

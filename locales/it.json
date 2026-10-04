@@ -180,7 +180,7 @@
       "bookmarkLayout": "Disposizione dei segnalibri",
       "oneColumn": "1 colonna",
       "twoColumns": "2 colonne",
-      "label": "Esperienza",
+      "label": "Generali",
       "defaultBrowser": "Apri i link nel browser predefinito",
       "defaultBrowserHint": "Attiva per uscire da Nori e aprire i link nel browser del telefono.",
       "showFavicon": "Mostra favicon",
@@ -232,6 +232,10 @@
       "version": "Versione",
       "code": "Codice",
       "donate": "Dona"
+    },
+    "appearance": {
+      "label": "Aspetto",
+      "hint": "Tema, colore di accento, caratteri e visualizzazione dei segnalibri."
     }
   },
   "common": {

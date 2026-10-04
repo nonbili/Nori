@@ -182,7 +182,7 @@
       "bookmarkLayout": "Tata letak markah",
       "oneColumn": "1 kolom",
       "twoColumns": "2 kolom",
-      "label": "Pengalaman",
+      "label": "Umum",
       "defaultBrowser": "Buka tautan di browser default",
       "defaultBrowserHint": "Aktifkan untuk keluar dari Nori dan membuka tautan di aplikasi browser ponsel Anda.",
       "showFavicon": "Tampilkan favicon",
@@ -235,6 +235,10 @@
       "code": "Kode sumber",
       "donate": "Donasi",
       "extensionPrivacy": "Konten halaman tidak dibaca. Nori hanya menerima tautan yang Anda pilih untuk disimpan."
+    },
+    "appearance": {
+      "label": "Tampilan",
+      "hint": "Tema, warna aksen, jenis huruf, dan tampilan markah."
     }
   },
   "common": {

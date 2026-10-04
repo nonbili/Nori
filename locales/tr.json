@@ -180,7 +180,7 @@
       "bookmarkLayout": "Yer imi düzeni",
       "oneColumn": "1 sütun",
       "twoColumns": "2 sütun",
-      "label": "Deneyim",
+      "label": "Genel",
       "defaultBrowser": "Bağlantıları varsayılan tarayıcıda aç",
       "defaultBrowserHint": "Nori'den çıkıp bağlantıları telefonunuzun tarayıcı uygulamasında açmak için bunu açın.",
       "showFavicon": "Site simgesini göster",
@@ -232,6 +232,10 @@
       "version": "Sürüm",
       "code": "Kaynak kodu",
       "donate": "Bağış yap"
+    },
+    "appearance": {
+      "label": "Görünüm",
+      "hint": "Tema, vurgu rengi, yazı tipleri ve yer imi görünümü."
     }
   },
   "common": {
