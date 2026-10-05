@@ -1,0 +1,15 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'jp.nonbili.nori'
+version = '0.0.1'
+
+android {
+  namespace "jp.nonbili.nori.filesave"
+  defaultConfig {
+    versionCode 1
+    versionName '0.0.1'
+  }
+}

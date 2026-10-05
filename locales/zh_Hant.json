@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "新增列表",
+    "choose": "選擇清單",
     "rename": "重新命名列表",
     "name": "列表名稱",
     "enterName": "請輸入列表名稱",
@@ -169,6 +170,7 @@
       "exportBackupHint": "儲存完整的 Nori 備份，可稍後還原。",
       "exporting": "正在匯出...",
       "exported": "書籤已匯出",
+      "saveToDevice": "儲存到裝置",
       "shareUnavailable": "此裝置上無法進行分享",
       "readingFile": "正在讀取檔案…",
       "foundOne": "找到 1 個書籤",

@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Uus loend",
+    "choose": "Vali loend",
     "rename": "Nimeta loend ümber",
     "name": "Loendi nimi",
     "enterName": "Sisesta loendi nimi",
@@ -171,6 +172,7 @@
       "exportBackupHint": "Salvesta täielik Nori varukoopia hilisemaks taastamiseks.",
       "exporting": "Eksportimine…",
       "exported": "Järjehoidjad eksporditud",
+      "saveToDevice": "Salvesta seadmesse",
       "shareUnavailable": "Jagamine pole selles seadmes saadaval",
       "readingFile": "Faili lugemine…",
       "foundOne": "Leitud 1 järjehoidja",

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Dấu trang</string>
+  <string name="nori_widget_description">Liên kết từ một trong các danh sách của bạn</string>
+  <string name="nori_widget_choose_list">Chọn danh sách</string>
+  <string name="nori_widget_empty">Mở Nori để tải dấu trang của bạn</string>
+</resources>

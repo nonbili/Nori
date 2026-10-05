@@ -21,8 +21,10 @@ export const AboutRow: React.FC<{
   detail: string
   onPress?: () => void
   isLast?: boolean
+  /** Shows the chevron when a wrapper, not this row, handles the press. */
+  showChevron?: boolean
   themeColors: ThemeColors
-}> = ({ icon, title, detail, onPress, isLast = false, themeColors }) => {
+}> = ({ icon, title, detail, onPress, isLast = false, showChevron = Boolean(onPress), themeColors }) => {
   const content = (
     <View
       className={`flex-row items-center gap-3 px-4 py-4 ${isLast ? '' : 'border-b-2 border-well'}`}
@@ -34,7 +36,7 @@ export const AboutRow: React.FC<{
         <NoriText className="font-medium text-content">{title}</NoriText>
         <NoriText className="mt-1 text-sm leading-5 text-content-muted">{detail}</NoriText>
       </View>
-      {onPress ? <MaterialIcons name="chevron-right" color={themeColors.contentMuted} size={20} /> : null}
+      {showChevron ? <MaterialIcons name="chevron-right" color={themeColors.contentMuted} size={20} /> : null}
     </View>
   )
 

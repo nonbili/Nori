@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Danh sách mới",
+    "choose": "Chọn danh sách",
     "rename": "Đổi tên danh sách",
     "name": "Tên danh sách",
     "enterName": "Nhập tên danh sách",
@@ -171,6 +172,7 @@
       "exportBackupHint": "Lưu bản sao lưu đầy đủ của Nori để khôi phục sau này.",
       "exporting": "Đang xuất…",
       "exported": "Đã xuất dấu trang",
+      "saveToDevice": "Lưu vào thiết bị",
       "shareUnavailable": "Chia sẻ không khả dụng trên thiết bị này",
       "readingFile": "Đang đọc tệp…",
       "foundOne": "Tìm thấy 1 dấu trang",

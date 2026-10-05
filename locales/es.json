@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Nueva lista",
+    "choose": "Elige una lista",
     "rename": "Renombrar lista",
     "name": "Nombre de la lista",
     "enterName": "Introduce un nombre de lista",
@@ -169,6 +170,7 @@
       "exportBackupHint": "Guarda una copia de seguridad completa de Nori para restaurarla después.",
       "exporting": "Exportando…",
       "exported": "Marcadores exportados",
+      "saveToDevice": "Guardar en el dispositivo",
       "shareUnavailable": "Compartir no está disponible en este dispositivo",
       "readingFile": "Leyendo archivo…",
       "foundOne": "Se encontró 1 marcador",

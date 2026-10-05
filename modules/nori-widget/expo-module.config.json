@@ -1,0 +1,6 @@
+{
+  "platforms": ["android"],
+  "android": {
+    "modules": ["jp.nonbili.nori.widget.NoriWidgetModule"]
+  }
+}

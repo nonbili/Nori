@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Segnalibri</string>
+  <string name="nori_widget_description">Link da uno dei tuoi elenchi</string>
+  <string name="nori_widget_choose_list">Scegli un elenco</string>
+  <string name="nori_widget_empty">Apri Nori per caricare i tuoi segnalibri</string>
+</resources>

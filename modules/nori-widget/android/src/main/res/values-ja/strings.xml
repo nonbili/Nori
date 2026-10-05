@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">ブックマーク</string>
+  <string name="nori_widget_description">リストのリンクを表示</string>
+  <string name="nori_widget_choose_list">リストを選択</string>
+  <string name="nori_widget_empty">Nori を開いてブックマークを読み込みます</string>
+</resources>

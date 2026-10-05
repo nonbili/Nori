@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">북마크</string>
+  <string name="nori_widget_description">목록 중 하나의 링크</string>
+  <string name="nori_widget_choose_list">목록 선택</string>
+  <string name="nori_widget_empty">Nori를 열어 북마크를 불러오세요</string>
+</resources>

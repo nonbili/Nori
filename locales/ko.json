@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "새 목록",
+    "choose": "목록 선택",
     "rename": "목록 이름 바꾸기",
     "name": "목록 이름",
     "enterName": "목록 이름을 입력하세요",
@@ -171,6 +172,7 @@
       "exportBackupHint": "나중에 복원할 수 있는 전체 Nori 백업을 저장합니다.",
       "exporting": "내보내는 중…",
       "exported": "북마크를 내보냈습니다",
+      "saveToDevice": "기기에 저장",
       "shareUnavailable": "이 기기에서는 공유를 사용할 수 없습니다",
       "readingFile": "파일 읽는 중…",
       "foundOne": "북마크 1개를 찾았습니다",

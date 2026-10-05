@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Bookmarks</string>
+  <string name="nori_widget_description">Links from one of your lists</string>
+  <!-- Fallbacks until the app has pushed its own translated copy. -->
+  <string name="nori_widget_choose_list">Choose a list</string>
+  <string name="nori_widget_empty">Open Nori to load your bookmarks</string>
+</resources>

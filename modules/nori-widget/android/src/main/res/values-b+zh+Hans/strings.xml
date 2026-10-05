@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">书签</string>
+  <string name="nori_widget_description">显示某个列表中的链接</string>
+  <string name="nori_widget_choose_list">选择列表</string>
+  <string name="nori_widget_empty">打开 Nori 以加载书签</string>
+</resources>

@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Daftar baru",
+    "choose": "Pilih daftar",
     "rename": "Ubah nama daftar",
     "name": "Nama daftar",
     "enterName": "Masukkan nama daftar",
@@ -171,6 +172,7 @@
       "exportBackupHint": "Simpan cadangan penuh Nori yang dapat dipulihkan nanti.",
       "exporting": "Mengekspor…",
       "exported": "Markah diekspor",
+      "saveToDevice": "Simpan ke perangkat",
       "shareUnavailable": "Berbagi tidak tersedia di perangkat ini",
       "readingFile": "Membaca file…",
       "foundOne": "1 markah ditemukan",

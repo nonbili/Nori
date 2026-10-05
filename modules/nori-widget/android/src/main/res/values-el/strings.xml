@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Σελιδοδείκτες</string>
+  <string name="nori_widget_description">Σύνδεσμοι από μία από τις λίστες σας</string>
+  <string name="nori_widget_choose_list">Επιλέξτε λίστα</string>
+  <string name="nori_widget_empty">Ανοίξτε το Nori για να φορτωθούν οι σελιδοδείκτες σας</string>
+</resources>

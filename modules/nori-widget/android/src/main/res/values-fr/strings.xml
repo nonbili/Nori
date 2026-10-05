@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Favoris</string>
+  <string name="nori_widget_description">Liens de l\'une de vos listes</string>
+  <string name="nori_widget_choose_list">Choisir une liste</string>
+  <string name="nori_widget_empty">Ouvrez Nori pour charger vos favoris</string>
+</resources>

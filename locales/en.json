@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "New list",
+    "choose": "Choose a list",
     "rename": "Rename list",
     "name": "List name",
     "enterName": "Enter a list name",
@@ -171,6 +172,7 @@
       "exportBackupHint": "Save a full Nori backup you can restore later.",
       "exporting": "Exporting…",
       "exported": "Bookmarks exported",
+      "saveToDevice": "Save to device",
       "shareUnavailable": "Sharing is unavailable on this device",
       "readingFile": "Reading file…",
       "foundOne": "Found 1 bookmark",

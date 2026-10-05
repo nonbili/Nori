@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Bokmärken</string>
+  <string name="nori_widget_description">Länkar från en av dina listor</string>
+  <string name="nori_widget_choose_list">Välj en lista</string>
+  <string name="nori_widget_empty">Öppna Nori för att läsa in dina bokmärken</string>
+</resources>

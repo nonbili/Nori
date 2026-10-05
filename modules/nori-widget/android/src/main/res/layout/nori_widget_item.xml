@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/nori_widget_item"
+  android:layout_width="match_parent"
+  android:layout_height="44dp"
+  android:background="?android:attr/selectableItemBackground"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  android:paddingStart="16dp"
+  android:paddingEnd="16dp">
+
+  <ImageView
+    android:id="@+id/nori_widget_item_icon"
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:layout_marginEnd="12dp"
+    android:importantForAccessibility="no"
+    android:scaleType="fitCenter" />
+
+  <TextView
+    android:id="@+id/nori_widget_item_title"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:textColor="@color/nori_widget_text"
+    android:textSize="14sp" />
+</LinearLayout>

@@ -1,0 +1,40 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <receiver
+      android:name=".BookmarkWidgetProvider"
+      android:exported="false"
+      android:label="@string/nori_widget_label">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/nori_widget_info" />
+    </receiver>
+
+    <service
+      android:name=".BookmarkWidgetService"
+      android:exported="false"
+      android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+    <!-- A dialog theme keeps the picker out of Android 16's forced edge-to-edge layout. -->
+    <activity
+      android:name=".WidgetConfigActivity"
+      android:exported="true"
+      android:excludeFromRecents="true"
+      android:taskAffinity=""
+      android:theme="@style/NoriWidgetConfigTheme">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+      </intent-filter>
+    </activity>
+
+    <activity
+      android:name=".WidgetOpenActivity"
+      android:exported="false"
+      android:excludeFromRecents="true"
+      android:noHistory="true"
+      android:taskAffinity=""
+      android:theme="@android:style/Theme.NoDisplay" />
+  </application>
+</manifest>

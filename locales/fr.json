@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Nouvelle liste",
+    "choose": "Choisir une liste",
     "rename": "Renommer la liste",
     "name": "Nom de la liste",
     "enterName": "Saisissez un nom de liste",
@@ -169,6 +170,7 @@
       "exportBackupHint": "Enregistrez une sauvegarde Nori complète à restaurer plus tard.",
       "exporting": "Exportation…",
       "exported": "Favoris exportés",
+      "saveToDevice": "Enregistrer sur l'appareil",
       "shareUnavailable": "Le partage n'est pas disponible sur cet appareil",
       "readingFile": "Lecture du fichier…",
       "foundOne": "1 favori trouvé",

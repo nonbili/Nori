@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Grāmatzīmes</string>
+  <string name="nori_widget_description">Saites no viena jūsu saraksta</string>
+  <string name="nori_widget_choose_list">Izvēlieties sarakstu</string>
+  <string name="nori_widget_empty">Atveriet Nori, lai ielādētu grāmatzīmes</string>
+</resources>

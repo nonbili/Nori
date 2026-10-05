@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Új lista",
+    "choose": "Válassz listát",
     "rename": "Lista átnevezése",
     "name": "Lista neve",
     "enterName": "Adja meg a lista nevét",
@@ -171,6 +172,7 @@
       "exportBackupHint": "Teljes Nori biztonsági mentés mentése későbbi visszaállításhoz.",
       "exporting": "Exportálás…",
       "exported": "Könyvjelzők exportálva",
+      "saveToDevice": "Mentés az eszközre",
       "shareUnavailable": "A megosztás nem érhető el ezen az eszközön",
       "readingFile": "Fájl beolvasása…",
       "foundOne": "1 könyvjelző található",

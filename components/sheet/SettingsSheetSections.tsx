@@ -18,6 +18,8 @@ import { isDynamicColorAvailable } from '@/lib/dynamic-palette'
 import { isIos } from '@/lib/utils'
 import { signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
+import { canSaveTextFile } from '@/modules/nori-file-save'
+import type { BookmarkExportTarget } from '@/components/sheet/useSettingsSheetActions'
 import { AboutRow } from '@/components/sheet/SettingsSheetAbout'
 import { TypographyRow } from '@/components/sheet/TypographyRow'
 import { CustomAccentPicker } from '@/components/sheet/AccentPicker'
@@ -43,7 +45,7 @@ export interface SettingsActions {
   onManage: () => void
   onManualSync: () => void
   onImportBookmarks: () => void
-  onExportBookmarks: (format: BookmarkTransferFormat) => void
+  onExportBookmarks: (format: BookmarkTransferFormat, target?: BookmarkExportTarget) => void
   onDeleteAccount: () => void
   onOpenAbout: () => void
   onOpenChangelog: () => void
@@ -671,6 +673,12 @@ const AccentRow: React.FC = () => {
   )
 }
 
+const EXPORT_ROWS = [
+  { format: 'html', icon: 'html', title: 'exportHtml', hint: 'exportHtmlHint' },
+  { format: 'plain', icon: 'subject', title: 'exportPlain', hint: 'exportPlainHint' },
+  { format: 'json', icon: 'backup', title: 'exportBackup', hint: 'exportBackupHint' },
+] as const
+
 export const TransferSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
@@ -684,40 +692,40 @@ export const TransferSection: React.FC<{ actions: SettingsActions }> = ({ action
         onPress={actions.onImportBookmarks}
         themeColors={themeColors}
       />
-      <AboutRow
-        icon="html"
-        title={t('settings.transfer.exportHtml')}
-        detail={
-          actions.busyAction === 'export-html'
-            ? t('settings.transfer.exporting')
-            : t('settings.transfer.exportHtmlHint')
+      {EXPORT_ROWS.map(({ format, icon, title, hint }, index) => {
+        const row = {
+          icon,
+          title: t(`settings.transfer.${title}`),
+          detail:
+            actions.busyAction === `export-${format}`
+              ? t('settings.transfer.exporting')
+              : t(`settings.transfer.${hint}`),
+          themeColors,
+          isLast: index === EXPORT_ROWS.length - 1,
         }
-        onPress={() => actions.onExportBookmarks('html')}
-        themeColors={themeColors}
-      />
-      <AboutRow
-        icon="subject"
-        title={t('settings.transfer.exportPlain')}
-        detail={
-          actions.busyAction === 'export-plain'
-            ? t('settings.transfer.exporting')
-            : t('settings.transfer.exportPlainHint')
+        if (!canSaveTextFile) {
+          return <AboutRow key={format} {...row} onPress={() => actions.onExportBookmarks(format)} />
         }
-        onPress={() => actions.onExportBookmarks('plain')}
-        themeColors={themeColors}
-      />
-      <AboutRow
-        icon="backup"
-        title={t('settings.transfer.exportBackup')}
-        detail={
-          actions.busyAction === 'export-json'
-            ? t('settings.transfer.exporting')
-            : t('settings.transfer.exportBackupHint')
-        }
-        onPress={() => actions.onExportBookmarks('json')}
-        themeColors={themeColors}
-        isLast
-      />
+        // Android's share sheet has no "save to Files" target, so offer it here.
+        return (
+          <NouMenu
+            key={format}
+            trigger={<AboutRow {...row} showChevron />}
+            items={[
+              {
+                label: t('settings.transfer.saveToDevice'),
+                icon: 'save-alt',
+                handler: () => actions.onExportBookmarks(format, 'save'),
+              },
+              {
+                label: t('bookmarks.share'),
+                icon: 'share',
+                handler: () => actions.onExportBookmarks(format, 'share'),
+              },
+            ]}
+          />
+        )
+      })}
     </SectionCard>
   )
 }

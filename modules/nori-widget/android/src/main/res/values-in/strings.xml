@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Markah</string>
+  <string name="nori_widget_description">Tautan dari salah satu daftar Anda</string>
+  <string name="nori_widget_choose_list">Pilih daftar</string>
+  <string name="nori_widget_empty">Buka Nori untuk memuat markah Anda</string>
+</resources>

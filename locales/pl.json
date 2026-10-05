@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Nowa lista",
+    "choose": "Wybierz listę",
     "rename": "Zmień nazwę listy",
     "name": "Nazwa listy",
     "enterName": "Podaj nazwę listy",
@@ -169,6 +170,7 @@
       "exportBackupHint": "Zapisz pełną kopię zapasową Nori, którą można później przywrócić.",
       "exporting": "Eksportowanie…",
       "exported": "Zakładki wyeksportowane",
+      "saveToDevice": "Zapisz na urządzeniu",
       "shareUnavailable": "Udostępnianie jest niedostępne na tym urządzeniu",
       "readingFile": "Odczytywanie pliku…",
       "foundOne": "Znaleziono 1 zakładkę",

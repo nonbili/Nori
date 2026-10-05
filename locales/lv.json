@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Jauns saraksts",
+    "choose": "Izvēlieties sarakstu",
     "rename": "Pārdēvēt sarakstu",
     "name": "Saraksta nosaukums",
     "enterName": "Ievadiet saraksta nosaukumu",
@@ -171,6 +172,7 @@
       "exportBackupHint": "Saglabāt pilnu Nori dublējumu, ko vēlāk var atjaunot.",
       "exporting": "Eksportē…",
       "exported": "Grāmatzīmes eksportētas",
+      "saveToDevice": "Saglabāt ierīcē",
       "shareUnavailable": "Kopīgošana šajā ierīcē nav pieejama",
       "readingFile": "Nolasa failu…",
       "foundOne": "Atrasta 1 grāmatzīme",

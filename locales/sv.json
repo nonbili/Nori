@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Ny lista",
+    "choose": "Välj en lista",
     "rename": "Byt namn på lista",
     "name": "Listnamn",
     "enterName": "Ange ett listnamn",
@@ -169,6 +170,7 @@
       "exportBackupHint": "Spara en fullständig Nori-säkerhetskopia som du kan återställa senare.",
       "exporting": "Exporterar...",
       "exported": "Bokmärken exporterade",
+      "saveToDevice": "Spara på enheten",
       "shareUnavailable": "Delning är inte tillgänglig på denna enhet",
       "readingFile": "Läser fil…",
       "foundOne": "Hittade 1 bokmärke",

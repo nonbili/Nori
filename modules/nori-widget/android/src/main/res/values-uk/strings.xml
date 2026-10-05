@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Закладки</string>
+  <string name="nori_widget_description">Посилання з одного з ваших списків</string>
+  <string name="nori_widget_choose_list">Виберіть список</string>
+  <string name="nori_widget_empty">Відкрийте Nori, щоб завантажити закладки</string>
+</resources>

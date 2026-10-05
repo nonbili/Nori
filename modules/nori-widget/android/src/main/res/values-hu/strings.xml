@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Könyvjelzők</string>
+  <string name="nori_widget_description">Linkek az egyik listádból</string>
+  <string name="nori_widget_choose_list">Válassz listát</string>
+  <string name="nori_widget_empty">Nyisd meg a Norit a könyvjelzők betöltéséhez</string>
+</resources>

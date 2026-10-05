@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">書籤</string>
+  <string name="nori_widget_description">顯示某個清單中的連結</string>
+  <string name="nori_widget_choose_list">選擇清單</string>
+  <string name="nori_widget_empty">開啟 Nori 以載入書籤</string>
+</resources>

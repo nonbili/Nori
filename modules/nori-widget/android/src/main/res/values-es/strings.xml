@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Marcadores</string>
+  <string name="nori_widget_description">Enlaces de una de tus listas</string>
+  <string name="nori_widget_choose_list">Elige una lista</string>
+  <string name="nori_widget_empty">Abre Nori para cargar tus marcadores</string>
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@android:id/background"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/nori_widget_background"
+  android:clipToOutline="true"
+  android:orientation="vertical">
+
+  <LinearLayout
+    android:id="@+id/nori_widget_header"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="12dp">
+
+    <TextView
+      android:id="@+id/nori_widget_title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:text="@string/nori_widget_label"
+      android:textColor="@color/nori_widget_text"
+      android:textSize="14sp"
+      android:textStyle="bold" />
+
+    <ImageView
+      android:layout_width="18dp"
+      android:layout_height="18dp"
+      android:importantForAccessibility="no"
+      android:src="@drawable/nori_widget_ic_expand"
+      android:tint="@color/nori_widget_text_muted" />
+  </LinearLayout>
+
+  <ListView
+    android:id="@+id/nori_widget_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:divider="@null"
+    android:paddingBottom="6dp"
+    android:clipToPadding="false" />
+
+  <TextView
+    android:id="@+id/nori_widget_empty"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="16dp"
+    android:text="@string/nori_widget_empty"
+    android:textColor="@color/nori_widget_text_muted"
+    android:textSize="13sp" />
+</LinearLayout>

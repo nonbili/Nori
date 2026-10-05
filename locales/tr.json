@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Yeni liste",
+    "choose": "Bir liste seçin",
     "rename": "Listeyi yeniden adlandır",
     "name": "Liste adı",
     "enterName": "Liste adı girin",
@@ -169,6 +170,7 @@
       "exportBackupHint": "Daha sonra geri yükleyebileceğiniz tam bir Nori yedeği kaydedin.",
       "exporting": "Dışa aktarılıyor...",
       "exported": "Yer imleri dışa aktarıldı",
+      "saveToDevice": "Cihaza kaydet",
       "shareUnavailable": "Paylaşım bu cihazda kullanılamıyor",
       "readingFile": "Dosya okunuyor…",
       "foundOne": "1 yer imi bulundu",

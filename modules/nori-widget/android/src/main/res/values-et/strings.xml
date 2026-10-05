@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Järjehoidjad</string>
+  <string name="nori_widget_description">Lingid ühest sinu loendist</string>
+  <string name="nori_widget_choose_list">Vali loend</string>
+  <string name="nori_widget_empty">Järjehoidjate laadimiseks ava Nori</string>
+</resources>

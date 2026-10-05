@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Zakładki</string>
+  <string name="nori_widget_description">Linki z jednej z twoich list</string>
+  <string name="nori_widget_choose_list">Wybierz listę</string>
+  <string name="nori_widget_empty">Otwórz Nori, aby wczytać zakładki</string>
+</resources>

@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Nuova lista",
+    "choose": "Scegli un elenco",
     "rename": "Rinomina lista",
     "name": "Nome della lista",
     "enterName": "Inserisci un nome per la lista",
@@ -169,6 +170,7 @@
       "exportBackupHint": "Salva un backup completo di Nori da ripristinare in seguito.",
       "exporting": "Esportazione…",
       "exported": "Segnalibri esportati",
+      "saveToDevice": "Salva sul dispositivo",
       "shareUnavailable": "Condivisione non disponibile su questo dispositivo",
       "readingFile": "Lettura del file…",
       "foundOne": "Trovato 1 segnalibro",

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">الإشارات المرجعية</string>
+  <string name="nori_widget_description">روابط من إحدى قوائمك</string>
+  <string name="nori_widget_choose_list">اختر قائمة</string>
+  <string name="nori_widget_empty">افتح Nori لتحميل إشاراتك المرجعية</string>
+</resources>

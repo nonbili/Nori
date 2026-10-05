@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Yer imleri</string>
+  <string name="nori_widget_description">Listelerinizden birindeki bağlantılar</string>
+  <string name="nori_widget_choose_list">Bir liste seçin</string>
+  <string name="nori_widget_empty">Yer imlerinizi yüklemek için Nori\'yi açın</string>
+</resources>

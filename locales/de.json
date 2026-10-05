@@ -61,6 +61,7 @@
   },
   "lists": {
     "new": "Neue Liste",
+    "choose": "Liste auswählen",
     "rename": "Liste umbenennen",
     "name": "Listenname",
     "enterName": "Listennamen eingeben",
@@ -171,6 +172,7 @@
       "exportBackupHint": "Eine vollständige Nori-Sicherung speichern, die Sie später wiederherstellen können.",
       "exporting": "Wird exportiert…",
       "exported": "Lesezeichen exportiert",
+      "saveToDevice": "Auf dem Gerät speichern",
       "shareUnavailable": "Teilen ist auf diesem Gerät nicht verfügbar",
       "readingFile": "Datei wird gelesen…",
       "foundOne": "1 Lesezeichen gefunden",

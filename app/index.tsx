@@ -7,6 +7,7 @@ import { ui$ } from '@/states/ui'
 import { NoriHome } from '@/components/home/NoriHome'
 import { usePendingShareIntent } from '@/hooks/usePendingShareIntent'
 import { useQuickShare } from '@/hooks/useQuickShare'
+import { useHomeWidget } from '@/hooks/useHomeWidget'
 
 // Distance (px) a slow drag must cover before the drawer opens.
 const DRAWER_OPEN_DISTANCE = 110
@@ -99,6 +100,7 @@ export default function HomeScreen() {
   }, [toggleDrawer])
 
   useQuickShare()
+  useHomeWidget()
   usePendingShareIntent()
 
   return <NoriHome renderMain={(main) => <GestureDetector gesture={openDrawerGesture}>{main}</GestureDetector>} />

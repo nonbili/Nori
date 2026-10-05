@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import NoriBilling from '@/modules/nori-billing'
+import { saveTextFile } from '@/modules/nori-file-save'
 import {
   exportBookmarksToHtml,
   exportBookmarksToJson,
@@ -53,6 +54,8 @@ const TRANSFER_BUSY_ACTION = {
   plain: 'export-plain',
   json: 'export-json',
 } as const
+
+export type BookmarkExportTarget = 'share' | 'save'
 
 const downloadOnWeb = (filename: string, content: string, mimeType: string) => {
   const blob = new Blob([content], { type: `${mimeType};charset=utf-8` })
@@ -251,7 +254,7 @@ export function useSettingsSheetActions() {
       showToast(t('settings.transfer.imported', { count: importedCount }))
     })
 
-  const onExportBookmarks = (format: BookmarkTransferFormat) =>
+  const onExportBookmarks = (format: BookmarkTransferFormat, target: BookmarkExportTarget = 'share') =>
     runAction(TRANSFER_BUSY_ACTION[format], async () => {
       const content = format === 'html'
         ? exportBookmarksToHtml(lists, bookmarks)
@@ -265,6 +268,14 @@ export function useSettingsSheetActions() {
       if (isWeb) {
         downloadOnWeb(filename, content, mimeType)
         showToast(t('settings.transfer.exported'))
+        return
+      }
+
+      if (target === 'save') {
+        // The system picker writes straight to Files, a USB drive or a cloud folder.
+        if (await saveTextFile(filename, mimeType, content)) {
+          showToast(t('settings.transfer.exported'))
+        }
         return
       }
 

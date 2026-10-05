@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="nori_widget_label">Lesezeichen</string>
+  <string name="nori_widget_description">Links aus einer deiner Listen</string>
+  <string name="nori_widget_choose_list">Liste auswählen</string>
+  <string name="nori_widget_empty">Öffne Nori, um deine Lesezeichen zu laden</string>
+</resources>
