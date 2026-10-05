@@ -23,7 +23,9 @@ const PAGE_BOTTOM_PADDING = 96
 const INITIAL_BOOKMARKS_TO_RENDER = 6
 const BOOKMARKS_RENDER_BATCH = 4
 const BOTTOM_EDGE_THRESHOLD = 24
-const BOTTOM_OVERSCROLL_OPEN_THRESHOLD = 12
+// iOS rubber-bands the overscroll, so this is roughly a 110px finger drag past
+// the end, matching the swipe distance the home screen's pan gesture asks for.
+const BOTTOM_OVERSCROLL_OPEN_THRESHOLD = 56
 const LARGE_EDIT_LIST_THRESHOLD = 120
 
 export interface BookmarkPagerActions {
@@ -122,6 +124,10 @@ export const BookmarkListPage = memo(({
   const contentHeightRef = useRef(0)
   const offsetYRef = useRef(0)
   const lastBottomStateRef = useRef<boolean | null>(null)
+  // Overscroll only opens the drawer during a drag that started at the end of
+  // the list, so neither the bounce after a fling nor a scroll that merely
+  // reaches the end opens it by accident.
+  const dragStartedAtBottomRef = useRef(false)
 
   const updateBottomState = useCallback((offsetY: number) => {
     offsetYRef.current = offsetY
@@ -158,11 +164,21 @@ export const BookmarkListPage = memo(({
       isActive
       && !bookmarkEditMode
       && !ui$.drawerOpen.peek()
+      && dragStartedAtBottomRef.current
       && contentOffset.y > maxOffsetY + BOTTOM_OVERSCROLL_OPEN_THRESHOLD
     ) {
+      dragStartedAtBottomRef.current = false
       ui$.openBookmarksDrawer()
     }
   }, [bookmarkEditMode, isActive, updateBottomState])
+
+  const onScrollBeginDrag = useCallback(() => {
+    dragStartedAtBottomRef.current = lastBottomStateRef.current === true
+  }, [])
+
+  const onScrollEndDrag = useCallback(() => {
+    dragStartedAtBottomRef.current = false
+  }, [])
 
   const renderTile = useCallback(({ item: bookmark }: { item: BookmarkRecord }) => (
     <View style={{ width: itemWidth, marginBottom: columns === 1 ? GRID_GAP : 0 }}>
@@ -227,6 +243,8 @@ export const BookmarkListPage = memo(({
           onLayout={onLayout}
           onContentSizeChange={onContentSizeChange}
           onScroll={onScroll}
+          onScrollBeginDrag={onScrollBeginDrag}
+          onScrollEndDrag={onScrollEndDrag}
           initialNumToRender={INITIAL_BOOKMARKS_TO_RENDER}
           maxToRenderPerBatch={BOOKMARKS_RENDER_BATCH}
           windowSize={bookmarkEditMode ? 5 : 3}
