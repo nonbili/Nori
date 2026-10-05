@@ -1,0 +1,7 @@
+- Rich bookmark previews with cached page images and screenshots
+- Font customization and pure black AMOLED dark theme
+- Bookmark layout options and improved URL visibility
+- Organized appearance settings with simplified font size controls
+- Add 11 new languages (German, Japanese, Korean, Portuguese, Russian, and more)
+- Refresh interface with filled bookmark tiles, list chips, and settings rows
+- Fix Reddit bookmark post title extraction
