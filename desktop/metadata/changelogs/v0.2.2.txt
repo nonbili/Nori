@@ -1,0 +1,2 @@
+- Fix in-app update removing the app when it is installed on a different filesystem than /tmp
+- Fix update dialog button turning blank on hover

@@ -13,6 +13,8 @@ import (
 var assets embed.FS
 
 func main() {
+	restageUpdate()
+
 	store, err := NewStoreService()
 	if err != nil {
 		log.Fatal(err)

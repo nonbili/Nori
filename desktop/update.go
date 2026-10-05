@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -39,6 +40,12 @@ const manifestURL = "https://github.com/nonbili/Nori/releases/download/desktop-l
 // startup check below.
 const checkInterval = 24 * time.Hour
 
+// updateWindowCSS is layered over the built-in update window. Its stock
+// `.u__btn:hover:not(:disabled)` rule outranks `.u__btn--primary`, so a hovered
+// primary button takes the neutral surface background under its white label
+// and vanishes.
+const updateWindowCSS = `.u__btn--primary:hover:not(:disabled) { background: var(--accent); }`
+
 // initUpdater wires up the Wails updater, which swaps the running binary (or
 // the .app bundle) in place and offers a restart. The DMG and the NSIS
 // installer are first-install channels only; updates arrive as the plain
@@ -61,6 +68,7 @@ func initUpdater(app *application.App) {
 		Providers:      []updater.Provider{provider},
 		PublicKey:      updateKey,
 		CheckInterval:  checkInterval,
+		Window:         &updater.BuiltinWindow{CSS: updateWindowCSS},
 	}); err != nil {
 		log.Printf("updater: %v", err)
 		return
@@ -81,4 +89,59 @@ func initUpdater(app *application.App) {
 			log.Printf("updater: %v", err)
 		}
 	}()
+}
+
+// restageUpdate moves a downloaded update next to the binary it replaces. It
+// must run before application.New, which is where Wails enters helper mode.
+//
+// The updater stages downloads under os.TempDir and its helper swaps them in
+// with a bare os.Rename, after deleting the target. A rename cannot cross
+// filesystems, and /tmp is commonly its own (tmpfs on Linux), so for an
+// install under $HOME the swap deleted the binary and then failed; the
+// helper's restore path relaunches with the helper environment still set, so
+// it looped deleting the binary again. Staging beside the target keeps the
+// rename on one filesystem.
+func restageUpdate() {
+	if os.Getenv("WAILS_UPDATER_HELPER") != "1" {
+		return
+	}
+	target, staged := os.Getenv("WAILS_UPDATER_HELPER_TARGET"), os.Getenv("WAILS_UPDATER_HELPER_NEW")
+	local := target + ".new"
+	if target == "" || staged == "" || staged == local {
+		return
+	}
+	if err := moveAcross(staged, local); err != nil {
+		// Leaving the staged path alone would hand the helper the
+		// cross-filesystem rename this exists to avoid; the install is
+		// untouched so far, so give up on this update instead.
+		_ = os.RemoveAll(local)
+		log.Fatalf("updater: restage %s: %v", staged, err)
+	}
+	if dir := filepath.Dir(staged); strings.HasPrefix(filepath.Base(dir), "wails-update-") {
+		_ = os.RemoveAll(dir)
+	}
+	_ = os.Setenv("WAILS_UPDATER_HELPER_NEW", local)
+}
+
+// moveAcross renames src to dst, copying instead when they sit on different
+// filesystems. src is a single binary, or a .app bundle directory on macOS.
+func moveAcross(src, dst string) error {
+	if err := os.RemoveAll(dst); err != nil {
+		return err
+	}
+	if os.Rename(src, dst) == nil {
+		return nil
+	}
+	info, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if info.IsDir() {
+		return os.CopyFS(dst, os.DirFS(src))
+	}
+	data, err := os.ReadFile(src)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(dst, data, info.Mode().Perm())
 }
