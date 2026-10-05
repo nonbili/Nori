@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Σύνδεσμοι από μία από τις λίστες σας</string>
   <string name="nori_widget_choose_list">Επιλέξτε λίστα</string>
   <string name="nori_widget_empty">Ανοίξτε το Nori για να φορτωθούν οι σελιδοδείκτες σας</string>
+  <string name="nori_widget_view_compact">Συμπαγής</string>
+  <string name="nori_widget_view_preview">Προεπισκόπηση</string>
 </resources>

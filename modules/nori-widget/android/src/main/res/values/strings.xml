@@ -5,4 +5,6 @@
   <!-- Fallbacks until the app has pushed its own translated copy. -->
   <string name="nori_widget_choose_list">Choose a list</string>
   <string name="nori_widget_empty">Open Nori to load your bookmarks</string>
+  <string name="nori_widget_view_compact">Compact</string>
+  <string name="nori_widget_view_preview">Preview</string>
 </resources>

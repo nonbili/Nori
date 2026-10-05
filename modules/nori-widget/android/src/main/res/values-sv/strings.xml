@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Länkar från en av dina listor</string>
   <string name="nori_widget_choose_list">Välj en lista</string>
   <string name="nori_widget_empty">Öppna Nori för att läsa in dina bokmärken</string>
+  <string name="nori_widget_view_compact">Kompakt</string>
+  <string name="nori_widget_view_preview">Förhandsvisning</string>
 </resources>

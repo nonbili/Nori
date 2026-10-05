@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Links de uma das suas listas</string>
   <string name="nori_widget_choose_list">Escolha uma lista</string>
   <string name="nori_widget_empty">Abra o Nori para carregar seus favoritos</string>
+  <string name="nori_widget_view_compact">Compacta</string>
+  <string name="nori_widget_view_preview">Prévia</string>
 </resources>

@@ -6,9 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.AbsListView
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ListView
+import android.widget.RadioButton
+import android.widget.RadioGroup
 
-/** Picks which list a widget shows. Opened by the launcher or from the widget header. */
+/** Picks which list a widget shows and how its rows look. Opened by the launcher or from the widget header. */
 class WidgetConfigActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -33,6 +37,8 @@ class WidgetConfigActivity : Activity() {
     }
 
     title = snapshot.chooseList ?: getString(R.string.nori_widget_choose_list)
+    val padding = (16 * resources.displayMetrics.density).toInt()
+
     val listView = ListView(this)
     listView.choiceMode = AbsListView.CHOICE_MODE_SINGLE
     listView.adapter = ArrayAdapter(
@@ -41,15 +47,50 @@ class WidgetConfigActivity : Activity() {
       snapshot.lists.map { it.name },
     )
     val current = WidgetStore.resolveList(this, snapshot, widgetId)
-    listView.setItemChecked(snapshot.lists.indexOfFirst { it.id == current?.id }, true)
-    listView.setOnItemClickListener { _, _, position, _ ->
-      WidgetStore.setListId(this, widgetId, snapshot.lists[position].id)
-      // One UI 8.5 discards a widget whose configuration ends before it has a complete
-      // RemoteViews, so push the full layout before reporting success.
-      BookmarkWidgetProvider.updateWidget(this, manager, widgetId, snapshot)
-      setResult(RESULT_OK, result)
-      finish()
+    listView.setItemChecked(snapshot.lists.indexOfFirst { it.id == current?.id }.coerceAtLeast(0), true)
+
+    val compact = RadioButton(this).apply {
+      id = R.id.nori_widget_view_compact
+      text = snapshot.viewCompact ?: getString(R.string.nori_widget_view_compact)
     }
-    setContentView(listView)
+    val preview = RadioButton(this).apply {
+      id = R.id.nori_widget_view_preview
+      text = snapshot.viewPreview ?: getString(R.string.nori_widget_view_preview)
+    }
+    val viewGroup = RadioGroup(this).apply {
+      orientation = RadioGroup.HORIZONTAL
+      setPadding(padding, padding / 2, padding, 0)
+      addView(compact)
+      addView(preview, LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+      ).apply { marginStart = padding })
+      check(if (WidgetStore.isPreview(this@WidgetConfigActivity, widgetId)) preview.id else compact.id)
+    }
+
+    val done = Button(this).apply {
+      setText(android.R.string.ok)
+      setOnClickListener {
+        val position = listView.checkedItemPosition.coerceIn(0, snapshot.lists.lastIndex)
+        WidgetStore.setListId(this@WidgetConfigActivity, widgetId, snapshot.lists[position].id)
+        WidgetStore.setPreview(this@WidgetConfigActivity, widgetId, viewGroup.checkedRadioButtonId == preview.id)
+        // One UI 8.5 discards a widget whose configuration ends before it has a complete
+        // RemoteViews, so push the full layout before reporting success.
+        BookmarkWidgetProvider.updateWidget(this@WidgetConfigActivity, manager, widgetId, snapshot)
+        setResult(RESULT_OK, result)
+        finish()
+      }
+    }
+
+    val root = LinearLayout(this).apply {
+      orientation = LinearLayout.VERTICAL
+      addView(listView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+      addView(viewGroup)
+      addView(done, LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+      ).apply { setMargins(padding, padding / 2, padding, padding / 2) })
+    }
+    setContentView(root)
   }
 }

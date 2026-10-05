@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Saites no viena jūsu saraksta</string>
   <string name="nori_widget_choose_list">Izvēlieties sarakstu</string>
   <string name="nori_widget_empty">Atveriet Nori, lai ielādētu grāmatzīmes</string>
+  <string name="nori_widget_view_compact">Kompakts</string>
+  <string name="nori_widget_view_preview">Priekšskatījums</string>
 </resources>

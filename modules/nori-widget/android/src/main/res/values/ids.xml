@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <item name="nori_widget_view_compact" type="id" />
+  <item name="nori_widget_view_preview" type="id" />
+</resources>

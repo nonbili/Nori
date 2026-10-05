@@ -3,4 +3,5 @@
   <color name="nori_widget_surface">#FF1C1917</color>
   <color name="nori_widget_text">#FFFAFAF9</color>
   <color name="nori_widget_text_muted">#FFA8A29E</color>
+  <color name="nori_widget_well">#FF292524</color>
 </resources>

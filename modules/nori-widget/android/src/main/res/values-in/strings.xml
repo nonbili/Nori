@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Tautan dari salah satu daftar Anda</string>
   <string name="nori_widget_choose_list">Pilih daftar</string>
   <string name="nori_widget_empty">Buka Nori untuk memuat markah Anda</string>
+  <string name="nori_widget_view_compact">Ringkas</string>
+  <string name="nori_widget_view_preview">Pratinjau</string>
 </resources>

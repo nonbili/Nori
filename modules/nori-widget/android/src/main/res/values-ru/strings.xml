@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Ссылки из одного из ваших списков</string>
   <string name="nori_widget_choose_list">Выберите список</string>
   <string name="nori_widget_empty">Откройте Nori, чтобы загрузить закладки</string>
+  <string name="nori_widget_view_compact">Компактный</string>
+  <string name="nori_widget_view_preview">Предпросмотр</string>
 </resources>

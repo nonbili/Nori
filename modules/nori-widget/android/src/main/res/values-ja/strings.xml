@@ -4,4 +4,6 @@
   <string name="nori_widget_description">リストのリンクを表示</string>
   <string name="nori_widget_choose_list">リストを選択</string>
   <string name="nori_widget_empty">Nori を開いてブックマークを読み込みます</string>
+  <string name="nori_widget_view_compact">コンパクト</string>
+  <string name="nori_widget_view_preview">プレビュー</string>
 </resources>

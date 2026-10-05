@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Linkek az egyik listádból</string>
   <string name="nori_widget_choose_list">Válassz listát</string>
   <string name="nori_widget_empty">Nyisd meg a Norit a könyvjelzők betöltéséhez</string>
+  <string name="nori_widget_view_compact">Kompakt</string>
+  <string name="nori_widget_view_preview">Előnézet</string>
 </resources>

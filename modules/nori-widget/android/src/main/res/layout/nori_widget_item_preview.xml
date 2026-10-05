@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/nori_widget_item"
+  android:layout_width="match_parent"
+  android:layout_height="68dp"
+  android:background="?android:attr/selectableItemBackground"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  android:paddingStart="12dp"
+  android:paddingEnd="16dp">
+
+  <FrameLayout
+    android:layout_width="76dp"
+    android:layout_height="56dp"
+    android:layout_marginEnd="12dp"
+    android:background="@drawable/nori_widget_thumb_background"
+    android:clipToOutline="true">
+
+    <ImageView
+      android:id="@+id/nori_widget_item_image"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:importantForAccessibility="no"
+      android:scaleType="centerCrop" />
+
+    <ImageView
+      android:id="@+id/nori_widget_item_icon"
+      android:layout_width="24dp"
+      android:layout_height="24dp"
+      android:layout_gravity="center"
+      android:importantForAccessibility="no"
+      android:scaleType="fitCenter" />
+  </FrameLayout>
+
+  <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/nori_widget_item_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:maxLines="2"
+      android:textColor="@color/nori_widget_text"
+      android:textSize="14sp" />
+
+    <TextView
+      android:id="@+id/nori_widget_item_domain"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:textColor="@color/nori_widget_text_muted"
+      android:textSize="12sp" />
+  </LinearLayout>
+</LinearLayout>

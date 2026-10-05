@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Lingid ühest sinu loendist</string>
   <string name="nori_widget_choose_list">Vali loend</string>
   <string name="nori_widget_empty">Järjehoidjate laadimiseks ava Nori</string>
+  <string name="nori_widget_view_compact">Kompaktne</string>
+  <string name="nori_widget_view_preview">Eelvaade</string>
 </resources>

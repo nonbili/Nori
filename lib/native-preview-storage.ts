@@ -18,6 +18,11 @@ interface StoredPreview {
   imageFile?: string
 }
 
+/** Name of the record file for a preview key, relative to the storage directory. */
+export function previewRecordFile(key: string) {
+  return `${fileName(key)}.json`
+}
+
 function fileName(key: string) {
   let first = 2166136261,
     second = 5381

@@ -4,4 +4,6 @@
   <string name="nori_widget_description">显示某个列表中的链接</string>
   <string name="nori_widget_choose_list">选择列表</string>
   <string name="nori_widget_empty">打开 Nori 以加载书签</string>
+  <string name="nori_widget_view_compact">紧凑</string>
+  <string name="nori_widget_view_preview">预览</string>
 </resources>

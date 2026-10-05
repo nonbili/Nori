@@ -4,4 +4,6 @@
   <string name="nori_widget_description">Links aus einer deiner Listen</string>
   <string name="nori_widget_choose_list">Liste auswählen</string>
   <string name="nori_widget_empty">Öffne Nori, um deine Lesezeichen zu laden</string>
+  <string name="nori_widget_view_compact">Kompakt</string>
+  <string name="nori_widget_view_preview">Vorschau</string>
 </resources>
