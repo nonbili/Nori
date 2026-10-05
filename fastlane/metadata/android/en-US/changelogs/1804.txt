@@ -1,0 +1,5 @@
+- Add rich bookmark previews with cached page images and screenshots
+- Add Android home screen list widget with preview thumbnails
+- Add font customization and pure black AMOLED dark theme
+- Add bookmark export directly to device storage
+- Organize appearance settings with simplified font size controls
