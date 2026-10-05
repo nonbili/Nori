@@ -49,10 +49,12 @@ export const SettingsSheet: React.FC = () => {
     onOpenChangelog: () => setPage('changelog'),
   }
 
+  const goBack = () => setPage(page === 'changelog' ? 'about' : 'home')
+
   const headerLeft =
     page === 'home' ? undefined : (
       <Pressable
-        onPress={() => setPage(page === 'changelog' ? 'about' : 'home')}
+        onPress={goBack}
         accessibilityLabel={t('common.back')}
         accessibilityRole="button"
         className="rounded-full bg-muted p-2 active:bg-muted-strong"
@@ -74,7 +76,8 @@ export const SettingsSheet: React.FC = () => {
               : t('settings.title')
       }
       height="85%"
-      onClose={page === 'home' ? onClose : () => setPage(page === 'changelog' ? 'about' : 'home')}
+      onClose={onClose}
+      onBack={page === 'home' ? undefined : goBack}
       headerLeft={headerLeft}
       showCloseButton={page === 'home'}
       contentScrollRef={scrollRef}

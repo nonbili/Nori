@@ -1,7 +1,13 @@
 import { fetchPreviewImage } from './preview-image'
 import { getPreviewMeta } from './bookmark'
 import { readPreview, writePreview, prunePreviews } from './bookmark-preview-storage'
-import { previewKey, PreviewResponseError, type BookmarkPreview, type PreviewSource } from './bookmark-preview-types'
+import {
+  blockedPreviewStatus,
+  previewKey,
+  PreviewResponseError,
+  type BookmarkPreview,
+  type PreviewSource,
+} from './bookmark-preview-types'
 
 export { previewSource, type PreviewSource, type BookmarkPreview } from './bookmark-preview-types'
 const FAILURE_RETRY_MS = 60 * 60 * 1000
@@ -16,6 +22,14 @@ export function setPreviewCapture(handler: typeof capture) {
 }
 export function setPreviewImageFetch(handler: typeof imageFetch) {
   imageFetch = handler
+}
+// Native only: reads the same metadata from a page rendered in a hidden WebView,
+// for sites whose bot protection rejects the plain fetch.
+let renderedMeta:
+  | ((url: string, signal: AbortSignal) => Promise<{ description: string; imageUrl: string } | null>)
+  | undefined
+export function setPreviewRenderedMeta(handler: typeof renderedMeta) {
+  renderedMeta = handler
 }
 
 interface Job {
@@ -196,15 +210,24 @@ export function loadBookmarkPreview(
     keepAlive: false,
     run: async () => {
       checkCancelled(signal)
-      let meta: { description: string; imageUrl: string }
+      let meta!: { description: string; imageUrl: string }
       let retryAfter: number | undefined
       try {
         meta = await getPreviewMeta(url, signal)
       } catch (error) {
         checkCancelled(signal)
-        if (refresh && source !== 'screenshot') throw error
-        meta = { description: cached?.description || '', imageUrl: cached?.imageUrl || '' }
-        if (!refresh) retryAfter = retryAt(error)
+        const rendered =
+          renderedMeta && error instanceof PreviewResponseError && blockedPreviewStatus(error.status)
+            ? await renderedMeta(url, signal).catch(() => null)
+            : null
+        checkCancelled(signal)
+        if (rendered) {
+          meta = rendered
+        } else {
+          if (refresh && source !== 'screenshot') throw error
+          meta = { description: cached?.description || '', imageUrl: cached?.imageUrl || '' }
+          if (!refresh) retryAfter = retryAt(error)
+        }
       }
       checkCancelled(signal)
       let imageUri = ''

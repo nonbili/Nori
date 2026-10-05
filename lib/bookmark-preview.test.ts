@@ -5,6 +5,7 @@ import {
   loadBookmarkPreview,
   setPreviewCapture,
   setPreviewImageFetch,
+  setPreviewRenderedMeta,
   onPreviewChange,
   updatePreviewBookmarks,
   retainEditorPreview,
@@ -29,6 +30,78 @@ describe('bookmark previews', () => {
       description: 'Saved article',
       imageUrl: 'https://final.example/cover.jpg',
     })
+  })
+  it('decodes the page bytes itself rather than trusting the response text()', async () => {
+    setPageFetch(async () => {
+      const response = new Response(new TextEncoder().encode('<meta name="description" content="歌詞を検索">'))
+      response.text = async () => 'garbled'
+      return response
+    })
+    expect((await getPreviewMeta('https://utf8.example')).description).toBe('歌詞を検索')
+  })
+  it('uses rendered metadata when the page fetch is blocked, but not for a missing page', async () => {
+    const rendered: string[] = []
+    setPreviewRenderedMeta(async (url) => {
+      rendered.push(url)
+      return { description: 'Rendered', imageUrl: '' }
+    })
+    try {
+      setPageFetch(async () => new Response('denied', { status: 401 }))
+      const blocked = await loadBookmarkPreview('https://blocked.example', 'page-image')
+      expect(blocked.description).toBe('Rendered')
+      expect(blocked.retryAfter).toBeUndefined()
+      setPageFetch(async () => new Response('gone', { status: 404 }))
+      const missing = await loadBookmarkPreview('https://missing.example', 'page-image')
+      expect(missing.description).toBe('')
+      expect(rendered).toEqual(['https://blocked.example'])
+    } finally {
+      setPreviewRenderedMeta(undefined)
+    }
+  })
+  it('keeps Latin-1 text when the runtime decoder only knows UTF-8', async () => {
+    const NativeDecoder = globalThis.TextDecoder
+    // Mirrors Hermes: any label other than UTF-8 is rejected.
+    globalThis.TextDecoder = class extends NativeDecoder {
+      constructor(label = 'utf-8') {
+        if (!/^utf-?8$/i.test(label)) throw new RangeError('Unknown encoding')
+        super(label)
+      }
+    } as typeof TextDecoder
+    try {
+      const bytes = Uint8Array.from('<meta name="description" content="caf\u00e9">', (char) => char.charCodeAt(0))
+      setPageFetch(async () => new Response(bytes, { headers: { 'content-type': 'text/html; charset=ISO-8859-1' } }))
+      expect((await getPreviewMeta('https://latin1.example')).description).toBe('caf\u00e9')
+    } finally {
+      globalThis.TextDecoder = NativeDecoder
+    }
+  })
+  it('frees the worker when a load waiting on rendered metadata is cancelled', async () => {
+    const signals: AbortSignal[] = []
+    setPreviewRenderedMeta(
+      (_url, signal) =>
+        new Promise((resolve) => {
+          signals.push(signal)
+          signal.addEventListener('abort', () => resolve(null), { once: true })
+        }),
+    )
+    try {
+      setPageFetch(async (url) =>
+        url.includes('stuck') ? new Response('denied', { status: 403 }) : new Response('<meta name="description" content="Fine">'),
+      )
+      const controllers = [new AbortController(), new AbortController()]
+      const stuck = controllers.map((controller, index) =>
+        loadBookmarkPreview(`https://stuck${index}.example`, 'page-image', false, { signal: controller.signal }).catch(
+          (error) => error.name,
+        ),
+      )
+      while (signals.length < 2) await new Promise((resolve) => setTimeout(resolve, 1))
+      controllers.forEach((controller) => controller.abort())
+      expect(await Promise.all(stuck)).toEqual(['AbortError', 'AbortError'])
+      expect(signals.every((signal) => signal.aborted)).toBe(true)
+      expect((await loadBookmarkPreview('https://healthy.example', 'page-image')).description).toBe('Fine')
+    } finally {
+      setPreviewRenderedMeta(undefined)
+    }
   })
   it('falls back to Twitter images and rejects non-http images', async () => {
     setPageFetch(

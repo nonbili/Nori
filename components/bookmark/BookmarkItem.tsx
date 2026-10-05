@@ -103,7 +103,7 @@ const AnchorMenu: React.FC<{
 export const BookmarkTile = memo(({
   bookmark,
   preview = false,
-  previewHeight = 148,
+  previewHeight,
   editMode,
   onOpen,
   selected,
@@ -190,7 +190,7 @@ export const BookmarkTile = memo(({
         {...webContextMenuProps}
       >
         <Pressable
-          style={preview ? { height: previewHeight } : undefined}
+          style={preview && previewHeight ? { height: previewHeight } : undefined}
           onPress={editMode ? onEnable || onSelect || undefined : onOpen}
           onLongPress={!editMode ? handleLongPress : undefined}
           className={`flex-row items-center gap-2 overflow-hidden border active:bg-muted ${preview ? 'rounded-2xl p-4' : 'rounded-full px-3 py-2.5'} ${

@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Platform, Pressable, ScrollView as NativeScrollView, View, useWindowDimensions } from 'react-native'
+import { Pressable, ScrollView as NativeScrollView, View } from 'react-native'
 import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { FlashList } from '@shopify/flash-list'
@@ -10,8 +10,6 @@ import { useValue } from '@legendapp/state/react'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { settings$ } from '@/states/settings'
 import { BookmarkTile } from '@/components/bookmark/BookmarkItem'
-import { previewHeight } from '@/lib/bookmark-preview-types'
-import { normalizeFontScale } from '@/lib/typography'
 import { lists$ } from '@/states/lists'
 import { type NouMenuItem, NouMenu } from '@/components/menu/NouMenu'
 import { ManageRow } from '@/components/common/Common'
@@ -61,12 +59,9 @@ export interface DrawerPartsState {
 
 const BookmarkItem = memo(({ bookmark, drawer }: { bookmark: BookmarkRecord; drawer: DrawerPartsState }) => {
   const preview = useValue(settings$.bookmarkView) === 'preview'
-  const scale = normalizeFontScale(useValue(settings$.fontScale))
-  const { fontScale } = useWindowDimensions()
   if (preview) return <BookmarkTile
     bookmark={bookmark}
     preview
-    previewHeight={previewHeight(scale, Platform.OS === 'web' ? 1 : fontScale)}
     editMode={false}
     onOpen={() => drawer.onOpen(bookmark)}
     onEdit={() => drawer.onEdit(bookmark)}

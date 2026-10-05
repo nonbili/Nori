@@ -1,7 +1,8 @@
 import { isBlankPreviewCapture } from '@/lib/preview-capture-validation'
 import { captureRef, releaseCapture } from 'react-native-view-shot'
-import { setPreviewCapture } from '@/lib/bookmark-preview'
+import { setPreviewCapture, setPreviewRenderedMeta } from '@/lib/bookmark-preview'
 import { resolveTitleWithWebView } from '@/lib/webview-title-resolver'
+import { applyRenderedTitle } from '@/lib/title-backfill'
 import { useValue } from '@legendapp/state/react'
 import { useEffect, useRef } from 'react'
 import { AppState, Platform, StyleSheet, View, useWindowDimensions } from 'react-native'
@@ -14,10 +15,14 @@ import {
   type WebViewTitleResult,
 } from '@/lib/webview-title-resolver'
 
+const DESKTOP_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 // Hard cap per job so a hanging page (consent wall, infinite spinner) can't stall
 // the queue forever.
 const JOB_TIMEOUT_MS = 9000
 const SCREENSHOT_TIMEOUT_MS = 30000
+// Preview jobs sit through a bot-protection check before the real page loads.
+const PREVIEW_TIMEOUT_MS = 15000
 
 /**
  * Invisible WebView mounted once at the app root. It processes one queued title
@@ -38,12 +43,18 @@ export const WebViewTitleResolver: React.FC<{ canvasColor?: string }> = ({ canva
       if (!result?.screenshotUri) throw new Error('preview_capture_failed')
       return result.screenshotUri
     })
+    setPreviewRenderedMeta(async (url, signal) => {
+      const result = await resolveTitleWithWebView(url, false, true, signal)
+      if (result) applyRenderedTitle(url, result.title)
+      return result && { description: result.description || '', imageUrl: result.imageUrl || '' }
+    })
     setWebViewTitleResolverAvailable(AppState.currentState === 'active')
     const subscription = AppState.addEventListener('change', (state) => {
       setWebViewTitleResolverAvailable(state === 'active')
     })
     return () => {
       setPreviewCapture(undefined)
+      setPreviewRenderedMeta(undefined)
       subscription.remove()
       setWebViewTitleResolverAvailable(false)
     }
@@ -54,11 +65,12 @@ export const WebViewTitleResolver: React.FC<{ canvasColor?: string }> = ({ canva
       return
     }
 
+    const job = webViewResolver$.active.peek()
     timeoutRef.current = setTimeout(
       () => {
         completeActiveJob(activeId, null)
       },
-      webViewResolver$.active.peek()?.screenshot ? SCREENSHOT_TIMEOUT_MS : JOB_TIMEOUT_MS,
+      job?.screenshot ? SCREENSHOT_TIMEOUT_MS : job?.preview ? PREVIEW_TIMEOUT_MS : JOB_TIMEOUT_MS,
     )
 
     return () => {
@@ -86,6 +98,14 @@ export const WebViewTitleResolver: React.FC<{ canvasColor?: string }> = ({ canva
     try {
       const data = JSON.parse(event.nativeEvent.data) as Partial<WebViewTitleResult>
       const title = (data.title || '').trim()
+      if (active.preview) {
+        const description = (data.description || '').trim().slice(0, 2000)
+        const imageUrl = /^https?:\/\//i.test(data.imageUrl || '') ? data.imageUrl! : ''
+        // A challenge page reports nothing useful; keep waiting for the real
+        // page it reloads into, until the job times out.
+        if (description || imageUrl) finish({ title, icon: data.icon || '', description, imageUrl })
+        return
+      }
       if (active.screenshot) {
         if (Platform.OS === 'android') {
           // Keep the original size: Android's RAW buffer/header can retain the
@@ -141,11 +161,14 @@ export const WebViewTitleResolver: React.FC<{ canvasColor?: string }> = ({ canva
           injectedJavaScript={INJECTED_TITLE_SCRIPT}
           onMessage={onMessage}
           onError={() => finish(null)}
-          onHttpError={() => finish(null)}
+          // Bot protection serves its challenge with an error status.
+          onHttpError={() => (active.preview ? undefined : finish(null))}
           javaScriptEnabled
           domStorageEnabled
           // Many SPAs gate content behind a desktop UA; mirror the fetch path.
-          userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+          // Preview jobs keep the WebView's own UA: bot protection (e.g. DataDome
+          // on reuters.com) rejects a desktop UA that the engine doesn't match.
+          userAgent={active.preview ? undefined : DESKTOP_USER_AGENT}
           style={{ width: captureWidth, height: captureHeight }}
         />
       </View>

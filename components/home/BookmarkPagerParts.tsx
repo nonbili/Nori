@@ -110,7 +110,7 @@ export const BookmarkListPage = memo(({
   const preview = useValue(settings$.bookmarkView) === 'preview'
   const { fontScale: systemFontScale } = useWindowDimensions()
   const fontScale = normalizeFontScale(useValue(settings$.fontScale))
-  const itemHeight = preview ? previewHeight(fontScale, Platform.OS === 'web' ? 1 : systemFontScale) : TILE_HEIGHT
+  const itemHeight = preview ? previewHeight(fontScale, Platform.OS === 'web' ? 1 : systemFontScale, Platform.OS === 'web' ? 16 : 14) : TILE_HEIGHT
   const preferredColumns = useValue(settings$.bookmarkColumns)
   const columns = preview || preferredColumns === 1 ? 1 : 2
   const selectedBookmarkIds = useValue(ui$.selectedBookmarkIds)
@@ -168,7 +168,9 @@ export const BookmarkListPage = memo(({
     <View style={{ width: itemWidth, marginBottom: columns === 1 ? GRID_GAP : 0 }}>
       <BookmarkTile
         preview={preview}
-        previewHeight={itemHeight}
+        // Only reordering needs uniform tiles; when viewing, a preview tile is
+        // as tall as its content.
+        previewHeight={bookmarkEditMode ? itemHeight : undefined}
         bookmark={bookmark}
         editMode={bookmarkEditMode}
         selected={selectedIdSet.has(bookmark.id)}
@@ -199,9 +201,10 @@ export const BookmarkListPage = memo(({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: 'center',
+            // Compact tiles sit centred like a launcher; preview cards read from the top.
+            justifyContent: preview ? 'flex-start' : 'center',
             paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-            paddingTop: 16,
+            paddingTop: preview && !bookmarkEditMode ? 4 : 16,
             paddingBottom: bottomPadding,
           }}
           columnWrapperStyle={columns === 2 ? { gap: GRID_GAP, marginBottom: GRID_GAP } : undefined}
@@ -220,7 +223,7 @@ export const BookmarkListPage = memo(({
               </View>
             ) : null
           }
-          getItemLayout={getItemLayout}
+          getItemLayout={preview && !bookmarkEditMode ? undefined : getItemLayout}
           onLayout={onLayout}
           onContentSizeChange={onContentSizeChange}
           onScroll={onScroll}
@@ -242,7 +245,7 @@ export const BookmarkListPage = memo(({
         onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}
         scrollEventThrottle={16}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16, paddingBottom: bottomPadding }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: preview ? 'flex-start' : 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16, paddingBottom: bottomPadding }}
         className="flex-1"
       >
         <View className="gap-8">
@@ -293,7 +296,7 @@ const HiddenBookmarksGrid: React.FC<{
   const preview = useValue(settings$.bookmarkView) === 'preview'
   const { fontScale: systemFontScale } = useWindowDimensions()
   const fontScale = normalizeFontScale(useValue(settings$.fontScale))
-  const itemHeight = preview ? previewHeight(fontScale, Platform.OS === 'web' ? 1 : systemFontScale) : TILE_HEIGHT
+  const itemHeight = preview ? previewHeight(fontScale, Platform.OS === 'web' ? 1 : systemFontScale, Platform.OS === 'web' ? 16 : 14) : TILE_HEIGHT
   const preferredColumns = useValue(settings$.bookmarkColumns)
   const columns = preview || preferredColumns === 1 ? 1 : 2
   return (

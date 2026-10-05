@@ -5,18 +5,25 @@ export interface WebViewTitleResult {
   title: string
   icon: string
   screenshotUri?: string
+  description?: string
+  imageUrl?: string
 }
 
 export interface PendingJob {
   id: number
   url: string
   screenshot?: boolean
+  // Wait for preview metadata, through any bot-protection interstitial.
+  preview?: boolean
 }
 
 // Resolver callbacks are kept out of the observable store on purpose — legend-state
 // would otherwise proxy them. Keyed by job id.
 const resolvers = new Map<number, (result: WebViewTitleResult | null) => void>()
 const pendingUrls = new Map<string, Promise<WebViewTitleResult | null>>()
+// Callers still waiting on each pending job. A caller without an abort signal
+// never leaves, so only jobs every caller has abandoned are cancelled.
+const waiters = new Map<string, { job: PendingJob; count: number }>()
 let available = false
 
 /** The host pauses work in the background and cancels jobs on unmount. */
@@ -30,6 +37,7 @@ export function setWebViewTitleResolverAvailable(value: boolean) {
     for (const resolve of resolvers.values()) resolve(null)
     resolvers.clear()
     pendingUrls.clear()
+    waiters.clear()
   }
 }
 
@@ -71,23 +79,65 @@ function pumpQueue() {
  * Queue a URL to have its title resolved by the hidden WebView. Resolves with the
  * extracted metadata, or `null` if no host is mounted / it times out / it errors.
  */
-export function resolveTitleWithWebView(url: string, screenshot = false): Promise<WebViewTitleResult | null> {
-  if (!available) return Promise.resolve(null)
-  const key = `${screenshot ? 'screenshot:' : ''}${url}`
-  const pending = pendingUrls.get(key)
-  if (pending) return pending
-  const request = new Promise<WebViewTitleResult | null>((resolve) => {
-    const job: PendingJob = { id: nextJobId++, url, ...(screenshot ? { screenshot: true } : {}) }
-    resolvers.set(job.id, resolve)
+export function resolveTitleWithWebView(
+  url: string,
+  screenshot = false,
+  preview = false,
+  signal?: AbortSignal,
+): Promise<WebViewTitleResult | null> {
+  if (!available || signal?.aborted) return Promise.resolve(null)
+  const key = `${screenshot ? 'screenshot:' : preview ? 'preview:' : ''}${url}`
+  let request = pendingUrls.get(key)
+  if (!request) {
+    const job: PendingJob = {
+      id: nextJobId++,
+      url,
+      ...(screenshot ? { screenshot: true } : {}),
+      ...(preview ? { preview: true } : {}),
+    }
+    const created = new Promise<WebViewTitleResult | null>((resolve) => {
+      resolvers.set(job.id, resolve)
+    })
+    request = created
+    pendingUrls.set(key, created)
+    waiters.set(key, { job, count: 0 })
+    void created.then(() => {
+      if (pendingUrls.get(key) === created) {
+        pendingUrls.delete(key)
+        waiters.delete(key)
+      }
+    })
     const queue = webViewResolver$.queue.peek()
     webViewResolver$.queue.set(screenshot ? [job, ...queue] : [...queue, job])
     pumpQueue()
+  }
+  const entry = waiters.get(key)
+  if (entry) entry.count++
+  if (!signal) return request
+  const shared = request
+  return new Promise((resolve) => {
+    const abort = () => {
+      resolve(null)
+      if (entry && waiters.get(key) === entry && --entry.count === 0) cancelJob(entry.job)
+    }
+    signal.addEventListener('abort', abort, { once: true })
+    void shared.then((result) => {
+      signal.removeEventListener('abort', abort)
+      resolve(result)
+    })
   })
-  pendingUrls.set(key, request)
-  void request.then(() => {
-    if (pendingUrls.get(key) === request) pendingUrls.delete(key)
-  })
-  return request
+}
+
+/** Drop a job nobody is waiting for, so it neither loads nor holds the queue. */
+function cancelJob(job: PendingJob) {
+  if (webViewResolver$.active.peek()?.id === job.id) {
+    completeActiveJob(job.id, null)
+    return
+  }
+  webViewResolver$.queue.set(webViewResolver$.queue.peek().filter((queued) => queued.id !== job.id))
+  const resolve = resolvers.get(job.id)
+  resolvers.delete(job.id)
+  resolve?.(null)
 }
 
 /** Called by the host component when a job finishes (or fails/times out). */
@@ -150,10 +200,27 @@ export const INJECTED_TITLE_SCRIPT = `
     var el = document.querySelector('link[rel*="icon"]');
     return el ? el.href : '';
   }
+  function readImage() {
+    var value = metaContent('meta[property="og:image"]') ||
+      metaContent('meta[name="twitter:image"]') ||
+      metaContent('meta[property="twitter:image"]');
+    try {
+      return value ? new URL(value, window.location.href).href : '';
+    } catch (e) {
+      return '';
+    }
+  }
   function post() {
     try {
       window.ReactNativeWebView.postMessage(
-        JSON.stringify({ title: readTitle(), icon: readIcon() })
+        JSON.stringify({
+          title: readTitle(),
+          icon: readIcon(),
+          description: metaContent('meta[property="og:description"]') ||
+            metaContent('meta[name="description"]') ||
+            metaContent('meta[name="twitter:description"]') || '',
+          imageUrl: readImage()
+        })
       );
     } catch (e) {}
   }

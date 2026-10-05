@@ -55,6 +55,31 @@ const BROWSER_HEADERS = {
   'Accept-Language': 'en-US,en;q=0.9',
 }
 
+const bytesToChars = (bytes: Uint8Array) => {
+  let text = ''
+  for (let i = 0; i < bytes.length; i += 8192) text += String.fromCharCode(...bytes.subarray(i, i + 8192))
+  return text
+}
+
+// On native, fetchWithTimeout's buffered Response is whatwg-fetch's, whose
+// text() maps each byte to one char and garbles every non-ASCII UTF-8 page.
+// Decode the bytes here instead, with the charset the page declares. Hermes'
+// TextDecoder only knows UTF-8; for any other declared charset keep the
+// byte-per-char mapping, which is exact for ISO-8859-1 and leaves the ASCII
+// markup of other encodings intact.
+const readHtml = async (res: Response) => {
+  const bytes = new Uint8Array(await res.arrayBuffer())
+  const declared = /charset\s*=\s*["']?([\w-]+)/i
+  const charset =
+    declared.exec(res.headers.get('content-type') ?? '')?.[1] ||
+    declared.exec(bytesToChars(bytes.subarray(0, 1024)))?.[1]
+  try {
+    return new TextDecoder(charset || 'utf-8').decode(bytes)
+  } catch {
+    return bytesToChars(bytes)
+  }
+}
+
 const extractTitle = ($: cheerio.CheerioAPI, url: string) => {
   const postId = getRedditPostId(url)
   const post = postId ? $(`shreddit-post[id="t3_${postId}"]`) : null
@@ -86,7 +111,7 @@ export async function getMeta(url: string) {
       }
     }
 
-    const html = await res.text()
+    const html = await readHtml(res)
     const $ = cheerio.load(html)
     // Share links (redd.it and /s/...) can redirect to the post permalink.
     const title = extractTitle($, res.url || url) || getFallbackTitle(url)
@@ -115,9 +140,13 @@ export async function getMeta(url: string) {
 export async function getPreviewMeta(url: string, signal?: AbortSignal) {
   const res = await pageFetch(url, { method: 'GET', headers: BROWSER_HEADERS, signal })
   if (!res.ok || !/text\/html|application\/xhtml\+xml/i.test(res.headers.get('content-type') || 'text/html')) {
-    throw new PreviewResponseError('preview_page_failed', res.ok || persistentPreviewStatus(res.status))
+    throw new PreviewResponseError(
+      'preview_page_failed',
+      res.ok || persistentPreviewStatus(res.status),
+      res.ok ? undefined : res.status,
+    )
   }
-  const $ = cheerio.load(await res.text())
+  const $ = cheerio.load(await readHtml(res))
   const description = (
     $('meta[property="og:description"]').attr('content') ||
     $('meta[name="description"]').attr('content') ||

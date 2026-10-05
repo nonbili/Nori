@@ -60,6 +60,9 @@ export const Sheet: React.FC<{
   visible: boolean
   title?: string
   onClose: () => void
+  // Handles the system back button instead of closing, e.g. to leave a sub-page.
+  // Pulling down or tapping the backdrop still closes the sheet.
+  onBack?: () => void
   children: ReactNode
   headerLeft?: ReactNode
   headerRight?: ReactNode
@@ -68,7 +71,7 @@ export const Sheet: React.FC<{
   contentScrollRef?: any
   contentScrollOffset?: SharedValue<number>
   edgeToEdgeBottom?: boolean
-}> = ({ visible, title, onClose, children, headerLeft, headerRight, showCloseButton = true, height, contentScrollRef, contentScrollOffset, edgeToEdgeBottom }) => {
+}> = ({ visible, title, onClose, onBack, children, headerLeft, headerRight, showCloseButton = true, height, contentScrollRef, contentScrollOffset, edgeToEdgeBottom }) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const { height: windowHeight } = useWindowDimensions()
@@ -194,7 +197,7 @@ export const Sheet: React.FC<{
   }
 
   return (
-    <Modal visible={rendered} animationType="none" transparent statusBarTranslucent navigationBarTranslucent onRequestClose={closeWithAnimation}>
+    <Modal visible={rendered} animationType="none" transparent statusBarTranslucent navigationBarTranslucent onRequestClose={onBack ?? closeWithAnimation}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center" pointerEvents="box-none">
           <View

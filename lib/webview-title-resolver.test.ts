@@ -15,7 +15,7 @@ afterEach(() => {
 
 describe('webview title probe', () => {
   function probe(readPostTitle: () => string, pageTitle = 'Reddit', hostname = 'www.reddit.com') {
-    const messages: { title: string; icon: string }[] = []
+    const messages: { title: string; icon: string; description: string; imageUrl: string }[] = []
     const timers: (() => void)[] = []
     runInNewContext(INJECTED_TITLE_SCRIPT, {
       window: {
@@ -42,20 +42,20 @@ describe('webview title probe', () => {
     expect(messages).toHaveLength(0)
     title = 'Actual post title'
     while (timers.length) timers.shift()!()
-    expect(messages).toEqual([{ title, icon: '' }])
+    expect(messages).toEqual([{ title, icon: '', description: '', imageUrl: '' }])
   })
 
   it('returns an empty title when Reddit stays on a loading page', () => {
     const { messages, timers } = probe(() => '')
     while (timers.length) timers.shift()!()
-    expect(messages).toEqual([{ title: '', icon: '' }])
+    expect(messages).toEqual([{ title: '', icon: '', description: '', imageUrl: '' }])
   })
 
   it('preserves normal titles on other sites', () => {
     const { messages, timers } = probe(() => '', 'Reddit', 'example.com')
     expect(messages).toHaveLength(0)
     while (timers.length) timers.shift()!()
-    expect(messages).toEqual([{ title: 'Reddit', icon: '' }])
+    expect(messages).toEqual([{ title: 'Reddit', icon: '', description: '', imageUrl: '' }])
   })
 
   it('waits for an initially plausible title to change during hydration', () => {
@@ -64,7 +64,7 @@ describe('webview title probe', () => {
     expect(messages).toHaveLength(0)
     setPageTitle('Actual article title')
     while (timers.length) timers.shift()!()
-    expect(messages).toEqual([{ title: 'Actual article title', icon: '' }])
+    expect(messages).toEqual([{ title: 'Actual article title', icon: '', description: '', imageUrl: '' }])
   })
 })
 
@@ -132,5 +132,36 @@ describe('webview title resolver queue', () => {
 
     // Still active and unchanged.
     expect(webViewResolver$.active.peek()?.id).toBe(activeId)
+  })
+})
+
+describe('webview job cancellation', () => {
+  it('drops abandoned jobs from the queue and the active slot', async () => {
+    const first = new AbortController()
+    const second = new AbortController()
+    const active = resolveTitleWithWebView('https://one.example', false, true, first.signal)
+    const queued = resolveTitleWithWebView('https://two.example', false, true, second.signal)
+    const kept = resolveTitleWithWebView('https://three.example')
+    expect(webViewResolver$.active.peek()?.url).toBe('https://one.example')
+    second.abort()
+    expect(await queued).toBeNull()
+    expect(webViewResolver$.queue.peek().map((job) => job.url)).toEqual(['https://three.example'])
+    first.abort()
+    expect(await active).toBeNull()
+    expect(webViewResolver$.active.peek()?.url).toBe('https://three.example')
+    completeActiveJob(webViewResolver$.active.peek()!.id, { title: 'Three', icon: '' })
+    expect(await kept).toEqual({ title: 'Three', icon: '' })
+  })
+
+  it('keeps a shared job while another caller still wants it', async () => {
+    const controller = new AbortController()
+    const cancelled = resolveTitleWithWebView('https://shared.example', false, true, controller.signal)
+    const waiting = resolveTitleWithWebView('https://shared.example', false, true)
+    controller.abort()
+    expect(await cancelled).toBeNull()
+    const job = webViewResolver$.active.peek()!
+    expect(job.url).toBe('https://shared.example')
+    completeActiveJob(job.id, { title: 'Shared', icon: '', description: 'Still here' })
+    expect((await waiting)?.description).toBe('Still here')
   })
 })

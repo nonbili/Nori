@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated from 'react-native-reanimated'
+import { useValue } from '@legendapp/state/react'
 import { ui$ } from '@/states/ui'
 import { settings$ } from '@/states/settings'
 import { ListChip } from '@/components/list/ListChip'
@@ -41,10 +42,13 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel; extraM
 }) => {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
+  // Preview cards start right under the chips; compact tiles and the edit hint
+  // keep the roomier gap.
+  const tight = useValue(settings$.bookmarkView) === 'preview' && !pager.bookmarkEditMode
   // The chips row is the topmost element now that every action lives in the
   // bottom toolbar, so it clears the status bar itself.
   return (
-  <View className="mb-8 px-6" style={{ paddingTop: insets.top + SCREEN_TOP_OFFSET }}>
+  <View className={`${tight ? 'mb-4' : 'mb-8'} px-6`} style={{ paddingTop: insets.top + SCREEN_TOP_OFFSET }}>
     <View className="flex-row items-center gap-2">
     <ScrollView
       ref={pager.chipScrollViewRef}

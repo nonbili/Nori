@@ -64,3 +64,17 @@ export async function backfillMissingTitles() {
     running = false
   }
 }
+
+/**
+ * A page rendered for its preview (see setPreviewRenderedMeta) also yields its
+ * title. Use it for bookmarks still showing the placeholder, since the title
+ * probe's desktop UA is rejected by the same bot protection as the fetch.
+ */
+export function applyRenderedTitle(url: string, title: string) {
+  if (!title || hasPlaceholderTitle(title, url)) return
+  for (const item of bookmarks$.bookmarks.peek()) {
+    if (!isDeleted(item) && item.url === url && hasPlaceholderTitle(item.title, url)) {
+      bookmarks$.update(item.id, { title })
+    }
+  }
+}
