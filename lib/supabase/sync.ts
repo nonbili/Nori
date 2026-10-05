@@ -11,6 +11,7 @@ import {
   mergeSyncRows,
   nextSyncCursor,
 } from '@/lib/supabase/sync-merge'
+import { describeSyncError } from '@/lib/supabase/sync-error'
 import { collectPagedRows, keysetFilter, SYNC_PAGE_SIZE } from '@/lib/supabase/sync-paging'
 import {
   toBatches,
@@ -469,7 +470,7 @@ async function runSyncCycle(): Promise<SyncAttemptOutcome> {
     }
     return outcome
   } catch (error) {
-    syncMeta$.lastError.set(error instanceof Error ? error.message : String(error))
+    syncMeta$.lastError.set(describeSyncError(error))
     throw error
   } finally {
     syncMeta$.inFlight.set(false)

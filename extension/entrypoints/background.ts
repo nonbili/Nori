@@ -1,6 +1,7 @@
 import { browser } from 'wxt/browser'
 import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile } from '../lib/api'
 import { createProfile } from '../lib/domain'
+import { describeSyncError } from 'nori/lib/supabase/sync-error'
 import { collectChangedRowIds } from 'nori/lib/supabase/sync-merge'
 import { loadState, saveState } from '../lib/storage'
 import type { AppSnapshot, AuthState, RequestMessage, ResponseMessage, StateChangedMessage } from '../lib/model'
@@ -41,7 +42,7 @@ async function runSync(broadcast = true) {
     if (await syncProfile(profile, auth)) finishPromotion(state, profile)
     await saveState(state)
   } catch (error) {
-    syncError = error instanceof Error ? error.message : String(error)
+    syncError = describeSyncError(error)
     throw error
   } finally {
     syncing = false
@@ -95,7 +96,7 @@ async function handleMessage(message: RequestMessage): Promise<ResponseMessage> 
     const data = await mutate(message)
     return { ok: true, data }
   } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+    return { ok: false, error: describeSyncError(error) }
   }
 }
 
@@ -116,11 +117,11 @@ async function handleSignIn(): Promise<ResponseMessage> {
         notifyStateChanged()
         return { ok: true, data: await snapshot() }
       } catch (error) {
-        return { ok: false, error: error instanceof Error ? error.message : String(error) }
+        return { ok: false, error: describeSyncError(error) }
       }
     })
   } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+    return { ok: false, error: describeSyncError(error) }
   }
 }
 
