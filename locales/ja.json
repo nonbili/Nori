@@ -147,6 +147,9 @@
       "buyPrice": "Sync を購入（{{price}}）",
       "buy": "Sync を購入",
       "purchasing": "購入中…",
+      "subscriptionLength": "サブスクリプションの期間：{{period}}",
+      "subscriptionPrice": "価格：{{price}}",
+      "subscriptionIncludes": "各サブスクリプション期間には、端末間でのリストとブックマークの同期が含まれます。",
       "legalHint": "お支払いは購入確認時に Apple ID アカウントに請求されます。現在の期間が終了する24時間前までにキャンセルされない限り、サブスクリプションは自動的に更新されます。",
       "termsOfUse": "利用規約",
       "privacyPolicy": "プライバシーポリシー"

@@ -145,6 +145,9 @@
       "buyPrice": "Acheter la synchronisation {{price}}",
       "buy": "Acheter la synchronisation",
       "purchasing": "Achat en cours…",
+      "subscriptionLength": "Durée de l'abonnement : {{period}}",
+      "subscriptionPrice": "Prix : {{price}}",
+      "subscriptionIncludes": "Chaque période d'abonnement inclut la synchronisation de vos listes et favoris sur tous vos appareils.",
       "legalHint": "Le paiement sera débité de votre compte Apple ID lors de la confirmation de l'achat. L'abonnement se renouvelle automatiquement sauf s'il est annulé au moins 24 heures avant la fin de la période en cours.",
       "termsOfUse": "Conditions d'utilisation",
       "privacyPolicy": "Politique de confidentialité"

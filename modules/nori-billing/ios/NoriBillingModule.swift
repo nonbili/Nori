@@ -13,6 +13,9 @@ struct NoriBillingProductRecord: Record {
 
   @Field
   var displayPrice: String = ""
+
+  @Field
+  var subscriptionPeriod: String? = nil
 }
 
 struct NoriBillingEntitlementRecord: Record {
@@ -66,14 +69,15 @@ public class NoriBillingModule: Module {
       self.updatesTask = nil
     }
 
-    AsyncFunction("getProducts") { (productIds: [String]) async throws -> [NoriBillingProductRecord] in
+    AsyncFunction("getProducts") { (productIds: [String], locale: String?) async throws -> [NoriBillingProductRecord] in
       let products = try await Product.products(for: productIds)
       return products.map { product in
         NoriBillingProductRecord(
           id: product.id,
           title: product.displayName,
           description: product.description,
-          displayPrice: product.displayPrice
+          displayPrice: product.displayPrice,
+          subscriptionPeriod: product.subscription.flatMap { self.formatPeriod($0.subscriptionPeriod, locale: locale) }
         )
       }
     }
@@ -132,6 +136,33 @@ public class NoriBillingModule: Module {
       }
       try await AppStore.showManageSubscriptions(in: scene)
     }
+  }
+
+  // Localized length of one billing period, e.g. "1 month". `locale` is the
+  // in-app language, which iOS does not know about; nil follows the device.
+  private func formatPeriod(_ period: Product.SubscriptionPeriod, locale: String?) -> String? {
+    var components = DateComponents()
+    switch period.unit {
+    case .day:
+      components.day = period.value
+    case .week:
+      components.weekOfMonth = period.value
+    case .month:
+      components.month = period.value
+    case .year:
+      components.year = period.value
+    @unknown default:
+      return nil
+    }
+    let formatter = DateComponentsFormatter()
+    formatter.unitsStyle = .full
+    formatter.allowedUnits = [.day, .weekOfMonth, .month, .year]
+    if let locale {
+      var calendar = Calendar.current
+      calendar.locale = Locale(identifier: locale)
+      formatter.calendar = calendar
+    }
+    return formatter.string(from: components)
   }
 
   private func startObservingUpdates() {

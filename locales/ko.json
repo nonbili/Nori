@@ -147,6 +147,9 @@
       "buyPrice": "Sync 구매 ({{price}})",
       "buy": "Sync 구매",
       "purchasing": "구매 중…",
+      "subscriptionLength": "구독 기간: {{period}}",
+      "subscriptionPrice": "가격: {{price}}",
+      "subscriptionIncludes": "각 구독 기간에는 기기 간 목록 및 북마크 동기화가 포함됩니다.",
       "legalHint": "결제는 구매 확인 시 Apple ID 계정으로 청구됩니다. 현재 기간이 끝나기 최소 24시간 전에 취소하지 않으면 구독이 자동으로 갱신됩니다.",
       "termsOfUse": "이용약관",
       "privacyPolicy": "개인정보 처리방침"

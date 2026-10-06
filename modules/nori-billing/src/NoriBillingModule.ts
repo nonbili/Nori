@@ -6,6 +6,8 @@ export interface NoriBillingProduct {
   title: string
   description: string
   displayPrice: string
+  /* Localized length of one billing period, e.g. "1 month"; null for non-subscriptions. */
+  subscriptionPeriod: string | null
 }
 
 export interface NoriBillingEntitlement {
@@ -25,7 +27,8 @@ type NoriBillingEvents = {
 }
 
 declare class NoriBillingModule extends NativeModule<NoriBillingEvents> {
-  getProducts(productIds: string[]): Promise<NoriBillingProduct[]>
+  /* `locale` (BCP 47) is the language subscriptionPeriod is written in; null follows the device. */
+  getProducts(productIds: string[], locale: string | null): Promise<NoriBillingProduct[]>
   /* Resolves with an unfinished transaction; call finishTransaction once the backend has it. */
   purchase(productId: string, appAccountToken: string): Promise<NoriBillingEntitlement>
   restore(): Promise<NoriBillingEntitlement[]>

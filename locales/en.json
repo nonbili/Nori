@@ -147,6 +147,9 @@
       "buyPrice": "Buy sync {{price}}",
       "buy": "Buy sync",
       "purchasing": "Purchasing…",
+      "subscriptionLength": "Subscription length: {{period}}",
+      "subscriptionPrice": "Price: {{price}}",
+      "subscriptionIncludes": "Each subscription period includes syncing lists and bookmarks across your devices.",
       "legalHint": "Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period.",
       "termsOfUse": "Terms of Use",
       "privacyPolicy": "Privacy Policy"

@@ -145,6 +145,9 @@
       "buyPrice": "Comprar Sync por {{price}}",
       "buy": "Comprar Sync",
       "purchasing": "Comprando...",
+      "subscriptionLength": "Duração da assinatura: {{period}}",
+      "subscriptionPrice": "Preço: {{price}}",
+      "subscriptionIncludes": "Cada período de assinatura inclui a sincronização de listas e favoritos entre seus dispositivos.",
       "legalHint": "O pagamento será cobrado na sua conta do Apple ID na confirmação da compra. A assinatura é renovada automaticamente, a menos que seja cancelada pelo menos 24 horas antes do final do período atual.",
       "termsOfUse": "Termos de Uso",
       "privacyPolicy": "Política de Privacidade"

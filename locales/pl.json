@@ -145,6 +145,9 @@
       "buyPrice": "Kup synchronizację {{price}}",
       "buy": "Kup synchronizację",
       "purchasing": "Kupowanie…",
+      "subscriptionLength": "Długość subskrypcji: {{period}}",
+      "subscriptionPrice": "Cena: {{price}}",
+      "subscriptionIncludes": "Każdy okres subskrypcji obejmuje synchronizację list i zakładek między Twoimi urządzeniami.",
       "legalHint": "Płatność zostanie pobrana z konta Apple ID po potwierdzeniu zakupu. Subskrypcja odnawia się automatycznie, chyba że zostanie anulowana co najmniej 24 godziny przed końcem bieżącego okresu.",
       "termsOfUse": "Regulamin",
       "privacyPolicy": "Polityka prywatności"

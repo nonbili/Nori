@@ -19,6 +19,7 @@ import { isIos } from '@/lib/utils'
 import { signOut, startHostedSignIn } from '@/lib/supabase/auth'
 import type { BookmarkTransferFormat } from '@/lib/bookmark-transfer'
 import { canSaveTextFile } from '@/modules/nori-file-save'
+import type { NoriBillingProduct } from '@/modules/nori-billing'
 import type { BookmarkExportTarget } from '@/components/sheet/useSettingsSheetActions'
 import { AboutRow } from '@/components/sheet/SettingsSheetAbout'
 import { TypographyRow } from '@/components/sheet/TypographyRow'
@@ -39,7 +40,7 @@ export interface SettingsActions {
   notice?: string
   busyAction: SettingsBusyAction
   loadingProduct: boolean
-  productPrice?: string
+  product?: NoriBillingProduct
   onPurchase: () => void
   onRestore: () => void
   onManage: () => void
@@ -215,7 +216,7 @@ const PlanSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => {
             plan={plan}
             source={source}
             loadingProduct={actions.loadingProduct}
-            productPrice={actions.productPrice}
+            product={actions.product}
             busyAction={actions.busyAction}
             onPurchase={actions.onPurchase}
           />
@@ -231,11 +232,12 @@ const IosPlanActions: React.FC<{
   plan: string
   source: string
   loadingProduct: boolean
-  productPrice?: string
+  product?: NoriBillingProduct
   busyAction: SettingsBusyAction
   onPurchase: () => void
-}> = ({ plan, source, loadingProduct, productPrice, busyAction, onPurchase }) => {
+}> = ({ plan, source, loadingProduct, product, busyAction, onPurchase }) => {
   const { t } = useTranslation()
+  const productPrice = product?.displayPrice
 
   return (
     <View className="mt-5 gap-3">
@@ -267,6 +269,22 @@ const IosPlanActions: React.FC<{
         </Pressable>
       )}
       <View className="gap-2 rounded-2xl bg-well px-4 py-3">
+        {product ? (
+          <View>
+            <NoriText className="text-sm font-medium text-content">{product.title || 'Nori Sync'}</NoriText>
+            {product.subscriptionPeriod ? (
+              <NoriText className="text-xs leading-5 text-content-muted">
+                {t('settings.ios.subscriptionLength', { period: product.subscriptionPeriod })}
+              </NoriText>
+            ) : null}
+            <NoriText className="text-xs leading-5 text-content-muted">
+              {t('settings.ios.subscriptionPrice', { price: product.displayPrice })}
+            </NoriText>
+            <NoriText className="text-xs leading-5 text-content-muted">
+              {t('settings.ios.subscriptionIncludes')}
+            </NoriText>
+          </View>
+        ) : null}
         <NoriText className="text-xs leading-5 text-content-muted">{t('settings.ios.legalHint')}</NoriText>
         <View className="flex-row flex-wrap gap-3">
           <NoriText

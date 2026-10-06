@@ -147,6 +147,9 @@
       "buyPrice": "Sync kaufen {{price}}",
       "buy": "Sync kaufen",
       "purchasing": "Wird gekauft…",
+      "subscriptionLength": "Abolaufzeit: {{period}}",
+      "subscriptionPrice": "Preis: {{price}}",
+      "subscriptionIncludes": "Jeder Abozeitraum umfasst die geräteübergreifende Synchronisierung von Listen und Lesezeichen.",
       "legalHint": "Die Zahlung wird bei Kaufbestätigung über Ihr Apple-ID-Konto abgerechnet. Das Abonnement verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ablauf des aktuellen Zeitraums gekündigt wird.",
       "termsOfUse": "Nutzungsbedingungen",
       "privacyPolicy": "Datenschutzerklärung"

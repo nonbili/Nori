@@ -147,6 +147,9 @@
       "buyPrice": "Mua Sync với {{price}}",
       "buy": "Mua Sync",
       "purchasing": "Đang mua…",
+      "subscriptionLength": "Thời hạn đăng ký: {{period}}",
+      "subscriptionPrice": "Giá: {{price}}",
+      "subscriptionIncludes": "Mỗi kỳ đăng ký bao gồm đồng bộ danh sách và dấu trang trên các thiết bị của bạn.",
       "legalHint": "Khoản thanh toán sẽ được tính vào tài khoản Apple ID của bạn khi xác nhận mua hàng. Gói đăng ký sẽ tự động gia hạn trừ khi bị hủy ít nhất 24 giờ trước khi kết thúc thời hạn hiện tại.",
       "termsOfUse": "Điều khoản sử dụng",
       "privacyPolicy": "Chính sách quyền riêng tư"

@@ -147,6 +147,9 @@
       "buyPrice": "Osta Sync hinnaga {{price}}",
       "buy": "Osta Sync",
       "purchasing": "Ostmine…",
+      "subscriptionLength": "Tellimuse kestus: {{period}}",
+      "subscriptionPrice": "Hind: {{price}}",
+      "subscriptionIncludes": "Iga tellimisperiood sisaldab loendite ja järjehoidjate sünkroonimist sinu seadmete vahel.",
       "legalHint": "Makse võetakse sinu Apple ID kontolt ostu kinnitamisel. Tellimus uueneb automaatselt, kui seda ei tühistata vähemalt 24 tundi enne praeguse perioodi lõppu.",
       "termsOfUse": "Kasutustingimused",
       "privacyPolicy": "Privaatsuspoliitika"

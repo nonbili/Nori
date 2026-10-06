@@ -4,7 +4,7 @@ import * as Sharing from 'expo-sharing'
 import { useEffect, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
-import NoriBilling from '@/modules/nori-billing'
+import NoriBilling, { type NoriBillingProduct } from '@/modules/nori-billing'
 import { saveTextFile } from '@/modules/nori-file-save'
 import {
   exportBookmarksToHtml,
@@ -68,13 +68,14 @@ const downloadOnWeb = (filename: string, content: string, mimeType: string) => {
 }
 
 export function useSettingsSheetActions() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const language = i18n.language
   const lists = useValue(lists$.lists)
   const bookmarks = useValue(bookmarks$.bookmarks)
   const userEmail = useValue(auth$.userEmail)
   const accessToken = useValue(auth$.accessToken)
   const [loadingProduct, setLoadingProduct] = useState(isIos)
-  const [productPrice, setProductPrice] = useState<string>()
+  const [product, setProduct] = useState<NoriBillingProduct>()
   const [actionError, setActionError] = useState<string>()
   const [notice, setNotice] = useState<string>()
   const [busyAction, setBusyAction] = useState<SettingsBusyAction>(null)
@@ -88,9 +89,9 @@ export function useSettingsSheetActions() {
     let active = true
     const loadProduct = async () => {
       try {
-        const products = await NoriBilling.getProducts([IOS_SYNC_PRODUCT_ID])
+        const products = await NoriBilling.getProducts([IOS_SYNC_PRODUCT_ID], language ? language.replace(/_/g, '-') : null)
         if (active) {
-          setProductPrice(products[0]?.displayPrice)
+          setProduct(products[0])
         }
       } catch (error) {
         if (active) {
@@ -107,7 +108,7 @@ export function useSettingsSheetActions() {
     return () => {
       active = false
     }
-  }, [])
+  }, [language])
 
   useEffect(() => {
     if (pendingExternalAction !== 'delete-account') {
@@ -300,7 +301,7 @@ export function useSettingsSheetActions() {
     notice,
     busyAction,
     loadingProduct,
-    productPrice,
+    product,
     onPurchase,
     onRestore,
     onManage,

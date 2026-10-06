@@ -145,6 +145,9 @@
       "buyPrice": "Senkronizasyon satın al {{price}}",
       "buy": "Senkronizasyon satın al",
       "purchasing": "Satın alınıyor...",
+      "subscriptionLength": "Abonelik süresi: {{period}}",
+      "subscriptionPrice": "Fiyat: {{price}}",
+      "subscriptionIncludes": "Her abonelik dönemi, listelerin ve yer imlerinin cihazlarınız arasında senkronize edilmesini içerir.",
       "legalHint": "Satın alma onayında ödeme Apple ID hesabınızdan tahsil edilecektir. Abonelik, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece otomatik olarak yenilenir.",
       "termsOfUse": "Kullanım Koşulları",
       "privacyPolicy": "Gizlilik Politikası"

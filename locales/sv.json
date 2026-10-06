@@ -145,6 +145,9 @@
       "buyPrice": "Köp synk {{price}}",
       "buy": "Köp synk",
       "purchasing": "Köper...",
+      "subscriptionLength": "Prenumerationens längd: {{period}}",
+      "subscriptionPrice": "Pris: {{price}}",
+      "subscriptionIncludes": "Varje prenumerationsperiod inkluderar synkning av listor och bokmärken mellan dina enheter.",
       "legalHint": "Betalningen debiteras ditt Apple ID-konto vid bekräftelse av köp. Prenumerationen förnyas automatiskt om den inte avslutas minst 24 timmar före slutet av den aktuella perioden.",
       "termsOfUse": "Användarvillkor",
       "privacyPolicy": "Integritetspolicy"

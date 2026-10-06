@@ -145,6 +145,9 @@
       "buyPrice": "購買同步 {{price}}",
       "buy": "購買同步",
       "purchasing": "正在購買...",
+      "subscriptionLength": "訂閱期間：{{period}}",
+      "subscriptionPrice": "價格：{{price}}",
+      "subscriptionIncludes": "每個訂閱週期均包含跨裝置同步列表與書籤。",
       "legalHint": "確認購買後，款項將從您的 Apple ID 帳號中扣除。訂閱會自動續訂，除非在目前計費週期結束前至少 24 小時取消。",
       "termsOfUse": "使用條款",
       "privacyPolicy": "隱私權政策"

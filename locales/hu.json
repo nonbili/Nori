@@ -147,6 +147,9 @@
       "buyPrice": "Sync vásárlása: {{price}}",
       "buy": "Sync vásárlása",
       "purchasing": "Vásárlás folyamatban…",
+      "subscriptionLength": "Előfizetés hossza: {{period}}",
+      "subscriptionPrice": "Ár: {{price}}",
+      "subscriptionIncludes": "Minden előfizetési időszak tartalmazza a listák és könyvjelzők szinkronizálását az eszközök között.",
       "legalHint": "A fizetés a vásárlás megerősítésekor az Apple ID fiókra kerül terhelésre. Az előfizetés automatikusan megújul, kivéve, ha legalább 24 órával az aktuális időszak vége előtt lemondják.",
       "termsOfUse": "Használati feltételek",
       "privacyPolicy": "Adatvédelmi irányelvek"

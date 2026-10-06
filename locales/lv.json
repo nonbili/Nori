@@ -147,6 +147,9 @@
       "buyPrice": "Pirkt Sync par {{price}}",
       "buy": "Pirkt Sync",
       "purchasing": "Iegādājas…",
+      "subscriptionLength": "Abonementa ilgums: {{period}}",
+      "subscriptionPrice": "Cena: {{price}}",
+      "subscriptionIncludes": "Katrā abonēšanas periodā ir iekļauta sarakstu un grāmatzīmju sinhronizēšana starp jūsu ierīcēm.",
       "legalHint": "Maksājums tiks iekasēts no jūsu Apple ID konta pēc pirkuma apstiprināšanas. Abonements tiek automātiski atjaunots, ja vien tas netiek atcelts vismaz 24 stundas pirms pašreizējā perioda beigām.",
       "termsOfUse": "Lietošanas noteikumi",
       "privacyPolicy": "Privātuma politika"

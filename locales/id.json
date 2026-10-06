@@ -147,6 +147,9 @@
       "buyPrice": "Beli Sync {{price}}",
       "buy": "Beli Sync",
       "purchasing": "Membeli…",
+      "subscriptionLength": "Durasi langganan: {{period}}",
+      "subscriptionPrice": "Harga: {{price}}",
+      "subscriptionIncludes": "Setiap periode langganan mencakup sinkronisasi daftar dan markah antarperangkat Anda.",
       "legalHint": "Pembayaran akan dibebankan ke akun Apple ID Anda saat konfirmasi pembelian. Langganan otomatis diperpanjang kecuali dibatalkan setidaknya 24 jam sebelum akhir periode berjalan.",
       "termsOfUse": "Ketentuan Penggunaan",
       "privacyPolicy": "Kebijakan Privasi"

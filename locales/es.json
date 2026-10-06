@@ -145,6 +145,9 @@
       "buyPrice": "Comprar sync {{price}}",
       "buy": "Comprar sync",
       "purchasing": "Comprando…",
+      "subscriptionLength": "Duración de la suscripción: {{period}}",
+      "subscriptionPrice": "Precio: {{price}}",
+      "subscriptionIncludes": "Cada período de suscripción incluye la sincronización de listas y marcadores en todos tus dispositivos.",
       "legalHint": "El pago se cargará a tu cuenta de Apple ID al confirmar la compra. La suscripción se renueva automáticamente a menos que se cancele con al menos 24 horas de antelación antes del final del período actual.",
       "termsOfUse": "Condiciones de uso",
       "privacyPolicy": "Política de privacidad"

@@ -145,6 +145,9 @@
       "buyPrice": "购买同步 {{price}}",
       "buy": "购买同步",
       "purchasing": "正在购买...",
+      "subscriptionLength": "订阅时长：{{period}}",
+      "subscriptionPrice": "价格：{{price}}",
+      "subscriptionIncludes": "每个订阅周期均包含跨设备同步列表和书签。",
       "legalHint": "确认购买后，款项将从您的 Apple ID 账号中扣除。订阅会自动续订，除非在当前计费周期结束前至少 24 小时取消。",
       "termsOfUse": "使用条款",
       "privacyPolicy": "隐私政策"

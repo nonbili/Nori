@@ -3,7 +3,6 @@
 import { resolve } from 'node:path'
 import {
   commandExists,
-  copyFile,
   ensureFile,
   envFlag,
   fail,
@@ -11,6 +10,7 @@ import {
   repoRoot,
   requireEnv,
   run,
+  writeAppleReleaseNotes,
 } from './release-utils'
 
 const [ipaArg] = Bun.argv.slice(2)
@@ -49,7 +49,7 @@ await ensureFile(
   changelogSource,
   `Android changelog not found: ${changelogSource}\n       Expected the current versionCode changelog at fastlane/metadata/android/en-US/changelogs/${pkg.versionCode}04.txt.`,
 )
-await copyFile(changelogSource, releaseNotesPath)
+await writeAppleReleaseNotes(changelogSource, releaseNotesPath)
 console.log(`Using release notes from ${changelogSource}`)
 
 if (envFlag('PREBUILD', !skipBuild)) {

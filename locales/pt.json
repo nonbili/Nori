@@ -147,6 +147,9 @@
       "buyPrice": "Comprar Sync por {{price}}",
       "buy": "Comprar Sync",
       "purchasing": "A comprar…",
+      "subscriptionLength": "Duração da subscrição: {{period}}",
+      "subscriptionPrice": "Preço: {{price}}",
+      "subscriptionIncludes": "Cada período de subscrição inclui a sincronização de listas e favoritos entre os seus dispositivos.",
       "legalHint": "O pagamento será debitado na sua conta Apple ID aquando da confirmação da compra. A subscrição renova-se automaticamente, a menos que seja cancelada pelo menos 24 horas antes do fim do período atual.",
       "termsOfUse": "Termos de Utilização",
       "privacyPolicy": "Política de Privacidade"

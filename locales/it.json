@@ -145,6 +145,9 @@
       "buyPrice": "Acquista sync {{price}}",
       "buy": "Acquista sync",
       "purchasing": "Acquisto in corso…",
+      "subscriptionLength": "Durata dell'abbonamento: {{period}}",
+      "subscriptionPrice": "Prezzo: {{price}}",
+      "subscriptionIncludes": "Ogni periodo di abbonamento include la sincronizzazione di liste e segnalibri su tutti i tuoi dispositivi.",
       "legalHint": "Il pagamento verrà addebitato sul tuo account Apple ID al momento della conferma dell'acquisto. L'abbonamento si rinnova automaticamente a meno che non venga annullato almeno 24 ore prima della fine del periodo in corso.",
       "termsOfUse": "Condizioni d'uso",
       "privacyPolicy": "Informativa sulla privacy"
