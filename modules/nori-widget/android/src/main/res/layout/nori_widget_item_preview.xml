@@ -12,24 +12,34 @@
   <FrameLayout
     android:layout_width="76dp"
     android:layout_height="56dp"
-    android:layout_marginEnd="12dp"
-    android:background="@drawable/nori_widget_thumb_background"
-    android:clipToOutline="true">
+    android:layout_marginEnd="12dp">
 
+    <!-- Sized to its bitmap, so a wide image sits whole in the middle of the slot. -->
     <ImageView
       android:id="@+id/nori_widget_item_image"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:importantForAccessibility="no"
-      android:scaleType="centerCrop" />
-
-    <ImageView
-      android:id="@+id/nori_widget_item_icon"
-      android:layout_width="24dp"
-      android:layout_height="24dp"
+      android:layout_height="wrap_content"
       android:layout_gravity="center"
+      android:adjustViewBounds="true"
+      android:background="@drawable/nori_widget_thumb_background"
+      android:clipToOutline="true"
       android:importantForAccessibility="no"
       android:scaleType="fitCenter" />
+
+    <FrameLayout
+      android:id="@+id/nori_widget_item_fallback"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@drawable/nori_widget_thumb_background">
+
+      <ImageView
+        android:id="@+id/nori_widget_item_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter" />
+    </FrameLayout>
   </FrameLayout>
 
   <LinearLayout

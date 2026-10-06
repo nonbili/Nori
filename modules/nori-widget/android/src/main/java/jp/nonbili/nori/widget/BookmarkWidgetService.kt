@@ -104,11 +104,11 @@ private class BookmarkWidgetFactory(
     if (image != null) {
       views.setImageViewBitmap(R.id.nori_widget_item_image, image)
       views.setViewVisibility(R.id.nori_widget_item_image, View.VISIBLE)
-      views.setViewVisibility(R.id.nori_widget_item_icon, View.GONE)
+      views.setViewVisibility(R.id.nori_widget_item_fallback, View.GONE)
     } else {
       // No cached preview yet: the favicon stands in, centred in the thumbnail slot.
       views.setViewVisibility(R.id.nori_widget_item_image, View.GONE)
-      views.setViewVisibility(R.id.nori_widget_item_icon, View.VISIBLE)
+      views.setViewVisibility(R.id.nori_widget_item_fallback, View.VISIBLE)
       val icon = if (showFavicon) WidgetIcons.cached(context, item) else null
       if (icon != null) {
         views.setImageViewBitmap(R.id.nori_widget_item_icon, icon)

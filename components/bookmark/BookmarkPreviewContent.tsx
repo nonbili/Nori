@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import { Image } from 'expo-image'
 import { View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
@@ -14,6 +14,19 @@ import {
 } from '@/lib/bookmark-preview'
 import { previewKey } from '@/lib/bookmark-preview-types'
 
+const IMAGE_WIDTH = 104
+const IMAGE_HEIGHT = 80
+// Wide page images (GitHub cards, banners) are shown whole up to 2:1 rather than cropped to the slot.
+const IMAGE_MIN_HEIGHT = IMAGE_WIDTH / 2
+// Remembered across mounts, so a recycled row sizes its image before it loads again. Keyed by
+// preview key, not image uri: web and desktop uris are data urls holding the whole image.
+const imageRatios = new Map<string, number>()
+
+function imageHeight(key: string) {
+  const ratio = imageRatios.get(key)
+  return ratio ? Math.min(IMAGE_HEIGHT, Math.max(IMAGE_MIN_HEIGHT, IMAGE_WIDTH / ratio)) : IMAGE_HEIGHT
+}
+
 export function BookmarkPreviewContent({
   bookmark,
   cachedOnly = false,
@@ -27,6 +40,7 @@ export function BookmarkPreviewContent({
   const source = previewSource(bookmark.json?.previewSource, fallback)
   const [preview, setPreview] = useState<BookmarkPreview>()
   const [failedImage, setFailedImage] = useState(false)
+  const [, redraw] = useReducer((count: number) => count + 1, 0)
   useEffect(() => {
     let mounted = true
     const controller = new AbortController()
@@ -62,6 +76,10 @@ export function BookmarkPreviewContent({
       unsubscribe()
     }
   }, [bookmark.url, source, cachedOnly])
+  let imageKey = ''
+  try {
+    imageKey = previewKey(bookmark.url, source)
+  } catch {}
   let domain = bookmark.url
   try {
     domain = new URL(bookmark.url).hostname.replace(/^www\./, '')
@@ -85,14 +103,23 @@ export function BookmarkPreviewContent({
         ) : null}
       </View>
       {preview?.imageUri && !failedImage ? (
-        <Image
-          source={{ uri: preview.imageUri }}
-          style={{ width: 104, height: 80, borderRadius: 12, marginLeft: 8 }}
-          contentFit="cover"
-          transition={150}
-          onError={() => setFailedImage(true)}
-          accessible={false}
-        />
+        // The slot keeps its size, so a shorter image never changes the row height.
+        <View style={{ width: IMAGE_WIDTH, height: IMAGE_HEIGHT, marginLeft: 8, justifyContent: 'center' }}>
+          <Image
+            source={{ uri: preview.imageUri }}
+            style={{ width: IMAGE_WIDTH, height: imageHeight(imageKey), borderRadius: 12 }}
+            contentFit="cover"
+            transition={150}
+            onLoad={({ source }) => {
+              if (source.width > 0 && source.height > 0) {
+                imageRatios.set(imageKey, source.width / source.height)
+                redraw()
+              }
+            }}
+            onError={() => setFailedImage(true)}
+            accessible={false}
+          />
+        </View>
       ) : null}
     </>
   )

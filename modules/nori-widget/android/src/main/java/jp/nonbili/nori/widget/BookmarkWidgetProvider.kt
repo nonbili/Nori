@@ -55,20 +55,27 @@ class BookmarkWidgetProvider : AppWidgetProvider() {
       views.setRemoteAdapter(R.id.nori_widget_list, adapterIntent)
       views.setEmptyView(R.id.nori_widget_list, R.id.nori_widget_empty)
 
-      // Tapping the header reopens the list picker, for launchers without a reconfigure entry.
+      // The header opens the app; its icon reopens the list picker, for launchers without a
+      // reconfigure entry.
+      val immutable = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      context.packageManager.getLaunchIntentForPackage(context.packageName)?.let { launchIntent ->
+        views.setOnClickPendingIntent(
+          R.id.nori_widget_header,
+          PendingIntent.getActivity(context, 0, launchIntent, immutable),
+        )
+      }
       val configIntent = Intent(context, WidgetConfigActivity::class.java)
         .setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
         .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
         .setData(widgetUri)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
       views.setOnClickPendingIntent(
-        R.id.nori_widget_header,
-        PendingIntent.getActivity(
-          context,
-          widgetId,
-          configIntent,
-          PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        ),
+        R.id.nori_widget_config,
+        PendingIntent.getActivity(context, widgetId, configIntent, immutable),
+      )
+      views.setContentDescription(
+        R.id.nori_widget_config,
+        snapshot.chooseList ?: context.getString(R.string.nori_widget_choose_list),
       )
 
       // Rows fill in the url. Android 14 rejects a mutable PendingIntent around an implicit

@@ -14,7 +14,7 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="16dp"
-    android:paddingEnd="12dp">
+    android:paddingEnd="1dp">
 
     <TextView
       android:id="@+id/nori_widget_title"
@@ -29,9 +29,11 @@
       android:textStyle="bold" />
 
     <ImageView
-      android:layout_width="18dp"
-      android:layout_height="18dp"
-      android:importantForAccessibility="no"
+      android:id="@+id/nori_widget_config"
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+      android:background="?android:attr/selectableItemBackgroundBorderless"
+      android:padding="11dp"
       android:src="@drawable/nori_widget_ic_expand"
       android:tint="@color/nori_widget_text_muted" />
   </LinearLayout>

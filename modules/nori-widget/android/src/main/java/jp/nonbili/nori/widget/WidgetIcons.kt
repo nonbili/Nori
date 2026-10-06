@@ -21,6 +21,8 @@ const val PREVIEW_WIDTH = 228
 const val PREVIEW_HEIGHT = 168
 private const val PREVIEW_MIN_WIDTH = 108
 private const val PREVIEW_MIN_HEIGHT = 80
+// Wide page images (GitHub cards, banners) are shown whole up to this shape rather than cropped.
+private const val PREVIEW_MAX_RATIO = 2.0
 // RGB_565: thumbnails are opaque, and two bytes a pixel doubles how many fit the budget.
 private const val PREVIEW_BYTES_PER_PIXEL = 2
 private const val PREVIEW_DIRECTORY = "bookmark-previews"
@@ -84,7 +86,12 @@ object WidgetIcons {
     )
   }
 
-  fun loadPreview(context: Context, item: WidgetItem, width: Int, height: Int): Bitmap? {
+  /**
+   * [slotWidth] by [slotHeight] is the budgeted size for an image of the slot's shape. A wider
+   * image keeps its own shape, up to 2:1, and the same pixel count, so it stays inside the
+   * budget and above the parcel floor; the row then shows it whole at the slot's width.
+   */
+  fun loadPreview(context: Context, item: WidgetItem, slotWidth: Int, slotHeight: Int): Bitmap? {
     if (!SAFE_FILE_NAME.matches(item.preview)) {
       return null
     }
@@ -98,11 +105,16 @@ object WidgetIcons {
       val path = File(directory, imageFile).path
       val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
       BitmapFactory.decodeFile(path, bounds)
-      if (bounds.outWidth <= 0) {
+      if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
         return null
       }
-      // Send exactly the slot's shape at the budgeted size: sample down while the image
-      // still covers it, then centre-crop, which is what the row's centerCrop would show anyway.
+      val slotRatio = slotWidth.toDouble() / slotHeight
+      val ratio = (bounds.outWidth.toDouble() / bounds.outHeight).coerceIn(slotRatio, PREVIEW_MAX_RATIO)
+      val pixels = slotWidth.toDouble() * slotHeight
+      val width = Math.ceil(Math.sqrt(pixels * ratio)).toInt()
+      val height = Math.ceil(Math.sqrt(pixels / ratio)).toInt()
+      // Send exactly the shape the row shows at the budgeted size: sample down while the image
+      // still covers it, then centre-crop whatever is taller or wider than that shape.
       var sample = 1
       while (bounds.outWidth / (sample * 2) >= width && bounds.outHeight / (sample * 2) >= height) {
         sample *= 2
