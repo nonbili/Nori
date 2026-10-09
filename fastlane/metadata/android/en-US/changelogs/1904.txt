@@ -1,0 +1,4 @@
+- Add optional notes to bookmarks, displayed on preview cards and searchable
+- Run cover images edge-to-edge and display wide previews whole in lists and widgets
+- Open the app from the Android widget header and keep the list picker on its icon
+- Show detailed error messages when sync fails
