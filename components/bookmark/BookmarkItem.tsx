@@ -196,7 +196,7 @@ export const BookmarkTile = memo(({
           style={preview && previewHeight ? { height: previewHeight } : undefined}
           onPress={editMode ? onEnable || onSelect || undefined : onOpen}
           onLongPress={!editMode ? handleLongPress : undefined}
-          className={`flex-row items-center gap-2 overflow-hidden border active:bg-muted ${preview ? 'rounded-2xl p-4' : 'rounded-full px-3 py-2.5'} ${
+          className={`flex-row items-center overflow-hidden border active:bg-muted ${preview ? 'rounded-2xl' : 'gap-2 rounded-full px-3 py-2.5'} ${
             selected
               ? 'border-accent-500 bg-accent-100/70 dark:bg-accent-950/20'
               : 'border-transparent bg-surface'

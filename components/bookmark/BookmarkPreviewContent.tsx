@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from 'react'
 import { Image } from 'expo-image'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { settings$ } from '@/states/settings'
 import { NoriText } from '@/components/common/NoriText'
@@ -15,17 +15,22 @@ import {
 import { previewKey } from '@/lib/bookmark-preview-types'
 import { getNote } from '@/lib/nori-data'
 
-const IMAGE_WIDTH = 104
-const IMAGE_HEIGHT = 80
+// The image runs to the tile's top, right and bottom edges, so its slot takes in the p-4 the text
+// column keeps: 1rem a side, which is 16 on web but 14 under NativeWind on native.
+const TILE_PADDING = Platform.OS === 'web' ? 16 : 14
+const IMAGE_WIDTH = 104 + 2 * TILE_PADDING
+const IMAGE_HEIGHT = 80 + 2 * TILE_PADDING
 // Wide page images (GitHub cards, banners) are shown whole up to 2:1 rather than cropped to the slot.
 const IMAGE_MIN_HEIGHT = IMAGE_WIDTH / 2
 // Remembered across mounts, so a recycled row sizes its image before it loads again. Keyed by
 // preview key, not image uri: web and desktop uris are data urls holding the whole image.
 const imageRatios = new Map<string, number>()
 
-function imageHeight(key: string) {
+// Undefined when the image is tall enough to fill the slot, however tall the text makes the tile.
+function wideImageHeight(key: string) {
   const ratio = imageRatios.get(key)
-  return ratio ? Math.min(IMAGE_HEIGHT, Math.max(IMAGE_MIN_HEIGHT, IMAGE_WIDTH / ratio)) : IMAGE_HEIGHT
+  const height = ratio ? Math.max(IMAGE_MIN_HEIGHT, IMAGE_WIDTH / ratio) : IMAGE_HEIGHT
+  return height < IMAGE_HEIGHT ? height : undefined
 }
 
 export function BookmarkPreviewContent({
@@ -87,9 +92,10 @@ export function BookmarkPreviewContent({
   try {
     domain = new URL(bookmark.url).hostname.replace(/^www\./, '')
   } catch {}
+  const wideHeight = wideImageHeight(imageKey)
   return (
     <>
-      <View className="min-w-0 flex-1 gap-2">
+      <View className="min-w-0 flex-1 justify-center gap-2 p-4">
         <View className="flex-row items-center gap-2">
           <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={18} iconSize={16} />
           <NoriText className="flex-1 text-xs text-content-muted" numberOfLines={1}>
@@ -106,17 +112,29 @@ export function BookmarkPreviewContent({
         ) : null}
       </View>
       {preview?.imageUri && !failedImage ? (
-        // The slot keeps its size, so a shorter image never changes the row height.
-        <View style={{ width: IMAGE_WIDTH, height: IMAGE_HEIGHT, marginLeft: 8, justifyContent: 'center' }}>
+        // The slot keeps its size, so a shorter image never changes the row height. The tile clips
+        // the corners of an image that fills it; a shorter one rounds its own free corners.
+        <View style={{ width: IMAGE_WIDTH, minHeight: IMAGE_HEIGHT, alignSelf: 'stretch', justifyContent: 'center' }}>
           <Image
             source={{ uri: preview.imageUri }}
-            style={{ width: IMAGE_WIDTH, height: imageHeight(imageKey), borderRadius: 12 }}
+            style={
+              wideHeight
+                ? { width: IMAGE_WIDTH, height: wideHeight, borderTopLeftRadius: 12, borderBottomLeftRadius: 12 }
+                : { width: IMAGE_WIDTH, flex: 1 }
+            }
             contentFit="cover"
             transition={150}
             onLoad={({ source }) => {
               if (source.width > 0 && source.height > 0) {
-                imageRatios.set(imageKey, source.width / source.height)
-                redraw()
+                // The size reported is the bitmap decoded for this view, so it is off by a
+                // rounded pixel from one load to the next. Following that would resize the
+                // image, which loads it again at the new size, without end.
+                const ratio = source.width / source.height
+                const known = imageRatios.get(imageKey)
+                if (!known || Math.abs(ratio - known) / known > 0.02) {
+                  imageRatios.set(imageKey, ratio)
+                  redraw()
+                }
               }
             }}
             onError={() => setFailedImage(true)}

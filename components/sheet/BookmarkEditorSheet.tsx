@@ -211,7 +211,7 @@ export const BookmarkEditorSheet: React.FC = () => {
               onPress={() => { setPreviewError(''); ui$.bookmarkEditor.set({ ...editor, previewSource: source }) }}
             />)}
           </View>
-          {/^https?:\/\//i.test(editor.url) ? <View className="flex-row rounded-2xl bg-surface p-3">
+          {/^https?:\/\//i.test(editor.url) ? <View className="flex-row overflow-hidden rounded-2xl bg-surface">
             <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource, note: editor.note } }} />
           </View> : null}
           <Pressable disabled={previewLoading} className="self-start rounded-full bg-muted px-4 py-2" onPress={async () => {

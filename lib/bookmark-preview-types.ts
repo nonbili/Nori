@@ -33,7 +33,8 @@ export function previewKey(url: string, source: PreviewSource) {
 }
 
 // Height of the fullest preview tile, for the reorder grid's uniform rows: a
-// 1px border and p-4 around the taller of the 80px image and the text column
+// 1px border and the taller of the image, which fills the tile at 80px plus the
+// p-4 it replaces, and the p-4 padded text column
 // (domain row, two text-sm title lines, two text-xs description lines, and two
 // gap-2 gaps). `rem` is 16 on web but 14 under NativeWind on native.
 export function previewHeight(fontScale: number, systemFontScale = 1, rem = 16) {

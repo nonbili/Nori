@@ -180,8 +180,8 @@ function AppearanceSection() {
             customLabel={t('settings.experience.accentCustom')}
           />
         </div>
-        <TypographyRow />
         <PreviewSettings />
+        <TypographyRow />
         <SettingRow
           last
           icon="image"

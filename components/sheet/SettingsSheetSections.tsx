@@ -533,7 +533,6 @@ export const AppearanceSection: React.FC = () => {
         </View>
       </View>
       <AccentRow />
-      <TypographyRow />
       <PreviewSettings />
       {Platform.OS !== 'web' && !preview ? (
         <View className="border-b-2 border-well px-4 py-4">
@@ -560,6 +559,7 @@ export const AppearanceSection: React.FC = () => {
           </View>
         </View>
       ) : null}
+      <TypographyRow />
       <View className="px-4 py-4">
         <View className="flex-row items-center gap-3">
           <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
