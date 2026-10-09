@@ -212,7 +212,7 @@ export const BookmarkEditorSheet: React.FC = () => {
             />)}
           </View>
           {/^https?:\/\//i.test(editor.url) ? <View className="flex-row overflow-hidden rounded-2xl bg-surface">
-            <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource, note: editor.note } }} />
+            <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource } }} />
           </View> : null}
           <Pressable disabled={previewLoading} className="self-start rounded-full bg-muted px-4 py-2" onPress={async () => {
             setPreviewLoading(true)

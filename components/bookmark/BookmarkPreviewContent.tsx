@@ -13,7 +13,6 @@ import {
   type BookmarkPreview,
 } from '@/lib/bookmark-preview'
 import { previewKey } from '@/lib/bookmark-preview-types'
-import { getNote } from '@/lib/nori-data'
 
 // The image runs to the tile's top, right and bottom edges, so its slot takes in the p-4 the text
 // column keeps: 1rem a side, which is 16 on web but 14 under NativeWind on native.
@@ -86,8 +85,6 @@ export function BookmarkPreviewContent({
   try {
     imageKey = previewKey(bookmark.url, source)
   } catch {}
-  // A note is the user's own summary, so it stands in for the page's description.
-  const note = getNote(bookmark)
   let domain = bookmark.url
   try {
     domain = new URL(bookmark.url).hostname.replace(/^www\./, '')
@@ -105,9 +102,9 @@ export function BookmarkPreviewContent({
         <NoriText className={`text-sm font-medium ${titleClassName}`} numberOfLines={2}>
           {bookmark.title}
         </NoriText>
-        {note || preview?.description ? (
+        {preview?.description ? (
           <NoriText className="text-xs text-content-muted" numberOfLines={2}>
-            {note || preview?.description}
+            {preview.description}
           </NoriText>
         ) : null}
       </View>

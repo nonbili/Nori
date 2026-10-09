@@ -72,7 +72,7 @@ const AnchorMenu: React.FC<{
               <View className="mx-4 mb-2 border-b border-line pb-3 pt-1">
                 <NoriText className="text-sm font-medium text-content" numberOfLines={2} ellipsizeMode="tail">{title}</NoriText>
                 <NoriText className="mt-2 text-xs text-content-muted" numberOfLines={2} ellipsizeMode="tail" selectable>{url}</NoriText>
-                {note ? <NoriText className="mt-2 text-xs text-content-secondary" numberOfLines={6} ellipsizeMode="tail" selectable>{note}</NoriText> : null}
+                {note ? <NoriText className="mt-2 text-xs text-content-secondary" numberOfLines={4} ellipsizeMode="tail" selectable>{note}</NoriText> : null}
               </View>
               {actions.map((action, index) => (
                 <Pressable
@@ -133,6 +133,8 @@ export const BookmarkTile = memo(({
   isDragging?: boolean
 }) => {
   const { t } = useTranslation()
+  const themeColors = useThemeColors()
+  const note = getNote(bookmark)
   const [menuOpen, setMenuOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
   const tileRef = useRef<View>(null)
@@ -185,7 +187,7 @@ export const BookmarkTile = memo(({
   }, t)
 
   return (
-    <View className="w-full gap-2">
+    <View className="w-full">
       <View
         ref={tileRef}
         collapsable={false}
@@ -210,6 +212,19 @@ export const BookmarkTile = memo(({
           </>}
         </Pressable>
       </View>
+      {/* A reorder row has a fixed height with no room for the note under it. */}
+      {preview && !previewHeight && note ? (
+        // Hangs off the tile's bottom edge like a tab, so its top corners stay square.
+        <View
+          className="flex-row gap-1.5 self-start rounded-xl bg-muted px-3 py-1.5"
+          style={{ marginLeft: 16, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+        >
+          <MaterialIcons name="edit-note" size={16} color={themeColors.contentSecondary} />
+          <NoriText className="shrink text-xs text-content-secondary" numberOfLines={2}>
+            {note}
+          </NoriText>
+        </View>
+      ) : null}
       <AnchorMenu
         visible={menuOpen}
         anchor={anchor}
@@ -217,7 +232,7 @@ export const BookmarkTile = memo(({
         actions={actions}
         title={bookmark.title}
         url={bookmark.url}
-        note={getNote(bookmark)}
+        note={note}
       />
     </View>
   )
