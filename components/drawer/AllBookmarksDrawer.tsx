@@ -12,7 +12,7 @@ import { showSnackbar, ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
 import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { showToast } from '@/lib/toast'
-import { getTags } from '@/lib/nori-data'
+import { getNote, getTags } from '@/lib/nori-data'
 import { SCREEN_TOP_OFFSET } from '@/lib/layout'
 import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 import {
@@ -130,6 +130,7 @@ export function AllBookmarksDrawer() {
       listId: bookmark.listId,
       previewSource: previewSourceOverride(bookmark.json.previewSource),
       tags: getTags(bookmark),
+      note: getNote(bookmark),
     })
   }, [])
 

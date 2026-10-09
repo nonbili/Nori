@@ -6,6 +6,7 @@
     "titleOptional": "タイトル（省略可）",
     "tags": "タグ",
     "addTag": "タグを追加",
+    "addNote": "メモを追加",
     "cancel": "キャンセル",
     "save": "保存",
     "saving": "保存中…",

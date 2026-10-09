@@ -9,6 +9,7 @@ import { getBookmarkActionMenuItems } from '@/components/bookmark/BookmarkAction
 import { type NouMenuItem } from '@/components/menu/NouMenu'
 import { Favicon } from './Favicon'
 import { BookmarkPreviewContent } from './BookmarkPreviewContent'
+import { getNote } from '@/lib/nori-data'
 
 const AnchorMenu: React.FC<{
   visible: boolean
@@ -17,7 +18,8 @@ const AnchorMenu: React.FC<{
   actions: NouMenuItem[]
   title: string
   url: string
-}> = ({ visible, anchor, onClose, actions, title, url }) => {
+  note: string
+}> = ({ visible, anchor, onClose, actions, title, url, note }) => {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const insets = useSafeAreaInsets()
   const themeColors = useThemeColors()
@@ -70,6 +72,7 @@ const AnchorMenu: React.FC<{
               <View className="mx-4 mb-2 border-b border-line pb-3 pt-1">
                 <NoriText className="text-sm font-medium text-content" numberOfLines={2} ellipsizeMode="tail">{title}</NoriText>
                 <NoriText className="mt-2 text-xs text-content-muted" numberOfLines={2} ellipsizeMode="tail" selectable>{url}</NoriText>
+                {note ? <NoriText className="mt-2 text-xs text-content-secondary" numberOfLines={6} ellipsizeMode="tail" selectable>{note}</NoriText> : null}
               </View>
               {actions.map((action, index) => (
                 <Pressable
@@ -214,6 +217,7 @@ export const BookmarkTile = memo(({
         actions={actions}
         title={bookmark.title}
         url={bookmark.url}
+        note={getNote(bookmark)}
       />
     </View>
   )

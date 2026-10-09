@@ -2,9 +2,11 @@ import { describe, expect, it } from 'bun:test'
 import {
   appendVisibleList,
   createStarterBookmarks,
+  createRowJsonState,
   createStarterLists,
   getAvailableBookmarks,
   getDeletedAt,
+  getNote,
   getVisibleBookmarks,
   getVisibleLists,
   moveItemWithinVisibleSubset,
@@ -200,5 +202,19 @@ describe('normalizeBookmarks', () => {
     expect(getDeletedAt(bookmarks[0])).toBe('2026-04-09T00:00:00.000Z')
     expect(getVisibleBookmarks(bookmarks, 'custom')).toHaveLength(0)
     expect(getAvailableBookmarks(bookmarks, 'custom')).toHaveLength(0)
+  })
+})
+
+describe('notes', () => {
+  it('trims a note and drops the key when it is blank', () => {
+    expect(createRowJsonState({ note: '  hello  ' }).note).toBe('hello')
+    expect('note' in createRowJsonState({ note: '   ' })).toBe(false)
+    expect('note' in createRowJsonState({ note: 3 as unknown as string })).toBe(false)
+    expect(getNote({ json: null })).toBe('')
+  })
+
+  it('clears a note when patched with an empty one', () => {
+    const row = { json: createRowJsonState({ note: 'hello' }) }
+    expect(getNote(patchRowState(row, { note: '' }))).toBe('')
   })
 })

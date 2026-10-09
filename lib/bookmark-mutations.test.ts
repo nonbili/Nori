@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { addBookmarkRecord, getBookmarkUrlKey, resolveActiveListId } from './bookmark-mutations'
-import { getTags, isVisible, normalizeBookmarks, normalizeLists, patchRowState } from './nori-data'
+import { getNote, getTags, isVisible, normalizeBookmarks, normalizeLists, patchRowState } from './nori-data'
 
 describe('bookmark mutations', () => {
   it('adds a bookmark to an active list with a fresh array reference', () => {
@@ -92,6 +92,31 @@ describe('bookmark mutations', () => {
     expect(isVisible(existing)).toBe(true)
     expect(getTags(existing)).toEqual(['Later'])
     expect(existing.updatedAt).toBe('2026-06-21T00:00:00.000Z')
+  })
+
+  it('stores a trimmed note and keeps it when the link is saved again without one', () => {
+    const lists = normalizeLists([{ id: 'read', name: 'Read', json: { visible: true } }])
+    const added = addBookmarkRecord(lists, normalizeBookmarks(lists, []), {
+      listId: 'read',
+      url: 'example.com/page',
+      note: '  Read before Friday\nthen share  ',
+    }, 'new', '2026-06-21T00:00:00.000Z')!
+    expect(getNote(added.bookmarks.find((item) => item.id === 'new')!)).toBe('Read before Friday\nthen share')
+
+    const again = addBookmarkRecord(lists, added.bookmarks, {
+      listId: 'read',
+      url: 'example.com/page',
+      tags: [],
+      note: '',
+    }, 'other', '2026-06-22T00:00:00.000Z')!
+    expect(getNote(again.bookmarks.find((item) => item.id === 'new')!)).toBe('Read before Friday\nthen share')
+
+    const replaced = addBookmarkRecord(lists, again.bookmarks, {
+      listId: 'read',
+      url: 'example.com/page',
+      note: 'Shared',
+    }, 'other', '2026-06-23T00:00:00.000Z')!
+    expect(getNote(replaced.bookmarks.find((item) => item.id === 'new')!)).toBe('Shared')
   })
 
   it('allows adding the same url when the previous bookmark was deleted', () => {

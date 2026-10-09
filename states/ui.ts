@@ -11,6 +11,7 @@ export interface BookmarkEditorState {
   listId: string
   previewSource?: 'default' | 'page-image' | 'screenshot'
   tags: string[]
+  note: string
 }
 
 export interface ListEditorState {

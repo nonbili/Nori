@@ -5,6 +5,7 @@ export interface RowJsonState {
   sort_index?: number
   deleted_at?: string | null
   tags?: string[]
+  note?: string
   [key: string]: unknown
 }
 
@@ -247,6 +248,10 @@ export function normalizeTags(value: unknown): string[] {
   return result
 }
 
+export function normalizeNote(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
 export function createRowJsonState(state?: Partial<RowJsonState>): RowJsonState {
   const next: RowJsonState = {
     ...state,
@@ -259,6 +264,12 @@ export function createRowJsonState(state?: Partial<RowJsonState>): RowJsonState 
     next.tags = tags
   } else {
     delete next.tags
+  }
+  const note = normalizeNote(state?.note)
+  if (note) {
+    next.note = note
+  } else {
+    delete next.note
   }
   return next
 }
@@ -299,6 +310,10 @@ export function isDeleted(row: { json?: RowJsonState | null }) {
 
 export function getTags(row: { json?: RowJsonState | null }): string[] {
   return normalizeTags(row.json?.tags)
+}
+
+export function getNote(row: { json?: RowJsonState | null }): string {
+  return normalizeNote(row.json?.note)
 }
 
 export function getAllTags(bookmarks: BookmarkRecordData[]): string[] {

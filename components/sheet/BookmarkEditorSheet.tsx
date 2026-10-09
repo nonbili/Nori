@@ -153,6 +153,7 @@ export const BookmarkEditorSheet: React.FC = () => {
       icon,
       ...(editor.previewSource ? { previewSource: previewSourceOverride(editor.previewSource) ?? ('default' as const) } : {}),
       tags: editor.tags,
+      note: editor.note,
     }
 
     let savedId: string | null = editor.id || null
@@ -211,7 +212,7 @@ export const BookmarkEditorSheet: React.FC = () => {
             />)}
           </View>
           {/^https?:\/\//i.test(editor.url) ? <View className="flex-row rounded-2xl bg-surface p-3">
-            <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource } }} />
+            <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource, note: editor.note } }} />
           </View> : null}
           <Pressable disabled={previewLoading} className="self-start rounded-full bg-muted px-4 py-2" onPress={async () => {
             setPreviewLoading(true)
@@ -273,6 +274,15 @@ export const BookmarkEditorSheet: React.FC = () => {
             </ScrollView>
           )}
         </View>
+        <NoriTextInput
+          value={editor.note}
+          onChangeText={(value) => ui$.bookmarkEditor.set({ ...editor, note: value })}
+          multiline
+          textAlignVertical="top"
+          placeholder={t('bookmarks.addNote')}
+          placeholderTextColor={themeColors.contentSubtle}
+          className="min-h-[88px] rounded-2xl border border-line bg-surface px-4 py-4 text-content"
+        />
         <ScrollView
           ref={listScrollRef}
           horizontal

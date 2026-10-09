@@ -27,6 +27,7 @@ export interface BookmarkDraft {
   icon?: string
   previewSource?: 'default' | 'page-image' | 'screenshot'
   tags?: string[]
+  note?: string
 }
 
 interface Store {
@@ -101,6 +102,7 @@ export const bookmarks$: Observable<Store> = observable<Store>({
 
     const withTags = patchRowState(previous, {
       ...(draft.tags ? { tags: draft.tags } : {}),
+      ...(draft.note != null ? { note: draft.note } : {}),
       ...(draft.previewSource ? { previewSource: draft.previewSource } : {}),
     })
     if (draft.previewSource === 'default') delete withTags.json.previewSource

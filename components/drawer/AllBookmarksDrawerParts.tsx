@@ -17,7 +17,7 @@ import { BookmarkActionsMenu } from '@/components/bookmark/BookmarkActionsMenu'
 import { Favicon } from '@/components/bookmark/Favicon'
 import { ListChip } from '@/components/list/ListChip'
 import { type ThemeColors } from '@/lib/theme'
-import { getAllTags, getLiveBookmarks, getTags, getVisibleLists } from '@/lib/nori-data'
+import { getAllTags, getLiveBookmarks, getNote, getTags, getVisibleLists } from '@/lib/nori-data'
 
 const getCreatedAtMs = (value?: string) => {
   const parsed = value ? Date.parse(value) : Number.NaN
@@ -32,6 +32,7 @@ interface SearchEntry {
   titleLower: string
   urlLower: string
   tagsLower: string[]
+  noteLower: string
   createdAtMs: number
 }
 
@@ -244,7 +245,7 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const bookmarks = useValue(bookmarks$.bookmarks)
-  // Lowercasing every title, url and tag per keystroke is the expensive half of
+  // Lowercasing every title, url, tag and note per keystroke is the expensive half of
   // searching, and none of it depends on the query — so it is done once per
   // bookmark change instead.
   const searchIndex = useMemo<SearchEntry[]>(() => getLiveBookmarks(bookmarks).map((bookmark) => ({
@@ -253,6 +254,7 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
     titleLower: bookmark.title.toLowerCase(),
     urlLower: bookmark.url.toLowerCase(),
     tagsLower: getTags(bookmark).map((tag) => tag.toLowerCase()),
+    noteLower: getNote(bookmark).toLowerCase(),
     createdAtMs: getCreatedAtMs(bookmark.createdAt),
   })), [bookmarks])
 
@@ -266,7 +268,7 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
       if (filterListId !== 'all' && entry.listId !== filterListId) return false
       if (tags.length && !tags.every((tag) => entry.tagsLower.includes(tag))) return false
       if (!query) return true
-      return entry.titleLower.includes(query) || entry.urlLower.includes(query)
+      return entry.titleLower.includes(query) || entry.urlLower.includes(query) || entry.noteLower.includes(query)
     })
 
     matched.sort((a, b) => {

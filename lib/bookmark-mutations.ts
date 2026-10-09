@@ -2,6 +2,7 @@ import { normalizeUrlInput, parseHttpUrl } from './url'
 import {
   createRowJsonState,
   isDeleted,
+  normalizeNote,
   isVisible,
   patchRowState,
   type BookmarkListData,
@@ -15,6 +16,7 @@ export interface BookmarkDraftData {
   icon?: string
   previewSource?: 'default' | 'page-image' | 'screenshot'
   tags?: string[]
+  note?: string
 }
 
 export function resolveActiveListId(lists: BookmarkListData[], listId: string) {
@@ -57,7 +59,9 @@ export function addBookmarkRecord(
   if (existingIndex !== -1) {
     const existing = bookmarks[existingIndex]
     const needsReveal = !isVisible(existing)
-    if (!needsReveal && !draft.tags) {
+    // Saving a link that is already here with the note left blank keeps the note it has.
+    const note = normalizeNote(draft.note)
+    if (!needsReveal && !draft.tags && !note) {
       return { id: existing.id, bookmarks }
     }
 
@@ -66,6 +70,7 @@ export function addBookmarkRecord(
       ...patchRowState(existing, {
         ...(needsReveal ? { visible: true } : {}),
         ...(draft.tags ? { tags: draft.tags } : {}),
+        ...(note ? { note } : {}),
       }),
       updatedAt: now,
     }
@@ -81,7 +86,7 @@ export function addBookmarkRecord(
       url,
       title: draft.title?.trim() || url,
       icon: draft.icon?.trim() || '',
-      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null, tags: draft.tags, ...(draft.previewSource && draft.previewSource !== 'default' ? { previewSource: draft.previewSource } : {}) }),
+      json: createRowJsonState({ visible: true, sort_index: nextSortIndex, deleted_at: null, tags: draft.tags, note: draft.note, ...(draft.previewSource && draft.previewSource !== 'default' ? { previewSource: draft.previewSource } : {}) }),
       createdAt: now,
       updatedAt: now,
     }],
