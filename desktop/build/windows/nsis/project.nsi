@@ -15,6 +15,10 @@ Unicode true
 !define INFO_PRODUCTNAME "Nori"
 !define INFO_COPYRIGHT   "© Nonbili"
 
+# In-place updates run as the signed-in user. Installing under Program Files
+# would require elevation to stage and replace nori.exe on every update.
+!define WAILS_INSTALL_SCOPE "user"
+
 !include "wails_tools.nsh"
 
 # The version information for this two must consist of 4 parts

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	_ "embed"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -91,8 +92,38 @@ func initUpdater(app *application.App) {
 	}()
 }
 
-// restageUpdate moves a downloaded update next to the binary it replaces. It
-// must run before application.New, which is where Wails enters helper mode.
+// runUpdateHelper handles updates before loading the store or starting Wails.
+// Log before restaging: a Windows install under Program Files can fail here
+// without reaching Wails' helper logger, after the original app has exited.
+func runUpdateHelper() {
+	if os.Getenv("WAILS_UPDATER_HELPER") != "1" {
+		return
+	}
+	logPath := os.Getenv("WAILS_UPDATER_HELPER_LOG")
+	if logPath == "" {
+		logPath = filepath.Join(os.TempDir(), fmt.Sprintf("wails-update-%d.log", os.Getpid()))
+		_ = os.Setenv("WAILS_UPDATER_HELPER_LOG", logPath)
+	}
+	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600)
+	if err != nil {
+		log.Printf("updater: open helper log: %v", err)
+	} else {
+		log.SetOutput(file)
+		// Wails opens the same log itself after restaging. Close our handle
+		// first so it can reopen the file on Windows too.
+	}
+	log.Print("updater: preparing update helper")
+	if err := restageUpdate(); err != nil {
+		log.Fatalf("updater: %v", err)
+	}
+	if file != nil {
+		log.SetOutput(os.Stderr)
+		_ = file.Close()
+	}
+	updater.HandleHelperMode()
+}
+
+// restageUpdate moves a downloaded update next to the binary it replaces.
 //
 // The updater stages downloads under os.TempDir and its helper swaps them in
 // with a bare os.Rename, after deleting the target. A rename cannot cross
@@ -101,26 +132,27 @@ func initUpdater(app *application.App) {
 // helper's restore path relaunches with the helper environment still set, so
 // it looped deleting the binary again. Staging beside the target keeps the
 // rename on one filesystem.
-func restageUpdate() {
+func restageUpdate() error {
 	if os.Getenv("WAILS_UPDATER_HELPER") != "1" {
-		return
+		return nil
 	}
 	target, staged := os.Getenv("WAILS_UPDATER_HELPER_TARGET"), os.Getenv("WAILS_UPDATER_HELPER_NEW")
 	local := target + ".new"
 	if target == "" || staged == "" || staged == local {
-		return
+		return nil
 	}
 	if err := moveAcross(staged, local); err != nil {
 		// Leaving the staged path alone would hand the helper the
 		// cross-filesystem rename this exists to avoid; the install is
 		// untouched so far, so give up on this update instead.
 		_ = os.RemoveAll(local)
-		log.Fatalf("updater: restage %s: %v", staged, err)
+		return fmt.Errorf("restage %s beside %s: %w", staged, target, err)
 	}
 	if dir := filepath.Dir(staged); strings.HasPrefix(filepath.Base(dir), "wails-update-") {
 		_ = os.RemoveAll(dir)
 	}
 	_ = os.Setenv("WAILS_UPDATER_HELPER_NEW", local)
+	return nil
 }
 
 // moveAcross renames src to dst, copying instead when they sit on different

@@ -15,7 +15,7 @@ import (
 var assets embed.FS
 
 func main() {
-	restageUpdate()
+	runUpdateHelper()
 
 	store, err := NewStoreService()
 	if err != nil {
