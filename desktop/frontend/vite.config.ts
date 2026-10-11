@@ -1,13 +1,16 @@
-import { defineConfig } from 'vite'
+import { defineConfig, normalizePath } from 'vite'
 import react from '@vitejs/plugin-react'
 import reactNativeWeb from 'vite-plugin-react-native-web'
 import { resolve } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 
-const frontendDir = import.meta.dirname
-const desktopDir = resolve(frontendDir, '..')
-const rootDir = resolve(desktopDir, '..')
-const extensionDir = resolve(rootDir, 'extension')
+// Vite module IDs use forward slashes on every platform. Native Windows paths
+// would make the transform guards below skip both the aliases and background
+// shim, leaving an unbound defineBackground in the bundle and a blank window.
+const frontendDir = normalizePath(import.meta.dirname)
+const desktopDir = normalizePath(resolve(frontendDir, '..'))
+const rootDir = normalizePath(resolve(desktopDir, '..'))
+const extensionDir = normalizePath(resolve(rootDir, 'extension'))
 // Packages that keep state in module scope must resolve to exactly one copy.
 // Depending on how the workspace install hoists, that copy lives either here or
 // in the repo root.
@@ -46,9 +49,9 @@ const injectDefineBackground = {
   name: 'inject-define-background',
   enforce: 'pre' as const,
   transform(code: string, id: string) {
-    if (!id.startsWith(resolve(extensionDir, 'entrypoints'))) return
+    if (!id.startsWith(normalizePath(resolve(extensionDir, 'entrypoints')))) return
     if (!code.includes('defineBackground')) return
-    return `import { defineBackground } from ${JSON.stringify(resolve(frontendDir, 'src/wxt-shim'))}\n${code}`
+    return `import { defineBackground } from ${JSON.stringify(normalizePath(resolve(frontendDir, 'src/wxt-shim')))}\n${code}`
   },
 }
 

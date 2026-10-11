@@ -61,6 +61,10 @@ jobs:
       - name: install deps
         run: bun install --frozen-lockfile
 
+      - name: test frontend build transforms
+        working-directory: desktop/frontend
+        run: bun test ./vite.config.test.ts
+
       - name: build
         if: "!startsWith(matrix.os, 'windows')"
         run: make -C desktop build
