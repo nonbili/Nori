@@ -1,0 +1,4 @@
+- Fix blank window on Windows
+- Add optional notes to bookmarks, displayed on preview cards and searchable
+- Run cover images edge-to-edge and display wide previews whole in the bookmark list
+- Show detailed error messages when sync fails
