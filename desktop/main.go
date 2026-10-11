@@ -3,8 +3,10 @@ package main
 import (
 	"embed"
 	"log"
+	"runtime"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wailsapp/wails/v3/pkg/events"
 )
 
 // The frontend is a Vite build of the shared Nori UI (see frontend/).
@@ -38,7 +40,7 @@ func main() {
 		},
 	})
 
-	app.Window.NewWithOptions(application.WebviewWindowOptions{
+	windowOptions := application.WebviewWindowOptions{
 		Name:             "main",
 		Title:            "Nori",
 		Width:            520,
@@ -48,7 +50,19 @@ func main() {
 		URL:              "/",
 		DevToolsEnabled:  true,
 		BackgroundColour: application.RGBA{Red: 245, Green: 245, Blue: 244, Alpha: 255},
-	})
+	}
+	if runtime.GOOS == "windows" {
+		// Screen information is available after the native app starts. Create
+		// the window hidden so its native frame can be fitted before showing it.
+		windowOptions.Hidden = true
+		app.Event.OnApplicationEvent(events.Common.ApplicationStarted, func(_ *application.ApplicationEvent) {
+			window := app.Window.NewWithOptions(windowOptions)
+			fitWindowToScreen(window, windowOptions.MinWidth, windowOptions.MinHeight)
+			window.Show()
+		})
+	} else {
+		app.Window.NewWithOptions(windowOptions)
+	}
 
 	initUpdater(app)
 

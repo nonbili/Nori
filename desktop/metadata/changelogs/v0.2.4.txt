@@ -1,0 +1,1 @@
+- Keep the Windows startup window and title bar inside the screen on smaller displays and with display scaling
