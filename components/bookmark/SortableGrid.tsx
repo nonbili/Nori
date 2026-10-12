@@ -1,6 +1,6 @@
 import React from 'react'
-import { View, useWindowDimensions } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { Platform, View, useWindowDimensions } from 'react-native'
+import { Gesture, GestureDetector, PointerType } from 'react-native-gesture-handler'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,6 +12,17 @@ import Animated, {
 
 const GAP = 16
 const MARGIN_HORIZONTAL = 24
+const HOLD_TO_DRAG_MS = 250
+
+// Web only. A tile lets a finger swipe scroll the page, so once a held tile is being
+// dragged the browser has to be stopped from scrolling with it and cancelling the drag.
+let touchDragging = false
+const setTouchDragging = (dragging: boolean) => {
+  touchDragging = dragging
+}
+const keepTouchOnDrag = (event: TouchEvent) => {
+  if (touchDragging && event.cancelable) event.preventDefault()
+}
 
 interface SortableGridProps<T extends { id: string }> {
   items: T[]
@@ -62,6 +73,23 @@ export function SortableGrid<T extends { id: string }>({
     onReorder(orderedIds)
   }
 
+  // A pen sends no touchmove to hold a drag with, so it cannot share the scrollable tiles. It
+  // hovers before it touches down, which is when the grid stops the browser panning under it.
+  const [penInput, setPenInput] = React.useState(false)
+  React.useEffect(() => {
+    if (!editMode || Platform.OS !== 'web') return
+    const trackPointer = (event: PointerEvent) => setPenInput(event.pointerType === 'pen')
+    document.addEventListener('touchmove', keepTouchOnDrag, { passive: false })
+    document.addEventListener('pointerover', trackPointer, true)
+    document.addEventListener('pointerdown', trackPointer, true)
+    return () => {
+      document.removeEventListener('touchmove', keepTouchOnDrag)
+      document.removeEventListener('pointerover', trackPointer, true)
+      document.removeEventListener('pointerdown', trackPointer, true)
+      touchDragging = false
+    }
+  }, [editMode])
+
   if (!editMode) {
     return (
       <View
@@ -89,6 +117,7 @@ export function SortableGrid<T extends { id: string }>({
         height: Math.ceil(items.length / columns) * (itemHeight + GAP),
         width: gridWidth,
         alignSelf: 'center',
+        ...(penInput ? { touchAction: 'none' as const } : null),
       }}
     >
       {items.map((item, index) => (
@@ -158,12 +187,13 @@ function DraggableTile<T extends { id: string }>({
     }
   }
 
-  const panGesture = Gesture.Pan()
+  const createPan = () => Gesture.Pan()
     .onStart(() => {
       isDragging.value = true
       const pos = getCoords(positions.value[id] ?? initialIndex)
       startX.value = pos.x
       startY.value = pos.y
+      runOnJS(setTouchDragging)(true)
     })
     .onUpdate((event) => {
       translateX.value = event.translationX
@@ -198,7 +228,6 @@ function DraggableTile<T extends { id: string }>({
           }
         }
         newPositions[id] = newIndex
-        // eslint-disable-next-line react-hooks/immutability
         positions.value = newPositions
       }
     })
@@ -206,8 +235,22 @@ function DraggableTile<T extends { id: string }>({
       isDragging.value = false
       translateX.value = withSpring(0)
       translateY.value = withSpring(0)
+      runOnJS(setTouchDragging)(false)
       runOnJS(onDragEnd)(positions.value)
     })
+
+  // On web a tile covers most of the page, so a finger swipe over it has to scroll. A finger
+  // picks a tile up after a short hold instead; the mouse and pen still drag at once.
+  const panGesture = Platform.OS === 'web'
+    ? Gesture.Race(
+        createPan().onTouchesDown((event, state) => {
+          if (event.pointerType === PointerType.TOUCH) state.fail()
+        }),
+        createPan().activateAfterLongPress(HOLD_TO_DRAG_MS).onTouchesDown((event, state) => {
+          if (event.pointerType !== PointerType.TOUCH) state.fail()
+        }),
+      )
+    : createPan()
 
   const animatedStyle = useAnimatedStyle(() => {
     const pos = getCoords(positions.value[id] ?? initialIndex)
@@ -231,7 +274,7 @@ function DraggableTile<T extends { id: string }>({
   }, [getCoords, id, initialIndex, isDragging, itemHeight, itemWidth, positions, startX, startY, translateX, translateY])
 
   return (
-    <GestureDetector gesture={panGesture}>
+    <GestureDetector gesture={panGesture} touchAction="pan-y">
       <Animated.View style={animatedStyle}>
         {renderItem(item, false)}
       </Animated.View>

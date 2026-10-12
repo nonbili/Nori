@@ -170,6 +170,24 @@ export const BookmarkEditorSheet: React.FC = () => {
     if (resolveAfterSaving && savedId) void enrichSavedBookmark(savedId)
   }
 
+  const refreshPreview = async () => {
+    setPreviewLoading(true)
+    setPreviewError('')
+    try {
+      const url = parseHttpUrl(editor.url).href
+      await loadBookmarkPreview(url, previewSource(editor.previewSource, defaultImageSource), true)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      if (message.includes('preview_open_bookmarked_page')) setPreviewError(t('preview.openPage'))
+      else if (message.includes('install Chrome')) setPreviewError(t('preview.browserMissing'))
+      else {
+        // The generic text cannot tell failures apart; keep the reason so a report can be acted on.
+        const generic = t(previewSource(editor.previewSource, defaultImageSource) === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed')
+        setPreviewError(message ? `${generic}\n${message}` : generic)
+      }
+    } finally { setPreviewLoading(false) }
+  }
+
   const onClose = () => ui$.bookmarkEditor.set(null)
 
   return (
@@ -211,22 +229,24 @@ export const BookmarkEditorSheet: React.FC = () => {
               onPress={() => { setPreviewError(''); ui$.bookmarkEditor.set({ ...editor, previewSource: source }) }}
             />)}
           </View>
-          {/^https?:\/\//i.test(editor.url) ? <View className="flex-row overflow-hidden rounded-2xl bg-surface">
-            <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource } }} />
+          {/^https?:\/\//i.test(editor.url) ? <View className="flex-row items-center gap-2">
+            <View className="min-w-0 flex-1 flex-row overflow-hidden rounded-2xl bg-surface">
+              <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource } }} />
+            </View>
+            {/* Beside the image and clear of the text fields, which a stylus tap near them opens instead. */}
+            <Pressable
+              disabled={previewLoading}
+              accessibilityRole="button"
+              accessibilityLabel={t('preview.refresh')}
+              hitSlop={6}
+              onPress={() => void refreshPreview()}
+              className="h-11 w-11 items-center justify-center rounded-full bg-muted active:bg-muted-strong"
+              style={{ opacity: previewLoading ? 0.5 : 1 }}
+            >
+              <MaterialIcons name="refresh" size={22} color={themeColors.content} />
+            </Pressable>
           </View> : null}
-          <Pressable disabled={previewLoading} className="self-start rounded-full bg-muted px-4 py-2" onPress={async () => {
-            setPreviewLoading(true)
-            setPreviewError('')
-            try {
-              const url = parseHttpUrl(editor.url).href
-              await loadBookmarkPreview(url, previewSource(editor.previewSource, defaultImageSource), true)
-            } catch (error) {
-              const message = error instanceof Error ? error.message : String(error)
-              if (message.includes('preview_open_bookmarked_page')) setPreviewError(t('preview.openPage'))
-              else if (message.includes('install Chrome')) setPreviewError(t('preview.browserMissing'))
-              else setPreviewError(t(previewSource(editor.previewSource, defaultImageSource) === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed'))
-            } finally { setPreviewLoading(false) }
-          }}>
+          <Pressable disabled={previewLoading} className="self-start rounded-full bg-muted px-4 py-2" onPress={() => void refreshPreview()}>
             <NoriText className="text-sm text-content">{t(previewLoading ? 'preview.refreshing' : 'preview.refresh')}</NoriText>
           </Pressable>
           {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}

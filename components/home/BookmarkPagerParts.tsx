@@ -238,7 +238,8 @@ export const BookmarkListPage = memo(({
           renderItem={renderTile}
           keyExtractor={(item) => item.id}
           numColumns={columns}
-          showsVerticalScrollIndicator={false}
+          // Touch screens on desktop: the scrollbar is a second way to move through a list being edited.
+          showsVerticalScrollIndicator={bookmarkEditMode && Platform.OS === 'web'}
           contentContainerStyle={{
             flexGrow: 1,
             // Compact tiles sit centred like a launcher; preview cards read from the top.
@@ -288,7 +289,7 @@ export const BookmarkListPage = memo(({
     <View className="flex-1" style={{ width }}>
       <ScrollView
         ref={actions.scrollViewRef}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={Platform.OS === 'web'}
         onLayout={onLayout}
         onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}

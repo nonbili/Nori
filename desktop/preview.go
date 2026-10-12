@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"image/png"
 	"io"
 	"net/http"
@@ -103,6 +104,9 @@ func (s *PageService) Screenshot(value string) (string, error) {
 	cmd := exec.CommandContext(ctx, browser,
 		"--headless", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
 		"--user-data-dir="+filepath.Join(directory, "profile"), "--window-size=1000,750",
+		// Windows captures at the display's scale otherwise: four times the pixels at
+		// 200%, which can pass maxPreviewBytes and never yield a usable image.
+		"--force-device-scale-factor=1",
 		"--hide-scrollbars", "--timeout=15000", "--virtual-time-budget=3000", "--screenshot="+image, value)
 	if err := cmd.Start(); err != nil {
 		return "", err
@@ -130,19 +134,23 @@ func (s *PageService) Screenshot(value string) (string, error) {
 	}
 	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
+	// Why the last poll had no usable image, so a timeout says what it was waiting on.
+	var pending error
 	for {
 		select {
 		case <-ticker.C:
-			if result, err := readImage(); err == nil {
+			result, err := readImage()
+			if err == nil {
 				cancel()
 				<-done
 				return result, nil
 			}
+			pending = err
 		case <-done:
 			return readImage()
 		case <-ctx.Done():
 			<-done
-			return "", errors.New("preview screenshot timed out")
+			return "", fmt.Errorf("preview screenshot timed out: %w", pending)
 		}
 	}
 }
