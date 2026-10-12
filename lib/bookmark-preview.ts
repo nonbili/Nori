@@ -294,6 +294,31 @@ export function loadBookmarkPreview(
   return subscribe(job, options.signal)
 }
 
+/**
+ * Saves a preview read from a page the user loaded in view, for sites that only
+ * let a person through (captcha) or need a banner dismissed before a screenshot.
+ */
+export async function saveRenderedPreview(
+  url: string,
+  source: PreviewSource,
+  page: { description: string; imageUrl: string; screenshotUri?: string },
+) {
+  const key = previewKey(url, source)
+  let imageUri = page.screenshotUri || ''
+  if (source === 'page-image' && page.imageUrl) imageUri = await imageFetch(page.imageUrl).catch(() => '')
+  // Keep the image already saved when this page gives none or it fails to download.
+  const cached = imageUri ? undefined : await readPreview(key)
+  if (!imageUri && !page.description) throw new Error('preview_page_empty')
+  pending.get(key)?.controller.abort()
+  await writePreview(key, {
+    description: page.description || cached?.description || '',
+    imageUrl: imageUri ? page.imageUrl : cached?.imageUrl || page.imageUrl,
+    imageUri: imageUri || cached?.imageUri || '',
+    savedAt: Date.now(),
+  })
+  listeners.forEach((listener) => listener(key))
+}
+
 export function getCachedBookmarkPreview(url: string, source: PreviewSource) {
   return readPreview(previewKey(url, source))
 }

@@ -55,6 +55,12 @@ const BROWSER_HEADERS = {
   'Accept-Language': 'en-US,en;q=0.9',
 }
 
+// Bot protection can answer a page request with a JavaScript challenge that is
+// not an error status: AWS WAF (e.g. fernsehserien.de) sends 202. Parsing it as
+// the page would save a bookmark with no title, description or image.
+const isChallenge = (res: Response) =>
+  res.status === 202 || res.headers.get('x-amzn-waf-action') === 'challenge'
+
 const bytesToChars = (bytes: Uint8Array) => {
   let text = ''
   for (let i = 0; i < bytes.length; i += 8192) text += String.fromCharCode(...bytes.subarray(i, i + 8192))
@@ -104,7 +110,7 @@ export async function getMeta(url: string) {
     // fallback instead of parsing an error page or binary payload as HTML.
     const contentType = res.headers.get('content-type') ?? ''
     const isNonDocument = /^(image|video|audio|font)\/|application\/(pdf|zip|octet-stream|json)/i.test(contentType)
-    if (!res.ok || isNonDocument) {
+    if (!res.ok || isNonDocument || isChallenge(res)) {
       return {
         title: getFallbackTitle(url),
         icon: getGoogleFavicon(url),
@@ -136,9 +142,22 @@ export async function getMeta(url: string) {
   }
 }
 
+// `data-a-dynamic-image` maps each rendition's url to its [width, height].
+const amazonProductImage = (hires?: string, renditions?: string) => {
+  if (hires) return hires
+  try {
+    const sizes = Object.entries(JSON.parse(renditions || '{}') as Record<string, number[]>)
+    return sizes.sort((a, b) => (b[1]?.[0] || 0) - (a[1]?.[0] || 0))[0]?.[0] || ''
+  } catch {
+    return ''
+  }
+}
+
 /** Preview metadata is cached separately from editable bookmark titles. */
 export async function getPreviewMeta(url: string, signal?: AbortSignal) {
   const res = await pageFetch(url, { method: 'GET', headers: BROWSER_HEADERS, signal })
+  // Reported as blocked, so native retries through the rendered page.
+  if (isChallenge(res)) throw new PreviewResponseError('preview_page_failed', true, 403)
   if (!res.ok || !/text\/html|application\/xhtml\+xml/i.test(res.headers.get('content-type') || 'text/html')) {
     throw new PreviewResponseError(
       'preview_page_failed',
@@ -160,6 +179,11 @@ export async function getPreviewMeta(url: string, signal?: AbortSignal) {
     $('meta[property="og:image"]').attr('content'),
     $('meta[name="twitter:image"]').attr('content'),
     $('meta[property="twitter:image"]').attr('content'),
+    // Shops often skip the social tags: Amazon only marks up its product
+    // image, mydealz only preloads it.
+    $('link[rel="image_src"]').attr('href'),
+    amazonProductImage($('#landingImage').attr('data-old-hires'), $('#landingImage').attr('data-a-dynamic-image')),
+    $('link[rel="preload"][as="image"]').attr('href'),
   ]) {
     try {
       const resolved = new URL(value || '', res.url || url)

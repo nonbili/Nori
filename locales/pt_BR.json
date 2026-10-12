@@ -79,7 +79,9 @@
     "hide": "Ocultar",
     "show": "Mostrar",
     "hidden": "Listas ocultas",
-    "unknown": "Lista desconhecida"
+    "unknown": "Lista desconhecida",
+    "newAtTop": "Adicionar novos favoritos no topo",
+    "newAtBottom": "Adicionar novos favoritos no final"
   },
   "history": {
     "used": "Usados recentemente",
@@ -265,6 +267,8 @@
     "refreshFailed": "Não foi possível atualizar a prévia. Tente novamente.",
     "screenshotFailed": "Não foi possível capturar a tela. Tente novamente.",
     "openPage": "Abra este favorito em uma aba e capture pela janela da extensão Nori.",
-    "browserMissing": "Instale Chrome, Chromium ou Edge para capturar a tela."
+    "browserMissing": "Instale Chrome, Chromium ou Edge para capturar a tela.",
+    "loadInPage": "Carregar prévia na página",
+    "usePage": "Usar esta página"
   }
 }

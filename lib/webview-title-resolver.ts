@@ -158,12 +158,8 @@ export function completeActiveJob(jobId: number, result: WebViewTitleResult | nu
 /** Limit how many URLs a single backfill pass will hand to the WebView. */
 export const maxJobsPerRun = MAX_JOBS_PER_RUN
 
-// Injected into the loaded page. Polls briefly so SPA-rendered titles have a
-// chance to populate before we read them, then posts the result back once.
-export const INJECTED_TITLE_SCRIPT = `
-(function () {
-  if (window.__noriTitleProbe) { return; }
-  window.__noriTitleProbe = true;
+// Readers shared by the scripts below; `post` sends what the page shows right now.
+const PAGE_META_READERS = `
   function metaContent(selector) {
     var el = document.querySelector(selector);
     return el && el.getAttribute('content');
@@ -201,9 +197,15 @@ export const INJECTED_TITLE_SCRIPT = `
     return el ? el.href : '';
   }
   function readImage() {
+    var imageSrc = document.querySelector('link[rel="image_src"]');
+    var product = document.querySelector('#landingImage');
+    var preload = document.querySelector('link[rel="preload"][as="image"]');
     var value = metaContent('meta[property="og:image"]') ||
       metaContent('meta[name="twitter:image"]') ||
-      metaContent('meta[property="twitter:image"]');
+      metaContent('meta[property="twitter:image"]') ||
+      (imageSrc && imageSrc.getAttribute('href')) ||
+      (product && (product.getAttribute('data-old-hires') || product.getAttribute('src'))) ||
+      (preload && preload.getAttribute('href'));
     try {
       return value ? new URL(value, window.location.href).href : '';
     } catch (e) {
@@ -224,6 +226,15 @@ export const INJECTED_TITLE_SCRIPT = `
       );
     } catch (e) {}
   }
+`
+
+// Injected into the loaded page. Polls briefly so SPA-rendered titles have a
+// chance to populate before we read them, then posts the result back once.
+export const INJECTED_TITLE_SCRIPT = `
+(function () {
+  if (window.__noriTitleProbe) { return; }
+  window.__noriTitleProbe = true;
+${PAGE_META_READERS}
   var tries = 0;
   var lastTitle = '';
   var stableTicks = 0;
@@ -241,6 +252,15 @@ export const INJECTED_TITLE_SCRIPT = `
     }
   }
   tick();
+})();
+true;
+`
+
+// Run in a page the user has loaded themselves, to read it once they say it is ready.
+export const READ_PAGE_META_SCRIPT = `
+(function () {
+${PAGE_META_READERS}
+  post();
 })();
 true;
 `

@@ -13,6 +13,7 @@ import {
   getVisibleBookmarks,
   isDeleted,
   moveItemWithinVisibleSubset,
+  nextBookmarkSortIndex,
   normalizeBookmarks,
   patchRowState,
   type BookmarkRecordData,
@@ -241,7 +242,7 @@ export const bookmarks$: Observable<Store> = observable<Store>({
         .filter((item) => item.listId === targetListId && !isDeleted(item) && !idSet.has(item.id))
         .map((item) => getBookmarkUrlKey(item.url)),
     )
-    let nextSortIndex = items.filter((item) => item.listId === targetListId).length
+    let nextSortIndex = nextBookmarkSortIndex(lists$.lists.get(), items, targetListId, ids.length)
     const now = new Date().toISOString()
     let moved = 0
 

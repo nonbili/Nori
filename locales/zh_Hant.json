@@ -79,7 +79,9 @@
     "hide": "隱藏",
     "show": "顯示",
     "hidden": "已隱藏列表",
-    "unknown": "未知列表"
+    "unknown": "未知列表",
+    "newAtTop": "新書籤加到頂端",
+    "newAtBottom": "新書籤加到底部"
   },
   "history": {
     "used": "最近使用",
@@ -265,6 +267,8 @@
     "refreshFailed": "無法重新整理預覽，請重試。",
     "screenshotFailed": "無法截圖，請重試。",
     "openPage": "在瀏覽器分頁中開啟此書籤，然後透過 Nori 擴充功能彈出視窗截圖。",
-    "browserMissing": "請安裝 Chrome、Chromium 或 Edge 以擷取網頁。"
+    "browserMissing": "請安裝 Chrome、Chromium 或 Edge 以擷取網頁。",
+    "loadInPage": "在頁面中載入預覽",
+    "usePage": "使用此頁面"
   }
 }

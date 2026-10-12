@@ -145,8 +145,9 @@ export const usePendingShareIntent = () => {
 
       const targetListId = resolveQuickShareTargetListId()
       if (settings$.quickSaveSharedLinks.peek() && targetListId) {
-        const saved = urls.filter((url) => saveQuickSharedLink(url, targetListId))
+        const saved = urls.flatMap((url) => saveQuickSharedLink(url, targetListId) ?? [])
         if (saved.length > 0) {
+          ui$.revealBookmarkId.set(saved[saved.length - 1])
           const name = getVisibleLists(lists$.lists.peek()).find((list) => list.id === targetListId)?.name
             || t('lists.name')
           showToast(

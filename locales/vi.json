@@ -79,7 +79,9 @@
     "hide": "Ẩn",
     "show": "Hiện",
     "hidden": "Danh sách đã ẩn",
-    "unknown": "Danh sách không xác định"
+    "unknown": "Danh sách không xác định",
+    "newAtTop": "Thêm dấu trang mới lên đầu",
+    "newAtBottom": "Thêm dấu trang mới xuống cuối"
   },
   "history": {
     "used": "Đã dùng gần đây",
@@ -268,6 +270,8 @@
     "refreshFailed": "Không thể làm mới bản xem trước. Hãy thử lại.",
     "screenshotFailed": "Không thể chụp màn hình. Hãy thử lại.",
     "openPage": "Mở dấu trang này trong thẻ trình duyệt, rồi chụp từ cửa sổ bật lên của tiện ích Nori.",
-    "browserMissing": "Cài Chrome, Chromium hoặc Edge để chụp màn hình."
+    "browserMissing": "Cài Chrome, Chromium hoặc Edge để chụp màn hình.",
+    "loadInPage": "Tải bản xem trước trong trang",
+    "usePage": "Dùng trang này"
   }
 }

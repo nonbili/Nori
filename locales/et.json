@@ -79,7 +79,9 @@
     "hide": "Peida",
     "show": "Näita",
     "hidden": "Peidetud loendid",
-    "unknown": "Tundmatu loend"
+    "unknown": "Tundmatu loend",
+    "newAtTop": "Lisa uued järjehoidjad üles",
+    "newAtBottom": "Lisa uued järjehoidjad alla"
   },
   "history": {
     "used": "Hiljuti kasutatud",
@@ -268,6 +270,8 @@
     "refreshFailed": "Eelvaadet ei saanud värskendada. Proovi uuesti.",
     "screenshotFailed": "Kuvatõmmist ei saanud teha. Proovi uuesti.",
     "openPage": "Ava see järjehoidja brauseri vahekaardil ja tee kuvatõmmis Nori laienduse hüpikaknas.",
-    "browserMissing": "Kuvatõmmiste tegemiseks paigalda Chrome, Chromium või Edge."
+    "browserMissing": "Kuvatõmmiste tegemiseks paigalda Chrome, Chromium või Edge.",
+    "loadInPage": "Laadi eelvaade lehel",
+    "usePage": "Kasuta seda lehte"
   }
 }

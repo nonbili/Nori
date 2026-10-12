@@ -79,7 +79,9 @@
     "hide": "隐藏",
     "show": "显示",
     "hidden": "已隐藏列表",
-    "unknown": "未知列表"
+    "unknown": "未知列表",
+    "newAtTop": "新书签添加到顶部",
+    "newAtBottom": "新书签添加到底部"
   },
   "history": {
     "used": "最近使用",
@@ -265,6 +267,8 @@
     "refreshFailed": "无法刷新预览，请重试。",
     "screenshotFailed": "无法截图，请重试。",
     "openPage": "在浏览器标签页中打开此书签，然后通过 Nori 扩展弹出窗口截图。",
-    "browserMissing": "请安装 Chrome、Chromium 或 Edge 以截取网页。"
+    "browserMissing": "请安装 Chrome、Chromium 或 Edge 以截取网页。",
+    "loadInPage": "在页面中加载预览",
+    "usePage": "使用此页面"
   }
 }

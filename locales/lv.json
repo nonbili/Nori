@@ -79,7 +79,9 @@
     "hide": "Paslēpt",
     "show": "Rādīt",
     "hidden": "Paslēptie saraksti",
-    "unknown": "Nezināms saraksts"
+    "unknown": "Nezināms saraksts",
+    "newAtTop": "Pievienot jaunās grāmatzīmes augšā",
+    "newAtBottom": "Pievienot jaunās grāmatzīmes apakšā"
   },
   "history": {
     "used": "Nesen lietots",
@@ -268,6 +270,8 @@
     "refreshFailed": "Neizdevās atsvaidzināt priekšskatījumu. Mēģiniet vēlreiz.",
     "screenshotFailed": "Neizdevās uzņemt ekrānuzņēmumu. Mēģiniet vēlreiz.",
     "openPage": "Atveriet šo grāmatzīmi pārlūka cilnē un uzņemiet attēlu Nori paplašinājuma uznirstošajā logā.",
-    "browserMissing": "Ekrānuzņēmumiem instalējiet Chrome, Chromium vai Edge."
+    "browserMissing": "Ekrānuzņēmumiem instalējiet Chrome, Chromium vai Edge.",
+    "loadInPage": "Ielādēt priekšskatījumu lapā",
+    "usePage": "Izmantot šo lapu"
   }
 }

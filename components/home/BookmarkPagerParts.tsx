@@ -128,6 +128,24 @@ export const BookmarkListPage = memo(({
   // the list, so neither the bounce after a fling nor a scroll that merely
   // reaches the end opens it by accident.
   const dragStartedAtBottomRef = useRef(false)
+  const listRef = useRef<FlatList<BookmarkRecord>>(null)
+  const revealBookmarkId = useValue(ui$.revealBookmarkId)
+
+  useEffect(() => {
+    if (!revealBookmarkId || !isActive) return
+    const index = listBookmarks.findIndex((bookmark) => bookmark.id === revealBookmarkId)
+    if (index === -1) return
+    ui$.revealBookmarkId.set(null)
+    const isLast = index === listBookmarks.length - 1
+    const reveal = (animated: boolean) => {
+      if (isLast) listRef.current?.scrollToEnd({ animated })
+      else listRef.current?.scrollToIndex({ index: Math.floor(index / columns), viewPosition: 0.5, animated })
+    }
+    // Once the new row is laid out. Preview rows are measured as they render, so
+    // the end of a long list is only an estimate the first time round.
+    setTimeout(() => reveal(true), 100)
+    if (isLast) setTimeout(() => reveal(false), 600)
+  }, [columns, isActive, listBookmarks, revealBookmarkId])
 
   const updateBottomState = useCallback((offsetY: number) => {
     offsetYRef.current = offsetY
@@ -195,20 +213,26 @@ export const BookmarkListPage = memo(({
         onEdit={() => actions.onEditBookmark(bookmark)}
         onCopyUrl={() => actions.onCopyBookmarkUrl(bookmark)}
         onShare={() => actions.onShareBookmark(bookmark)}
+        // The page is shown in a WebView, which only the mobile app has.
+        onLoadPreview={preview && Platform.OS !== 'web'
+          ? () => ui$.previewPage.set({ url: bookmark.url, previewSource: bookmark.json.previewSource })
+          : undefined}
         onDelete={() => actions.onDeleteBookmark(bookmark)}
       />
     </View>
   ), [actions, bookmarkEditMode, columns, itemWidth, selectedIdSet, preview, itemHeight])
 
   const getItemLayout = useCallback((_: ArrayLike<BookmarkRecord> | null | undefined, index: number) => {
+    // FlatList asks per row, not per bookmark, when there is more than one column.
     const rowHeight = itemHeight + GRID_GAP
-    return { length: rowHeight, offset: Math.floor(index / columns) * rowHeight, index }
-  }, [columns, itemHeight])
+    return { length: rowHeight, offset: index * rowHeight, index }
+  }, [itemHeight])
 
   if (!bookmarkEditMode || listBookmarks.length > LARGE_EDIT_LIST_THRESHOLD) {
     return (
       <View className="flex-1" style={{ width }}>
         <FlatList
+          ref={listRef}
           key={`${columns}:${itemHeight}`}
           data={listBookmarks}
           renderItem={renderTile}
@@ -240,6 +264,10 @@ export const BookmarkListPage = memo(({
             ) : null
           }
           getItemLayout={preview && !bookmarkEditMode ? undefined : getItemLayout}
+          onScrollToIndexFailed={({ index, averageItemLength }) => {
+            listRef.current?.scrollToOffset({ offset: index * averageItemLength, animated: false })
+            setTimeout(() => listRef.current?.scrollToIndex({ index, viewPosition: 0.5, animated: false }), 100)
+          }}
           onLayout={onLayout}
           onContentSizeChange={onContentSizeChange}
           onScroll={onScroll}
@@ -247,7 +275,9 @@ export const BookmarkListPage = memo(({
           onScrollEndDrag={onScrollEndDrag}
           initialNumToRender={INITIAL_BOOKMARKS_TO_RENDER}
           maxToRenderPerBatch={BOOKMARKS_RENDER_BATCH}
-          windowSize={bookmarkEditMode ? 5 : 3}
+          // Preview rows have no fixed height, so one that mounts above the viewport
+          // shifts the list as it is measured. Keep more of them mounted.
+          windowSize={bookmarkEditMode ? 5 : preview ? 9 : 3}
           removeClippedSubviews
         />
       </View>

@@ -5,6 +5,7 @@ import {
   getFallbackTitle,
   getGoogleFavicon,
   getMeta,
+  getPreviewMeta,
   getRuntimeFaviconCandidates,
   setPageFetch,
 } from './bookmark'
@@ -183,5 +184,25 @@ describe('bookmark helpers', () => {
       title: 'Injected Title',
       icon: 'https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Fexample.com%2Fpage&sz=128',
     })
+  })
+
+  it('treats a bot protection challenge as a blocked page, not as the page', async () => {
+    setPageFetch(async () => new Response('<title></title>', { status: 202, headers: { 'x-amzn-waf-action': 'challenge' } }))
+
+    expect((await getMeta('https://example.com/page')).title).toBe('example.com')
+    await expect(getPreviewMeta('https://example.com/page')).rejects.toMatchObject({ status: 403, persistent: true })
+  })
+
+  it('finds a preview image on pages without social image tags', async () => {
+    const html = (head: string) => async () => new Response(head, { headers: { 'content-type': 'text/html' } })
+
+    setPageFetch(html('<img id="landingImage" data-old-hires="" data-a-dynamic-image="{&quot;https://img.example/s.jpg&quot;:[280,355],&quot;https://img.example/l.jpg&quot;:[448,569]}">'))
+    expect((await getPreviewMeta('https://example.com/dp/1')).imageUrl).toBe('https://img.example/l.jpg')
+
+    setPageFetch(html('<link rel="preload" as="image" href="/deal.jpg">'))
+    expect((await getPreviewMeta('https://example.com/deals/1')).imageUrl).toBe('https://example.com/deal.jpg')
+
+    setPageFetch(html('<meta property="og:image" content="https://img.example/og.jpg"><link rel="preload" as="image" href="/deal.jpg">'))
+    expect((await getPreviewMeta('https://example.com/deals/1')).imageUrl).toBe('https://img.example/og.jpg')
   })
 })

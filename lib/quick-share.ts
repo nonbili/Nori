@@ -50,8 +50,10 @@ export async function drainQuickShareInbox() {
   const importedIds: string[] = []
 
   for (const entry of pending) {
-    if (drainEntry(entry)) {
+    const savedId = drainEntry(entry)
+    if (savedId) {
       importedIds.push(entry.id)
+      ui$.revealBookmarkId.set(savedId)
     }
   }
 

@@ -79,7 +79,9 @@
     "hide": "Elrejtés",
     "show": "Megjelenítés",
     "hidden": "Rejtett listák",
-    "unknown": "Ismeretlen lista"
+    "unknown": "Ismeretlen lista",
+    "newAtTop": "Új könyvjelzők hozzáadása felülre",
+    "newAtBottom": "Új könyvjelzők hozzáadása alulra"
   },
   "history": {
     "used": "Nemrég használt",
@@ -268,6 +270,8 @@
     "refreshFailed": "Az előnézet nem frissíthető. Próbáld újra.",
     "screenshotFailed": "Nem sikerült képernyőképet készíteni. Próbáld újra.",
     "openPage": "Nyisd meg ezt a könyvjelzőt egy böngészőlapon, majd készíts képet a Nori bővítmény felugró ablakában.",
-    "browserMissing": "Képernyőképekhez telepítsd a Chrome, Chromium vagy Edge böngészőt."
+    "browserMissing": "Képernyőképekhez telepítsd a Chrome, Chromium vagy Edge böngészőt.",
+    "loadInPage": "Előnézet betöltése az oldalon",
+    "usePage": "Az oldal használata"
   }
 }

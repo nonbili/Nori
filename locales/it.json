@@ -79,7 +79,9 @@
     "hide": "Nascondi",
     "show": "Mostra",
     "hidden": "Liste nascoste",
-    "unknown": "Lista sconosciuta"
+    "unknown": "Lista sconosciuta",
+    "newAtTop": "Aggiungi i nuovi segnalibri in alto",
+    "newAtBottom": "Aggiungi i nuovi segnalibri in basso"
   },
   "history": {
     "used": "Usati di recente",
@@ -265,6 +267,8 @@
     "refreshFailed": "Impossibile aggiornare l’anteprima. Riprova.",
     "screenshotFailed": "Impossibile acquisire lo screenshot. Riprova.",
     "openPage": "Apri questo segnalibro in una scheda e acquisiscilo dal popup dell’estensione Nori.",
-    "browserMissing": "Installa Chrome, Chromium o Edge per acquisire screenshot."
+    "browserMissing": "Installa Chrome, Chromium o Edge per acquisire screenshot.",
+    "loadInPage": "Carica l’anteprima nella pagina",
+    "usePage": "Usa questa pagina"
   }
 }

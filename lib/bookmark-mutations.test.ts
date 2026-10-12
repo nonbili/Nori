@@ -41,6 +41,26 @@ describe('bookmark mutations', () => {
     expect(result!.bookmarks[0].json).not.toHaveProperty('previewSource')
   })
 
+  it('adds ahead of the first bookmark in a list that takes new ones at the top', () => {
+    const lists = normalizeLists([
+      { id: 'top', name: 'Top', json: { visible: true, new_at_top: true } },
+      { id: 'bottom', name: 'Bottom', json: { visible: true } },
+    ])
+    let bookmarks = normalizeBookmarks(lists, [])
+    for (const listId of ['top', 'bottom']) {
+      for (const page of ['a', 'b', 'c']) {
+        bookmarks = addBookmarkRecord(lists, bookmarks, { listId, url: `https://example.com/${page}` }, `${listId}-${page}`, 'now')!.bookmarks
+      }
+    }
+    const order = (listId: string) => bookmarks
+      .filter((item) => item.listId === listId)
+      .sort((a, b) => a.json.sort_index! - b.json.sort_index!)
+      .map((item) => item.id)
+
+    expect(order('top')).toEqual(['top-c', 'top-b', 'top-a'])
+    expect(order('bottom')).toEqual(['bottom-a', 'bottom-b', 'bottom-c'])
+  })
+
   it('rejects blank urls and missing list ids', () => {
     const lists = normalizeLists([{ id: 'read', name: 'Read', json: { visible: true } }])
     const bookmarks = normalizeBookmarks(lists, [])

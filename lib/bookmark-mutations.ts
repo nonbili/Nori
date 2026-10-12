@@ -4,6 +4,7 @@ import {
   isDeleted,
   normalizeNote,
   isVisible,
+  nextBookmarkSortIndex,
   patchRowState,
   type BookmarkListData,
   type BookmarkRecordData,
@@ -77,7 +78,7 @@ export function addBookmarkRecord(
     return { id: existing.id, bookmarks: nextBookmarks }
   }
 
-  const nextSortIndex = bookmarks.filter((item) => item.listId === listId).length
+  const nextSortIndex = nextBookmarkSortIndex(lists, bookmarks, listId)
   return {
     id,
     bookmarks: [...bookmarks, {

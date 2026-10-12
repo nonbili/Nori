@@ -9,6 +9,7 @@ import {
   onPreviewChange,
   updatePreviewBookmarks,
   retainEditorPreview,
+  saveRenderedPreview,
 } from './bookmark-preview'
 import { previewKey, previewSource } from './bookmark-preview-types'
 import { readPreview, writePreview } from './bookmark-preview-storage'
@@ -382,5 +383,23 @@ describe('bookmark previews', () => {
     closeEditor()
     await updatePreviewBookmarks([url])
     expect(await readPreview(temporary)).toBeUndefined()
+  })
+  it('keeps the saved image when a page loaded in view cannot download its own', async () => {
+    const url = 'https://rendered-keep.example/'
+    const key = previewKey(url, 'page-image')
+    await updatePreviewBookmarks([url])
+    await writePreview(key, { description: 'Old', imageUrl: 'https://rendered-keep.example/old.jpg', imageUri: 'data:image/jpeg;base64,b2xk', savedAt: 1 })
+    setPreviewImageFetch(async () => {
+      throw new Error('offline')
+    })
+
+    await saveRenderedPreview(url, 'page-image', { description: 'New', imageUrl: 'https://rendered-keep.example/new.jpg' })
+
+    expect(await readPreview(key)).toMatchObject({
+      description: 'New',
+      imageUrl: 'https://rendered-keep.example/old.jpg',
+      imageUri: 'data:image/jpeg;base64,b2xk',
+    })
+    await expect(saveRenderedPreview('https://rendered-empty.example/', 'page-image', { description: '', imageUrl: '' })).rejects.toThrow('preview_page_empty')
   })
 })

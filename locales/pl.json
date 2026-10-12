@@ -79,7 +79,9 @@
     "hide": "Ukryj",
     "show": "Pokaż",
     "hidden": "Ukryte listy",
-    "unknown": "Nieznana lista"
+    "unknown": "Nieznana lista",
+    "newAtTop": "Dodawaj nowe zakładki na górze",
+    "newAtBottom": "Dodawaj nowe zakładki na dole"
   },
   "history": {
     "used": "Ostatnio używane",
@@ -265,6 +267,8 @@
     "refreshFailed": "Nie udało się odświeżyć podglądu. Spróbuj ponownie.",
     "screenshotFailed": "Nie udało się wykonać zrzutu ekranu. Spróbuj ponownie.",
     "openPage": "Otwórz tę zakładkę w przeglądarce i wykonaj zrzut w oknie rozszerzenia Nori.",
-    "browserMissing": "Zainstaluj Chrome, Chromium lub Edge, aby wykonywać zrzuty ekranu."
+    "browserMissing": "Zainstaluj Chrome, Chromium lub Edge, aby wykonywać zrzuty ekranu.",
+    "loadInPage": "Wczytaj podgląd na stronie",
+    "usePage": "Użyj tej strony"
   }
 }

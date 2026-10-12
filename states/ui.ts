@@ -55,7 +55,11 @@ interface UIStore {
   listManagerOpen: boolean
   pendingBookmarkImport: PendingBookmarkImportState | null
   pendingShare: PendingShareState | null
+  // A bookmark whose page is open in view for the user to load its preview from.
+  previewPage: { url: string; previewSource?: unknown } | null
   recentSheetOpen: boolean
+  // A bookmark just saved from a share, for its list to scroll into view.
+  revealBookmarkId: string | null
   selectedBookmarkIds: string[]
   settingsSheetOpen: boolean
   snackbars: SnackbarState[]
@@ -74,7 +78,9 @@ export const ui$ = observable<UIStore>({
   listManagerOpen: false,
   pendingBookmarkImport: null,
   pendingShare: null,
+  previewPage: null,
   recentSheetOpen: false,
+  revealBookmarkId: null,
   selectedBookmarkIds: [],
   settingsSheetOpen: false,
   snackbars: [],

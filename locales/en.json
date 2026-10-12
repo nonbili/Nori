@@ -79,7 +79,9 @@
     "hide": "Hide",
     "show": "Show",
     "hidden": "Hidden lists",
-    "unknown": "Unknown list"
+    "unknown": "Unknown list",
+    "newAtTop": "Add new bookmarks at the top",
+    "newAtBottom": "Add new bookmarks at the bottom"
   },
   "history": {
     "used": "Recently used",
@@ -268,6 +270,8 @@
     "refreshFailed": "Could not refresh the preview. Try again.",
     "screenshotFailed": "Could not capture the screenshot. Try again.",
     "openPage": "Open this bookmark in a browser tab, then use the Nori extension popup to capture it.",
-    "browserMissing": "Install Chrome, Chromium or Edge to capture screenshots."
+    "browserMissing": "Install Chrome, Chromium or Edge to capture screenshots.",
+    "loadInPage": "Load preview in page",
+    "usePage": "Use this page"
   }
 }

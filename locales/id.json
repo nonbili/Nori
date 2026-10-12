@@ -79,7 +79,9 @@
     "hide": "Sembunyikan",
     "show": "Tampilkan",
     "hidden": "Daftar tersembunyi",
-    "unknown": "Daftar tidak dikenal"
+    "unknown": "Daftar tidak dikenal",
+    "newAtTop": "Tambahkan markah baru di atas",
+    "newAtBottom": "Tambahkan markah baru di bawah"
   },
   "history": {
     "used": "Baru saja digunakan",
@@ -268,6 +270,8 @@
     "refreshFailed": "Tidak dapat menyegarkan pratinjau. Coba lagi.",
     "screenshotFailed": "Tidak dapat mengambil tangkapan layar. Coba lagi.",
     "openPage": "Buka markah ini di tab browser, lalu ambil gambar dari popup ekstensi Nori.",
-    "browserMissing": "Instal Chrome, Chromium, atau Edge untuk mengambil tangkapan layar."
+    "browserMissing": "Instal Chrome, Chromium, atau Edge untuk mengambil tangkapan layar.",
+    "loadInPage": "Muat pratinjau di halaman",
+    "usePage": "Gunakan halaman ini"
   }
 }

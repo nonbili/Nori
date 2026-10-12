@@ -56,6 +56,7 @@ export const SaveSharedLinkSheet: React.FC = () => {
     }
 
     settings$.setLastSelectedListId(listId)
+    ui$.revealBookmarkId.set(saved[saved.length - 1].id)
     const name = visibleLists.find((item) => item.id === listId)?.name || t('lists.name')
     showToast(
       saved.length > 1

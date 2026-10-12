@@ -79,7 +79,9 @@
     "hide": "Ausblenden",
     "show": "Einblenden",
     "hidden": "Ausgeblendete Listen",
-    "unknown": "Unbekannte Liste"
+    "unknown": "Unbekannte Liste",
+    "newAtTop": "Neue Lesezeichen oben hinzufügen",
+    "newAtBottom": "Neue Lesezeichen unten hinzufügen"
   },
   "history": {
     "used": "Kürzlich verwendet",
@@ -268,6 +270,8 @@
     "refreshFailed": "Vorschau konnte nicht aktualisiert werden. Erneut versuchen.",
     "screenshotFailed": "Screenshot konnte nicht aufgenommen werden. Erneut versuchen.",
     "openPage": "Dieses Lesezeichen in einem Browser-Tab öffnen und über das Popup der Nori-Erweiterung aufnehmen.",
-    "browserMissing": "Chrome, Chromium oder Edge installieren, um Screenshots aufzunehmen."
+    "browserMissing": "Chrome, Chromium oder Edge installieren, um Screenshots aufzunehmen.",
+    "loadInPage": "Vorschau in der Seite laden",
+    "usePage": "Diese Seite verwenden"
   }
 }

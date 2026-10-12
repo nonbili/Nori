@@ -24,6 +24,7 @@ import { normalizeFontScale } from '@/lib/typography'
 import { settings$ } from '@/states/settings'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
+import { PreviewPageSheet } from '@/components/sheet/PreviewPageSheet'
 import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 
 LogBox.ignoreAllLogs()
@@ -140,6 +141,7 @@ function LayoutContent() {
     <View className="flex-1 bg-canvas" style={accentStyle}>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <WebViewTitleResolver canvasColor={themeColors.canvas} />
+      <PreviewPageSheet />
       <Slot />
       <ActionSnackbar />
     </View>

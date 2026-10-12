@@ -79,7 +79,9 @@
     "hide": "Gizle",
     "show": "Göster",
     "hidden": "Gizli listeler",
-    "unknown": "Bilinmeyen liste"
+    "unknown": "Bilinmeyen liste",
+    "newAtTop": "Yeni yer imlerini üste ekle",
+    "newAtBottom": "Yeni yer imlerini alta ekle"
   },
   "history": {
     "used": "Son kullanılanlar",
@@ -265,6 +267,8 @@
     "refreshFailed": "Önizleme yenilenemedi. Tekrar deneyin.",
     "screenshotFailed": "Ekran görüntüsü alınamadı. Tekrar deneyin.",
     "openPage": "Bu yer imini bir tarayıcı sekmesinde açın ve Nori uzantısının açılır penceresinden görüntü alın.",
-    "browserMissing": "Ekran görüntüsü almak için Chrome, Chromium veya Edge yükleyin."
+    "browserMissing": "Ekran görüntüsü almak için Chrome, Chromium veya Edge yükleyin.",
+    "loadInPage": "Önizlemeyi sayfada yükle",
+    "usePage": "Bu sayfayı kullan"
   }
 }

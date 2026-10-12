@@ -13,6 +13,7 @@ import {
   type BookmarkPreview,
 } from '@/lib/bookmark-preview'
 import { previewKey } from '@/lib/bookmark-preview-types'
+import { hasPlaceholderTitle } from '@/lib/bookmark-title'
 
 // The image runs to the tile's top, right and bottom edges, so its slot takes in the p-4 the text
 // column keeps: 1rem a side, which is 16 on web but 14 under NativeWind on native.
@@ -24,6 +25,18 @@ const IMAGE_MIN_HEIGHT = IMAGE_WIDTH / 2
 // Remembered across mounts, so a recycled row sizes its image before it loads again. Keyed by
 // preview key, not image uri: web and desktop uris are data urls holding the whole image.
 const imageRatios = new Map<string, number>()
+
+// What each row last showed. A row scrolled back into view mounts at its final height instead of
+// growing once the cache is read, which shifted the list under the finger when scrolling up.
+// Native only: there the image is a file uri, on web and desktop it is the image itself.
+const shownPreviews = new Map<string, BookmarkPreview>()
+function shownPreview(url: string, source: Parameters<typeof previewKey>[1]) {
+  try {
+    return shownPreviews.get(previewKey(url, source))
+  } catch {
+    return undefined
+  }
+}
 
 // Undefined when the image is tall enough to fill the slot, however tall the text makes the tile.
 function wideImageHeight(key: string) {
@@ -43,13 +56,13 @@ export function BookmarkPreviewContent({
 }) {
   const fallback = useValue(settings$.previewImageSource)
   const source = previewSource(bookmark.json?.previewSource, fallback)
-  const [preview, setPreview] = useState<BookmarkPreview>()
+  const [preview, setPreview] = useState(() => shownPreview(bookmark.url, source))
   const [failedImage, setFailedImage] = useState(false)
   const [, redraw] = useReducer((count: number) => count + 1, 0)
   useEffect(() => {
     let mounted = true
     const controller = new AbortController()
-    setPreview(undefined)
+    setPreview(shownPreview(bookmark.url, source))
     setFailedImage(false)
     let key: string
     try {
@@ -64,6 +77,7 @@ export function BookmarkPreviewContent({
           : loadBookmarkPreview(bookmark.url, source, false, { signal: controller.signal })
       ).then(
         (value) => {
+          if (value && Platform.OS !== 'web') shownPreviews.set(key, value)
           if (mounted) {
             setPreview(value)
             setFailedImage(false)
@@ -90,6 +104,8 @@ export function BookmarkPreviewContent({
     domain = new URL(bookmark.url).hostname.replace(/^www\./, '')
   } catch {}
   const wideHeight = wideImageHeight(imageKey)
+  // A page that could not be read leaves only its hostname as the title; show which page it is.
+  const description = preview?.description || (hasPlaceholderTitle(bookmark.title, bookmark.url) ? bookmark.url : '')
   return (
     <>
       <View className="min-w-0 flex-1 justify-center gap-2 p-4">
@@ -102,9 +118,9 @@ export function BookmarkPreviewContent({
         <NoriText className={`text-sm font-medium ${titleClassName}`} numberOfLines={2}>
           {bookmark.title}
         </NoriText>
-        {preview?.description ? (
+        {description ? (
           <NoriText className="text-xs text-content-muted" numberOfLines={2}>
-            {preview.description}
+            {description}
           </NoriText>
         ) : null}
       </View>

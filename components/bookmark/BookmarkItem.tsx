@@ -115,6 +115,7 @@ export const BookmarkTile = memo(({
   onEdit,
   onCopyUrl,
   onShare,
+  onLoadPreview,
   onDelete,
   isDragging,
 }: {
@@ -129,6 +130,7 @@ export const BookmarkTile = memo(({
   onEdit?: () => void
   onCopyUrl?: () => void
   onShare?: () => void
+  onLoadPreview?: () => void
   onDelete?: () => void
   isDragging?: boolean
 }) => {
@@ -183,6 +185,7 @@ export const BookmarkTile = memo(({
     onEdit,
     onCopyUrl,
     onShare,
+    onLoadPreview,
     onDelete,
   }, t)
 

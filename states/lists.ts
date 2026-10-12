@@ -23,6 +23,7 @@ interface Store {
   deleteList: (id: string) => boolean
   restoreList: (list: BookmarkList) => void
   setVisible: (id: string, visible: boolean) => void
+  setNewAtTop: (id: string, newAtTop: boolean) => void
   reorder: (orderedIds: string[]) => void
   replaceAll: (lists: BookmarkList[]) => void
 }
@@ -124,6 +125,20 @@ export const lists$: Observable<Store> = observable<Store>({
     }
     lists$.lists.set(nextItems)
     ensureSelectedList()
+  },
+  setNewAtTop: (id, newAtTop) => {
+    const items = lists$.lists.get()
+    const index = items.findIndex((item) => item.id === id)
+    if (index === -1) {
+      return
+    }
+
+    const nextItems = [...items]
+    nextItems[index] = {
+      ...patchRowState(items[index], { new_at_top: newAtTop }),
+      updatedAt: new Date().toISOString(),
+    }
+    lists$.lists.set(nextItems)
   },
   reorder: (orderedIds) => {
     const items = lists$.lists.get()
