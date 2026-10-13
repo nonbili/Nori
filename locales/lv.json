@@ -79,9 +79,7 @@
     "hide": "Paslēpt",
     "show": "Rādīt",
     "hidden": "Paslēptie saraksti",
-    "unknown": "Nezināms saraksts",
-    "newAtTop": "Pievienot jaunās grāmatzīmes augšā",
-    "newAtBottom": "Pievienot jaunās grāmatzīmes apakšā"
+    "unknown": "Nezināms saraksts"
   },
   "history": {
     "used": "Nesen lietots",
@@ -198,6 +196,7 @@
       "quickShareHint": "Saglabāt kopīgotos URL mērķa sarakstā bez saraksta izvēles.",
       "loadPagesForTitles": "Ielādēt lapas, lai iegūtu virsrakstus",
       "loadPagesForTitlesHint": "Ielādē katru saglabāto saiti, lai nolasītu tās virsrakstu. Patērē vairāk datu; fonā saglabātās saites tiek atjauninātas, atverot Nori.",
+      "newAtTop": "Pievienot jaunās grāmatzīmes augšā",
       "theme": "Motīvs",
       "themeHint": "Izvēlies sistēmas, gaišo, tumšo vai AMOLED izskatu.",
       "system": "Sistēmas",

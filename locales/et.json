@@ -79,9 +79,7 @@
     "hide": "Peida",
     "show": "Näita",
     "hidden": "Peidetud loendid",
-    "unknown": "Tundmatu loend",
-    "newAtTop": "Lisa uued järjehoidjad üles",
-    "newAtBottom": "Lisa uued järjehoidjad alla"
+    "unknown": "Tundmatu loend"
   },
   "history": {
     "used": "Hiljuti kasutatud",
@@ -198,6 +196,7 @@
       "quickShareHint": "Salvesta jagatud URL-id sihtloendisse ilma loendit valimata.",
       "loadPagesForTitles": "Laadi lehed pealkirjade hankimiseks",
       "loadPagesForTitlesHint": "Laadi iga salvestatud link selle pealkirja lugemiseks. Kasutab rohkem andmesidet; taustal salvestatud lingid uuenevad Nori avamisel.",
+      "newAtTop": "Lisa uued järjehoidjad üles",
       "theme": "Teema",
       "themeHint": "Vali süsteemi, hele, tume või AMOLED-kujundus.",
       "system": "Süsteem",

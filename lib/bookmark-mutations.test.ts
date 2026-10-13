@@ -41,24 +41,18 @@ describe('bookmark mutations', () => {
     expect(result!.bookmarks[0].json).not.toHaveProperty('previewSource')
   })
 
-  it('adds ahead of the first bookmark in a list that takes new ones at the top', () => {
-    const lists = normalizeLists([
-      { id: 'top', name: 'Top', json: { visible: true, new_at_top: true } },
-      { id: 'bottom', name: 'Bottom', json: { visible: true } },
-    ])
-    let bookmarks = normalizeBookmarks(lists, [])
-    for (const listId of ['top', 'bottom']) {
+  it('adds ahead of the first bookmark when new ones go at the top', () => {
+    const lists = normalizeLists([{ id: 'mine', name: 'Mine', json: { visible: true } }])
+    const order = (newAtTop: boolean) => {
+      let bookmarks = normalizeBookmarks(lists, [])
       for (const page of ['a', 'b', 'c']) {
-        bookmarks = addBookmarkRecord(lists, bookmarks, { listId, url: `https://example.com/${page}` }, `${listId}-${page}`, 'now')!.bookmarks
+        bookmarks = addBookmarkRecord(lists, bookmarks, { listId: 'mine', url: `https://example.com/${page}` }, page, 'now', newAtTop)!.bookmarks
       }
+      return bookmarks.filter((item) => item.listId === 'mine').sort((a, b) => a.json.sort_index! - b.json.sort_index!).map((item) => item.id)
     }
-    const order = (listId: string) => bookmarks
-      .filter((item) => item.listId === listId)
-      .sort((a, b) => a.json.sort_index! - b.json.sort_index!)
-      .map((item) => item.id)
 
-    expect(order('top')).toEqual(['top-c', 'top-b', 'top-a'])
-    expect(order('bottom')).toEqual(['bottom-a', 'bottom-b', 'bottom-c'])
+    expect(order(true)).toEqual(['c', 'b', 'a'])
+    expect(order(false)).toEqual(['a', 'b', 'c'])
   })
 
   it('rejects blank urls and missing list ids', () => {

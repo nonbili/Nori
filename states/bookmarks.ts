@@ -6,6 +6,7 @@ import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
 import { Platform } from 'react-native'
 import { lists$ } from './lists'
+import { settings$ } from './settings'
 import { genId } from '@/lib/utils'
 import { normalizeUrlInput } from '@/lib/url'
 import { addBookmarkRecord, getBookmarkUrlKey, resolveActiveListId } from '@/lib/bookmark-mutations'
@@ -73,7 +74,14 @@ export const bookmarks$: Observable<Store> = observable<Store>({
     const now = new Date().toISOString()
     const id = genId()
     const currentBookmarks = bookmarks$.bookmarks.get()
-    const result = addBookmarkRecord(lists$.lists.get(), currentBookmarks, draft, id, now)
+    const result = addBookmarkRecord(
+      lists$.lists.get(),
+      currentBookmarks,
+      draft,
+      id,
+      now,
+      settings$.newBookmarksAtTop.get(),
+    )
     if (!result) {
       return null
     }
@@ -244,7 +252,12 @@ export const bookmarks$: Observable<Store> = observable<Store>({
         .filter((item) => item.listId === targetListId && !isDeleted(item) && !idSet.has(item.id))
         .map((item) => getBookmarkUrlKey(item.url)),
     )
-    let nextSortIndex = nextBookmarkSortIndex(lists$.lists.get(), items, targetListId, ids.length)
+    let nextSortIndex = nextBookmarkSortIndex(
+      items,
+      targetListId,
+      settings$.newBookmarksAtTop.get(),
+      ids.length,
+    )
     const now = new Date().toISOString()
     let moved = 0
 

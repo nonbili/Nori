@@ -296,22 +296,18 @@ export function isVisible(row: { json?: RowJsonState | null }) {
   return row.json?.visible !== false
 }
 
-export function addsNewAtTop(list?: { json?: RowJsonState | null } | null) {
-  return list?.json?.new_at_top === true
-}
-
 /**
  * The sort index for the first of `count` bookmarks arriving in a list: after
- * its last bookmark, or ahead of its first when the list adds new ones at the top.
+ * its last bookmark, or ahead of its first when new ones go at the top.
  */
 export function nextBookmarkSortIndex(
-  lists: BookmarkListData[],
   bookmarks: BookmarkRecordData[],
   listId: string,
+  newAtTop: boolean,
   count = 1,
 ) {
   const inList = bookmarks.filter((item) => item.listId === listId)
-  if (!addsNewAtTop(lists.find((item) => item.id === listId))) {
+  if (!newAtTop) {
     return inList.length
   }
   return inList.reduce((min, item) => Math.min(min, getSortIndex(item)), count) - count

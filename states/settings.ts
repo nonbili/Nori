@@ -22,6 +22,7 @@ export interface Settings {
   previewImageSource: 'page-image' | 'screenshot'
   bookmarkColumns: 1 | 2
   loadPagesForTitles: boolean
+  newBookmarksAtTop: boolean
   quickSaveSharedLinks: boolean
   quickSaveShareListId: string
 }
@@ -36,6 +37,7 @@ interface Store extends Settings {
   setShowFavicon: (enabled: boolean) => void
   setBookmarkColumns: (columns: 1 | 2) => void
   setLoadPagesForTitles: (enabled: boolean) => void
+  setNewBookmarksAtTop: (enabled: boolean) => void
   setQuickSaveSharedLinks: (enabled: boolean) => void
   setQuickSaveShareListId: (id: string) => void
 }
@@ -58,6 +60,7 @@ export const settings$: Observable<Store> = observable<Store>({
   previewImageSource: 'page-image',
   bookmarkColumns: 2,
   loadPagesForTitles: false,
+  newBookmarksAtTop: true,
   quickSaveSharedLinks: false,
   quickSaveShareListId: '',
   cycleTheme: () => {
@@ -88,6 +91,9 @@ export const settings$: Observable<Store> = observable<Store>({
   },
   setLoadPagesForTitles: (enabled) => {
     settings$.loadPagesForTitles.set(enabled)
+  },
+  setNewBookmarksAtTop: (enabled) => {
+    settings$.newBookmarksAtTop.set(enabled)
   },
   setQuickSaveSharedLinks: (enabled) => {
     settings$.quickSaveSharedLinks.set(enabled)

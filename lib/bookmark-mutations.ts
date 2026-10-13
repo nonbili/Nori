@@ -39,6 +39,7 @@ export function addBookmarkRecord(
   draft: BookmarkDraftData,
   id: string,
   now: string,
+  newAtTop = false,
 ) {
   const url = normalizeUrlInput(draft.url)
   if (!url) {
@@ -78,7 +79,7 @@ export function addBookmarkRecord(
     return { id: existing.id, bookmarks: nextBookmarks }
   }
 
-  const nextSortIndex = nextBookmarkSortIndex(lists, bookmarks, listId)
+  const nextSortIndex = nextBookmarkSortIndex(bookmarks, listId, newAtTop)
   return {
     id,
     bookmarks: [...bookmarks, {

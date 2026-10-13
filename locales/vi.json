@@ -79,9 +79,7 @@
     "hide": "Ẩn",
     "show": "Hiện",
     "hidden": "Danh sách đã ẩn",
-    "unknown": "Danh sách không xác định",
-    "newAtTop": "Thêm dấu trang mới lên đầu",
-    "newAtBottom": "Thêm dấu trang mới xuống cuối"
+    "unknown": "Danh sách không xác định"
   },
   "history": {
     "used": "Đã dùng gần đây",
@@ -198,6 +196,7 @@
       "quickShareHint": "Lưu các URL được chia sẻ vào danh sách đích mà không cần chọn danh sách.",
       "loadPagesForTitles": "Tải trang để lấy tiêu đề",
       "loadPagesForTitlesHint": "Tải từng liên kết đã lưu để đọc tiêu đề. Sử dụng nhiều dữ liệu hơn; các liên kết lưu trong nền sẽ cập nhật khi mở Nori.",
+      "newAtTop": "Thêm dấu trang mới lên đầu",
       "theme": "Giao diện",
       "themeHint": "Chọn giao diện hệ thống, sáng, tối hoặc AMOLED.",
       "system": "Hệ thống",

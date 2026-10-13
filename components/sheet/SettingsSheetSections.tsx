@@ -332,6 +332,7 @@ export const ExperienceSection: React.FC<{ onOpenAppearance: () => void }> = ({ 
   const themeColors = useThemeColors()
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
   const loadPagesForTitles = useValue(settings$.loadPagesForTitles)
+  const newBookmarksAtTop = useValue(settings$.newBookmarksAtTop)
   const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
   const quickSaveShareListId = useValue(settings$.quickSaveShareListId)
   const selectedLanguage = useValue(settings$.language)
@@ -404,6 +405,25 @@ export const ExperienceSection: React.FC<{ onOpenAppearance: () => void }> = ({ 
           </View>
         </View>
       ) : null}
+      <View className="border-b-2 border-well px-4 py-4">
+        <View className="flex-row items-center gap-3">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
+            <MaterialIcons name="vertical-align-top" color={themeColors.contentMuted} size={18} />
+          </View>
+          <View className="flex-1">
+            <NoriText className="font-medium text-content">{t('settings.experience.newAtTop')}</NoriText>
+          </View>
+          <Pressable
+            accessibilityRole="switch"
+            accessibilityLabel={t('settings.experience.newAtTop')}
+            accessibilityState={{ checked: newBookmarksAtTop }}
+            onPress={() => settings$.setNewBookmarksAtTop(!newBookmarksAtTop)}
+            className={`h-8 w-14 rounded-full p-1 ${newBookmarksAtTop ? 'bg-accent-500' : 'bg-muted-strong'}`}
+          >
+            <View className={`h-6 w-6 rounded-full bg-white ${newBookmarksAtTop ? 'ml-auto' : ''}`} />
+          </Pressable>
+        </View>
+      </View>
       <View className="border-b-2 border-well px-4 py-4">
         <View className="flex-row items-center gap-3">
           <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">

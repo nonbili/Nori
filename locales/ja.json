@@ -79,9 +79,7 @@
     "hide": "非表示",
     "show": "表示",
     "hidden": "非表示のリスト",
-    "unknown": "不明なリスト",
-    "newAtTop": "新しいブックマークを先頭に追加",
-    "newAtBottom": "新しいブックマークを末尾に追加"
+    "unknown": "不明なリスト"
   },
   "history": {
     "used": "最近使った項目",
@@ -198,6 +196,7 @@
       "quickShareHint": "リストを選択せずに、保存先リストに共有 URL を直接保存します。",
       "loadPagesForTitles": "ページを読み込んでタイトルを取得",
       "loadPagesForTitlesHint": "保存した各リンクを読み込んでタイトルを取得します。データ通信量が増加します。バックグラウンド保存分は Nori を開いたときに更新されます。",
+      "newAtTop": "新しいブックマークを先頭に追加",
       "theme": "テーマ",
       "themeHint": "システム、ライト、ダーク、AMOLED の表示を切り替えます。",
       "system": "システム",

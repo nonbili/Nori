@@ -79,9 +79,7 @@
     "hide": "Gizle",
     "show": "Göster",
     "hidden": "Gizli listeler",
-    "unknown": "Bilinmeyen liste",
-    "newAtTop": "Yeni yer imlerini üste ekle",
-    "newAtBottom": "Yeni yer imlerini alta ekle"
+    "unknown": "Bilinmeyen liste"
   },
   "history": {
     "used": "Son kullanılanlar",
@@ -197,6 +195,7 @@
       "quickShareHint": "Paylaşılan URL'leri liste seçmeden hedef listeye kaydet.",
       "loadPagesForTitles": "Başlıkları almak için sayfaları yükle",
       "loadPagesForTitlesHint": "Başlığını okumak için kaydedilen her bağlantıyı yükler. Daha fazla veri kullanır; arka planda kaydedilen bağlantılar Nori açıldığında güncellenir.",
+      "newAtTop": "Yeni yer imlerini üste ekle",
       "theme": "Tema",
       "themeHint": "Sistem, açık, koyu ve AMOLED görünümleri arasında geçiş yapın.",
       "system": "Sistem",

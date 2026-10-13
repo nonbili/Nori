@@ -11,7 +11,7 @@ import { bookmarks$ } from '@/states/bookmarks'
 import { lists$, type BookmarkList } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { showSnackbar, ui$ } from '@/states/ui'
-import { addsNewAtTop, getInactiveLists, getVisibleLists, isDeleted } from '@/lib/nori-data'
+import { getInactiveLists, getVisibleLists, isDeleted } from '@/lib/nori-data'
 import { useThemeColors } from '@/lib/theme'
 import { ManageRow, SectionLabel } from '@/components/common/Common'
 import { Sheet } from '@/components/modal/BaseModal'
@@ -116,11 +116,6 @@ export const ManageListsSheet: React.FC = () => {
                         handler: () => ui$.listEditor.set({ id: list.id, name: list.name }),
                       },
                       {
-                        label: addsNewAtTop(list) ? t('lists.newAtBottom') : t('lists.newAtTop'),
-                        icon: addsNewAtTop(list) ? 'vertical-align-bottom' : 'vertical-align-top',
-                        handler: () => lists$.setNewAtTop(list.id, !addsNewAtTop(list)),
-                      },
-                      {
                         label: t('lists.hide'),
                         icon: 'visibility-off',
                         handler: () => toggleList(list, false),
@@ -158,11 +153,6 @@ export const ManageListsSheet: React.FC = () => {
                           label: t('lists.renameAction'),
                           icon: 'edit',
                           handler: () => ui$.listEditor.set({ id: list.id, name: list.name }),
-                        },
-                        {
-                          label: addsNewAtTop(list) ? t('lists.newAtBottom') : t('lists.newAtTop'),
-                          icon: addsNewAtTop(list) ? 'vertical-align-bottom' : 'vertical-align-top',
-                          handler: () => lists$.setNewAtTop(list.id, !addsNewAtTop(list)),
                         },
                         {
                           label: t('lists.show'),

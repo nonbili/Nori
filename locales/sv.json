@@ -79,9 +79,7 @@
     "hide": "Göm",
     "show": "Visa",
     "hidden": "Gömda listor",
-    "unknown": "Okänd lista",
-    "newAtTop": "Lägg till nya bokmärken överst",
-    "newAtBottom": "Lägg till nya bokmärken nederst"
+    "unknown": "Okänd lista"
   },
   "history": {
     "used": "Nyligen använda",
@@ -197,6 +195,7 @@
       "quickShareHint": "Spara delade URL:er i en mållista utan att välja en lista.",
       "loadPagesForTitles": "Läs in sidor för att hämta titlar",
       "loadPagesForTitlesHint": "Läser in varje sparad länk för att hämta titeln. Använder mer data; länkar sparade i bakgrunden uppdateras när Nori öppnas.",
+      "newAtTop": "Lägg till nya bokmärken överst",
       "theme": "Tema",
       "themeHint": "Välj mellan systemets utseende, ljust, mörkt och AMOLED.",
       "system": "System",

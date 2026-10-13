@@ -79,9 +79,7 @@
     "hide": "Ausblenden",
     "show": "Einblenden",
     "hidden": "Ausgeblendete Listen",
-    "unknown": "Unbekannte Liste",
-    "newAtTop": "Neue Lesezeichen oben hinzufügen",
-    "newAtBottom": "Neue Lesezeichen unten hinzufügen"
+    "unknown": "Unbekannte Liste"
   },
   "history": {
     "used": "Kürzlich verwendet",
@@ -198,6 +196,7 @@
       "quickShareHint": "Geteilte URLs direkt in einer Zielliste speichern, ohne eine Liste auszuwählen.",
       "loadPagesForTitles": "Seiten laden, um Titel abzurufen",
       "loadPagesForTitlesHint": "Jeden gespeicherten Link laden, um seinen Titel zu ermitteln. Verbraucht mehr Daten; im Hintergrund gespeicherte Links werden beim Öffnen von Nori aktualisiert.",
+      "newAtTop": "Neue Lesezeichen oben hinzufügen",
       "theme": "Design",
       "themeHint": "Zwischen System, Hell, Dunkel und AMOLED wechseln.",
       "system": "System",

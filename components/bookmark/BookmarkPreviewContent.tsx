@@ -115,13 +115,13 @@ export function BookmarkPreviewContent({
       </View>
       {preview?.imageUri && !failedImage ? (
         // The slot keeps its size, so a shorter image never changes the row height. The tile clips
-        // the corners of an image that fills it; a shorter one rounds its own free corners.
+        // the corners of an image that fills it; a shorter one rounds all its own corners, as the tile clips none of them.
         <View style={{ width: IMAGE_WIDTH, minHeight: IMAGE_HEIGHT, alignSelf: 'stretch', justifyContent: 'center' }}>
           <Image
             source={{ uri: preview.imageUri }}
             style={
               wideHeight
-                ? { width: IMAGE_WIDTH, height: wideHeight, borderTopLeftRadius: 12, borderBottomLeftRadius: 12 }
+                ? { width: IMAGE_WIDTH, height: wideHeight, borderRadius: 12 }
                 : { width: IMAGE_WIDTH, flex: 1 }
             }
             contentFit="cover"

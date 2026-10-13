@@ -79,9 +79,7 @@
     "hide": "Elrejtés",
     "show": "Megjelenítés",
     "hidden": "Rejtett listák",
-    "unknown": "Ismeretlen lista",
-    "newAtTop": "Új könyvjelzők hozzáadása felülre",
-    "newAtBottom": "Új könyvjelzők hozzáadása alulra"
+    "unknown": "Ismeretlen lista"
   },
   "history": {
     "used": "Nemrég használt",
@@ -198,6 +196,7 @@
       "quickShareHint": "Megosztott URL-ek mentése céllistába lista választása nélkül.",
       "loadPagesForTitles": "Oldalak betöltése címekhez",
       "loadPagesForTitlesHint": "Minden mentett hivatkozás betöltése a cím lekéréséhez. Több adatot használ; a háttérben mentett linkek a Nori megnyitásakor frissülnek.",
+      "newAtTop": "Új könyvjelzők hozzáadása felülre",
       "theme": "Téma",
       "themeHint": "Válassz a rendszer, a világos, a sötét és az AMOLED megjelenés közül.",
       "system": "Rendszer",

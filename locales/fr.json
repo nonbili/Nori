@@ -79,9 +79,7 @@
     "hide": "Masquer",
     "show": "Afficher",
     "hidden": "Listes masquées",
-    "unknown": "Liste inconnue",
-    "newAtTop": "Ajouter les nouveaux favoris en haut",
-    "newAtBottom": "Ajouter les nouveaux favoris en bas"
+    "unknown": "Liste inconnue"
   },
   "history": {
     "used": "Utilisés récemment",
@@ -197,6 +195,7 @@
       "quickShareHint": "Enregistrez les URL partagées dans une liste cible sans choisir de liste.",
       "loadPagesForTitles": "Charger les pages pour obtenir les titres",
       "loadPagesForTitlesHint": "Charge chaque lien enregistré pour lire son titre. Utilise plus de données ; les liens enregistrés en arrière-plan sont mis à jour à l’ouverture de Nori.",
+      "newAtTop": "Ajouter les nouveaux favoris en haut",
       "theme": "Thème",
       "themeHint": "Choisissez entre le thème système, clair, sombre et AMOLED.",
       "system": "Système",

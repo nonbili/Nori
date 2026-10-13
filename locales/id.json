@@ -79,9 +79,7 @@
     "hide": "Sembunyikan",
     "show": "Tampilkan",
     "hidden": "Daftar tersembunyi",
-    "unknown": "Daftar tidak dikenal",
-    "newAtTop": "Tambahkan markah baru di atas",
-    "newAtBottom": "Tambahkan markah baru di bawah"
+    "unknown": "Daftar tidak dikenal"
   },
   "history": {
     "used": "Baru saja digunakan",
@@ -198,6 +196,7 @@
       "quickShareHint": "Simpan URL yang dibagikan ke daftar tujuan tanpa memilih daftar terlebih dahulu.",
       "loadPagesForTitles": "Muat halaman untuk mendapatkan judul",
       "loadPagesForTitlesHint": "Memuat setiap tautan yang disimpan untuk membaca judulnya. Membutuhkan lebih banyak kuota; penyimpanan latar belakang diperbarui saat Nori dibuka.",
+      "newAtTop": "Tambahkan markah baru di atas",
       "theme": "Tema",
       "themeHint": "Pilih tampilan sistem, terang, gelap, atau AMOLED.",
       "system": "Sistem",
