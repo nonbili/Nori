@@ -22,6 +22,7 @@ export const defaultState = (): StoredState => ({
     bookmarkView: 'compact',
     previewImageSource: 'page-image',
     showFavicons: true,
+    newBookmarksAtTop: true,
   },
 })
 
@@ -39,6 +40,8 @@ export async function loadState(): Promise<StoredState> {
     stored.preferences.language = normalizeLanguage(stored.preferences.language)
     // Added after v1 shipped, so state persisted before then has no accent.
     stored.preferences.accent = normalizeAccent(stored.preferences.accent)
+    // Likewise newer than v1, and on unless it was turned off.
+    stored.preferences.newBookmarksAtTop = stored.preferences.newBookmarksAtTop !== false
   }
   return stored
 }

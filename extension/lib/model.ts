@@ -42,6 +42,7 @@ export interface Preferences {
   bookmarkView: 'compact' | 'preview'
   previewImageSource: 'page-image' | 'screenshot'
   showFavicons: boolean
+  newBookmarksAtTop: boolean
 }
 
 export interface StoredState {

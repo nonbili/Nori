@@ -5,15 +5,13 @@ import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useEffect, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
+import { useLocales } from 'expo-localization'
 import { ui$ } from '@/states/ui'
 import { useThemeColors } from '@/lib/theme'
+import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { Sheet } from '@/components/modal/BaseModal'
-import {
-  AppearanceSection,
-  ExperienceSection,
-  SyncSettingsSections,
-  TransferSection,
-} from '@/components/sheet/SettingsSheetSections'
+import { SyncSettingsSections, TransferSection } from '@/components/sheet/SettingsSheetSections'
+import { AppearanceSection, ExperienceSection } from '@/components/sheet/SettingsSheetPreferences'
 import { AboutSettingsSection, SettingsAboutPage } from '@/components/sheet/SettingsSheetAbout'
 import { SettingsChangelogPage } from '@/components/sheet/SettingsSheetChangelog'
 import { useSettingsSheetActions } from '@/components/sheet/useSettingsSheetActions'
@@ -27,6 +25,7 @@ export const SettingsSheet: React.FC = () => {
   const scrollRef = useRef<React.ElementRef<typeof ScrollView>>(null)
   const [page, setPage] = useState<'home' | 'appearance' | 'about' | 'changelog'>('home')
   const settingsActions = useSettingsSheetActions()
+  const systemLanguage = resolveI18nLanguageFromExpoLocale(useLocales()[0]) || 'en'
 
   useEffect(() => {
     scrollOffset.value = 0
@@ -100,7 +99,7 @@ export const SettingsSheet: React.FC = () => {
         ) : (
           <>
             <SyncSettingsSections actions={actions} />
-            <ExperienceSection onOpenAppearance={() => setPage('appearance')} />
+            <ExperienceSection onOpenAppearance={() => setPage('appearance')} systemLanguage={systemLanguage} />
             <TransferSection actions={actions} />
             <AboutSettingsSection appVersion={appVersion} actions={actions} />
           </>

@@ -1,20 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { browser } from 'wxt/browser'
 import { useApp } from '../AppContext'
 import { Icon } from '../Icon'
 import { Menu } from '../Menu'
 import { Sheet } from '../Overlays'
-import { AccentSwatches, SectionCard, Segmented, SettingRow, Toggle } from '../Rows'
-import { TypographyRow } from 'nori-root/components/sheet/TypographyRow'
+import { SectionCard, SettingRow } from '../Rows'
+import { AppearanceSection, ExperienceSection } from 'nori-root/components/sheet/SettingsSheetPreferences'
 import { showSnackbar } from 'nori-root/states/ui'
-import { languageNativeNames } from 'nori/lib/language'
 import { DONATE_LINKS, PLAN_URL, RELEASES_URL, REPO_URL } from 'nori/lib/product-links'
-import { languages, systemLanguage } from '../../lib/language'
+import { systemLanguage } from '../../lib/language'
 import { exportBookmarks, readImportFile, type TransferFormat } from '../../lib/transfer'
-import { normalizeAccent } from 'nori-root/lib/accent'
-import { PreviewSettings } from 'nori-root/components/bookmark/PreviewSettings'
-import type { Theme } from '../../lib/model'
 
 const openTab = (url: string) => void browser.tabs.create({ url })
 
@@ -76,127 +72,6 @@ function SyncSection() {
         </div>
       </SectionCard>
     </>
-  )
-}
-
-function ExperienceSection({ onOpenAppearance }: { onOpenAppearance: () => void }) {
-  const { t } = useTranslation()
-  const { snapshot, mutate } = useApp()
-  const { preferences } = snapshot
-  const setPreference = (patch: Partial<typeof preferences>) =>
-    void mutate({ type: 'set-preferences', preferences: patch })
-  const resolvedSystemLanguage = systemLanguage()
-  const toLanguageLabel = (language: string) =>
-    languageNativeNames[language as keyof typeof languageNativeNames] || language
-  const currentLanguageLabel = preferences.language
-    ? toLanguageLabel(preferences.language)
-    : `${t('settings.experience.languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`
-
-  return (
-    <SectionCard title={t('settings.experience.label')}>
-      <SettingRow
-        icon="palette"
-        title={t('settings.appearance.label')}
-        detail={t('settings.appearance.hint')}
-        onClick={onOpenAppearance}
-      />
-      <SettingRow
-        icon="translate"
-        title={t('settings.experience.language')}
-        detail={t('settings.experience.languageHint')}
-        trailing={
-          <Menu
-            className="value-trigger"
-            label={t('settings.experience.language')}
-            trigger={
-              <>
-                <span>{currentLanguageLabel}</span>
-                <Icon name="down" size={15} />
-              </>
-            }
-            items={[
-              {
-                label: `${t('settings.experience.languageSystem')} (${toLanguageLabel(resolvedSystemLanguage)})`,
-                selected: preferences.language === null,
-                handler: () => setPreference({ language: null }),
-              },
-              ...languages.map((language) => ({
-                label: toLanguageLabel(language),
-                selected: preferences.language === language,
-                handler: () => setPreference({ language }),
-              })),
-            ]}
-          />
-        }
-      />
-    </SectionCard>
-  )
-}
-
-function AppearanceSection() {
-  const { t } = useTranslation()
-  const { snapshot, mutate } = useApp()
-  const { preferences } = snapshot
-  const setPreference = (patch: Partial<typeof preferences>) =>
-    void mutate({ type: 'set-preferences', preferences: patch })
-  return (
-    <section className="grid">
-      <div className="section-body">
-        <div className="setting-row column border-b-2 border-well">
-          <div className="flex items-center gap-3">
-            <span className="setting-icon">
-              <Icon name="palette" size={18} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-medium">{t('settings.experience.theme')}</span>
-              <span className="mt-1 block text-sm leading-5 text-content-muted">
-                {t('settings.experience.themeHint')}
-              </span>
-            </span>
-          </div>
-          <Segmented
-            options={(['system', 'light', 'dark', 'amoled'] as Theme[]).map((theme) => ({
-              label: t(`settings.experience.${theme}`),
-              active: preferences.theme === theme,
-              onClick: () => setPreference({ theme }),
-            }))}
-          />
-        </div>
-        <div className="setting-row column border-b-2 border-well">
-          <div className="flex items-center gap-3">
-            <span className="setting-icon">
-              <Icon name="colorLens" size={18} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-medium">{t('settings.experience.accent')}</span>
-              <span className="mt-1 block text-sm leading-5 text-content-muted">
-                {t('settings.experience.accentHint')}
-              </span>
-            </span>
-          </div>
-          <AccentSwatches
-            value={normalizeAccent(preferences.accent)}
-            onChange={(accent) => setPreference({ accent })}
-            customLabel={t('settings.experience.accentCustom')}
-          />
-        </div>
-        <PreviewSettings />
-        <TypographyRow />
-        <SettingRow
-          last
-          icon="image"
-          title={t('settings.experience.showFavicon')}
-          detail={t('settings.experience.showFaviconHint')}
-          trailing={
-            <Toggle
-              label={t('settings.experience.showFavicon')}
-              checked={preferences.showFavicons}
-              onChange={() => setPreference({ showFavicons: !preferences.showFavicons })}
-            />
-          }
-        />
-      </div>
-    </section>
   )
 }
 
@@ -311,6 +186,11 @@ function AboutPage({ version }: { version: string }) {
   )
 }
 
+// The shared sections are react-native-web views, which may shrink below their
+// content as direct children of the sheet's grid and then overlap the next
+// section. A plain block wrapper keeps the row as tall as what it holds.
+const SharedSection = ({ children }: { children: ReactNode }) => <div>{children}</div>
+
 export function SettingsSheet({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation()
   const [page, setPage] = useState<'home' | 'appearance' | 'about'>('home')
@@ -343,13 +223,17 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
     >
       <div ref={scrollRef} className="grid min-h-0 flex-1 content-start gap-6 overflow-y-auto px-6 pb-4">
         {page === 'appearance' ? (
-          <AppearanceSection />
+          <SharedSection>
+            <AppearanceSection />
+          </SharedSection>
         ) : page === 'about' ? (
           <AboutPage version={version} />
         ) : (
           <>
             <SyncSection />
-            <ExperienceSection onOpenAppearance={() => setPage('appearance')} />
+            <SharedSection>
+              <ExperienceSection onOpenAppearance={() => setPage('appearance')} systemLanguage={systemLanguage()} />
+            </SharedSection>
             <TransferSection />
             <SectionCard title={t('settings.about.label')}>
               <SettingRow

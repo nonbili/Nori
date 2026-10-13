@@ -9,6 +9,8 @@ import { setDynamicLoadingEnabled } from '@react-native-vector-icons/common'
 import { browser } from 'wxt/browser'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
+import { useValue } from '@legendapp/state/react'
+import { settings$ } from 'nori-root/states/settings'
 import { NoriHome } from 'nori-root/components/home/NoriHome'
 import { ActionSnackbar } from 'nori-root/components/common/ActionSnackbar'
 import { AppProvider } from './AppContext'
@@ -71,11 +73,16 @@ function ReadyApp({
     document.documentElement.classList.toggle('dark', isDark)
   }, [isDark])
 
+  // Read from the shared store, which the bridge keeps in step with the stored
+  // preference, so the colour follows the picker while it is being dragged
+  // instead of waiting for each write to round-trip.
+  const accent = normalizeAccent(useValue(settings$.accent))
+
   // On the root element rather than a React subtree so the plain-DOM parts of
   // the popup (app.css) and the react-native-web tree both inherit them.
   useEffect(() => {
-    applyAccentToDocument(normalizeAccent(state.snapshot.preferences.accent), isDark ? 'dark' : 'light', state.snapshot.preferences.theme === 'amoled')
-  }, [state.snapshot.preferences.accent, state.snapshot.preferences.theme, isDark])
+    applyAccentToDocument(accent, isDark ? 'dark' : 'light', state.snapshot.preferences.theme === 'amoled')
+  }, [accent, state.snapshot.preferences.theme, isDark])
 
   useEffect(() => {
     document.documentElement.style.setProperty('--nori-font-scale', String(normalizeFontScale(state.snapshot.preferences.fontScale)))

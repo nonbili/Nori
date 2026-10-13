@@ -17,18 +17,79 @@ const toHistoryItem = (item: (typeof history$.openedBookmarks)['get'] extends ()
   openedAt: new Date(item.openedAt).toISOString(),
 })
 
-function currentPayload() {
-  const preferences: Preferences = {
-    theme: settings$.theme.peek() ?? 'system',
-    fontScale: normalizeFontScale(settings$.fontScale.peek()),
-    fontFamily: normalizeFontFamily(settings$.fontFamily.peek()),
-    accent: normalizeAccent(settings$.accent.peek()),
-    language: settings$.language.peek(),
-    lastListId: settings$.lastSelectedListId.peek(),
-    bookmarkView: settings$.bookmarkView.peek(),
-    previewImageSource: settings$.previewImageSource.peek(),
-    showFavicons: settings$.showFavicon.peek(),
+/**
+ * How each stored preference maps onto the shared settings store. The mapped
+ * type makes this the one list to extend: a key added to Preferences without an
+ * entry here does not compile, and reading, projecting and watching all derive
+ * from it.
+ */
+type PreferenceBridge = {
+  [K in keyof Preferences]: {
+    setting$: { onChange: (callback: () => void) => () => void }
+    read: () => Preferences[K]
+    write: (value: Preferences[K]) => void
   }
+}
+
+const preferenceBridge: PreferenceBridge = {
+  theme: {
+    setting$: settings$.theme,
+    read: () => settings$.theme.peek() ?? 'system',
+    write: (value) => settings$.theme.set(value === 'system' ? null : value),
+  },
+  fontScale: {
+    setting$: settings$.fontScale,
+    read: () => normalizeFontScale(settings$.fontScale.peek()),
+    write: (value) => settings$.fontScale.set(normalizeFontScale(value)),
+  },
+  fontFamily: {
+    setting$: settings$.fontFamily,
+    read: () => normalizeFontFamily(settings$.fontFamily.peek()),
+    write: (value) => settings$.fontFamily.set(normalizeFontFamily(value)),
+  },
+  accent: {
+    setting$: settings$.accent,
+    read: () => normalizeAccent(settings$.accent.peek()),
+    write: (value) => settings$.accent.set(normalizeAccent(value)),
+  },
+  language: {
+    setting$: settings$.language,
+    read: () => settings$.language.peek(),
+    write: (value) => settings$.language.set(value as any),
+  },
+  lastListId: {
+    setting$: settings$.lastSelectedListId,
+    read: () => settings$.lastSelectedListId.peek(),
+    write: (value) => settings$.lastSelectedListId.set(value),
+  },
+  bookmarkView: {
+    setting$: settings$.bookmarkView,
+    read: () => settings$.bookmarkView.peek(),
+    write: (value) => settings$.bookmarkView.set(value ?? 'compact'),
+  },
+  previewImageSource: {
+    setting$: settings$.previewImageSource,
+    read: () => settings$.previewImageSource.peek(),
+    write: (value) => settings$.previewImageSource.set(value ?? 'page-image'),
+  },
+  showFavicons: {
+    setting$: settings$.showFavicon,
+    read: () => settings$.showFavicon.peek(),
+    write: (value) => settings$.showFavicon.set(value),
+  },
+  newBookmarksAtTop: {
+    setting$: settings$.newBookmarksAtTop,
+    read: () => settings$.newBookmarksAtTop.peek(),
+    write: (value) => settings$.newBookmarksAtTop.set(value !== false),
+  },
+}
+
+const preferenceKeys = Object.keys(preferenceBridge) as (keyof Preferences)[]
+
+function currentPayload() {
+  const preferences = Object.fromEntries(
+    preferenceKeys.map((key) => [key, preferenceBridge[key].read()]),
+  ) as unknown as Preferences
   return {
     lists: lists$.lists.peek(),
     bookmarks: bookmarks$.bookmarks.peek(),
@@ -96,15 +157,10 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
       history$.openedBookmarks.set(
         snapshot.profile.history.map((item) => ({ ...item, openedAt: Date.parse(item.openedAt) || Date.now() })),
       )
-      settings$.theme.set(snapshot.preferences.theme === 'system' ? null : snapshot.preferences.theme)
-      settings$.fontScale.set(normalizeFontScale(snapshot.preferences.fontScale))
-      settings$.fontFamily.set(normalizeFontFamily(snapshot.preferences.fontFamily))
-      settings$.accent.set(normalizeAccent(snapshot.preferences.accent))
-      settings$.language.set(snapshot.preferences.language as any)
-      settings$.lastSelectedListId.set(snapshot.preferences.lastListId)
-      settings$.bookmarkView.set(snapshot.preferences.bookmarkView ?? 'compact')
-      settings$.previewImageSource.set(snapshot.preferences.previewImageSource ?? 'page-image')
-      settings$.showFavicon.set(snapshot.preferences.showFavicons)
+      for (const key of preferenceKeys) {
+        const write = preferenceBridge[key].write as (value: Preferences[typeof key]) => void
+        write(snapshot.preferences[key])
+      }
       auth$.assign({
         loaded: snapshot.auth.loaded,
         userId: snapshot.auth.userId,
@@ -180,14 +236,7 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
       lists$.lists.onChange(commit),
       bookmarks$.bookmarks.onChange(commit),
       history$.openedBookmarks.onChange(commit),
-      settings$.theme.onChange(commit),
-      settings$.fontScale.onChange(commit),
-      settings$.fontFamily.onChange(commit),
-      settings$.language.onChange(commit),
-      settings$.lastSelectedListId.onChange(commit),
-      settings$.showFavicon.onChange(commit),
-      settings$.bookmarkView.onChange(commit),
-      settings$.previewImageSource.onChange(commit),
+      ...preferenceKeys.map((key) => preferenceBridge[key].setting$.onChange(commit)),
     ]
     return () => {
       stopped = true

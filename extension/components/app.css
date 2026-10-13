@@ -331,27 +331,6 @@ button.setting-row:hover {
 .setting-icon {
   @apply grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-line bg-inset text-content-muted;
 }
-.toggle {
-  @apply flex h-8 w-14 shrink-0 items-center rounded-full bg-muted-strong p-1 transition;
-}
-.toggle.on {
-  @apply bg-accent-500;
-}
-.toggle span {
-  @apply h-6 w-6 rounded-full bg-white transition-transform;
-}
-.toggle.on span {
-  @apply translate-x-6;
-}
-.segmented {
-  @apply rounded-full bg-muted px-4 py-2 text-sm font-medium text-content-secondary;
-}
-.segmented.active {
-  @apply bg-contrast text-content-inverse;
-}
-.value-trigger {
-  @apply flex shrink-0 items-center gap-1 rounded-full border border-line-strong bg-well px-3 py-1.5 text-sm font-medium text-content-secondary;
-}
 .badge {
   @apply inline-block rounded-full border border-line-strong bg-well px-3 py-1 text-xs text-content-secondary;
 }
@@ -400,19 +379,4 @@ button.setting-row:hover {
 }
 .error-toast span {
   @apply min-w-0 flex-1;
-}
-
-/* Accent picker */
-.accent-swatch {
-  @apply grid h-9 w-9 cursor-pointer place-items-center rounded-full border-2 border-transparent bg-transparent p-0 transition;
-}
-.accent-swatch.active {
-  @apply border-content;
-}
-.accent-swatch > span {
-  @apply grid h-6 w-6 place-items-center rounded-full text-content-inverse;
-  background: rgb(var(--accent-swatch-light));
-}
-.dark .accent-swatch > span {
-  background: rgb(var(--accent-swatch-dark));
 }
