@@ -1,10 +1,13 @@
 import { useRef, useState } from 'react'
 import { Image } from 'expo-image'
-import { ActivityIndicator, Pressable, View } from 'react-native'
+import { ActivityIndicator, Platform, Pressable, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import { captureRef } from 'react-native-view-shot'
-import { WebView, type WebViewMessageEvent } from 'react-native-webview'
+import { applyBlocklist, supportsRuntimeBlocklist } from '@/lib/blocklist'
+import { getUserAgent } from '@/lib/useragent'
+import { NoriWebView, type NoriWebViewHandle, type NoriWebViewMessageEvent } from '@/modules/nori-view'
+import { blocklist$ } from '@/states/blocklist'
 import { PREVIEW_IMAGE_RATIO } from '@/components/bookmark/BookmarkPreviewContent'
 import { NoriText } from '@/components/common/NoriText'
 import { FullScreenModal } from '@/components/modal/BaseModal'
@@ -71,7 +74,8 @@ export const PreviewPageSheet: React.FC = () => {
   const { t } = useTranslation()
   const page = useValue(ui$.previewPage)
   const fallback = useValue(settings$.previewImageSource)
-  const webView = useRef<WebView>(null)
+  const webView = useRef<NoriWebViewHandle>(null)
+  const blockAds = useValue(blocklist$.enabled)
   const captureView = useRef<View>(null)
   const [saving, setSaving] = useState(false)
   // Room left once the button has its own. The cover image and the live page share the largest
@@ -116,13 +120,21 @@ export const PreviewPageSheet: React.FC = () => {
     ui$.previewPage.set(null)
   }
 
+  // The switch is global, so it is also what the automatic previews use. The page is loaded again
+  // once the list has landed, since a list only affects the loads that start after it.
+  const toggleBlockAds = async () => {
+    blocklist$.setEnabled(!blockAds)
+    await applyBlocklist()
+    webView.current?.reload()
+  }
+
   const saveFromPage = () => {
     reading.current = true
     setSaving(true)
     webView.current?.injectJavaScript(READ_PAGE_META_SCRIPT)
   }
 
-  const onMessage = async (event: WebViewMessageEvent) => {
+  const onMessage = async (event: NoriWebViewMessageEvent) => {
     let data: Partial<WebViewTitleResult>
     try {
       data = JSON.parse(event.nativeEvent.data) as Partial<WebViewTitleResult>
@@ -217,11 +229,10 @@ export const PreviewPageSheet: React.FC = () => {
               style={{ marginLeft: INDENT, width: frameWidth, height: frameHeight }}
             >
               <View ref={captureView} collapsable={false} className="flex-1 bg-white">
-                {/* The WebView's own user agent, as for automatic previews: bot protection
-                rejects one the engine doesn't match. */}
-                <WebView
+                <NoriWebView
                   ref={webView}
-                  source={{ uri: page.url }}
+                  source={page.url}
+                  userAgent={getUserAgent(Platform.OS)}
                   onMessage={onMessage}
                   onLoadStart={() => {
                     setPageLoading(true)
@@ -233,8 +244,6 @@ export const PreviewPageSheet: React.FC = () => {
                     setPageLoading(false)
                     if (!reading.current) webView.current?.injectJavaScript(READ_PAGE_META_SCRIPT)
                   }}
-                  javaScriptEnabled
-                  domStorageEnabled
                   style={{ flex: 1 }}
                 />
               </View>
@@ -246,6 +255,23 @@ export const PreviewPageSheet: React.FC = () => {
             </View>
           </View>
         </View>
+        {supportsRuntimeBlocklist() ? (
+          <View className="flex-row items-center gap-3">
+            <View className="flex-1">
+              <NoriText className="font-medium text-content">{t('preview.blockAds')}</NoriText>
+              <NoriText className="text-sm text-content-muted">{t('preview.blockAdsHint')}</NoriText>
+            </View>
+            <Pressable
+              accessibilityRole="switch"
+              accessibilityLabel={t('preview.blockAds')}
+              accessibilityState={{ checked: blockAds }}
+              onPress={toggleBlockAds}
+              className={`h-8 w-14 rounded-full p-1 ${blockAds ? 'bg-accent-500' : 'bg-muted-strong'}`}
+            >
+              <View className={`h-6 w-6 rounded-full bg-white ${blockAds ? 'ml-auto' : ''}`} />
+            </Pressable>
+          </View>
+        ) : null}
         <Pressable
           disabled={saving}
           onPress={saveFromPage}

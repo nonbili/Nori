@@ -273,6 +273,8 @@
     "capturePreview": "Capture preview",
     "capture": "Capture",
     "capturing": "Capturing…",
-    "coverNone": "No cover image found"
+    "coverNone": "No cover image found",
+    "blockAds": "Block ads and trackers",
+    "blockAdsHint": "Applies to every page Nori loads for previews and titles."
   }
 }

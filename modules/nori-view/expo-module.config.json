@@ -1,0 +1,9 @@
+{
+  "platforms": ["android", "ios"],
+  "android": {
+    "modules": ["jp.nonbili.nori.view.NoriViewModule"]
+  },
+  "ios": {
+    "modules": ["NoriViewModule"]
+  }
+}

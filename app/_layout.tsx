@@ -27,6 +27,7 @@ import { bookmarks$ } from '@/states/bookmarks'
 import { isDeleted } from '@/lib/nori-data'
 import { previewSource, warmShownPreviews } from '@/lib/bookmark-preview'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
+import { useBlocklistSync } from '@/hooks/useBlocklistSync'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
 import { PreviewPageSheet } from '@/components/sheet/PreviewPageSheet'
 import { ActionSnackbar } from '@/components/common/ActionSnackbar'
@@ -49,6 +50,7 @@ function warmPreviews() {
 }
 
 function LayoutContent() {
+  useBlocklistSync()
   const appColorScheme = useAppColorScheme()
   const themeColors = useThemeColors()
   const userId = useValue(auth$.userId)

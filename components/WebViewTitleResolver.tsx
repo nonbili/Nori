@@ -6,7 +6,8 @@ import { applyRenderedTitle } from '@/lib/title-backfill'
 import { useValue } from '@legendapp/state/react'
 import { useEffect, useRef } from 'react'
 import { AppState, Platform, StyleSheet, View, useWindowDimensions } from 'react-native'
-import { WebView, type WebViewMessageEvent } from 'react-native-webview'
+import { getUserAgent } from '@/lib/useragent'
+import { NoriWebView, type NoriWebViewMessageEvent } from '@/modules/nori-view'
 import {
   completeActiveJob,
   INJECTED_TITLE_SCRIPT,
@@ -15,8 +16,8 @@ import {
   type WebViewTitleResult,
 } from '@/lib/webview-title-resolver'
 
-const DESKTOP_USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+const MOBILE_USER_AGENT = getUserAgent(Platform.OS)
+const DESKTOP_USER_AGENT = getUserAgent(Platform.OS, true)
 // Hard cap per job so a hanging page (consent wall, infinite spinner) can't stall
 // the queue forever.
 const JOB_TIMEOUT_MS = 9000
@@ -94,7 +95,7 @@ export const WebViewTitleResolver: React.FC<{ canvasColor?: string }> = ({ canva
     completeActiveJob(active.id, result)
   }
 
-  const onMessage = async (event: WebViewMessageEvent) => {
+  const onMessage = async (event: NoriWebViewMessageEvent) => {
     try {
       const data = JSON.parse(event.nativeEvent.data) as Partial<WebViewTitleResult>
       const title = (data.title || '').trim()
@@ -154,21 +155,19 @@ export const WebViewTitleResolver: React.FC<{ canvasColor?: string }> = ({ canva
         // The opaque sibling mask and app content conceal it from the user.
         style={{ width: captureWidth, height: captureHeight, backgroundColor: '#fff' }}
       >
-        <WebView
+        <NoriWebView
           // Remount per job so each URL starts from a clean page/probe state.
           key={active.id}
-          source={{ uri: active.url }}
+          source={active.url}
           injectedJavaScript={INJECTED_TITLE_SCRIPT}
           onMessage={onMessage}
           onError={() => finish(null)}
           // Bot protection serves its challenge with an error status.
           onHttpError={() => (active.preview ? undefined : finish(null))}
-          javaScriptEnabled
-          domStorageEnabled
-          // Many SPAs gate content behind a desktop UA; mirror the fetch path.
-          // Preview jobs keep the WebView's own UA: bot protection (e.g. DataDome
-          // on reuters.com) rejects a desktop UA that the engine doesn't match.
-          userAgent={active.preview ? undefined : DESKTOP_USER_AGENT}
+          // Many SPAs gate content behind a desktop UA; mirror the fetch path. Preview jobs use
+          // the mobile one: bot protection (e.g. DataDome on reuters.com) rejects a desktop UA
+          // that the engine doesn't match.
+          userAgent={active.preview ? MOBILE_USER_AGENT : DESKTOP_USER_AGENT}
           style={{ width: captureWidth, height: captureHeight }}
         />
       </View>
