@@ -91,7 +91,6 @@
     "clear": "지우기",
     "clearAction": "방문 기록 지우기",
     "cleared": "방문 기록이 삭제되었습니다",
-    "reopen": "다시 열기",
     "noRecent": "최근 탭이 없습니다",
     "noRecentHint": "Nori에서 연 링크가 여기에 표시되어 나중에 쉽게 다시 열 수 있습니다.",
     "noBookmarks": "아직 북마크가 없습니다",

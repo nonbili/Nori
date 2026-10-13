@@ -60,15 +60,32 @@ export function PreviewSettings() {
     </>
   )
 }
-export function Choice({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+export function Choice({
+  label,
+  active,
+  onPress,
+  tinted,
+}: {
+  label: string
+  active: boolean
+  onPress: () => void
+  // Tint instead of fill, for dialogs where a solid accent button is the primary action.
+  tinted?: boolean
+}) {
+  const themeColors = useThemeColors()
+  const className = tinted
+    ? `rounded-full border px-4 py-2 ${
+        active ? 'border-accent-500 bg-accent-100/70 dark:bg-accent-950/30' : 'border-transparent bg-muted'
+      }`
+    : `rounded-full px-4 py-2 ${active ? 'bg-accent-fill' : 'bg-muted'}`
   return (
-    <Pressable
-      accessibilityRole="radio"
-      accessibilityState={{ selected: active }}
-      onPress={onPress}
-      className={`rounded-full px-4 py-2 ${active ? 'bg-accent-fill' : 'bg-muted'}`}
-    >
-      <NoriText className={`text-sm ${active ? 'text-accent-on' : 'text-content-secondary'}`}>{label}</NoriText>
+    <Pressable accessibilityRole="radio" accessibilityState={{ selected: active }} onPress={onPress} className={className}>
+      <NoriText
+        className={`text-sm ${active && !tinted ? 'text-accent-on' : 'text-content-secondary'}`}
+        style={active && tinted ? { color: themeColors.accent } : undefined}
+      >
+        {label}
+      </NoriText>
     </Pressable>
   )
 }

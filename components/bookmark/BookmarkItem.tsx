@@ -219,11 +219,11 @@ export const BookmarkTile = memo(({
       {preview && !previewHeight && note ? (
         // Hangs off the tile's bottom edge like a tab, so its top corners stay square.
         <View
-          className="flex-row gap-1.5 self-start rounded-xl bg-muted px-3 py-1.5"
+          className="flex-row gap-1.5 self-start rounded-xl bg-accent-100 px-3 py-1.5 dark:bg-accent-950/40"
           style={{ marginLeft: 16, borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
         >
           <MaterialIcons name="edit-note" size={16} color={themeColors.contentSecondary} />
-          <NoriText className="shrink text-xs text-content-secondary" numberOfLines={2}>
+          <NoriText className="shrink text-xs text-accent-900 dark:text-accent-100" numberOfLines={2}>
             {note}
           </NoriText>
         </View>

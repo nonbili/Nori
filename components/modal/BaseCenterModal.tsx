@@ -48,7 +48,7 @@ export const BaseCenterModal: React.FC<{
   // A calc()-based max-width is dropped on native, which let the dialog grow to
   // the full screen width on phones.
   const innerCls = clsx(
-    'w-[30rem] max-w-full self-center rounded-2xl bg-canvas lg:w-[40rem] xl:w-[50rem]',
+    'w-[30rem] max-w-full self-center rounded-[28px] bg-canvas lg:w-[40rem] xl:w-[50rem]',
     containerClassName,
   )
 

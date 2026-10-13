@@ -29,6 +29,9 @@ const getHostLabel = (url: string) => {
   }
 }
 
+// Shared by every text field so they stay the same height.
+const INPUT_CLASS = 'rounded-xl border border-line bg-surface px-4 py-3 text-content'
+
 export const BookmarkEditorSheet: React.FC = () => {
   const { t } = useTranslation()
   const { height } = useWindowDimensions()
@@ -193,7 +196,7 @@ export const BookmarkEditorSheet: React.FC = () => {
   return (
     <BaseCenterModal onClose={onClose}>
       <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: Math.max(220, height - keyboardHeight - 120) }}>
-      <View className="p-6 gap-4">
+      <View className="gap-5 p-6">
         <NoriText className="text-xl font-semibold text-content">
           {editor.id ? t('bookmarks.edit') : t('bookmarks.add')}
         </NoriText>
@@ -207,7 +210,7 @@ export const BookmarkEditorSheet: React.FC = () => {
             keyboardType="url"
             placeholder={t('bookmarks.url')}
             placeholderTextColor={themeColors.contentSubtle}
-            className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
+            className={INPUT_CLASS}
           />
           <NoriTextInput
             value={editor.title}
@@ -216,16 +219,17 @@ export const BookmarkEditorSheet: React.FC = () => {
             autoCorrect={false}
             placeholder={t('bookmarks.titleOptional')}
             placeholderTextColor={themeColors.contentSubtle}
-            className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
+            className={INPUT_CLASS}
           />
         </View>
         {previewMode ? <View className="gap-3">
-          <NoriText className="font-medium text-content">{t('preview.imageSource')}</NoriText>
+          <NoriText className="text-xs font-medium uppercase tracking-[0.12em] text-content-subtle">{t('preview.imageSource')}</NoriText>
           <View className="flex-row flex-wrap gap-2">
             {(['default', 'page-image', 'screenshot'] as const).map((source) => <Choice
               key={source}
               label={t(`preview.${source}`)}
               active={(editor.previewSource ?? 'default') === source}
+              tinted
               onPress={() => { setPreviewError(''); ui$.bookmarkEditor.set({ ...editor, previewSource: source }) }}
             />)}
           </View>
@@ -246,9 +250,6 @@ export const BookmarkEditorSheet: React.FC = () => {
               <MaterialIcons name="refresh" size={22} color={themeColors.content} />
             </Pressable>
           </View> : null}
-          <Pressable disabled={previewLoading} className="self-start rounded-full bg-muted px-4 py-2" onPress={() => void refreshPreview()}>
-            <NoriText className="text-sm text-content">{t(previewLoading ? 'preview.refreshing' : 'preview.refresh')}</NoriText>
-          </Pressable>
           {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}
         </View> : null}
         <View className="gap-2">
@@ -275,7 +276,7 @@ export const BookmarkEditorSheet: React.FC = () => {
             autoCorrect={false}
             placeholder={t('bookmarks.addTag')}
             placeholderTextColor={themeColors.contentSubtle}
-            className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
+            className={INPUT_CLASS}
           />
           {tagSuggestions.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2" keyboardShouldPersistTaps="handled">
@@ -301,7 +302,7 @@ export const BookmarkEditorSheet: React.FC = () => {
           textAlignVertical="top"
           placeholder={t('bookmarks.addNote')}
           placeholderTextColor={themeColors.contentSubtle}
-          className="min-h-[88px] rounded-2xl border border-line bg-surface px-4 py-4 text-content"
+          className={`min-h-[88px] ${INPUT_CLASS}`}
         />
         <ScrollView
           ref={listScrollRef}
@@ -324,19 +325,16 @@ export const BookmarkEditorSheet: React.FC = () => {
               <Pressable
                 key={list.id}
                 onPress={() => ui$.bookmarkEditor.set({ ...editor, listId: list.id })}
-                className="min-h-[32px] py-1.5 items-center justify-center rounded-full px-4"
+                className={`min-h-[32px] items-center justify-center rounded-full border px-4 py-1.5 ${
+                  isActive ? 'border-accent-500 bg-accent-100/70 dark:bg-accent-950/30' : 'border-line bg-surface'
+                }`}
                 onLayout={(event) => {
                   listItemXRef.current[list.id] = event.nativeEvent.layout.x
-                }}
-                style={{
-                  backgroundColor: isActive ? themeColors.contrast : 'transparent',
-                  borderWidth: isActive ? 0 : 1,
-                  borderColor: themeColors.line,
                 }}
               >
                 <NoriText
                   className="text-sm font-medium"
-                  style={{ color: isActive ? themeColors.contentInverse : themeColors.contentMuted }}
+                  style={{ color: isActive ? themeColors.accent : themeColors.contentMuted }}
                 >
                   {list.name}
                 </NoriText>

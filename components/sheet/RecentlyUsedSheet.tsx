@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { Pressable, ScrollView, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { Pressable, View } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
+import { useSharedValue } from 'react-native-reanimated'
 import { NoriText } from '@/components/common/NoriText'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
@@ -43,12 +45,12 @@ function TabButton({
     <Pressable
       onPress={onPress}
       className={`flex-1 items-center rounded-xl px-3 py-2 ${
-        active ? 'bg-contrast' : 'bg-transparent'
+        active ? 'bg-accent-fill' : 'bg-transparent'
       }`}
     >
       <NoriText
         className={`text-xs font-medium ${
-          active ? 'text-content-inverse' : 'text-content-muted'
+          active ? 'text-accent-on' : 'text-content-muted'
         }`}
       >
         {label}
@@ -63,7 +65,6 @@ function BookmarkRow({
   icon,
   listLabel,
   subtitle,
-  trailing,
   onPress,
 }: {
   title: string
@@ -71,7 +72,6 @@ function BookmarkRow({
   icon: string
   listLabel?: string
   subtitle?: string
-  trailing?: { label: string }
   onPress: () => void
 }) {
   return (
@@ -108,13 +108,6 @@ function BookmarkRow({
           </NoriText>
         )}
       </View>
-      {trailing ? (
-        <View className="rounded-full bg-muted px-2 py-1">
-          <NoriText className="text-2xs font-medium uppercase tracking-[0.12em] text-content-muted">
-            {trailing.label}
-          </NoriText>
-        </View>
-      ) : null}
     </Pressable>
   )
 }
@@ -135,7 +128,22 @@ export function RecentlyUsedSheet() {
   const allBookmarks = useValue(bookmarks$.bookmarks)
   const allLists = useValue(lists$.lists)
   const [tab, setTab] = useState<HistoryTab>('used')
+  const scrollOffset = useSharedValue(0)
+  const scrollRef = useRef<React.ElementRef<typeof ScrollView>>(null)
   const listNameById = new Map(allLists.map((list) => [list.id, list.name]))
+
+  // The sheet unmounts its content when closed, so the ScrollView reopens at the top.
+  useEffect(() => {
+    if (!visible) {
+      scrollOffset.value = 0
+    }
+  }, [visible, scrollOffset])
+
+  const selectTab = (next: HistoryTab) => {
+    scrollOffset.value = 0
+    scrollRef.current?.scrollTo({ y: 0, animated: false })
+    setTab(next)
+  }
 
   const clearRecentHistory = () => {
     const snapshot = history$.openedBookmarks.get()
@@ -155,14 +163,24 @@ export function RecentlyUsedSheet() {
       showCloseButton={false}
       height="60%"
       onClose={() => ui$.recentSheetOpen.set(false)}
+      contentScrollRef={scrollRef}
+      contentScrollOffset={scrollOffset}
     >
       <View className="flex-1 gap-4">
         <View className="flex-row gap-1 rounded-2xl bg-muted p-1">
-          <TabButton label={t('history.used')} active={tab === 'used'} onPress={() => setTab('used')} />
-          <TabButton label={t('history.added')} active={tab === 'added'} onPress={() => setTab('added')} />
+          <TabButton label={t('history.used')} active={tab === 'used'} onPress={() => selectTab('used')} />
+          <TabButton label={t('history.added')} active={tab === 'added'} onPress={() => selectTab('added')} />
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+        <ScrollView
+          ref={scrollRef}
+          showsVerticalScrollIndicator={false}
+          className="flex-1"
+          onScroll={(event) => {
+            scrollOffset.value = event.nativeEvent.contentOffset.y
+          }}
+          scrollEventThrottle={16}
+        >
           <View className="gap-4 pb-4">
             {tab === 'used' ? (
               recentlyUsed.length > 0 ? (
@@ -183,7 +201,6 @@ export function RecentlyUsedSheet() {
                           title={bookmark.title}
                           url={bookmark.url}
                           icon={bookmark.icon}
-                          trailing={{ label: t('history.reopen') }}
                           onPress={() => {
                             ui$.recentSheetOpen.set(false)
                             void openBookmarkAction(bookmark)
