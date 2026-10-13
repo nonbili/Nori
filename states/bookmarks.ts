@@ -1,5 +1,7 @@
 import { observable, observe, syncState, type Observable } from '@legendapp/state'
 import { updatePreviewBookmarks } from '@/lib/bookmark-preview'
+import { previewKey } from '@/lib/bookmark-preview-types'
+import { pruneImageRatios } from '@/lib/preview-layout'
 import { syncObservable } from '@legendapp/state/sync'
 import { ObservablePersistMMKV } from '@legendapp/state/persist-plugins/mmkv'
 import { Platform } from 'react-native'
@@ -335,5 +337,13 @@ if (Platform.OS !== 'web') {
     if (!syncState(bookmarks$.bookmarks).isPersistLoaded.get()) return
     // Tombstones remain live until purged so Undo and sync retain screenshots.
     void updatePreviewBookmarks(bookmarks.map((row) => row.url)).catch(() => {})
+    const ratioKeys = new Set<string>()
+    for (const row of bookmarks) {
+      try {
+        ratioKeys.add(previewKey(row.url, 'page-image'))
+        ratioKeys.add(previewKey(row.url, 'screenshot'))
+      } catch {}
+    }
+    pruneImageRatios(ratioKeys)
   })
 }

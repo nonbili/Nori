@@ -109,6 +109,21 @@ export function createNativePreviewStorage(fs: PreviewFileSystem, directory: str
     return { ...record.preview, imageUri }
   }
 
+  // For the startup warm-up: reads one record without waiting for initialize(), which scans every
+  // record and takes seconds on a big library. Never deletes, since a record may be mid-rewrite.
+  async function peekPreview(key: string): Promise<BookmarkPreview | undefined> {
+    try {
+      const record = JSON.parse(await fs.readAsStringAsync(`${directory}${fileName(key)}.json`)) as StoredPreview
+      if (record.key !== key || typeof record.preview?.description !== 'string') return undefined
+      const image = imageFile(record)
+      const imageUri = image ? directory + image : ''
+      if (imageUri && !(await fs.getInfoAsync(imageUri)).exists) return undefined
+      return { ...record.preview, imageUri }
+    } catch {
+      return undefined
+    }
+  }
+
   async function writePreview(key: string, value: BookmarkPreview) {
     await initialize()
     if (liveKeys && !liveKeys.has(key)) return
@@ -166,5 +181,5 @@ export function createNativePreviewStorage(fs: PreviewFileSystem, directory: str
     }
   }
 
-  return { readPreview, writePreview, prunePreviews }
+  return { readPreview, peekPreview, writePreview, prunePreviews }
 }

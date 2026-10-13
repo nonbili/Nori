@@ -7,5 +7,6 @@ import { createNativePreviewStorage } from './native-preview-storage'
 // Persist only file names, never iOS container paths.
 const storage = createNativePreviewStorage(FileSystem, `${FileSystem.documentDirectory}bookmark-previews/`)
 export const readPreview = storage.readPreview
+export const peekPreview = storage.peekPreview
 export const writePreview = storage.writePreview
 export const prunePreviews = storage.prunePreviews

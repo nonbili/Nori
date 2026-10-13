@@ -24,6 +24,8 @@ export async function readPreview(key: string): Promise<BookmarkPreview | undefi
     request.onerror = () => reject(request.error)
   })
 }
+// Web has no slow startup scan to skip.
+export const peekPreview = readPreview
 export async function writePreview(key: string, preview: BookmarkPreview) {
   const db = await open()
   if (liveKeys && !liveKeys.has(key)) return

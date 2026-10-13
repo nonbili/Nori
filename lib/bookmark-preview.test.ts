@@ -10,6 +10,8 @@ import {
   updatePreviewBookmarks,
   retainEditorPreview,
   saveRenderedPreview,
+  shownPreview,
+  warmShownPreviews,
 } from './bookmark-preview'
 import { previewKey, previewSource } from './bookmark-preview-types'
 import { readPreview, writePreview } from './bookmark-preview-storage'
@@ -401,5 +403,23 @@ describe('bookmark previews', () => {
       imageUri: 'data:image/jpeg;base64,b2xk',
     })
     await expect(saveRenderedPreview('https://rendered-empty.example/', 'page-image', { description: '', imageUrl: '' })).rejects.toThrow('preview_page_empty')
+  })
+  it('warms saved previews so a row renders them without an async read', async () => {
+    const url = 'https://warm.example/page'
+    expect(shownPreview(url, 'page-image')).toBeUndefined()
+    await updatePreviewBookmarks([url])
+    await writePreview(previewKey(url, 'page-image'), {
+      description: 'Warm',
+      imageUrl: '',
+      imageUri: '',
+      savedAt: 1,
+    })
+    await warmShownPreviews([
+      { url, source: 'page-image' },
+      { url: 'not a url', source: 'page-image' },
+      { url: 'https://missing.example', source: 'screenshot' },
+    ])
+    expect(shownPreview(url, 'page-image')?.description).toBe('Warm')
+    expect(shownPreview('https://missing.example', 'screenshot')).toBeUndefined()
   })
 })

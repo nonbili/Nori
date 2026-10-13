@@ -54,4 +54,18 @@ describe('fetch timeout and cancellation', () => {
       server.stop(true)
     }
   })
+  it('omits credentials so the native cookie jar is never consulted', async () => {
+    const realFetch = globalThis.fetch
+    let seen: RequestInit | undefined
+    globalThis.fetch = (async (_url: unknown, init?: RequestInit) => {
+      seen = init
+      return new Response('ok')
+    }) as typeof fetch
+    try {
+      await fetchWithTimeout('https://example.com', { credentials: 'include' })
+      expect(seen?.credentials).toBe('omit')
+    } finally {
+      globalThis.fetch = realFetch
+    }
+  })
 })

@@ -1,6 +1,6 @@
 import { fetchPreviewImage } from './preview-image'
 import { getPreviewMeta } from './bookmark'
-import { readPreview, writePreview, prunePreviews } from './bookmark-preview-storage'
+import { readPreview, peekPreview, writePreview, prunePreviews } from './bookmark-preview-storage'
 import {
   blockedPreviewStatus,
   previewKey,
@@ -321,4 +321,37 @@ export async function saveRenderedPreview(
 
 export function getCachedBookmarkPreview(url: string, source: PreviewSource) {
   return readPreview(previewKey(url, source))
+}
+
+// What each row last showed. A row scrolled back into view mounts at its final height instead of
+// growing once the cache is read, which shifted the list under the finger when scrolling up.
+// Native only: there the image is a file uri, on web and desktop it is the image itself.
+const shownPreviews = new Map<string, BookmarkPreview>()
+export function rememberShownPreview(key: string, preview: BookmarkPreview) {
+  shownPreviews.set(key, preview)
+}
+export function shownPreview(url: string, source: PreviewSource) {
+  try {
+    return shownPreviews.get(previewKey(url, source))
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Reads the saved previews of these bookmarks into `shownPreviews`, so the first render of the
+ * list already has them instead of showing text-only tiles until each file read returns. Stops
+ * waiting after `timeoutMs`; reads still in flight keep filling the map.
+ */
+export async function warmShownPreviews(items: { url: string; source: PreviewSource }[], timeoutMs = 1000) {
+  const reads = items.map(async ({ url, source }) => {
+    try {
+      const key = previewKey(url, source)
+      const preview = await peekPreview(key)
+      if (preview) shownPreviews.set(key, preview)
+    } catch {}
+  })
+  let timer: ReturnType<typeof setTimeout> | undefined
+  await Promise.race([Promise.all(reads), new Promise((resolve) => (timer = setTimeout(resolve, timeoutMs)))])
+  clearTimeout(timer)
 }

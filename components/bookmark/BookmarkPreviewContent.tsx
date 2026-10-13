@@ -8,11 +8,13 @@ import { Favicon } from './Favicon'
 import {
   getCachedBookmarkPreview,
   loadBookmarkPreview,
+  rememberShownPreview,
+  shownPreview,
   onPreviewChange,
   previewSource,
-  type BookmarkPreview,
 } from '@/lib/bookmark-preview'
 import { previewKey } from '@/lib/bookmark-preview-types'
+import { getImageRatio, setImageRatio } from '@/lib/preview-layout'
 import { hasPlaceholderTitle } from '@/lib/bookmark-title'
 
 // The image runs to the tile's top, right and bottom edges, so its slot takes in the p-4 the text
@@ -22,25 +24,10 @@ const IMAGE_WIDTH = 104 + 2 * TILE_PADDING
 const IMAGE_HEIGHT = 80 + 2 * TILE_PADDING
 // Wide page images (GitHub cards, banners) are shown whole up to 2:1 rather than cropped to the slot.
 const IMAGE_MIN_HEIGHT = IMAGE_WIDTH / 2
-// Remembered across mounts, so a recycled row sizes its image before it loads again. Keyed by
-// preview key, not image uri: web and desktop uris are data urls holding the whole image.
-const imageRatios = new Map<string, number>()
-
-// What each row last showed. A row scrolled back into view mounts at its final height instead of
-// growing once the cache is read, which shifted the list under the finger when scrolling up.
-// Native only: there the image is a file uri, on web and desktop it is the image itself.
-const shownPreviews = new Map<string, BookmarkPreview>()
-function shownPreview(url: string, source: Parameters<typeof previewKey>[1]) {
-  try {
-    return shownPreviews.get(previewKey(url, source))
-  } catch {
-    return undefined
-  }
-}
 
 // Undefined when the image is tall enough to fill the slot, however tall the text makes the tile.
 function wideImageHeight(key: string) {
-  const ratio = imageRatios.get(key)
+  const ratio = getImageRatio(key)
   const height = ratio ? Math.max(IMAGE_MIN_HEIGHT, IMAGE_WIDTH / ratio) : IMAGE_HEIGHT
   return height < IMAGE_HEIGHT ? height : undefined
 }
@@ -77,7 +64,7 @@ export function BookmarkPreviewContent({
           : loadBookmarkPreview(bookmark.url, source, false, { signal: controller.signal })
       ).then(
         (value) => {
-          if (value && Platform.OS !== 'web') shownPreviews.set(key, value)
+          if (value && Platform.OS !== 'web') rememberShownPreview(key, value)
           if (mounted) {
             setPreview(value)
             setFailedImage(false)
@@ -143,9 +130,9 @@ export function BookmarkPreviewContent({
                 // rounded pixel from one load to the next. Following that would resize the
                 // image, which loads it again at the new size, without end.
                 const ratio = source.width / source.height
-                const known = imageRatios.get(imageKey)
+                const known = getImageRatio(imageKey)
                 if (!known || Math.abs(ratio - known) / known > 0.02) {
-                  imageRatios.set(imageKey, ratio)
+                  setImageRatio(imageKey, ratio)
                   redraw()
                 }
               }

@@ -23,7 +23,9 @@ export async function fetchWithTimeout(url: string, init: RequestInit = {}, time
     return await Promise.race([
       cancelled,
       (async () => {
-        const response = await fetch(url, { ...init, signal: controller.signal })
+        // Expo fetch defaults to 'include', which routes through OkHttp's cookie jar; a WebView
+        // cookie like nytimes' quoted gpp-string (`",,..."`) crashes it with substring(1, 0).
+        const response = await fetch(url, { ...init, credentials: 'omit', signal: controller.signal })
         const body = await response.arrayBuffer()
         const buffered = new Response(
           init.method === 'HEAD' || [204, 205, 304].includes(response.status) ? null : body,

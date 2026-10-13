@@ -1,13 +1,14 @@
 import '@/lib/i18n'
 import './global.css'
 
-import { AppState, Appearance, Linking, LogBox, View } from 'react-native'
+import { AppState, Appearance, Linking, LogBox, Platform, View } from 'react-native'
 import { Slot } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import { useValue } from '@legendapp/state/react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocales } from 'expo-localization'
 import i18n from 'i18next'
 import { colorScheme as nativeWindColorScheme, vars } from 'nativewind'
@@ -22,12 +23,30 @@ import { auth$, bootstrapAuth } from '@/states/auth'
 import { listenIosTransactions, reconcileIosTransactions } from '@/lib/ios-billing'
 import { normalizeFontScale } from '@/lib/typography'
 import { settings$ } from '@/states/settings'
+import { bookmarks$ } from '@/states/bookmarks'
+import { isDeleted } from '@/lib/nori-data'
+import { previewSource, warmShownPreviews } from '@/lib/bookmark-preview'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
 import { PreviewPageSheet } from '@/components/sheet/PreviewPageSheet'
 import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 
 LogBox.ignoreAllLogs()
+
+// Preview tiles read their saved preview from files, so on a cold start they first render without
+// an image and then fill in. Keep the splash up and the tiles unmounted until those reads are done
+// (capped at a second), so they mount with their preview and final size.
+const holdSplash = Platform.OS !== 'web' && settings$.bookmarkView.peek() === 'preview'
+if (holdSplash) void SplashScreen.preventAutoHideAsync().catch(() => {})
+
+function warmPreviews() {
+  const fallback = settings$.previewImageSource.peek()
+  const items = bookmarks$.bookmarks
+    .peek()
+    .filter((row) => !isDeleted(row))
+    .map((row) => ({ url: row.url, source: previewSource(row.json?.previewSource, fallback) }))
+  return warmShownPreviews(items)
+}
 
 function LayoutContent() {
   const appColorScheme = useAppColorScheme()
@@ -101,6 +120,18 @@ function LayoutContent() {
     }
   }, [userId])
 
+  const [previewsReady, setPreviewsReady] = useState(!holdSplash)
+  useEffect(() => {
+    if (holdSplash) void warmPreviews().finally(() => setPreviewsReady(true))
+  }, [])
+  useEffect(() => {
+    if (holdSplash && previewsReady) {
+      // After the tiles have committed, so the first frame shown is the final one.
+      const frame = requestAnimationFrame(() => void SplashScreen.hideAsync().catch(() => {}))
+      return () => cancelAnimationFrame(frame)
+    }
+  }, [previewsReady])
+
   useEffect(() => {
     // Before the watchers start, so compacting old tombstones does not mark every
     // row pending and schedule a full push.
@@ -142,7 +173,7 @@ function LayoutContent() {
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <WebViewTitleResolver canvasColor={themeColors.canvas} />
       <PreviewPageSheet />
-      <Slot />
+      {previewsReady ? <Slot /> : null}
       <ActionSnackbar />
     </View>
   )
