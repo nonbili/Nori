@@ -14,6 +14,8 @@ import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { useThemeColors } from '@/lib/theme'
 import { showToast } from '@/lib/toast'
 import { BookmarkPagerToolbar } from '@/components/home/BookmarkPagerToolbar'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { EdgeFade } from '@/components/home/EdgeFade'
 import { BookmarkListChips, BookmarkPagerPages, type BookmarkPagerViewModel } from '@/components/home/BookmarkPagerViews'
 import type { NouMenuItem } from '@/components/menu/NouMenu'
 
@@ -58,6 +60,8 @@ export const BookmarkPager: React.FC<{
 }> = ({ newBookmarkDefaults, menuItems, onOpenSettings }) => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
+  const insets = useSafeAreaInsets()
+  const [headerHeight, setHeaderHeight] = useState(0)
   const lists = useValue(lists$.lists)
   const bookmarks = useValue(bookmarks$.bookmarks)
   const selectedListId = useValue(settings$.lastSelectedListId)
@@ -377,6 +381,7 @@ export const BookmarkPager: React.FC<{
   }, [t])
 
   const pagerActions = {
+    topInset: headerHeight,
     iconSubtleColor: themeColors.contentSubtle,
     iconAccentColor: themeColors.accent,
     themeColors,
@@ -439,8 +444,18 @@ export const BookmarkPager: React.FC<{
         }
       }}
     >
-        <BookmarkListChips pager={pagerView} extraMenuItems={menuItems} />
-        <BookmarkPagerPages pager={pagerView} actions={pagerActions} />
+        <View className="flex-1">
+          <BookmarkPagerPages pager={pagerView} actions={pagerActions} />
+        </View>
+        <View
+          pointerEvents="box-none"
+          className="absolute left-0 right-0 top-0 z-10"
+          onLayout={(event) => setHeaderHeight(Math.round(event.nativeEvent.layout.height))}
+        >
+          <EdgeFade edge="top" height={headerHeight + 16} color={themeColors.canvas} solid={55} alpha={0.9} />
+          <BookmarkListChips pager={pagerView} extraMenuItems={menuItems} />
+        </View>
+        <EdgeFade edge="bottom" height={insets.bottom + 96} color={themeColors.canvas} />
 
         <BookmarkPagerToolbar
           selectedCount={selectedBookmarks.length}

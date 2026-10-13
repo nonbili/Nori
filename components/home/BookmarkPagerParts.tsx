@@ -29,6 +29,8 @@ const BOTTOM_OVERSCROLL_OPEN_THRESHOLD = 56
 const LARGE_EDIT_LIST_THRESHOLD = 120
 
 export interface BookmarkPagerActions {
+  /** Height of the chips header floating over the page; content starts below it. */
+  topInset: number
   iconSubtleColor: string
   iconAccentColor: string
   themeColors: ThemeColors
@@ -245,7 +247,7 @@ export const BookmarkListPage = memo(({
             // Compact tiles sit centred like a launcher; preview cards read from the top.
             justifyContent: preview ? 'flex-start' : 'center',
             paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-            paddingTop: preview && !bookmarkEditMode ? 4 : 16,
+            paddingTop: actions.topInset + (preview && !bookmarkEditMode ? 4 : 16),
             paddingBottom: bottomPadding,
           }}
           columnWrapperStyle={columns === 2 ? { gap: GRID_GAP, marginBottom: GRID_GAP } : undefined}
@@ -294,7 +296,7 @@ export const BookmarkListPage = memo(({
         onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}
         scrollEventThrottle={16}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: preview ? 'flex-start' : 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16, paddingBottom: bottomPadding }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: preview ? 'flex-start' : 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: actions.topInset + 16, paddingBottom: bottomPadding }}
         className="flex-1"
       >
         <View className="gap-8">

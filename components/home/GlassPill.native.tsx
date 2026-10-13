@@ -36,7 +36,7 @@ export const GlassPill: React.FC<{ gap?: string; className?: string; children: R
               fill,
               {
                 borderRadius: 999,
-                backgroundColor: dark ? 'rgba(48,50,60,0.55)' : 'rgba(255,255,255,0.62)',
+                backgroundColor: dark ? 'rgba(48,50,60,0.88)' : 'rgba(255,255,255,0.9)',
                 experimental_backgroundImage: dark
                   ? 'linear-gradient(to bottom, rgba(255,255,255,0.16), rgba(255,255,255,0.02) 55%, rgba(255,255,255,0.06))'
                   : 'linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0.15) 55%, rgba(120,130,160,0.10))',
