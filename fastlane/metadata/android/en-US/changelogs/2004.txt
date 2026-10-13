@@ -1,0 +1,6 @@
+- Block ads and trackers in capture webviews with native nori-view
+- Choose cover image or screenshot when capturing previews
+- Warm bookmark preview tiles, preserve image ratios, and fix scroll jitter
+- Scroll bookmark tiles behind a floating chips header with edge fades
+- New bookmarks are now added at the top by default; turn it off in Settings
+- Improve bookmark sheet styling
