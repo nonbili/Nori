@@ -272,6 +272,8 @@
     "browserMissing": "Установіть Chrome, Chromium або Edge для знімків екрана.",
     "capturePreview": "Захоплення попереднього перегляду",
     "capture": "Захопити",
-    "capturing": "Захоплення…"
+    "capturing": "Захоплення…",
+    "coverNone": "Обкладинку не знайдено",
+    "blockAds": "Блокувати рекламу та трекери"
   }
 }

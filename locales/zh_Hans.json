@@ -127,7 +127,8 @@
       "errorSignInBuy": "登录以购买 Nori 同步",
       "errorSignInRestore": "登录以恢复购买",
       "errorNoPurchase": "未找到可恢复的 Nori 同步购买记录",
-      "errorPending": "最新更改仍在同步，请稍后再试。"
+      "errorPending": "最新更改仍在同步，请稍后再试。",
+      "purchasePending": "购买待批准。批准后即可解锁同步。"
     },
     "plan": {
       "label": "当前套餐",
@@ -238,12 +239,14 @@
       "label": "关于",
       "version": "版本",
       "code": "源代码",
-      "donate": "捐赠"
+      "donate": "捐赠",
+      "extensionPrivacy": "不读取任何页面内容。Nori 仅接收您选择保存的链接。"
     },
     "appearance": {
       "label": "外观",
       "hint": "主题、强调色、字体和书签显示。"
-    }
+    },
+    "openInTab": "在标签页中打开"
   },
   "common": {
     "back": "返回",
@@ -269,6 +272,8 @@
     "browserMissing": "请安装 Chrome、Chromium 或 Edge 以截取网页。",
     "capturePreview": "捕获预览",
     "capture": "捕获",
-    "capturing": "捕获中…"
+    "capturing": "捕获中…",
+    "coverNone": "未找到封面图",
+    "blockAds": "拦截广告和跟踪器"
   }
 }

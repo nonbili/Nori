@@ -127,7 +127,8 @@
       "errorSignInBuy": "Inicia sesión para comprar Nori Sync",
       "errorSignInRestore": "Inicia sesión para restaurar compras",
       "errorNoPurchase": "No se encontró ninguna compra de Nori Sync para restaurar",
-      "errorPending": "Tus últimos cambios aún se están sincronizando. Inténtalo de nuevo en un momento."
+      "errorPending": "Tus últimos cambios aún se están sincronizando. Inténtalo de nuevo en un momento.",
+      "purchasePending": "Compra pendiente de aprobación. La sincronización se desbloqueará una vez aprobada."
     },
     "plan": {
       "label": "Plan actual",
@@ -238,12 +239,14 @@
       "label": "Acerca de",
       "version": "Versión",
       "code": "Código",
-      "donate": "Donar"
+      "donate": "Donar",
+      "extensionPrivacy": "No se lee el contenido de la página. Nori solo recibe los enlaces que decides guardar."
     },
     "appearance": {
       "label": "Apariencia",
       "hint": "Tema, color de acento, fuentes y visualización de marcadores."
-    }
+    },
+    "openInTab": "Abrir en una pestaña"
   },
   "common": {
     "back": "Atrás",
@@ -269,6 +272,8 @@
     "browserMissing": "Instale Chrome, Chromium o Edge para capturar pantallas.",
     "capturePreview": "Capturar vista previa",
     "capture": "Capturar",
-    "capturing": "Capturando…"
+    "capturing": "Capturando…",
+    "coverNone": "No se encontró imagen de portada",
+    "blockAds": "Bloquear anuncios y rastreadores"
   }
 }

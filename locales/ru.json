@@ -272,6 +272,8 @@
     "browserMissing": "Установите Chrome, Chromium или Edge для снимков экрана.",
     "capturePreview": "Захват предпросмотра",
     "capture": "Захватить",
-    "capturing": "Захват…"
+    "capturing": "Захват…",
+    "coverNone": "Обложка не найдена",
+    "blockAds": "Блокировать рекламу и трекеры"
   }
 }

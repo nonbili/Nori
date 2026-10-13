@@ -127,7 +127,8 @@
       "errorSignInBuy": "Zaloguj się, aby kupić Nori Sync",
       "errorSignInRestore": "Zaloguj się, aby przywrócić zakupy",
       "errorNoPurchase": "Nie znaleziono zakupu Nori Sync do przywrócenia",
-      "errorPending": "Twoje najnowsze zmiany są nadal synchronizowane. Spróbuj ponownie za chwilę."
+      "errorPending": "Twoje najnowsze zmiany są nadal synchronizowane. Spróbuj ponownie za chwilę.",
+      "purchasePending": "Zakup oczekuje na zatwierdzenie. Synchronizacja zostanie odblokowana po zatwierdzeniu."
     },
     "plan": {
       "label": "Aktualny plan",
@@ -238,12 +239,14 @@
       "label": "O aplikacji",
       "version": "Wersja",
       "code": "Kod źródłowy",
-      "donate": "Wesprzyj"
+      "donate": "Wesprzyj",
+      "extensionPrivacy": "Zawartość strony nie jest odczytywana. Nori otrzymuje tylko linki, które zdecydujesz się zapisać."
     },
     "appearance": {
       "label": "Wygląd",
       "hint": "Motyw, kolor akcentu, czcionki i wyświetlanie zakładek."
-    }
+    },
+    "openInTab": "Otwórz na karcie"
   },
   "common": {
     "back": "Wstecz",
@@ -269,6 +272,8 @@
     "browserMissing": "Zainstaluj Chrome, Chromium lub Edge, aby wykonywać zrzuty ekranu.",
     "capturePreview": "Przechwyć podgląd",
     "capture": "Przechwyć",
-    "capturing": "Przechwytywanie…"
+    "capturing": "Przechwytywanie…",
+    "coverNone": "Nie znaleziono obrazu okładki",
+    "blockAds": "Blokuj reklamy i moduły śledzące"
   }
 }

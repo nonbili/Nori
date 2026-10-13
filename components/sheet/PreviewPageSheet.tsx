@@ -259,7 +259,6 @@ export const PreviewPageSheet: React.FC = () => {
           <View className="flex-row items-center gap-3">
             <View className="flex-1">
               <NoriText className="font-medium text-content">{t('preview.blockAds')}</NoriText>
-              <NoriText className="text-sm text-content-muted">{t('preview.blockAdsHint')}</NoriText>
             </View>
             <Pressable
               accessibilityRole="switch"

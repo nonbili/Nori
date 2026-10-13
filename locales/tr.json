@@ -127,7 +127,8 @@
       "errorSignInBuy": "Nori Sync satın almak için giriş yapın",
       "errorSignInRestore": "Satın alımları geri yüklemek için giriş yapın",
       "errorNoPurchase": "Geri yüklenecek Nori Sync satın alımı bulunamadı",
-      "errorPending": "Son değişiklikleriniz hâlâ eşitleniyor. Birazdan tekrar deneyin."
+      "errorPending": "Son değişiklikleriniz hâlâ eşitleniyor. Birazdan tekrar deneyin.",
+      "purchasePending": "Satın alma onayı bekleniyor. Senkronizasyon onaylandıktan sonra açılacaktır."
     },
     "plan": {
       "label": "Mevcut plan",
@@ -238,12 +239,14 @@
       "label": "Hakkında",
       "version": "Sürüm",
       "code": "Kaynak kodu",
-      "donate": "Bağış yap"
+      "donate": "Bağış yap",
+      "extensionPrivacy": "Sayfa içeriği okunmaz. Nori yalnızca kaydetmeyi seçtiğiniz bağlantıları alır."
     },
     "appearance": {
       "label": "Görünüm",
       "hint": "Tema, vurgu rengi, yazı tipleri ve yer imi görünümü."
-    }
+    },
+    "openInTab": "Bir sekmede aç"
   },
   "common": {
     "back": "Geri",
@@ -269,6 +272,8 @@
     "browserMissing": "Ekran görüntüsü almak için Chrome, Chromium veya Edge yükleyin.",
     "capturePreview": "Önizlemeyi yakala",
     "capture": "Yakala",
-    "capturing": "Yakalanıyor…"
+    "capturing": "Yakalanıyor…",
+    "coverNone": "Kapak görseli bulunamadı",
+    "blockAds": "Reklamları ve izleyicileri engelle"
   }
 }

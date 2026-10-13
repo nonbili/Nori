@@ -272,6 +272,8 @@
     "browserMissing": "Chrome, Chromium oder Edge installieren, um Screenshots aufzunehmen.",
     "capturePreview": "Vorschau erfassen",
     "capture": "Erfassen",
-    "capturing": "Wird erfasst…"
+    "capturing": "Wird erfasst…",
+    "coverNone": "Kein Titelbild gefunden",
+    "blockAds": "Werbung und Tracker blockieren"
   }
 }

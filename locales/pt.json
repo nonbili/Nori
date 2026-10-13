@@ -272,6 +272,8 @@
     "browserMissing": "Instale Chrome, Chromium ou Edge para capturar o ecrã.",
     "capturePreview": "Capturar pré-visualização",
     "capture": "Capturar",
-    "capturing": "A capturar…"
+    "capturing": "A capturar…",
+    "coverNone": "Nenhuma imagem de capa encontrada",
+    "blockAds": "Bloquear anúncios e rastreadores"
   }
 }

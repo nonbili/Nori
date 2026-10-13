@@ -272,6 +272,8 @@
     "browserMissing": "Cài Chrome, Chromium hoặc Edge để chụp màn hình.",
     "capturePreview": "Chụp bản xem trước",
     "capture": "Chụp",
-    "capturing": "Đang chụp…"
+    "capturing": "Đang chụp…",
+    "coverNone": "Không tìm thấy ảnh bìa",
+    "blockAds": "Chặn quảng cáo và trình theo dõi"
   }
 }

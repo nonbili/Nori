@@ -272,6 +272,8 @@
     "browserMissing": "Kuvatõmmiste tegemiseks paigalda Chrome, Chromium või Edge.",
     "capturePreview": "Jäädvusta eelvaade",
     "capture": "Jäädvusta",
-    "capturing": "Jäädvustamine…"
+    "capturing": "Jäädvustamine…",
+    "coverNone": "Kaanepilti ei leitud",
+    "blockAds": "Blokeeri reklaamid ja jälitajad"
   }
 }

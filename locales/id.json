@@ -272,6 +272,8 @@
     "browserMissing": "Instal Chrome, Chromium, atau Edge untuk mengambil tangkapan layar.",
     "capturePreview": "Ambil pratinjau",
     "capture": "Ambil",
-    "capturing": "Mengambil…"
+    "capturing": "Mengambil…",
+    "coverNone": "Gambar sampul tidak ditemukan",
+    "blockAds": "Blokir iklan dan pelacak"
   }
 }

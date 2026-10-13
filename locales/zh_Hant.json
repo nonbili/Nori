@@ -127,7 +127,8 @@
       "errorSignInBuy": "登入以購買 Nori 同步",
       "errorSignInRestore": "登入以復原購買",
       "errorNoPurchase": "未找到可復原的 Nori 同步購買紀錄",
-      "errorPending": "最新變更仍在同步，請稍後再試。"
+      "errorPending": "最新變更仍在同步，請稍後再試。",
+      "purchasePending": "購買待核准。核准後即可解鎖同步。"
     },
     "plan": {
       "label": "目前方案",
@@ -238,12 +239,14 @@
       "label": "關於",
       "version": "版本",
       "code": "原始碼",
-      "donate": "捐助"
+      "donate": "捐助",
+      "extensionPrivacy": "不讀取任何頁面內容。Nori 僅接收您選擇儲存的連結。"
     },
     "appearance": {
       "label": "外觀",
       "hint": "主題、強調色、字體和書籤顯示。"
-    }
+    },
+    "openInTab": "在分頁中開啟"
   },
   "common": {
     "back": "返回",
@@ -269,6 +272,8 @@
     "browserMissing": "請安裝 Chrome、Chromium 或 Edge 以擷取網頁。",
     "capturePreview": "擷取預覽",
     "capture": "擷取",
-    "capturing": "擷取中…"
+    "capturing": "擷取中…",
+    "coverNone": "未找到封面圖",
+    "blockAds": "阻擋廣告與追蹤器"
   }
 }

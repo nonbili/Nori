@@ -272,6 +272,8 @@
     "browserMissing": "撮影には Chrome、Chromium または Edge をインストールしてください。",
     "capturePreview": "プレビューを取得",
     "capture": "取得",
-    "capturing": "取得中…"
+    "capturing": "取得中…",
+    "coverNone": "カバー画像が見つかりません",
+    "blockAds": "広告とトラッカーをブロック"
   }
 }

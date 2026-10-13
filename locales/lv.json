@@ -272,6 +272,8 @@
     "browserMissing": "Ekrānuzņēmumiem instalējiet Chrome, Chromium vai Edge.",
     "capturePreview": "Tvert priekšskatījumu",
     "capture": "Tvert",
-    "capturing": "Tver…"
+    "capturing": "Tver…",
+    "coverNone": "Nav atrasts vāka attēls",
+    "blockAds": "Bloķēt reklāmas un izsekotājus"
   }
 }

@@ -272,6 +272,8 @@
     "browserMissing": "Képernyőképekhez telepítsd a Chrome, Chromium vagy Edge böngészőt.",
     "capturePreview": "Előnézet rögzítése",
     "capture": "Rögzítés",
-    "capturing": "Rögzítés…"
+    "capturing": "Rögzítés…",
+    "coverNone": "Nem található borítókép",
+    "blockAds": "Hirdetések és nyomkövetők blokkolása"
   }
 }

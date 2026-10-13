@@ -127,7 +127,8 @@
       "errorSignInBuy": "Logga in för att köpa Nori Synk",
       "errorSignInRestore": "Logga in för att återställa köp",
       "errorNoPurchase": "Inget köp av Nori Synk hittades att återställa",
-      "errorPending": "Dina senaste ändringar synkroniseras fortfarande. Försök igen om en stund."
+      "errorPending": "Dina senaste ändringar synkroniseras fortfarande. Försök igen om en stund.",
+      "purchasePending": "Köp väntar på godkännande. Synkroniseringen låses upp när det har godkänts."
     },
     "plan": {
       "label": "Nuvarande plan",
@@ -238,12 +239,14 @@
       "label": "Om",
       "version": "Version",
       "code": "Källkod",
-      "donate": "Donera"
+      "donate": "Donera",
+      "extensionPrivacy": "Inget sidinnehåll läses. Nori tar bara emot länkar du väljer att spara."
     },
     "appearance": {
       "label": "Utseende",
       "hint": "Tema, accentfärg, typsnitt och visning av bokmärken."
-    }
+    },
+    "openInTab": "Öppna i en flik"
   },
   "common": {
     "back": "Tillbaka",
@@ -269,6 +272,8 @@
     "browserMissing": "Installera Chrome, Chromium eller Edge för att ta skärmbilder.",
     "capturePreview": "Fånga förhandsvisning",
     "capture": "Fånga",
-    "capturing": "Fångar…"
+    "capturing": "Fångar…",
+    "coverNone": "Ingen omslagsbild hittades",
+    "blockAds": "Blockera annonser och spårare"
   }
 }
