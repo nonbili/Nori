@@ -3,22 +3,18 @@ import { Image } from 'expo-image'
 import { ActivityIndicator, Platform, Pressable, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
-import { captureRef } from 'react-native-view-shot'
-import { applyBlocklist, supportsRuntimeBlocklist } from '@/lib/blocklist'
-import { getUserAgent } from '@/lib/useragent'
-import { NoriWebView, type NoriWebViewHandle, type NoriWebViewMessageEvent } from '@/modules/nori-view'
-import { blocklist$ } from '@/states/blocklist'
 import { PREVIEW_IMAGE_RATIO } from '@/components/bookmark/BookmarkPreviewContent'
 import { NoriText } from '@/components/common/NoriText'
 import { FullScreenModal } from '@/components/modal/BaseModal'
 import { previewSource, saveRenderedPreview, type PreviewSource } from '@/lib/bookmark-preview'
 import { previewSourceOverride } from '@/lib/bookmark-preview-types'
+import type { PreviewPageViewHandle } from '@/lib/preview-page'
 import { applyRenderedTitle } from '@/lib/title-backfill'
 import { showToast } from '@/lib/toast'
-import { READ_PAGE_META_SCRIPT, type WebViewTitleResult } from '@/lib/webview-title-resolver'
 import { bookmarks$ } from '@/states/bookmarks'
 import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
+import { PreviewPageOptions, PreviewPageView } from './PreviewPageView'
 
 const HEADING_HEIGHT = 32
 const GAP = 12
@@ -68,16 +64,18 @@ const Radio: React.FC<{
 
 /**
  * Shows a bookmark's page so the user can get it into shape themselves (solve a
- * captcha, dismiss a cookie banner), then saves the preview from what is on screen.
+ * captcha, dismiss a cookie banner, scroll to the part worth showing), then saves the preview
+ * from what is on screen. The page itself is PreviewPageView: a WebView in the app, a page
+ * streamed from a headless browser on desktop.
  */
 export const PreviewPageSheet: React.FC = () => {
   const { t } = useTranslation()
   const page = useValue(ui$.previewPage)
   const fallback = useValue(settings$.previewImageSource)
-  const webView = useRef<NoriWebViewHandle>(null)
-  const blockAds = useValue(blocklist$.enabled)
-  const captureView = useRef<View>(null)
+  const view = useRef<PreviewPageViewHandle>(null)
   const [saving, setSaving] = useState(false)
+  // A toast is only logged on the web, so a failure there is spelled out above the button.
+  const [error, setError] = useState('')
   // Room left once the button has its own. The cover image and the live page share the largest
   // tile-shaped size that fits both under their headings, so a short window never pushes the
   // button out of reach.
@@ -87,8 +85,10 @@ export const PreviewPageSheet: React.FC = () => {
     Math.min(area.width - INDENT, ((area.height - 2 * (HEADING_HEIGHT + GAP) - GAP) / 2) * PREVIEW_IMAGE_RATIO),
   )
   const frameHeight = frameWidth / PREVIEW_IMAGE_RATIO
-  // The page can post on its own; only the read asked for below is saved.
-  const reading = useRef(false)
+  // A load that ends while saving is not read for its cover: the save reads the page itself.
+  const savingNow = useRef(false)
+  // Counts page loads, so a cover read from the page before this one is dropped.
+  const load = useRef(0)
   // What the pick starts from is the bookmark's own source; picking one also makes it the default.
   const [picked, setPicked] = useState<PreviewSource | null>(null)
   // The page's own cover image, read once it has loaded, so it can be shown beside the live page.
@@ -110,8 +110,9 @@ export const PreviewPageSheet: React.FC = () => {
   }
 
   const close = () => {
-    reading.current = false
+    savingNow.current = false
     setSaving(false)
+    setError('')
     setPicked(null)
     setCoverUrl('')
     setMetaRead(false)
@@ -120,59 +121,49 @@ export const PreviewPageSheet: React.FC = () => {
     ui$.previewPage.set(null)
   }
 
-  // The switch is global, so it is also what the automatic previews use. The page is loaded again
-  // once the list has landed, since a list only affects the loads that start after it.
-  const toggleBlockAds = async () => {
-    blocklist$.setEnabled(!blockAds)
-    await applyBlocklist()
-    webView.current?.reload()
+  const fail = (message: string) => {
+    if (Platform.OS === 'web') setError(message)
+    else showToast(message)
   }
 
-  const saveFromPage = () => {
-    reading.current = true
+  // Once a page has loaded: note its cover image, so it can be picked beside the live page.
+  const readCover = async () => {
+    const current = load.current
+    const data = await view.current?.read().catch(() => null)
+    if (!data || current !== load.current || savingNow.current) return
+    // Replaces the last page's image, so a page without one never leaves it selectable.
+    setCoverUrl(data.imageUrl)
+    setCoverLoading(Boolean(data.imageUrl))
+    setMetaRead(true)
+  }
+
+  const saveFromPage = async () => {
+    if (!view.current) return
+    savingNow.current = true
     setSaving(true)
-    webView.current?.injectJavaScript(READ_PAGE_META_SCRIPT)
-  }
-
-  const onMessage = async (event: NoriWebViewMessageEvent) => {
-    let data: Partial<WebViewTitleResult>
+    setError('')
     try {
-      data = JSON.parse(event.nativeEvent.data) as Partial<WebViewTitleResult>
-    } catch {
-      return
-    }
-    // A page that finished loading without being asked to save: only note its cover image.
-    if (!reading.current) {
-      // Replaces the last page's image, so a page without one never leaves it selectable.
-      const cover = /^https?:\/\//i.test(data.imageUrl || '') ? data.imageUrl! : ''
-      setCoverUrl(cover)
-      setCoverLoading(Boolean(cover))
-      setMetaRead(true)
-      return
-    }
-    reading.current = false
-    try {
-      const imageUrl = /^https?:\/\//i.test(data.imageUrl || '') ? data.imageUrl! : ''
+      const data = await view.current.read()
       let screenshotUri: string | undefined
       // A site that publishes no cover image still gets one: what is on screen.
-      if (source === 'screenshot' || !imageUrl) {
-        const path = await captureRef(captureView, { format: 'jpg', quality: 0.8, result: 'tmpfile' })
-        screenshotUri = path.startsWith('/') ? `file://${path}` : path
+      if (source === 'screenshot' || !data.imageUrl) {
+        screenshotUri = await view.current.capture()
       }
       await saveRenderedPreview(page.url, source, {
-        description: (data.description || '').trim().slice(0, 2000),
-        imageUrl,
+        description: data.description,
+        imageUrl: data.imageUrl,
         screenshotUri,
       })
       // A bookmark with its own source keeps showing it, not the one just captured.
       if (previewSourceOverride(page.previewSource) && previewSourceOverride(page.previewSource) !== source) {
         bookmarks$.update(page.id, { previewSource: source })
       }
-      applyRenderedTitle(page.url, (data.title || '').trim())
+      applyRenderedTitle(page.url, data.title)
       close()
     } catch {
+      savingNow.current = false
       setSaving(false)
-      showToast(t(source === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed'))
+      fail(t(source === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed'))
     }
   }
 
@@ -228,25 +219,25 @@ export const PreviewPageSheet: React.FC = () => {
               className={`overflow-hidden rounded-2xl border-2 ${ringClass(source === 'screenshot')}`}
               style={{ marginLeft: INDENT, width: frameWidth, height: frameHeight }}
             >
-              <View ref={captureView} collapsable={false} className="flex-1 bg-white">
-                <NoriWebView
-                  ref={webView}
-                  source={page.url}
-                  userAgent={getUserAgent(Platform.OS)}
-                  onMessage={onMessage}
-                  onLoadStart={() => {
-                    setPageLoading(true)
-                    setMetaRead(false)
-                    setCoverUrl('')
-                    setCoverLoading(false)
-                  }}
-                  onLoadEnd={() => {
-                    setPageLoading(false)
-                    if (!reading.current) webView.current?.injectJavaScript(READ_PAGE_META_SCRIPT)
-                  }}
-                  style={{ flex: 1 }}
-                />
-              </View>
+              <PreviewPageView
+                ref={view}
+                url={page.url}
+                onLoadStart={() => {
+                  load.current++
+                  setPageLoading(true)
+                  setMetaRead(false)
+                  setCoverUrl('')
+                  setCoverLoading(false)
+                }}
+                onLoadEnd={() => {
+                  setPageLoading(false)
+                  if (!savingNow.current) void readCover()
+                }}
+                onError={(message) => {
+                  setMetaRead(true)
+                  fail(t(message.includes('install Chrome') ? 'preview.browserMissing' : 'preview.screenshotFailed'))
+                }}
+              />
               {pageLoading ? (
                 <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
                   <ActivityIndicator size="large" />
@@ -255,22 +246,8 @@ export const PreviewPageSheet: React.FC = () => {
             </View>
           </View>
         </View>
-        {supportsRuntimeBlocklist() ? (
-          <View className="flex-row items-center gap-3">
-            <View className="flex-1">
-              <NoriText className="font-medium text-content">{t('preview.blockAds')}</NoriText>
-            </View>
-            <Pressable
-              accessibilityRole="switch"
-              accessibilityLabel={t('preview.blockAds')}
-              accessibilityState={{ checked: blockAds }}
-              onPress={toggleBlockAds}
-              className={`h-8 w-14 rounded-full p-1 ${blockAds ? 'bg-accent-500' : 'bg-muted-strong'}`}
-            >
-              <View className={`h-6 w-6 rounded-full bg-white ${blockAds ? 'ml-auto' : ''}`} />
-            </Pressable>
-          </View>
-        ) : null}
+        <PreviewPageOptions onChanged={() => view.current?.reload()} />
+        {error ? <NoriText className="text-sm text-content-muted">{error}</NoriText> : null}
         <Pressable
           disabled={saving}
           onPress={saveFromPage}

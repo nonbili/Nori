@@ -179,7 +179,12 @@ export async function getPreviewMeta(url: string, signal?: AbortSignal) {
       res.ok ? undefined : res.status,
     )
   }
-  const $ = cheerio.load(await readHtml(res))
+  return parsePreviewMeta(await readHtml(res), res.url || url)
+}
+
+/** The description and cover image a page's HTML offers; relative image links resolve against `base`. */
+export function parsePreviewMeta(html: string, base: string) {
+  const $ = cheerio.load(html)
   const description = (
     $('meta[property="og:description"]').attr('content') ||
     $('meta[name="description"]').attr('content') ||
@@ -200,7 +205,7 @@ export async function getPreviewMeta(url: string, signal?: AbortSignal) {
     $('link[rel="preload"][as="image"]').attr('href'),
   ]) {
     try {
-      const resolved = new URL(value || '', res.url || url)
+      const resolved = new URL(value || '', base)
       if (value && /^https?:$/.test(resolved.protocol)) {
         imageUrl = resolved.href
         break

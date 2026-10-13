@@ -7,7 +7,8 @@
  */
 import { Call } from '@wailsio/runtime'
 import { setPreviewCapture, setPreviewImageFetch } from 'nori/lib/bookmark-preview'
-import { parsePageMeta, setPageFetch } from 'nori/lib/bookmark'
+import { parsePageMeta, parsePreviewMeta, setPageFetch } from 'nori/lib/bookmark'
+import { setPreviewPageDriver } from 'nori/lib/preview-page'
 import { setRenderedTitlesSupported } from 'nori/lib/rendered-titles'
 import { completeActiveJob, setWebViewTitleResolverAvailable, webViewResolver$ } from 'nori/lib/webview-title-resolver'
 import { PreviewResponseError } from 'nori/lib/bookmark-preview-types'
@@ -48,4 +49,50 @@ export function installDesktopPageFetch() {
   })
   setWebViewTitleResolverAvailable(true)
   setRenderedTitlesSupported(true)
+
+  // "Capture preview": the app shows the page in a WebView. This window cannot
+  // embed one, so Go keeps the page open in a headless browser, its frames are
+  // drawn in the sheet and the mouse and keys used there are replayed in it.
+  setPreviewPageDriver(async (url, size, onFrame) => {
+    const id: string = await Call.ByName(`${PAGE}.LiveOpen`, url, size.width, size.height)
+    let closed = false
+    void (async () => {
+      let seq = 0
+      while (!closed) {
+        // Answers once the page has changed, so this never spins.
+        const frame: { seq: number; image: string; loading: boolean; closed: boolean } | null = await Call.ByName(
+          `${PAGE}.LiveFrame`,
+          id,
+          seq,
+        ).catch(() => null)
+        if (closed) return
+        if (!frame || frame.closed) break
+        if (frame.seq === seq) continue
+        seq = frame.seq
+        onFrame({ image: frame.image || undefined, loading: frame.loading })
+      }
+      // The browser is gone; nothing more will load.
+      onFrame({ loading: false })
+    })()
+    // One at a time: calls race each other otherwise, and a click must not
+    // reach the page as a release followed by a press.
+    let inputs: Promise<unknown> = Promise.resolve()
+    return {
+      input: (event) => {
+        inputs = inputs.then(() => Call.ByName(`${PAGE}.LiveInput`, id, event)).catch(() => {})
+      },
+      resize: (width, height) => void Call.ByName(`${PAGE}.LiveResize`, id, width, height).catch(() => {}),
+      reload: () => void Call.ByName(`${PAGE}.LiveReload`, id).catch(() => {}),
+      read: async () => {
+        const page: { url: string; html: string } = await Call.ByName(`${PAGE}.LiveRead`, id)
+        const base = page.url || url
+        return { title: parsePageMeta(page.html, base, { rendered: true }).title, ...parsePreviewMeta(page.html, base) }
+      },
+      capture: () => Call.ByName(`${PAGE}.LiveCapture`, id),
+      close: () => {
+        closed = true
+        void Call.ByName(`${PAGE}.LiveClose`, id).catch(() => {})
+      },
+    }
+  })
 }

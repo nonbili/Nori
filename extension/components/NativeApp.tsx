@@ -14,6 +14,7 @@ import { settings$ } from 'nori-root/states/settings'
 import { setUrlOpener } from 'nori-root/lib/open-url'
 import { NoriHome } from 'nori-root/components/home/NoriHome'
 import { ActionSnackbar } from 'nori-root/components/common/ActionSnackbar'
+import { PreviewPageSheet } from 'nori-root/components/sheet/PreviewPageSheet'
 import { AppProvider } from './AppContext'
 import { SettingsSheet } from './parts/SettingsSheet'
 import { useSnapshot } from './useSnapshot'
@@ -116,6 +117,7 @@ function ReadyApp({
             }
           />
           <ActionSnackbar />
+          <PreviewPageSheet />
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </AppProvider>

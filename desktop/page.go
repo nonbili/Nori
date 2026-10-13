@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -18,6 +19,9 @@ const maxPageBytes = 2 * 1024 * 1024
 // the extension gets the same reach from its host permissions.
 type PageService struct {
 	client *http.Client
+
+	liveMu sync.Mutex
+	live   *livePage
 }
 
 func NewPageService() *PageService {

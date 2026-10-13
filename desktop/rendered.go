@@ -24,7 +24,8 @@ type RenderedPage struct {
 const (
 	renderedLoadTimeout = 15 * time.Second
 	// The app's WebView resolver gives a page up to five seconds to hydrate.
-	renderedBudget = 5 * time.Second
+	renderedBudget      = 5 * time.Second
+	browserStartTimeout = 15 * time.Second
 )
 
 type cdpMessage struct {
@@ -48,7 +49,10 @@ type cdpClient struct {
 }
 
 func dialCDP(ctx context.Context, endpoint string) (*cdpClient, error) {
-	conn, _, err := websocket.Dial(ctx, endpoint, nil)
+	// Only the handshake is bounded: the connection itself lives as long as ctx.
+	dialing, stop := context.WithTimeout(ctx, browserStartTimeout)
+	defer stop()
+	conn, _, err := websocket.Dial(dialing, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +86,9 @@ func (c *cdpClient) dispatch(message cdpMessage) {
 	}
 }
 
-// call sends a command and waits for its reply, handing over any events that
-// arrive first.
-func (c *cdpClient) call(ctx context.Context, session string, method string, params any) (json.RawMessage, error) {
+// send writes a command without waiting for its reply, which call then drops as
+// an answer nobody asked for.
+func (c *cdpClient) send(ctx context.Context, session string, method string, params any) (int, error) {
 	c.next++
 	id := c.next
 	body, err := json.Marshal(map[string]any{"id": id, "method": method, "params": params, "sessionId": session})
@@ -92,9 +96,16 @@ func (c *cdpClient) call(ctx context.Context, session string, method string, par
 		body, err = json.Marshal(map[string]any{"id": id, "method": method, "params": params})
 	}
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	if err := c.conn.Write(ctx, websocket.MessageText, body); err != nil {
+	return id, c.conn.Write(ctx, websocket.MessageText, body)
+}
+
+// call sends a command and waits for its reply, handing over any events that
+// arrive first.
+func (c *cdpClient) call(ctx context.Context, session string, method string, params any) (json.RawMessage, error) {
+	id, err := c.send(ctx, session, method, params)
+	if err != nil {
 		return nil, err
 	}
 	for {
@@ -138,6 +149,8 @@ func (c *cdpClient) pump(ctx context.Context, duration time.Duration) bool {
 
 // devToolsEndpoint waits for the browser to publish the port it picked.
 func devToolsEndpoint(ctx context.Context, profile string) (string, error) {
+	ctx, stop := context.WithTimeout(ctx, browserStartTimeout)
+	defer stop()
 	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
 	for {
@@ -154,86 +167,134 @@ func devToolsEndpoint(ctx context.Context, profile string) (string, error) {
 	}
 }
 
-// Rendered returns the page's HTML after its scripts have run, for sites whose
-// title only exists once they have. It shares Screenshot's isolation: a
-// throwaway profile in a temporary directory, never the user's own.
-//
-// The page is driven over the DevTools protocol rather than --dump-dom so the
-// HTML and its address are read from the same document: a script may have
-// redirected, and only the browser knows where to.
-func (s *PageService) Rendered(value string) (RenderedPage, error) {
-	if err := previewURL(value); err != nil {
-		return RenderedPage{}, err
-	}
+// headlessPage is a throwaway headless browser with one blank page attached.
+type headlessPage struct {
+	client  *cdpClient
+	session string
+	// close quits the browser and removes its profile.
+	close func()
+}
+
+// openHeadlessPage starts a browser that lives until ctx ends or close is
+// called. It shares Screenshot's isolation: a throwaway profile in a temporary
+// directory, never the user's own.
+func openHeadlessPage(ctx context.Context, cancel context.CancelFunc) (*headlessPage, error) {
 	browser, err := previewBrowser()
 	if err != nil {
-		return RenderedPage{}, err
+		return nil, err
 	}
 	directory, err := os.MkdirTemp("", "nori-rendered-")
 	if err != nil {
-		return RenderedPage{}, err
+		return nil, err
 	}
 	profile := filepath.Join(directory, "profile")
-	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
-	defer cancel()
 	cmd := exec.CommandContext(ctx, browser,
 		"--headless", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
 		"--user-data-dir="+profile, "--remote-debugging-port=0", "about:blank")
 	if err := cmd.Start(); err != nil {
-		return RenderedPage{}, err
+		_ = os.RemoveAll(directory)
+		return nil, err
 	}
-	var client *cdpClient
+	page := &headlessPage{}
 	// Ask the browser to quit before falling back to killing it: a killed
 	// browser's child processes can still be writing to the profile, and the
 	// directory then outlives the removal below.
-	defer func() {
+	page.close = func() {
 		exited := make(chan struct{})
 		go func() {
 			_ = cmd.Wait()
 			close(exited)
 		}()
-		if client != nil {
-			_, _ = client.call(ctx, "", "Browser.close", map[string]any{})
-		}
-		select {
-		case <-exited:
-		case <-time.After(3 * time.Second):
+		if page.client != nil && ctx.Err() == nil {
+			// Bounded as a whole: a browser that has stopped answering never
+			// replies, and ctx may have no deadline of its own.
+			closing, stop := context.WithTimeout(ctx, 3*time.Second)
+			_, _ = page.client.call(closing, "", "Browser.close", map[string]any{})
+			select {
+			case <-exited:
+			case <-closing.Done():
+			}
+			stop()
 		}
 		cancel()
 		<-exited
-		if client != nil {
-			_ = client.conn.CloseNow()
+		if page.client != nil {
+			_ = page.client.conn.CloseNow()
 		}
 		for attempt := 0; attempt < 5 && os.RemoveAll(directory) != nil; attempt++ {
 			time.Sleep(100 * time.Millisecond)
 		}
-	}()
+	}
 
 	endpoint, err := devToolsEndpoint(ctx, profile)
 	if err != nil {
-		return RenderedPage{}, err
+		page.close()
+		return nil, err
 	}
-	client, err = dialCDP(ctx, endpoint)
+	client, err := dialCDP(ctx, endpoint)
 	if err != nil {
-		client = nil
-		return RenderedPage{}, err
+		page.close()
+		return nil, err
 	}
+	page.client = client
 
 	var target struct {
 		TargetID string `json:"targetId"`
 	}
 	result, err := client.call(ctx, "", "Target.createTarget", map[string]any{"url": "about:blank"})
 	if err != nil || json.Unmarshal(result, &target) != nil {
-		return RenderedPage{}, fmt.Errorf("could not open a page: %w", err)
+		page.close()
+		return nil, fmt.Errorf("could not open a page: %w", err)
 	}
 	var attached struct {
 		SessionID string `json:"sessionId"`
 	}
 	result, err = client.call(ctx, "", "Target.attachToTarget", map[string]any{"targetId": target.TargetID, "flatten": true})
 	if err != nil || json.Unmarshal(result, &attached) != nil {
-		return RenderedPage{}, fmt.Errorf("could not attach to the page: %w", err)
+		page.close()
+		return nil, fmt.Errorf("could not attach to the page: %w", err)
 	}
-	session := attached.SessionID
+	page.session = attached.SessionID
+	return page, nil
+}
+
+// document reads the page's HTML and its address from the same document: a
+// script may have redirected, and only the browser knows where to.
+func (p *headlessPage) document(ctx context.Context) (RenderedPage, error) {
+	expression := fmt.Sprintf("JSON.stringify({url: location.href, html: document.documentElement.outerHTML.slice(0, %d)})", maxPageBytes)
+	var evaluated struct {
+		Result struct {
+			Value string `json:"value"`
+		} `json:"result"`
+	}
+	result, err := p.client.call(ctx, p.session, "Runtime.evaluate", map[string]any{"expression": expression, "returnByValue": true})
+	if err != nil {
+		return RenderedPage{}, err
+	}
+	var page RenderedPage
+	if json.Unmarshal(result, &evaluated) != nil || json.Unmarshal([]byte(evaluated.Result.Value), &page) != nil || page.HTML == "" {
+		return RenderedPage{}, errors.New("rendered page was empty")
+	}
+	return page, nil
+}
+
+// Rendered returns the page's HTML after its scripts have run, for sites whose
+// title only exists once they have.
+//
+// The page is driven over the DevTools protocol rather than --dump-dom so the
+// HTML and its address are read from the same document.
+func (s *PageService) Rendered(value string) (RenderedPage, error) {
+	if err := previewURL(value); err != nil {
+		return RenderedPage{}, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
+	defer cancel()
+	browser, err := openHeadlessPage(ctx, cancel)
+	if err != nil {
+		return RenderedPage{}, err
+	}
+	defer browser.close()
+	client, session := browser.client, browser.session
 
 	// Scripts get renderedBudget of the page's own time before it is read, which
 	// the browser fast-forwards through: a title set by a timer two seconds in is
@@ -270,19 +331,5 @@ func (s *PageService) Rendered(value string) (RenderedPage, error) {
 		}
 	}
 
-	expression := fmt.Sprintf("JSON.stringify({url: location.href, html: document.documentElement.outerHTML.slice(0, %d)})", maxPageBytes)
-	var evaluated struct {
-		Result struct {
-			Value string `json:"value"`
-		} `json:"result"`
-	}
-	result, err = client.call(ctx, session, "Runtime.evaluate", map[string]any{"expression": expression, "returnByValue": true})
-	if err != nil {
-		return RenderedPage{}, err
-	}
-	var page RenderedPage
-	if json.Unmarshal(result, &evaluated) != nil || json.Unmarshal([]byte(evaluated.Result.Value), &page) != nil || page.HTML == "" {
-		return RenderedPage{}, errors.New("rendered page was empty")
-	}
-	return page, nil
+	return browser.document(ctx)
 }

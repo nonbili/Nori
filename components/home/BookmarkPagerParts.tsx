@@ -12,6 +12,7 @@ import { settings$ } from '@/states/settings'
 import { BookmarkTile } from '@/components/bookmark/BookmarkItem'
 import { SortableGrid } from '@/components/bookmark/SortableGrid'
 import { SectionLabel } from '@/components/common/Common'
+import { previewPageDriver } from '@/lib/preview-page'
 import { previewHeight } from '@/lib/bookmark-preview-types'
 import { normalizeFontScale } from '@/lib/typography'
 import type { ThemeColors } from '@/lib/theme'
@@ -215,8 +216,8 @@ export const BookmarkListPage = memo(({
         onEdit={() => actions.onEditBookmark(bookmark)}
         onCopyUrl={() => actions.onCopyBookmarkUrl(bookmark)}
         onShare={() => actions.onShareBookmark(bookmark)}
-        // The page is shown in a WebView, which only the mobile app has.
-        onLoadPreview={preview && Platform.OS !== 'web'
+        // The page is shown in a WebView, or by the driver a host without one installs.
+        onLoadPreview={preview && (Platform.OS !== 'web' || previewPageDriver())
           ? () => ui$.previewPage.set({ id: bookmark.id, url: bookmark.url, previewSource: bookmark.json.previewSource })
           : undefined}
         onDelete={() => actions.onDeleteBookmark(bookmark)}
