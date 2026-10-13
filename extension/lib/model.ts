@@ -43,6 +43,8 @@ export interface Preferences {
   previewImageSource: 'page-image' | 'screenshot'
   showFavicons: boolean
   newBookmarksAtTop: boolean
+  /** Desktop only: the extension has no way to render a page. */
+  loadPagesForTitles: boolean
 }
 
 export interface StoredState {

@@ -90,3 +90,35 @@ func TestPreviewScreenshot(t *testing.T) {
 		t.Fatalf("page was not rendered: pixel = %x %x %x", r>>8, g>>8, b>>8)
 	}
 }
+
+func TestRenderedPage(t *testing.T) {
+	if _, err := previewBrowser(); err != nil {
+		t.Skip("no supported browser installed")
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		if r.URL.Path == "/share" {
+			// A redirect only the browser can follow.
+			_, _ = w.Write([]byte(`<html><head><title>Redirecting</title></head><body><script>location.replace('/posts/123')</script></body></html>`))
+			return
+		}
+		// Later than a page merely finishing its load would wait for.
+		_, _ = w.Write([]byte(`<html><head><title>Site name</title></head><body><script>setTimeout(() => { document.title = 'Set by script' }, 2500)</script></body></html>`))
+	}))
+	defer server.Close()
+	service := NewPageService()
+	page, err := service.Rendered(server.URL + "/share")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(page.HTML, "<title>Set by script</title>") {
+		t.Fatalf("scripts did not run before the page was read: %s", page.HTML)
+	}
+	// Relative links in the HTML belong to where the script redirected to.
+	if page.URL != server.URL+"/posts/123" {
+		t.Fatalf("url = %q", page.URL)
+	}
+	if _, err := service.Rendered("file:///etc/passwd"); err == nil {
+		t.Error("Rendered accepted a non-http URL")
+	}
+}

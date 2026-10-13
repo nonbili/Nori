@@ -2,7 +2,7 @@ import { previewSourceOverride } from '@/lib/bookmark-preview-types'
 import { retainEditorPreview } from '@/lib/bookmark-preview'
 import { useEffect, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
-import { Keyboard, Platform, ScrollView, Pressable, View, useWindowDimensions } from 'react-native'
+import { Keyboard, ScrollView, Pressable, View, useWindowDimensions } from 'react-native'
 import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
@@ -10,6 +10,7 @@ import { useThemeColors } from '@/lib/theme'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
+import { canLoadPagesForTitles } from '@/lib/rendered-titles'
 import { ui$ } from '@/states/ui'
 import { getMeta } from '@/lib/bookmark'
 import { getAllTags, getVisibleLists } from '@/lib/nori-data'
@@ -138,7 +139,7 @@ export const BookmarkEditorSheet: React.FC = () => {
 
     let title = editor.title.trim()
     let icon = editor.icon.trim()
-    const resolveAfterSaving = !title && Platform.OS !== 'web' && settings$.loadPagesForTitles.peek()
+    const resolveAfterSaving = !title && canLoadPagesForTitles() && settings$.loadPagesForTitles.peek()
 
     if (!title && !resolveAfterSaving) {
       setMetadataLoading(true)

@@ -6,9 +6,12 @@ import (
 	"time"
 )
 
-// Responses are only ever parsed for <title>/og:title and a favicon link, all
-// of which live in <head>, so there is no reason to pull a whole page across.
-const maxPageBytes = 512 * 1024
+// Responses are only ever parsed for <title>/og:title, a cover image and a
+// favicon link, all of which live in <head>, so there is no reason to pull a
+// whole page across. The head is not always near the top, though: Google Play
+// puts some 900 KB of inline script ahead of its meta tags, and at the old
+// 512 KB cap such a page had no title or cover image at all.
+const maxPageBytes = 2 * 1024 * 1024
 
 // PageService fetches other sites' HTML for the shared bookmark metadata code.
 // The webview is a normal web origin, so its own `fetch` is blocked by CORS;

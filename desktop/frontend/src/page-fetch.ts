@@ -7,7 +7,9 @@
  */
 import { Call } from '@wailsio/runtime'
 import { setPreviewCapture, setPreviewImageFetch } from 'nori/lib/bookmark-preview'
-import { setPageFetch } from 'nori/lib/bookmark'
+import { parsePageMeta, setPageFetch } from 'nori/lib/bookmark'
+import { setRenderedTitlesSupported } from 'nori/lib/rendered-titles'
+import { completeActiveJob, setWebViewTitleResolverAvailable, webViewResolver$ } from 'nori/lib/webview-title-resolver'
 import { PreviewResponseError } from 'nori/lib/bookmark-preview-types'
 
 const PAGE = 'main.PageService'
@@ -30,4 +32,20 @@ export function installDesktopPageFetch() {
     Object.defineProperty(response, 'url', { value: res.url })
     return response
   })
+
+  // "Load pages to get titles": the app answers these jobs with a hidden
+  // WebView; here Go renders the page in a headless browser and the shared
+  // parser reads the title out of what it returns. A failure (no browser
+  // installed, a page that never settles) leaves the fetched title in place.
+  webViewResolver$.active.onChange(({ value: job }) => {
+    if (!job) return
+    void Call.ByName(`${PAGE}.Rendered`, job.url)
+      .then((page: { url: string; html: string }) => {
+        const meta = parsePageMeta(page.html, page.url || job.url, { rendered: true })
+        completeActiveJob(job.id, meta.title ? meta : null)
+      })
+      .catch(() => completeActiveJob(job.id, null))
+  })
+  setWebViewTitleResolverAvailable(true)
+  setRenderedTitlesSupported(true)
 }

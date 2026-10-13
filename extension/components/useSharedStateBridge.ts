@@ -82,6 +82,11 @@ const preferenceBridge: PreferenceBridge = {
     read: () => settings$.newBookmarksAtTop.peek(),
     write: (value) => settings$.newBookmarksAtTop.set(value !== false),
   },
+  loadPagesForTitles: {
+    setting$: settings$.loadPagesForTitles,
+    read: () => settings$.loadPagesForTitles.peek(),
+    write: (value) => settings$.loadPagesForTitles.set(value === true),
+  },
 }
 
 const preferenceKeys = Object.keys(preferenceBridge) as (keyof Preferences)[]

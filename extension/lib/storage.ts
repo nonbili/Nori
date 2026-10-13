@@ -23,6 +23,7 @@ export const defaultState = (): StoredState => ({
     previewImageSource: 'page-image',
     showFavicons: true,
     newBookmarksAtTop: true,
+    loadPagesForTitles: false,
   },
 })
 
@@ -42,6 +43,7 @@ export async function loadState(): Promise<StoredState> {
     stored.preferences.accent = normalizeAccent(stored.preferences.accent)
     // Likewise newer than v1, and on unless it was turned off.
     stored.preferences.newBookmarksAtTop = stored.preferences.newBookmarksAtTop !== false
+    stored.preferences.loadPagesForTitles = stored.preferences.loadPagesForTitles === true
   }
   return stored
 }

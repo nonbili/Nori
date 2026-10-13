@@ -17,6 +17,7 @@ import { TypographyRow } from '@/components/sheet/TypographyRow'
 import { CustomAccentPanel, CustomAccentSwatch } from '@/components/sheet/CustomAccent'
 import { languageNativeNames, supportedI18nLanguages } from '@/lib/language'
 import { getVisibleLists } from '@/lib/nori-data'
+import { canLoadPagesForTitles } from '@/lib/rendered-titles'
 
 /**
  * The settings every shell shares: the Expo app, the browser extension and the
@@ -91,7 +92,7 @@ export const ExperienceSection: React.FC<{
         onPress={onOpenAppearance}
         themeColors={themeColors}
       />
-      {Platform.OS !== 'web' ? (
+      {canLoadPagesForTitles() ? (
         <View className="border-b-2 border-well px-4 py-4">
           <View className="flex-row items-center gap-3">
             <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">

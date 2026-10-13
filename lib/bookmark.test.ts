@@ -7,6 +7,7 @@ import {
   getMeta,
   getPreviewMeta,
   getRuntimeFaviconCandidates,
+  parsePageMeta,
   setPageFetch,
 } from './bookmark'
 
@@ -204,5 +205,25 @@ describe('bookmark helpers', () => {
 
     setPageFetch(html('<meta property="og:image" content="https://img.example/og.jpg"><link rel="preload" as="image" href="/deal.jpg">'))
     expect((await getPreviewMeta('https://example.com/deals/1')).imageUrl).toBe('https://img.example/og.jpg')
+  })
+})
+
+describe('parsePageMeta', () => {
+  it('reads the title and icon a rendered page declares, and nothing when it declares none', () => {
+    expect(
+      parsePageMeta('<head><title>Set by script</title><link rel="icon" href="/f.ico"></head>', 'https://example.com/a/b'),
+    ).toEqual({ title: 'Set by script', icon: 'https://example.com/f.ico' })
+    expect(parsePageMeta('<head><title>example.com</title></head>', 'https://example.com/a')).toEqual({ title: '', icon: '' })
+  })
+
+  it('prefers the document title of a rendered page over its static social tags', () => {
+    const html = '<head><meta property="og:title" content="Site name"><title>The article</title><link rel="icon" href="icon.ico"></head>'
+    expect(parsePageMeta(html, 'https://example.com/posts/123').title).toBe('Site name')
+    expect(parsePageMeta(html, 'https://example.com/posts/123', { rendered: true })).toEqual({
+      title: 'The article',
+      icon: 'https://example.com/posts/icon.ico',
+    })
+    const untitled = '<head><meta property="og:title" content="The article"></head><body><svg><title>Back Button</title></svg></body>'
+    expect(parsePageMeta(untitled, 'https://example.com/posts/123', { rendered: true }).title).toBe('The article')
   })
 })

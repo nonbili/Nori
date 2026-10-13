@@ -7,6 +7,10 @@ import { resolveTitleWithWebView } from './webview-title-resolver'
 import { isDeleted } from './nori-data'
 import { backfillMissingTitles } from './title-backfill'
 import { getFallbackIcon } from './bookmark'
+import { canLoadPagesForTitles } from './rendered-titles'
+
+// The app's WebView stops in the background; a desktop window's renderer does not.
+const cannotRender = () => Platform.OS !== 'web' && AppState.currentState !== 'active'
 
 const pending = new Map<string, Promise<void>>()
 
@@ -24,12 +28,12 @@ async function enrich(id: string) {
   const previous = bookmarks$.bookmarks.peek().find((item) => item.id === id)
   if (!previous || isDeleted(previous) || !needsBookmarkMetadata(previous.title, previous.url)) return
 
-  const preferRendered = Platform.OS !== 'web' && settings$.loadPagesForTitles.peek()
+  const preferRendered = canLoadPagesForTitles() && settings$.loadPagesForTitles.peek()
   // Leave a persisted placeholder for the foreground backfill if the app is asleep.
-  if (preferRendered && AppState.currentState !== 'active') return
+  if (preferRendered && cannotRender()) return
 
   const meta = await resolveBookmarkMetadata(previous.url, preferRendered, getPrefetchedBookmarkMeta, resolveTitleWithWebView)
-  if (preferRendered && AppState.currentState !== 'active') return
+  if (preferRendered && cannotRender()) return
 
   const current = bookmarks$.bookmarks.peek().find((item) => item.id === id)
   if (!current || !canApplyBookmarkMetadata(previous, current, isDeleted(current))) return

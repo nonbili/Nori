@@ -86,13 +86,18 @@ const readHtml = async (res: Response) => {
   }
 }
 
-const extractTitle = ($: cheerio.CheerioAPI, url: string) => {
+// A fetched page's social tags are usually the cleaner title. Once scripts have
+// run it is the other way round: the document title is what they updated, and
+// the social tags are often the static shell's (a site name, say).
+const extractTitle = ($: cheerio.CheerioAPI, url: string, rendered = false) => {
   const postId = getRedditPostId(url)
   const post = postId ? $(`shreddit-post[id="t3_${postId}"]`) : null
   const candidates = [
     post?.attr('post-title'),
     post?.find('[slot="title"]').first().text(),
     postId ? $(`.thing[data-fullname="t3_${postId}"] a.title`).first().text() : '',
+    // The document's own title only: an inline SVG's <title> names an icon.
+    ...(rendered ? [$('head > title').first().text()] : []),
     $('meta[property="og:title"]').attr('content'),
     $('meta[name="twitter:title"]').attr('content'),
     $('title').text(),
@@ -100,6 +105,16 @@ const extractTitle = ($: cheerio.CheerioAPI, url: string) => {
   ]
 
   return candidates.find((candidate) => candidate && !hasPlaceholderTitle(candidate, url))?.trim()
+}
+
+/**
+ * The title and icon a page's HTML declares, each empty when it declares none.
+ * `url` is the address the HTML came from, after any redirect.
+ */
+export function parsePageMeta(html: string, url: string, { iconBase = url, rendered = false } = {}) {
+  const $ = cheerio.load(html)
+  const icon = $('link[rel*=icon]').attr('href')
+  return { title: extractTitle($, url, rendered) || '', icon: icon ? new URL(icon, iconBase).href : '' }
 }
 
 export async function getMeta(url: string) {
@@ -118,13 +133,12 @@ export async function getMeta(url: string) {
     }
 
     const html = await readHtml(res)
-    const $ = cheerio.load(html)
     // Share links (redd.it and /s/...) can redirect to the post permalink.
-    const title = extractTitle($, res.url || url) || getFallbackTitle(url)
-    const icon = $('link[rel*=icon]').attr('href')
+    const meta = parsePageMeta(html, res.url || url, { iconBase: url })
+    const title = meta.title || getFallbackTitle(url)
     const directFavicon = getDirectFavicon(url)
 
-    let resolvedIcon = icon ? new URL(icon, url).href : ''
+    let resolvedIcon = meta.icon
 
     if (!resolvedIcon && (await canLoadImageUrl(directFavicon))) {
       resolvedIcon = directFavicon
