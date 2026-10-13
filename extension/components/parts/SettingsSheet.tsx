@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { browser } from 'wxt/browser'
 import { useApp } from '../AppContext'
@@ -45,10 +45,10 @@ function SyncSection() {
           <Menu
             className="round-action"
             label={t('settings.moreOptions')}
-            trigger={<Icon name="more" size={17} />}
+            trigger={<Icon name="more-vert" size={17} />}
             items={[
-              { label: t('settings.sync.syncNow'), icon: 'cloud', handler: () => void mutate({ type: 'sync' }) },
-              { label: t('settings.plan.manage'), icon: 'external', handler: () => openTab(PLAN_URL) },
+              { label: t('settings.sync.syncNow'), icon: 'cloud-sync', handler: () => void mutate({ type: 'sync' }) },
+              { label: t('settings.plan.manage'), icon: 'open-in-new', handler: () => openTab(PLAN_URL) },
               { label: t('settings.sync.signOut'), handler: () => void mutate({ type: 'sign-out' }) },
             ]}
           />
@@ -118,7 +118,7 @@ function TransferSection() {
         }}
       />
       <SettingRow
-        icon="upload"
+        icon="file-upload"
         title={t('settings.transfer.import')}
         detail={busy === 'import' ? t('settings.transfer.importing') : t('settings.transfer.importHint')}
         onClick={() => fileRef.current?.click()}
@@ -130,7 +130,7 @@ function TransferSection() {
         onClick={() => runExport('html')}
       />
       <SettingRow
-        icon="text"
+        icon="subject"
         title={t('settings.transfer.exportPlain')}
         detail={busy === 'plain' ? t('settings.transfer.exporting') : t('settings.transfer.exportPlainHint')}
         onClick={() => runExport('plain')}
@@ -151,7 +151,7 @@ function AboutPage({ version }: { version: string }) {
   return (
     <>
       <div className="section-body">
-        <SettingRow icon="info" title={t('settings.about.version')} detail={`v${version}`} />
+        <SettingRow icon="info-outline" title={t('settings.about.version')} detail={`v${version}`} />
         <SettingRow
           icon="history"
           title={t('settings.changelog.label')}
@@ -174,7 +174,7 @@ function AboutPage({ version }: { version: string }) {
         {DONATE_LINKS.map((item, index) => (
           <SettingRow
             key={item.url}
-            icon="heart"
+            icon="favorite-outline"
             title={item.label}
             detail={item.detail}
             onClick={() => openTab(item.url)}
@@ -185,11 +185,6 @@ function AboutPage({ version }: { version: string }) {
     </>
   )
 }
-
-// The shared sections are react-native-web views, which may shrink below their
-// content as direct children of the sheet's grid and then overlap the next
-// section. A plain block wrapper keeps the row as tall as what it holds.
-const SharedSection = ({ children }: { children: ReactNode }) => <div>{children}</div>
 
 export function SettingsSheet({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation()
@@ -216,28 +211,26 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
       headerLeft={
         page === 'home' ? undefined : (
           <button className="round-action" onClick={() => setPage('home')} aria-label={t('common.back')}>
-            <Icon name="back" size={18} />
+            <Icon name="arrow-back" size={18} />
           </button>
         )
       }
     >
-      <div ref={scrollRef} className="grid min-h-0 flex-1 content-start gap-6 overflow-y-auto px-6 pb-4">
+      {/* auto-rows-max: otherwise a section taller than the space left shrinks and
+          clips or overlaps its neighbour instead of the sheet scrolling. */}
+      <div ref={scrollRef} className="grid min-h-0 flex-1 auto-rows-max content-start gap-6 overflow-y-auto px-6 pb-4">
         {page === 'appearance' ? (
-          <SharedSection>
-            <AppearanceSection />
-          </SharedSection>
+          <AppearanceSection />
         ) : page === 'about' ? (
           <AboutPage version={version} />
         ) : (
           <>
             <SyncSection />
-            <SharedSection>
-              <ExperienceSection onOpenAppearance={() => setPage('appearance')} systemLanguage={systemLanguage()} />
-            </SharedSection>
+            <ExperienceSection onOpenAppearance={() => setPage('appearance')} systemLanguage={systemLanguage()} />
             <TransferSection />
             <SectionCard title={t('settings.about.label')}>
               <SettingRow
-                icon="info"
+                icon="info-outline"
                 title={t('settings.about.label')}
                 detail={`v${version}`}
                 onClick={() => setPage('about')}

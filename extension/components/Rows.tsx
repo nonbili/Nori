@@ -39,7 +39,7 @@ export const SettingRow = ({
         <span className="block font-medium">{title}</span>
         {detail ? <span className="mt-1 block text-sm leading-5 text-content-muted">{detail}</span> : null}
       </span>
-      {trailing || (onClick ? <Icon name="chevronRight" size={18} /> : null)}
+      {trailing || (onClick ? <Icon name="chevron-right" size={18} /> : null)}
     </>
   )
   const className = `setting-row ${last ? '' : 'divided'}`
