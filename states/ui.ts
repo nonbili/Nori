@@ -56,7 +56,7 @@ interface UIStore {
   pendingBookmarkImport: PendingBookmarkImportState | null
   pendingShare: PendingShareState | null
   // A bookmark whose page is open in view for the user to load its preview from.
-  previewPage: { url: string; previewSource?: unknown } | null
+  previewPage: { id: string; url: string; previewSource?: unknown } | null
   recentSheetOpen: boolean
   // A bookmark just saved from a share, for its list to scroll into view.
   revealBookmarkId: string | null

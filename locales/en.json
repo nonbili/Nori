@@ -272,6 +272,7 @@
     "browserMissing": "Install Chrome, Chromium or Edge to capture screenshots.",
     "capturePreview": "Capture preview",
     "capture": "Capture",
-    "capturing": "Capturing…"
+    "capturing": "Capturing…",
+    "coverNone": "No cover image found"
   }
 }

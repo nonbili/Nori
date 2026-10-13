@@ -215,7 +215,7 @@ export const BookmarkListPage = memo(({
         onShare={() => actions.onShareBookmark(bookmark)}
         // The page is shown in a WebView, which only the mobile app has.
         onLoadPreview={preview && Platform.OS !== 'web'
-          ? () => ui$.previewPage.set({ url: bookmark.url, previewSource: bookmark.json.previewSource })
+          ? () => ui$.previewPage.set({ id: bookmark.id, url: bookmark.url, previewSource: bookmark.json.previewSource })
           : undefined}
         onDelete={() => actions.onDeleteBookmark(bookmark)}
       />
