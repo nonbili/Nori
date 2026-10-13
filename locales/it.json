@@ -268,7 +268,8 @@
     "screenshotFailed": "Impossibile acquisire lo screenshot. Riprova.",
     "openPage": "Apri questo segnalibro in una scheda e acquisiscilo dal popup dell’estensione Nori.",
     "browserMissing": "Installa Chrome, Chromium o Edge per acquisire screenshot.",
-    "loadInPage": "Carica l’anteprima nella pagina",
-    "usePage": "Usa questa pagina"
+    "capturePreview": "Acquisisci anteprima",
+    "capture": "Acquisisci",
+    "capturing": "Acquisizione…"
   }
 }

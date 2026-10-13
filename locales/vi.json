@@ -271,7 +271,8 @@
     "screenshotFailed": "Không thể chụp màn hình. Hãy thử lại.",
     "openPage": "Mở dấu trang này trong thẻ trình duyệt, rồi chụp từ cửa sổ bật lên của tiện ích Nori.",
     "browserMissing": "Cài Chrome, Chromium hoặc Edge để chụp màn hình.",
-    "loadInPage": "Tải bản xem trước trong trang",
-    "usePage": "Dùng trang này"
+    "capturePreview": "Chụp bản xem trước",
+    "capture": "Chụp",
+    "capturing": "Đang chụp…"
   }
 }

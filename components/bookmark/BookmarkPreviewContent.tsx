@@ -22,6 +22,8 @@ import { hasPlaceholderTitle } from '@/lib/bookmark-title'
 const TILE_PADDING = Platform.OS === 'web' ? 16 : 14
 const IMAGE_WIDTH = 104 + 2 * TILE_PADDING
 const IMAGE_HEIGHT = 80 + 2 * TILE_PADDING
+// The slot's smallest shape; a screenshot of this ratio fills it without cropping.
+export const PREVIEW_IMAGE_RATIO = IMAGE_WIDTH / IMAGE_HEIGHT
 // Wide page images (GitHub cards, banners) are shown whole up to 2:1 rather than cropped to the slot.
 const IMAGE_MIN_HEIGHT = IMAGE_WIDTH / 2
 

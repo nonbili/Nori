@@ -271,7 +271,8 @@
     "screenshotFailed": "Nem sikerült képernyőképet készíteni. Próbáld újra.",
     "openPage": "Nyisd meg ezt a könyvjelzőt egy böngészőlapon, majd készíts képet a Nori bővítmény felugró ablakában.",
     "browserMissing": "Képernyőképekhez telepítsd a Chrome, Chromium vagy Edge böngészőt.",
-    "loadInPage": "Előnézet betöltése az oldalon",
-    "usePage": "Az oldal használata"
+    "capturePreview": "Előnézet rögzítése",
+    "capture": "Rögzítés",
+    "capturing": "Rögzítés…"
   }
 }

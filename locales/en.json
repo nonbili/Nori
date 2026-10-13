@@ -271,7 +271,8 @@
     "screenshotFailed": "Could not capture the screenshot. Try again.",
     "openPage": "Open this bookmark in a browser tab, then use the Nori extension popup to capture it.",
     "browserMissing": "Install Chrome, Chromium or Edge to capture screenshots.",
-    "loadInPage": "Load preview in page",
-    "usePage": "Use this page"
+    "capturePreview": "Capture preview",
+    "capture": "Capture",
+    "capturing": "Capturing…"
   }
 }

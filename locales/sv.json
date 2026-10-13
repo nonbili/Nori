@@ -268,7 +268,8 @@
     "screenshotFailed": "Kunde inte ta skärmbilden. Försök igen.",
     "openPage": "Öppna bokmärket i en webbläsarflik och ta bilden från Nori-tilläggets popup.",
     "browserMissing": "Installera Chrome, Chromium eller Edge för att ta skärmbilder.",
-    "loadInPage": "Läs in förhandsvisning på sidan",
-    "usePage": "Använd den här sidan"
+    "capturePreview": "Fånga förhandsvisning",
+    "capture": "Fånga",
+    "capturing": "Fångar…"
   }
 }

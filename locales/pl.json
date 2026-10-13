@@ -268,7 +268,8 @@
     "screenshotFailed": "Nie udało się wykonać zrzutu ekranu. Spróbuj ponownie.",
     "openPage": "Otwórz tę zakładkę w przeglądarce i wykonaj zrzut w oknie rozszerzenia Nori.",
     "browserMissing": "Zainstaluj Chrome, Chromium lub Edge, aby wykonywać zrzuty ekranu.",
-    "loadInPage": "Wczytaj podgląd na stronie",
-    "usePage": "Użyj tej strony"
+    "capturePreview": "Przechwyć podgląd",
+    "capture": "Przechwyć",
+    "capturing": "Przechwytywanie…"
   }
 }

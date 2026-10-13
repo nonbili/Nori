@@ -271,7 +271,8 @@
     "screenshotFailed": "Screenshot konnte nicht aufgenommen werden. Erneut versuchen.",
     "openPage": "Dieses Lesezeichen in einem Browser-Tab öffnen und über das Popup der Nori-Erweiterung aufnehmen.",
     "browserMissing": "Chrome, Chromium oder Edge installieren, um Screenshots aufzunehmen.",
-    "loadInPage": "Vorschau in der Seite laden",
-    "usePage": "Diese Seite verwenden"
+    "capturePreview": "Vorschau erfassen",
+    "capture": "Erfassen",
+    "capturing": "Wird erfasst…"
   }
 }

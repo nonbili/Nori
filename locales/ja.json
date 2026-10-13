@@ -271,7 +271,8 @@
     "screenshotFailed": "スクリーンショットを撮影できませんでした。もう一度お試しください。",
     "openPage": "このブックマークをブラウザーのタブで開き、Nori 拡張機能のポップアップから撮影してください。",
     "browserMissing": "撮影には Chrome、Chromium または Edge をインストールしてください。",
-    "loadInPage": "ページを開いてプレビューを読み込む",
-    "usePage": "このページを使用"
+    "capturePreview": "プレビューを取得",
+    "capture": "取得",
+    "capturing": "取得中…"
   }
 }

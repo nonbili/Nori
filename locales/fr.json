@@ -268,7 +268,8 @@
     "screenshotFailed": "Impossible de faire la capture. Réessayez.",
     "openPage": "Ouvrez ce favori dans un onglet, puis faites la capture depuis la fenêtre de l’extension Nori.",
     "browserMissing": "Installez Chrome, Chromium ou Edge pour faire des captures.",
-    "loadInPage": "Charger l’aperçu dans la page",
-    "usePage": "Utiliser cette page"
+    "capturePreview": "Capturer l’aperçu",
+    "capture": "Capturer",
+    "capturing": "Capture…"
   }
 }

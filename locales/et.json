@@ -271,7 +271,8 @@
     "screenshotFailed": "Kuvatõmmist ei saanud teha. Proovi uuesti.",
     "openPage": "Ava see järjehoidja brauseri vahekaardil ja tee kuvatõmmis Nori laienduse hüpikaknas.",
     "browserMissing": "Kuvatõmmiste tegemiseks paigalda Chrome, Chromium või Edge.",
-    "loadInPage": "Laadi eelvaade lehel",
-    "usePage": "Kasuta seda lehte"
+    "capturePreview": "Jäädvusta eelvaade",
+    "capture": "Jäädvusta",
+    "capturing": "Jäädvustamine…"
   }
 }

@@ -271,7 +271,8 @@
     "screenshotFailed": "Tidak dapat mengambil tangkapan layar. Coba lagi.",
     "openPage": "Buka markah ini di tab browser, lalu ambil gambar dari popup ekstensi Nori.",
     "browserMissing": "Instal Chrome, Chromium, atau Edge untuk mengambil tangkapan layar.",
-    "loadInPage": "Muat pratinjau di halaman",
-    "usePage": "Gunakan halaman ini"
+    "capturePreview": "Ambil pratinjau",
+    "capture": "Ambil",
+    "capturing": "Mengambil…"
   }
 }

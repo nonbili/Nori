@@ -271,7 +271,8 @@
     "screenshotFailed": "스크린샷을 촬영하지 못했습니다. 다시 시도하세요.",
     "openPage": "이 북마크를 브라우저 탭에서 열고 Nori 확장 프로그램 팝업에서 촬영하세요.",
     "browserMissing": "스크린샷 촬영을 위해 Chrome, Chromium 또는 Edge를 설치하세요.",
-    "loadInPage": "페이지에서 미리보기 불러오기",
-    "usePage": "이 페이지 사용"
+    "capturePreview": "미리보기 캡처",
+    "capture": "캡처",
+    "capturing": "캡처 중…"
   }
 }

@@ -268,7 +268,8 @@
     "screenshotFailed": "Ekran görüntüsü alınamadı. Tekrar deneyin.",
     "openPage": "Bu yer imini bir tarayıcı sekmesinde açın ve Nori uzantısının açılır penceresinden görüntü alın.",
     "browserMissing": "Ekran görüntüsü almak için Chrome, Chromium veya Edge yükleyin.",
-    "loadInPage": "Önizlemeyi sayfada yükle",
-    "usePage": "Bu sayfayı kullan"
+    "capturePreview": "Önizlemeyi yakala",
+    "capture": "Yakala",
+    "capturing": "Yakalanıyor…"
   }
 }

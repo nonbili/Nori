@@ -271,7 +271,8 @@
     "screenshotFailed": "Neizdevās uzņemt ekrānuzņēmumu. Mēģiniet vēlreiz.",
     "openPage": "Atveriet šo grāmatzīmi pārlūka cilnē un uzņemiet attēlu Nori paplašinājuma uznirstošajā logā.",
     "browserMissing": "Ekrānuzņēmumiem instalējiet Chrome, Chromium vai Edge.",
-    "loadInPage": "Ielādēt priekšskatījumu lapā",
-    "usePage": "Izmantot šo lapu"
+    "capturePreview": "Tvert priekšskatījumu",
+    "capture": "Tvert",
+    "capturing": "Tver…"
   }
 }

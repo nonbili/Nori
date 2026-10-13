@@ -271,7 +271,8 @@
     "screenshotFailed": "Não foi possível capturar o ecrã. Tente novamente.",
     "openPage": "Abra este favorito num separador e capture-o através da janela da extensão Nori.",
     "browserMissing": "Instale Chrome, Chromium ou Edge para capturar o ecrã.",
-    "loadInPage": "Carregar pré-visualização na página",
-    "usePage": "Usar esta página"
+    "capturePreview": "Capturar pré-visualização",
+    "capture": "Capturar",
+    "capturing": "A capturar…"
   }
 }
