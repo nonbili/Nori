@@ -1,0 +1,4 @@
+- Load pages in a headless browser to extract titles from client-rendered sites
+- Shared Experience and Appearance settings with Material icons
+- Add new bookmarks at the top by default, configurable in settings
+- Show preview capture error details and refresh controls
