@@ -72,5 +72,8 @@
     "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
     "typescript": "~6.0.3"
+  },
+  "patchedDependencies": {
+    "react-native-css-interop@0.2.3": "patches/react-native-css-interop@0.2.3.patch"
   }
 }

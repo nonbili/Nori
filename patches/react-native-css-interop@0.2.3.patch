@@ -1,0 +1,78 @@
+diff --git a/dist/metro/index.js b/dist/metro/index.js
+index c91ba6adf049dd5c6eec1ec8301ecc0802f41bfc..ba2f98c199ee59ae9f444c1325abbd942de1d754 100644
+--- a/dist/metro/index.js
++++ b/dist/metro/index.js
+@@ -176,18 +176,23 @@ async function startCSSProcessor(filePath, platform, isDev, { input, getCSSForPl
+                 ? css
+                 : getNativeJS((0, css_to_rn_1.cssToReactNativeRuntime)(css, options), debug)));
+             debug(`virtualStyles.emit ${platform}`);
++            // Metro 0.84 reads `changes` and `rootDir` from the haste change event.
+             haste.emit("change", {
+-                eventsQueue: [
+-                    {
+-                        filePath,
+-                        metadata: {
+-                            modifiedTime: Date.now(),
+-                            size: 1,
+-                            type: "virtual",
+-                        },
+-                        type: "change",
+-                    },
+-                ],
++                changes: {
++                    addedFiles: new Map(),
++                    modifiedFiles: new Map([
++                        [
++                            path_1.default.basename(filePath),
++                            {
++                                modifiedTime: Date.now(),
++                                size: 1,
++                                type: "virtual",
++                            },
++                        ],
++                    ]),
++                    removedFiles: new Map(),
++                },
++                rootDir: path_1.default.dirname(filePath),
+             });
+         }).then((css) => {
+             debug(`virtualStyles.initial ${platform}`);
+diff --git a/src/metro/index.ts b/src/metro/index.ts
+index fa58c7b84bfb0e72d6f1100097bdc2c7030358f6..2b3b45fa610249aacdac7a4f4f50165ab88be9b2 100644
+--- a/src/metro/index.ts
++++ b/src/metro/index.ts
+@@ -341,18 +341,23 @@ async function startCSSProcessor(
+         );
+ 
+         debug(`virtualStyles.emit ${platform}`);
++        // Metro 0.84 reads `changes` and `rootDir` from the haste change event.
+         haste.emit("change", {
+-          eventsQueue: [
+-            {
+-              filePath,
+-              metadata: {
+-                modifiedTime: Date.now(),
+-                size: 1, // Can be anything
+-                type: "virtual", // Can be anything
+-              },
+-              type: "change",
+-            },
+-          ],
++          changes: {
++            addedFiles: new Map(),
++            modifiedFiles: new Map([
++              [
++                path.basename(filePath),
++                {
++                  modifiedTime: Date.now(),
++                  size: 1,
++                  type: "virtual",
++                },
++              ],
++            ]),
++            removedFiles: new Map(),
++          },
++          rootDir: path.dirname(filePath),
+         });
+       }).then((css) => {
+         debug(`virtualStyles.initial ${platform}`);
