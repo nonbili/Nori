@@ -11,10 +11,11 @@ import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 import { useValue } from '@legendapp/state/react'
 import { settings$ } from 'nori-root/states/settings'
+import { setUrlOpener } from 'nori-root/lib/open-url'
 import { NoriHome } from 'nori-root/components/home/NoriHome'
 import { ActionSnackbar } from 'nori-root/components/common/ActionSnackbar'
 import { AppProvider } from './AppContext'
-import { SettingsSheet } from './SharedSettingsSheet'
+import { SettingsSheet } from './parts/SettingsSheet'
 import { useSnapshot } from './useSnapshot'
 import { useSharedStateBridge } from './useSharedStateBridge'
 import { installPreviewCapture } from '../lib/preview-capture'
@@ -24,6 +25,7 @@ import './nativewind-interop'
 
 setDynamicLoadingEnabled(false)
 installPreviewCapture()
+setUrlOpener((url) => browser.tabs.create({ url }))
 
 function ReadyApp({
   state,

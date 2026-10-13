@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Icon, type IconName } from './Icon'
-import { useEscape } from './useEscape'
+import { useEscape } from 'nori-root/lib/use-escape'
 
 export interface MenuItem {
   id?: string

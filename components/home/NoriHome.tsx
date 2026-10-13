@@ -6,7 +6,6 @@ import { BookmarkEditorSheet } from '@/components/sheet/BookmarkEditorSheet'
 import { ManageListsSheet } from '@/components/sheet/ManageListsSheet'
 import { RecentlyUsedSheet } from '@/components/sheet/RecentlyUsedSheet'
 import { SaveSharedLinkSheet } from '@/components/sheet/SaveSharedLinkSheet'
-import { SettingsSheet } from '@/components/sheet/SettingsSheet'
 import { ListEditorSheet } from '@/components/sheet/ListEditorSheet'
 import type { BookmarkRecord } from '@/states/bookmarks'
 import type { NouMenuItem } from '@/components/menu/NouMenu'
@@ -24,8 +23,9 @@ export function NoriHome({
   menuItems?: NouMenuItem[]
   onOpenSettings?: () => void
   renderMain?: (main: ReactElement) => ReactElement
-  settingsSheet?: ReactElement | null
-} = {}) {
+  /** Each host brings its own: accounts, billing and file transfer are platform work. */
+  settingsSheet: ReactElement | null
+}) {
   const main = (
     <View className="flex-1">
       <BookmarkPager
@@ -42,7 +42,7 @@ export function NoriHome({
 
       <AllBookmarksDrawer />
       <RecentlyUsedSheet />
-      {settingsSheet === undefined ? <SettingsSheet /> : settingsSheet}
+      {settingsSheet}
       <ManageListsSheet />
       <BookmarkEditorSheet />
       <ListEditorSheet />

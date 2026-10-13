@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react'
 
 // Only the topmost layer reacts to Escape, so closing a menu inside a sheet does
-// not also close the sheet.
+// not also close the sheet. Web only; see use-escape.native.ts.
 const stack: object[] = []
 
-export function useEscape(onEscape: () => void) {
+export function useEscape(onEscape: () => void, enabled = true) {
   const handler = useRef(onEscape)
   handler.current = onEscape
   useEffect(() => {
+    if (!enabled) return
     const token = {}
     stack.push(token)
     const listener = (event: KeyboardEvent) => {
@@ -21,5 +22,5 @@ export function useEscape(onEscape: () => void) {
       if (index >= 0) stack.splice(index, 1)
       document.removeEventListener('keydown', listener)
     }
-  }, [])
+  }, [enabled])
 }

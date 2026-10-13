@@ -4,6 +4,9 @@ import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeColors } from '@/lib/theme'
+import { useEscape } from '@/lib/use-escape'
+
+const holdEscape = () => {}
 
 export interface NouMenuItem {
   id?: string
@@ -42,6 +45,12 @@ export const NouMenu: React.FC<{
   }
 
   const closeMenu = () => setOpen(false)
+
+  // On the web the Modal below dismisses itself on Escape, but only on keyup;
+  // the shells' own sheets act on keydown and would close around the menu
+  // first. Taking the top of their Escape stack while open leaves the key to
+  // the Modal, so it dismisses the menu alone.
+  useEscape(holdEscape, open)
 
   useEffect(() => {
     if (open || !pendingItem.current) {

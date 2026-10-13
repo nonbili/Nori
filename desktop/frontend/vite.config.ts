@@ -25,18 +25,13 @@ const pinned = (name: string) => {
 const version = readFileSync(resolve(desktopDir, 'version.txt'), 'utf8').trim()
 
 // Mirrors the extension's wxt.config.ts: the React Native app under the repo
-// root imports through the `@/` alias, and two of those modules have web
-// specific replacements.
+// root imports through the `@/` alias.
 const rewriteRootAliases = {
   name: 'rewrite-nori-root-aliases',
   enforce: 'pre' as const,
   transform(code: string, id: string) {
     if (!id.startsWith(rootDir) || id.startsWith(extensionDir) || id.startsWith(desktopDir)) return
     return code
-      .replaceAll("'@/components/sheet/SettingsSheet'", "'nori-extension-settings'")
-      .replaceAll('"@/components/sheet/SettingsSheet"', '"nori-extension-settings"')
-      .replaceAll("'@/lib/open-bookmark'", "'nori-extension-open-bookmark'")
-      .replaceAll('"@/lib/open-bookmark"', '"nori-extension-open-bookmark"')
       .replaceAll("'@/", "'nori-root/")
       .replaceAll('"@/', '"nori-root/')
   },
@@ -70,14 +65,6 @@ export default defineConfig({
       // Every `browser.*` call in the shared extension code lands on the
       // desktop shim, which is backed by the Wails services.
       { find: 'wxt/browser', replacement: resolve(frontendDir, 'src/wxt-shim.ts') },
-      {
-        find: 'nori-extension-settings',
-        replacement: resolve(extensionDir, 'components/SharedSettingsSheet.tsx'),
-      },
-      {
-        find: 'nori-extension-open-bookmark',
-        replacement: resolve(extensionDir, 'lib/open-bookmark.ts'),
-      },
       {
         find: '@legendapp/state/react',
         replacement: resolve(extensionDir, 'lib/legend-react.ts'),

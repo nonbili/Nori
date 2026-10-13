@@ -15,8 +15,6 @@
     "isolatedModules": true,
     "paths": {
       "wxt/browser": ["./src/wxt-shim.ts"],
-      "@/components/sheet/SettingsSheet": ["../../extension/components/SharedSettingsSheet.tsx"],
-      "@/lib/open-bookmark": ["../../extension/lib/open-bookmark.ts"],
       "@/*": ["../../*"],
       "nori/*": ["../../*"],
       "nori-root/*": ["../../*"],

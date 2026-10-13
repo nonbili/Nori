@@ -25,16 +25,14 @@ describe('desktop Vite transforms', () => {
     expect(inject.transform(code, id('desktop/frontend/src/main.tsx'))).toBeUndefined()
   })
 
-  test('rewrites shared imports to the web implementations', () => {
+  test('rewrites shared imports onto the repo root', () => {
     const code = [
-      "import Settings from '@/components/sheet/SettingsSheet'",
       'import openBookmark from "@/lib/open-bookmark"',
       "import { value } from '@/lib/example'",
     ].join('\n')
     expect(rewrite.transform(code, id('components/example.tsx'))).toBe(
       [
-        "import Settings from 'nori-extension-settings'",
-        'import openBookmark from "nori-extension-open-bookmark"',
+        'import openBookmark from "nori-root/lib/open-bookmark"',
         "import { value } from 'nori-root/lib/example'",
       ].join('\n'),
     )

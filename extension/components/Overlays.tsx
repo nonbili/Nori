@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
-import { useEscape } from './useEscape'
+import { useEscape } from 'nori-root/lib/use-escape'
 
 // The Android bottom sheet: backdrop, rounded top, grabber, header row.
 export function Sheet({

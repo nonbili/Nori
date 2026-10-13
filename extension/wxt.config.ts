@@ -15,10 +15,6 @@ const rewriteRootAliases = {
   transform(code: string, id: string) {
     if (!id.startsWith(rootDir) || id.startsWith(extensionDir)) return
     return code
-      .replaceAll("'@/components/sheet/SettingsSheet'", "'nori-extension-settings'")
-      .replaceAll('"@/components/sheet/SettingsSheet"', '"nori-extension-settings"')
-      .replaceAll("'@/lib/open-bookmark'", "'nori-extension-open-bookmark'")
-      .replaceAll('"@/lib/open-bookmark"', '"nori-extension-open-bookmark"')
       .replaceAll("'@/", "'nori-root/")
       .replaceAll('"@/', '"nori-root/')
   },
@@ -38,14 +34,6 @@ export default defineConfig({
     resolve: {
       dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@legendapp/state'],
       alias: [
-        {
-          find: 'nori-extension-settings',
-          replacement: resolve(extensionDir, 'components/SharedSettingsSheet.tsx'),
-        },
-        {
-          find: 'nori-extension-open-bookmark',
-          replacement: resolve(extensionDir, 'lib/open-bookmark.ts'),
-        },
         {
           find: '@legendapp/state/react',
           replacement: resolve(extensionDir, 'lib/legend-react.ts'),

@@ -5,6 +5,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import { ui$ } from '@/states/ui'
 import { NoriHome } from '@/components/home/NoriHome'
+import { SettingsSheet } from '@/components/sheet/SettingsSheet'
 import { usePendingShareIntent } from '@/hooks/usePendingShareIntent'
 import { useQuickShare } from '@/hooks/useQuickShare'
 import { useHomeWidget } from '@/hooks/useHomeWidget'
@@ -103,5 +104,10 @@ export default function HomeScreen() {
   useHomeWidget()
   usePendingShareIntent()
 
-  return <NoriHome renderMain={(main) => <GestureDetector gesture={openDrawerGesture}>{main}</GestureDetector>} />
+  return (
+    <NoriHome
+      renderMain={(main) => <GestureDetector gesture={openDrawerGesture}>{main}</GestureDetector>}
+      settingsSheet={<SettingsSheet />}
+    />
+  )
 }

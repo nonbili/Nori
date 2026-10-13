@@ -5,8 +5,6 @@
     "noUncheckedIndexedAccess": false,
     "jsx": "react-jsx",
     "paths": {
-      "@/components/sheet/SettingsSheet": ["./components/SharedSettingsSheet.tsx"],
-      "@/lib/open-bookmark": ["./lib/open-bookmark.ts"],
       "@/*": ["../*"],
       "nori/*": ["../*"],
       "nori-root/*": ["../*"]
