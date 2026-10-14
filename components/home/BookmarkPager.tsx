@@ -68,7 +68,6 @@ export const BookmarkPager: React.FC<{
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const selectedBookmarkIds = useValue(ui$.selectedBookmarkIds)
   const pagerRef = useAnimatedRef<Animated.ScrollView>()
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>()
   const chipScrollViewRef = useRef<ScrollView>(null)
   const pagerScrollX = useSharedValue(0)
   const pagerIndexRef = useRef(-1)
@@ -385,7 +384,6 @@ export const BookmarkPager: React.FC<{
     iconSubtleColor: themeColors.contentSubtle,
     iconAccentColor: themeColors.accent,
     themeColors,
-    scrollViewRef,
     onOpenBookmark: handleOpenBookmark,
     onOpenNewBookmark: openNewBookmark,
     onEditBookmark: editBookmark,

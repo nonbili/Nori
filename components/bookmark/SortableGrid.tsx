@@ -2,8 +2,14 @@ import React from 'react'
 import { Platform, View, useWindowDimensions } from 'react-native'
 import { Gesture, GestureDetector, PointerType } from 'react-native-gesture-handler'
 import Animated, {
-  useSharedValue,
+  measure,
+  scrollTo,
+  useAnimatedReaction,
+  useAnimatedRef,
   useAnimatedStyle,
+  useFrameCallback,
+  useScrollOffset,
+  useSharedValue,
   withSpring,
   runOnJS,
   type AnimatedRef,
@@ -13,6 +19,9 @@ import Animated, {
 const GAP = 16
 const MARGIN_HORIZONTAL = 24
 const HOLD_TO_DRAG_MS = 250
+// A tile held this close to the top or bottom of the list scrolls it, faster the closer it gets.
+const AUTO_SCROLL_EDGE = 72
+const AUTO_SCROLL_SPEED = 900
 
 // Web only. A tile lets a finger swipe scroll the page, so once a held tile is being
 // dragged the browser has to be stopped from scrolling with it and cancelling the drag.
@@ -32,7 +41,9 @@ interface SortableGridProps<T extends { id: string }> {
   renderItem: (item: T, isDragging: boolean) => React.ReactNode
   onReorder: (newOrder: string[]) => void
   editMode: boolean
-  scrollViewRef: AnimatedRef<Animated.ScrollView>
+  /** The list the grid scrolls in. Only a grid being reordered needs it. */
+  scrollViewRef?: AnimatedRef<Animated.ScrollView>
+  /** How much of the top of the list sits under a floating header. */
   headerHeight?: number
   trailingItem?: React.ReactNode
 }
@@ -71,6 +82,37 @@ export function SortableGrid<T extends { id: string }>({
   const handleReorder = (newPositions: Record<string, number>) => {
     const orderedIds = Object.keys(newPositions).sort((a, b) => newPositions[a] - newPositions[b])
     onReorder(orderedIds)
+  }
+
+  // A held tile is placed from how far the pointer has moved, which says nothing of the list
+  // moving under it: the tiles also follow the list's scroll offset, and the list is scrolled
+  // while a tile is held at its top or bottom, so a tile can be carried past what is in view.
+  const sortable = editMode ? scrollViewRef : undefined
+  const scrollOffset = useScrollOffset(sortable ?? null)
+  const gridRef = useAnimatedRef<Animated.View>()
+  const pointerY = useSharedValue(0)
+  const autoScroll = useFrameCallback((frame) => {
+    if (!sortable) return
+    const view = measure(sortable)
+    const grid = measure(gridRef)
+    if (!view || !grid) return
+    const top = view.pageY + headerHeight
+    const bottom = view.pageY + view.height
+    const distance = (AUTO_SCROLL_SPEED * Math.min(frame.timeSincePreviousFrame ?? 16, 64)) / 1000
+    let step = 0
+    if (pointerY.value < top + AUTO_SCROLL_EDGE) {
+      const pull = Math.min(1, (top + AUTO_SCROLL_EDGE - pointerY.value) / AUTO_SCROLL_EDGE)
+      step = -Math.min(pull * distance, scrollOffset.value)
+    } else if (pointerY.value > bottom - AUTO_SCROLL_EDGE) {
+      const pull = Math.min(1, (pointerY.value - (bottom - AUTO_SCROLL_EDGE)) / AUTO_SCROLL_EDGE)
+      // Stops once the last row is clear of the edge, never past the end of the list.
+      step = Math.max(0, Math.min(pull * distance, grid.pageY + grid.height - (bottom - AUTO_SCROLL_EDGE)))
+    }
+    if (step) scrollTo(sortable, 0, scrollOffset.value + step, false)
+  }, false)
+  const setDragging = (dragging: boolean) => {
+    setTouchDragging(dragging)
+    autoScroll.setActive(dragging)
   }
 
   // A pen sends no touchmove to hold a drag with, so it cannot share the scrollable tiles. It
@@ -112,7 +154,8 @@ export function SortableGrid<T extends { id: string }>({
   }
 
   return (
-    <View
+    <Animated.View
+      ref={gridRef}
       style={{
         height: Math.ceil(items.length / columns) * (itemHeight + GAP),
         width: gridWidth,
@@ -133,11 +176,12 @@ export function SortableGrid<T extends { id: string }>({
           gap={GAP}
           renderItem={renderItem}
           onDragEnd={handleReorder}
-          scrollViewRef={scrollViewRef}
-          headerHeight={headerHeight}
+          onDragging={setDragging}
+          scrollOffset={scrollOffset}
+          pointerY={pointerY}
         />
       ))}
-    </View>
+    </Animated.View>
   )
 }
 
@@ -152,8 +196,9 @@ interface DraggableTileProps<T> {
   gap: number
   renderItem: (item: T, isDragging: boolean) => React.ReactNode
   onDragEnd: (newPositions: Record<string, number>) => void
-  scrollViewRef: AnimatedRef<Animated.ScrollView>
-  headerHeight: number
+  onDragging: (dragging: boolean) => void
+  scrollOffset: SharedValue<number>
+  pointerY: SharedValue<number>
 }
 
 function DraggableTile<T extends { id: string }>({
@@ -167,14 +212,19 @@ function DraggableTile<T extends { id: string }>({
   gap,
   renderItem,
   onDragEnd,
-  scrollViewRef,
-  headerHeight,
+  onDragging,
+  scrollOffset,
+  pointerY,
 }: DraggableTileProps<T>) {
   const isDragging = useSharedValue(false)
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
   const startX = useSharedValue(0)
   const startY = useSharedValue(0)
+  // How far the pointer has moved, and where the list was scrolled to when the tile was picked up.
+  const dragX = useSharedValue(0)
+  const dragY = useSharedValue(0)
+  const startScroll = useSharedValue(0)
 
   const getCoords = (index: number) => {
     'worklet'
@@ -187,55 +237,81 @@ function DraggableTile<T extends { id: string }>({
     }
   }
 
+  // Puts the held tile under the pointer and makes room for it where it now is.
+  const moveDragged = () => {
+    'worklet'
+    const x = dragX.value
+    const y = dragY.value + scrollOffset.value - startScroll.value
+    translateX.value = x
+    translateY.value = y
+
+    const centerX = startX.value + x + itemWidth / 2
+    const centerY = startY.value + y + itemHeight / 2
+
+    const col = Math.max(0, Math.min(columns - 1, Math.floor(centerX / (itemWidth + gap))))
+    const row = Math.floor(centerY / (itemHeight + gap))
+    const newIndex = Math.min(
+      Math.max(row * columns + col, 0),
+      Object.keys(positions.value).length - 1,
+    )
+
+    if (newIndex !== positions.value[id]) {
+      const oldIndex = positions.value[id] ?? initialIndex
+      const newPositions = { ...positions.value }
+
+      // Shift logic
+      for (const key in newPositions) {
+        if (key === id) continue
+        const pos = newPositions[key]!
+        if (oldIndex < newIndex) {
+          if (pos > oldIndex && pos <= newIndex) {
+            newPositions[key] = pos - 1
+          }
+        } else {
+          if (pos >= newIndex && pos < oldIndex) {
+            newPositions[key] = pos + 1
+          }
+        }
+      }
+      newPositions[id] = newIndex
+      positions.value = newPositions
+    }
+  }
+
+  // The list scrolling under a held tile (the wheel, or the grid scrolling it at an edge) moves
+  // the tile's slot without the pointer moving at all. The dependencies are spelled out for the
+  // web builds, which have no Babel plugin to work out what the reaction reads.
+  useAnimatedReaction(
+    () => scrollOffset.value,
+    () => {
+      if (isDragging.value) moveDragged()
+    },
+    [scrollOffset, isDragging, positions, dragX, dragY, startScroll, startX, startY, translateX, translateY, id, initialIndex, itemWidth, itemHeight, columns, gap],
+  )
+
   const createPan = () => Gesture.Pan()
-    .onStart(() => {
+    .onStart((event) => {
       isDragging.value = true
       const pos = getCoords(positions.value[id] ?? initialIndex)
       startX.value = pos.x
       startY.value = pos.y
-      runOnJS(setTouchDragging)(true)
+      dragX.value = 0
+      dragY.value = 0
+      startScroll.value = scrollOffset.value
+      pointerY.value = event.absoluteY
+      runOnJS(onDragging)(true)
     })
     .onUpdate((event) => {
-      translateX.value = event.translationX
-      translateY.value = event.translationY
-
-      const centerX = startX.value + event.translationX + itemWidth / 2
-      const centerY = startY.value + event.translationY + itemHeight / 2
-
-      const col = Math.max(0, Math.min(columns - 1, Math.floor(centerX / (itemWidth + gap))))
-      const row = Math.floor(centerY / (itemHeight + gap))
-      const newIndex = Math.min(
-        Math.max(row * columns + col, 0),
-        Object.keys(positions.value).length - 1,
-      )
-
-      if (newIndex !== positions.value[id]) {
-        const oldIndex = positions.value[id] ?? initialIndex
-        const newPositions = { ...positions.value }
-
-        // Shift logic
-        for (const key in newPositions) {
-          if (key === id) continue
-          const pos = newPositions[key]!
-          if (oldIndex < newIndex) {
-            if (pos > oldIndex && pos <= newIndex) {
-              newPositions[key] = pos - 1
-            }
-          } else {
-            if (pos >= newIndex && pos < oldIndex) {
-              newPositions[key] = pos + 1
-            }
-          }
-        }
-        newPositions[id] = newIndex
-        positions.value = newPositions
-      }
+      dragX.value = event.translationX
+      dragY.value = event.translationY
+      pointerY.value = event.absoluteY
+      moveDragged()
     })
     .onEnd(() => {
       isDragging.value = false
       translateX.value = withSpring(0)
       translateY.value = withSpring(0)
-      runOnJS(setTouchDragging)(false)
+      runOnJS(onDragging)(false)
       runOnJS(onDragEnd)(positions.value)
     })
 

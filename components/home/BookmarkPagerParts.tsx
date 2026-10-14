@@ -1,11 +1,11 @@
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, Platform, ScrollView, View, useWindowDimensions, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
+import { FlatList, Platform, View, useWindowDimensions, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Animated, { type AnimatedRef } from 'react-native-reanimated'
+import Animated, { useAnimatedRef } from 'react-native-reanimated'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { ui$ } from '@/states/ui'
 import { settings$ } from '@/states/settings'
@@ -35,7 +35,6 @@ export interface BookmarkPagerActions {
   iconSubtleColor: string
   iconAccentColor: string
   themeColors: ThemeColors
-  scrollViewRef: AnimatedRef<Animated.ScrollView>
   onOpenBookmark: (bookmark: BookmarkRecord) => void
   onOpenNewBookmark: () => void
   onEditBookmark: (bookmark: BookmarkRecord) => void
@@ -132,6 +131,8 @@ export const BookmarkListPage = memo(({
   // reaches the end opens it by accident.
   const dragStartedAtBottomRef = useRef(false)
   const listRef = useRef<FlatList<BookmarkRecord>>(null)
+  // Each page scrolls on its own, so the grid being reordered is told which list is its own.
+  const sortScrollRef = useAnimatedRef<Animated.ScrollView>()
   const revealBookmarkId = useValue(ui$.revealBookmarkId)
 
   useEffect(() => {
@@ -263,7 +264,7 @@ export const BookmarkListPage = memo(({
             bookmarkEditMode && availableBookmarks.length ? (
               <View className="gap-4 pt-4">
                 <SectionLabel title={t('bookmarks.hiddenInList')} subtitle={t('bookmarks.hiddenInListHint')} />
-                <HiddenBookmarksGrid items={availableBookmarks} containerWidth={width} scrollViewRef={actions.scrollViewRef} />
+                <HiddenBookmarksGrid items={availableBookmarks} containerWidth={width} />
               </View>
             ) : null
           }
@@ -290,15 +291,15 @@ export const BookmarkListPage = memo(({
 
   return (
     <View className="flex-1" style={{ width }}>
-      <ScrollView
-        ref={actions.scrollViewRef}
+      <Animated.ScrollView
+        ref={sortScrollRef}
         showsVerticalScrollIndicator={Platform.OS === 'web'}
         onLayout={onLayout}
         onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}
         scrollEventThrottle={16}
         contentContainerStyle={{ flexGrow: 1, justifyContent: preview ? 'flex-start' : 'center', paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: actions.topInset + 16, paddingBottom: bottomPadding }}
-        className="flex-1"
+        style={{ flex: 1 }}
       >
         <View className="gap-8">
           <EditModeHint iconColor={actions.iconAccentColor} />
@@ -308,7 +309,8 @@ export const BookmarkListPage = memo(({
             columns={columns}
             itemHeight={itemHeight}
             editMode={true}
-            scrollViewRef={actions.scrollViewRef}
+            scrollViewRef={sortScrollRef}
+            headerHeight={actions.topInset}
             onReorder={(newOrder) => bookmarks$.reorder(list.id, newOrder)}
             renderItem={(bookmark, isDragging) => (
               <BookmarkTile
@@ -330,11 +332,11 @@ export const BookmarkListPage = memo(({
           {availableBookmarks.length ? (
             <View className="gap-4">
               <SectionLabel title={t('bookmarks.hiddenInList')} subtitle={t('bookmarks.hiddenInListHint')} />
-              <HiddenBookmarksGrid items={availableBookmarks} containerWidth={width} scrollViewRef={actions.scrollViewRef} />
+              <HiddenBookmarksGrid items={availableBookmarks} containerWidth={width} />
             </View>
           ) : null}
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   )
 })
@@ -343,8 +345,7 @@ BookmarkListPage.displayName = 'BookmarkListPage'
 const HiddenBookmarksGrid: React.FC<{
   items: BookmarkRecord[]
   containerWidth: number
-  scrollViewRef: AnimatedRef<Animated.ScrollView>
-}> = ({ items, containerWidth, scrollViewRef }) => {
+}> = ({ items, containerWidth }) => {
   const preview = useValue(settings$.bookmarkView) === 'preview'
   const { fontScale: systemFontScale } = useWindowDimensions()
   const fontScale = normalizeFontScale(useValue(settings$.fontScale))
@@ -358,7 +359,6 @@ const HiddenBookmarksGrid: React.FC<{
       columns={columns}
       itemHeight={itemHeight}
       editMode={false}
-      scrollViewRef={scrollViewRef}
       renderItem={(bookmark) => (
         <BookmarkTile
           key={bookmark.id}
