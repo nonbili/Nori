@@ -276,5 +276,9 @@
     "capturing": "Capturing…",
     "coverNone": "No cover image found",
     "blockAds": "Block ads and trackers"
+  },
+  "tray": {
+    "show": "Show Nori",
+    "quit": "Quit Nori"
   }
 }

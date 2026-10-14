@@ -276,5 +276,9 @@
     "capturing": "Jäädvustamine…",
     "coverNone": "Kaanepilti ei leitud",
     "blockAds": "Blokeeri reklaamid ja jälitajad"
+  },
+  "tray": {
+    "show": "Kuva Nori",
+    "quit": "Sulge Nori"
   }
 }

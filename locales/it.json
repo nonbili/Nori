@@ -276,5 +276,9 @@
     "capturing": "Acquisizione…",
     "coverNone": "Nessuna immagine di copertina trovata",
     "blockAds": "Blocca annunci e tracker"
+  },
+  "tray": {
+    "show": "Mostra Nori",
+    "quit": "Esci da Nori"
   }
 }

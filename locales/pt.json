@@ -276,5 +276,9 @@
     "capturing": "A capturar…",
     "coverNone": "Nenhuma imagem de capa encontrada",
     "blockAds": "Bloquear anúncios e rastreadores"
+  },
+  "tray": {
+    "show": "Mostrar o Nori",
+    "quit": "Sair do Nori"
   }
 }

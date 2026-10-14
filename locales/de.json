@@ -276,5 +276,9 @@
     "capturing": "Wird erfasst…",
     "coverNone": "Kein Titelbild gefunden",
     "blockAds": "Werbung und Tracker blockieren"
+  },
+  "tray": {
+    "show": "Nori anzeigen",
+    "quit": "Nori beenden"
   }
 }

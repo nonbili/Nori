@@ -276,5 +276,9 @@
     "capturing": "Mengambil…",
     "coverNone": "Gambar sampul tidak ditemukan",
     "blockAds": "Blokir iklan dan pelacak"
+  },
+  "tray": {
+    "show": "Tampilkan Nori",
+    "quit": "Keluar dari Nori"
   }
 }

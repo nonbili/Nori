@@ -276,5 +276,9 @@
     "capturing": "캡처 중…",
     "coverNone": "커버 이미지를 찾을 수 없습니다",
     "blockAds": "광고 및 추적기 차단"
+  },
+  "tray": {
+    "show": "Nori 표시",
+    "quit": "Nori 종료"
   }
 }

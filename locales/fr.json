@@ -276,5 +276,9 @@
     "capturing": "Capture…",
     "coverNone": "Aucune image de couverture trouvée",
     "blockAds": "Bloquer les publicités et les traceurs"
+  },
+  "tray": {
+    "show": "Afficher Nori",
+    "quit": "Quitter Nori"
   }
 }

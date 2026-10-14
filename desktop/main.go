@@ -52,6 +52,7 @@ func main() {
 		},
 	})
 	icon = newTray(app, store)
+	app.RegisterService(application.NewService(&TrayService{tray: icon}))
 
 	windowOptions := application.WebviewWindowOptions{
 		Name:             "main",

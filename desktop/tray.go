@@ -32,16 +32,19 @@ type tray struct {
 	mu     sync.Mutex
 	window application.Window
 
+	showItem, quitItem *application.MenuItem
+
 	quitting atomic.Bool
 }
 
 func newTray(app *application.App, store *StoreService) *tray {
 	t := &tray{app: app, store: store}
 
+	// In English until the frontend, which has the translations, sends its own.
 	menu := app.NewMenu()
-	menu.Add("Show Nori").OnClick(func(*application.Context) { t.show() })
+	t.showItem = menu.Add("Show Nori").OnClick(func(*application.Context) { t.show() })
 	menu.AddSeparator()
-	menu.Add("Quit").OnClick(func(*application.Context) { t.quit() })
+	t.quitItem = menu.Add("Quit Nori").OnClick(func(*application.Context) { t.quit() })
 
 	icon := app.SystemTray.New().SetMenu(menu)
 	icon.SetTooltip("Nori")
@@ -56,6 +59,22 @@ func newTray(app *application.App, store *StoreService) *tray {
 	}
 	app.OnShutdown(func() { t.quitting.Store(true) })
 	return t
+}
+
+// TrayService is how the frontend reaches the tray. The translations live with
+// the frontend, so it sends the menu's labels in the language it is showing,
+// at startup and again whenever that language changes.
+type TrayService struct {
+	tray *tray
+}
+
+func (s *TrayService) SetLabels(show string, quit string) {
+	if show != "" {
+		s.tray.showItem.SetLabel(show)
+	}
+	if quit != "" {
+		s.tray.quitItem.SetLabel(quit)
+	}
 }
 
 // adopt makes closing the window hide it instead, for as long as that is wanted.

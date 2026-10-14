@@ -276,5 +276,9 @@
     "capturing": "Yakalanıyor…",
     "coverNone": "Kapak görseli bulunamadı",
     "blockAds": "Reklamları ve izleyicileri engelle"
+  },
+  "tray": {
+    "show": "Nori’yi göster",
+    "quit": "Nori’den çık"
   }
 }

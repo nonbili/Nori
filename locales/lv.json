@@ -276,5 +276,9 @@
     "capturing": "Tver…",
     "coverNone": "Nav atrasts vāka attēls",
     "blockAds": "Bloķēt reklāmas un izsekotājus"
+  },
+  "tray": {
+    "show": "Rādīt Nori",
+    "quit": "Iziet no Nori"
   }
 }

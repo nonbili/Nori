@@ -276,5 +276,9 @@
     "capturing": "Rögzítés…",
     "coverNone": "Nem található borítókép",
     "blockAds": "Hirdetések és nyomkövetők blokkolása"
+  },
+  "tray": {
+    "show": "Nori megjelenítése",
+    "quit": "Kilépés a Noriból"
   }
 }

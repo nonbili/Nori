@@ -276,5 +276,9 @@
     "capturing": "Fångar…",
     "coverNone": "Ingen omslagsbild hittades",
     "blockAds": "Blockera annonser och spårare"
+  },
+  "tray": {
+    "show": "Visa Nori",
+    "quit": "Avsluta Nori"
   }
 }

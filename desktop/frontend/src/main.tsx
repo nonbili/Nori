@@ -1,4 +1,6 @@
 import { createRoot } from 'react-dom/client'
+import i18n from 'i18next'
+import { Call } from '@wailsio/runtime'
 import { initDesktopBridge } from './wxt-shim'
 import { installDesktopPageFetch } from './page-fetch'
 import background from 'nori-extension/entrypoints/background'
@@ -16,6 +18,12 @@ await initDesktopBridge()
 installDesktopPageFetch()
 // The window is closed to a tray icon, which Go puts up and the settings sheet can turn off.
 setCloseToTraySupported(true)
+// The tray menu is drawn by Go, which has no translations of its own.
+const sendTrayLabels = () =>
+  // eslint-disable-next-line import/no-named-as-default-member
+  void Call.ByName('main.TrayService.SetLabels', i18n.t('tray.show'), i18n.t('tray.quit')).catch(() => {})
+i18n.on('languageChanged', sendTrayLabels)
+sendTrayLabels()
 background.main()
 
 // `tab` is the extension's standalone-window mode, which is what a desktop

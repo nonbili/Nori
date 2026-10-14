@@ -276,5 +276,9 @@
     "capturing": "Đang chụp…",
     "coverNone": "Không tìm thấy ảnh bìa",
     "blockAds": "Chặn quảng cáo và trình theo dõi"
+  },
+  "tray": {
+    "show": "Hiện Nori",
+    "quit": "Thoát Nori"
   }
 }

@@ -276,5 +276,9 @@
     "capturing": "取得中…",
     "coverNone": "カバー画像が見つかりません",
     "blockAds": "広告とトラッカーをブロック"
+  },
+  "tray": {
+    "show": "Nori を表示",
+    "quit": "Nori を終了"
   }
 }

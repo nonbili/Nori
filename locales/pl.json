@@ -276,5 +276,9 @@
     "capturing": "Przechwytywanie…",
     "coverNone": "Nie znaleziono obrazu okładki",
     "blockAds": "Blokuj reklamy i moduły śledzące"
+  },
+  "tray": {
+    "show": "Pokaż Nori",
+    "quit": "Zakończ Nori"
   }
 }

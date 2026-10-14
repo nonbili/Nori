@@ -276,5 +276,9 @@
     "capturing": "擷取中…",
     "coverNone": "未找到封面圖",
     "blockAds": "阻擋廣告與追蹤器"
+  },
+  "tray": {
+    "show": "顯示 Nori",
+    "quit": "結束 Nori"
   }
 }
