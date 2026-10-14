@@ -1,0 +1,5 @@
+- System tray icon and close to tray with a setting to turn it off
+- Localized tray menu in all supported languages
+- Capture bookmark previews from a live, scrollable page
+- Preview screenshots over DevTools and support for sites that block headless browsers
+- Scroll the list at its edges while sorting and keep the held tile under the pointer
