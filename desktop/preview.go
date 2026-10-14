@@ -1,12 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
-	"fmt"
-	"image/png"
 	"io"
 	"net/http"
 	"net/url"
@@ -18,6 +16,11 @@ import (
 )
 
 const maxPreviewBytes = 5 * 1024 * 1024
+
+// How much of its own time a page gets to settle before it is captured.
+const screenshotBudget = 3 * time.Second
+
+const imageUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 
 type PreviewImageResponse struct {
 	DataURL    string `json:"dataUrl"`
@@ -38,7 +41,15 @@ func (s *PageService) Image(value string) (PreviewImageResponse, error) {
 	if err := previewURL(value); err != nil {
 		return PreviewImageResponse{}, err
 	}
-	res, err := s.client.Get(value)
+	req, err := http.NewRequest(http.MethodGet, value, nil)
+	if err != nil {
+		return PreviewImageResponse{}, err
+	}
+	// Image hosts refuse Go's own User-Agent as a bot's, where the app and the
+	// extension ask as the browsers they are.
+	req.Header.Set("User-Agent", imageUserAgent)
+	req.Header.Set("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8")
+	res, err := s.client.Do(req)
 	if err != nil {
 		return PreviewImageResponse{}, err
 	}
@@ -85,72 +96,44 @@ func previewBrowser() (string, error) {
 
 // Screenshot uses an isolated temporary browser profile, never the user's
 // browsing profile. Captures remain local and no screenshot service is used.
+//
+// The image is asked for over the DevTools protocol rather than with
+// --screenshot, which has the browser write a file this then has to find: on
+// some Windows machines that file never appeared.
 func (s *PageService) Screenshot(value string) (string, error) {
 	if err := previewURL(value); err != nil {
 		return "", err
 	}
-	browser, err := previewBrowser()
-	if err != nil {
-		return "", err
-	}
-	directory, err := os.MkdirTemp("", "nori-preview-")
-	if err != nil {
-		return "", err
-	}
-	defer os.RemoveAll(directory)
-	image := filepath.Join(directory, "preview.png")
-	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, browser,
-		"--headless", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
-		"--user-data-dir="+filepath.Join(directory, "profile"), "--window-size=1000,750",
-		// Windows captures at the display's scale otherwise: four times the pixels at
-		// 200%, which can pass maxPreviewBytes and never yield a usable image.
-		"--force-device-scale-factor=1",
-		"--hide-scrollbars", "--timeout=15000", "--virtual-time-budget=3000", "--screenshot="+image, value)
-	if err := cmd.Start(); err != nil {
+	browser, err := openHeadlessPage(ctx, cancel)
+	if err != nil {
 		return "", err
 	}
-	done := make(chan error, 1)
-	go func() { done <- cmd.Wait() }()
-	readImage := func() (string, error) {
-		info, err := os.Stat(image)
-		if err != nil {
-			return "", err
-		}
-		if info.Size() > maxPreviewBytes {
-			return "", errors.New("preview image too large")
-		}
-		body, err := os.ReadFile(image)
-		if err != nil {
-			return "", err
-		}
-		// Chrome can keep running after writing its screenshot. Wait for a complete
-		// PNG rather than waiting for the browser process to exit on its own.
-		if _, err := png.Decode(bytes.NewReader(body)); err != nil {
-			return "", err
-		}
-		return "data:image/png;base64," + base64.StdEncoding.EncodeToString(body), nil
+	defer browser.close()
+	client, session := browser.client, browser.session
+	// A scale of one whatever the display's: at 200% the capture has four times
+	// the pixels, which can pass maxPreviewBytes and never yield a usable image.
+	if _, err := client.call(ctx, session, "Emulation.setDeviceMetricsOverride", map[string]any{
+		"width": 1000, "height": 750, "deviceScaleFactor": 1, "mobile": false,
+	}); err != nil {
+		return "", err
 	}
-	ticker := time.NewTicker(100 * time.Millisecond)
-	defer ticker.Stop()
-	// Why the last poll had no usable image, so a timeout says what it was waiting on.
-	var pending error
-	for {
-		select {
-		case <-ticker.C:
-			result, err := readImage()
-			if err == nil {
-				cancel()
-				<-done
-				return result, nil
-			}
-			pending = err
-		case <-done:
-			return readImage()
-		case <-ctx.Done():
-			<-done
-			return "", fmt.Errorf("preview screenshot timed out: %w", pending)
-		}
+	if err := browser.load(ctx, value, screenshotBudget); err != nil {
+		return "", err
 	}
+	var shot struct {
+		Data string `json:"data"`
+	}
+	result, err := client.call(ctx, session, "Page.captureScreenshot", map[string]any{"format": "png"})
+	if err != nil {
+		return "", err
+	}
+	if json.Unmarshal(result, &shot) != nil || shot.Data == "" {
+		return "", errors.New("preview screenshot was empty")
+	}
+	if len(shot.Data)/4*3 > maxPreviewBytes {
+		return "", errors.New("preview image too large")
+	}
+	return "data:image/png;base64," + shot.Data, nil
 }

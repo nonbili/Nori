@@ -8,7 +8,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/coder/websocket"
@@ -147,13 +149,60 @@ func (c *cdpClient) pump(ctx context.Context, duration time.Duration) bool {
 	}
 }
 
-// devToolsEndpoint waits for the browser to publish the port it picked.
-func devToolsEndpoint(ctx context.Context, profile string) (string, error) {
+// browserOutput keeps the end of what the browser printed: where it is
+// listening, and failing that, why it gave up.
+type browserOutput struct {
+	mu   sync.Mutex
+	text []byte
+}
+
+const browserOutputLimit = 16 * 1024
+
+func (o *browserOutput) Write(data []byte) (int, error) {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	o.text = append(o.text, data...)
+	if len(o.text) > browserOutputLimit {
+		o.text = o.text[len(o.text)-browserOutputLimit:]
+	}
+	return len(data), nil
+}
+
+var devToolsListening = regexp.MustCompile(`DevTools listening on (ws://\S+)`)
+
+func (o *browserOutput) endpoint() string {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	if match := devToolsListening.FindSubmatch(o.text); match != nil {
+		return string(match[1])
+	}
+	return ""
+}
+
+// reason is the last thing the browser said, cut to fit an error message.
+func (o *browserOutput) reason() string {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	lines := strings.Split(strings.TrimSpace(string(o.text)), "\n")
+	last := strings.TrimSpace(lines[len(lines)-1])
+	if len(last) > 300 {
+		last = last[len(last)-300:]
+	}
+	return last
+}
+
+// devToolsEndpoint waits for the browser to say where it is listening. It says
+// so twice, in what it prints and in a file in its profile, and either will do:
+// one of them alone has been seen to never arrive.
+func devToolsEndpoint(ctx context.Context, profile string, output *browserOutput, exited <-chan struct{}) (string, error) {
 	ctx, stop := context.WithTimeout(ctx, browserStartTimeout)
 	defer stop()
 	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
 	for {
+		if endpoint := output.endpoint(); endpoint != "" {
+			return endpoint, nil
+		}
 		if body, err := os.ReadFile(filepath.Join(profile, "DevToolsActivePort")); err == nil {
 			if lines := strings.Split(strings.TrimSpace(string(body)), "\n"); len(lines) >= 2 && lines[0] != "" {
 				return "ws://127.0.0.1:" + strings.TrimSpace(lines[0]) + strings.TrimSpace(lines[1]), nil
@@ -161,6 +210,8 @@ func devToolsEndpoint(ctx context.Context, profile string) (string, error) {
 		}
 		select {
 		case <-ticker.C:
+		case <-exited:
+			return "", errors.New("browser exited before it was ready")
 		case <-ctx.Done():
 			return "", errors.New("browser did not start")
 		}
@@ -191,20 +242,24 @@ func openHeadlessPage(ctx context.Context, cancel context.CancelFunc) (*headless
 	cmd := exec.CommandContext(ctx, browser,
 		"--headless", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
 		"--user-data-dir="+profile, "--remote-debugging-port=0", "about:blank")
+	output := &browserOutput{}
+	cmd.Stderr = output
+	// The browser's own children hold its output open after it has gone.
+	cmd.WaitDelay = 2 * time.Second
 	if err := cmd.Start(); err != nil {
 		_ = os.RemoveAll(directory)
-		return nil, err
+		return nil, fmt.Errorf("could not start %s: %w", filepath.Base(browser), err)
 	}
+	exited := make(chan struct{})
+	go func() {
+		_ = cmd.Wait()
+		close(exited)
+	}()
 	page := &headlessPage{}
 	// Ask the browser to quit before falling back to killing it: a killed
 	// browser's child processes can still be writing to the profile, and the
 	// directory then outlives the removal below.
 	page.close = func() {
-		exited := make(chan struct{})
-		go func() {
-			_ = cmd.Wait()
-			close(exited)
-		}()
 		if page.client != nil && ctx.Err() == nil {
 			// Bounded as a whole: a browser that has stopped answering never
 			// replies, and ctx may have no deadline of its own.
@@ -226,10 +281,14 @@ func openHeadlessPage(ctx context.Context, cancel context.CancelFunc) (*headless
 		}
 	}
 
-	endpoint, err := devToolsEndpoint(ctx, profile)
+	endpoint, err := devToolsEndpoint(ctx, profile, output, exited)
 	if err != nil {
 		page.close()
-		return nil, err
+		// Which browser and its parting words: all a report from another machine has to go on.
+		if reason := output.reason(); reason != "" {
+			return nil, fmt.Errorf("%w (%s: %s)", err, filepath.Base(browser), reason)
+		}
+		return nil, fmt.Errorf("%w (%s)", err, filepath.Base(browser))
 	}
 	client, err := dialCDP(ctx, endpoint)
 	if err != nil {
@@ -255,7 +314,54 @@ func openHeadlessPage(ctx context.Context, cancel context.CancelFunc) (*headless
 		return nil, fmt.Errorf("could not attach to the page: %w", err)
 	}
 	page.session = attached.SessionID
+
+	// Sites turn a browser away for calling itself headless.
+	var version struct {
+		UserAgent string `json:"userAgent"`
+	}
+	if result, err := client.call(ctx, page.session, "Browser.getVersion", map[string]any{}); err == nil && json.Unmarshal(result, &version) == nil && version.UserAgent != "" {
+		_, _ = client.call(ctx, page.session, "Emulation.setUserAgentOverride", map[string]any{"userAgent": strings.ReplaceAll(version.UserAgent, "HeadlessChrome", "Chrome")})
+	}
 	return page, nil
+}
+
+// load opens the address and gives its scripts budget of the page's own time,
+// which the browser fast-forwards through: a title set by a timer two seconds in
+// is there without two seconds passing, and the clock stops while requests are
+// still in flight. The page is frozen once the budget is spent, so what is read
+// afterwards cannot change underneath the read. A script redirect is just more
+// of the same budget, spent in the page it leads to.
+func (p *headlessPage) load(ctx context.Context, value string, budget time.Duration) error {
+	client, session := p.client, p.session
+	expired := false
+	client.onEvent = func(message cdpMessage) {
+		if message.Method == "Emulation.virtualTimeBudgetExpired" {
+			expired = true
+		}
+	}
+	if _, err := client.call(ctx, session, "Page.enable", map[string]any{}); err != nil {
+		return err
+	}
+	if _, err := client.call(ctx, session, "Page.navigate", map[string]any{"url": value}); err != nil {
+		return err
+	}
+	// Started once the navigation has committed: set any earlier, the budget is
+	// spent on the blank page before this one begins.
+	if _, err := client.call(ctx, session, "Emulation.setVirtualTimePolicy", map[string]any{
+		"policy": "pauseIfNetworkFetchesPending",
+		"budget": budget.Milliseconds(),
+	}); err != nil {
+		return err
+	}
+	// A page that keeps the clock stopped (a request that never answers) is used
+	// as it stands when the real time is up.
+	deadline := time.Now().Add(renderedLoadTimeout)
+	for !expired && time.Now().Before(deadline) {
+		if !client.pump(ctx, 50*time.Millisecond) {
+			return errors.New("browser closed before the page loaded")
+		}
+	}
+	return nil
 }
 
 // document reads the page's HTML and its address from the same document: a
@@ -294,42 +400,8 @@ func (s *PageService) Rendered(value string) (RenderedPage, error) {
 		return RenderedPage{}, err
 	}
 	defer browser.close()
-	client, session := browser.client, browser.session
-
-	// Scripts get renderedBudget of the page's own time before it is read, which
-	// the browser fast-forwards through: a title set by a timer two seconds in is
-	// there without two seconds passing, and the clock stops while requests are
-	// still in flight. The page is frozen once the budget is spent, so the title
-	// and address read below cannot change underneath the read. A script redirect
-	// is just more of the same budget, spent in the page it leads to.
-	expired := false
-	client.onEvent = func(message cdpMessage) {
-		if message.Method == "Emulation.virtualTimeBudgetExpired" {
-			expired = true
-		}
-	}
-	if _, err := client.call(ctx, session, "Page.enable", map[string]any{}); err != nil {
+	if err := browser.load(ctx, value, renderedBudget); err != nil {
 		return RenderedPage{}, err
 	}
-	if _, err := client.call(ctx, session, "Page.navigate", map[string]any{"url": value}); err != nil {
-		return RenderedPage{}, err
-	}
-	// Started once the navigation has committed: set any earlier, the budget is
-	// spent on the blank page before this one begins.
-	if _, err := client.call(ctx, session, "Emulation.setVirtualTimePolicy", map[string]any{
-		"policy": "pauseIfNetworkFetchesPending",
-		"budget": renderedBudget.Milliseconds(),
-	}); err != nil {
-		return RenderedPage{}, err
-	}
-	// A page that keeps the clock stopped (a request that never answers) is read
-	// as it stands when the real time is up.
-	deadline := time.Now().Add(renderedLoadTimeout)
-	for !expired && time.Now().Before(deadline) {
-		if !client.pump(ctx, 50*time.Millisecond) {
-			return RenderedPage{}, errors.New("browser closed before the page loaded")
-		}
-	}
-
 	return browser.document(ctx)
 }

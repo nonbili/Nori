@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -220,13 +219,6 @@ func (s *PageService) LiveOpen(value string, width, height int) (string, error) 
 	fail := func(err error) (string, error) {
 		browser.close()
 		return "", err
-	}
-	// Sites turn a browser away for calling itself headless.
-	var version struct {
-		UserAgent string `json:"userAgent"`
-	}
-	if result, err := page.call("Browser.getVersion", map[string]any{}); err == nil && json.Unmarshal(result, &version) == nil && version.UserAgent != "" {
-		_, _ = page.call("Emulation.setUserAgentOverride", map[string]any{"userAgent": strings.ReplaceAll(version.UserAgent, "HeadlessChrome", "Chrome")})
 	}
 	var tree struct {
 		FrameTree struct {

@@ -21,6 +21,13 @@ const GAP = 12
 // Content sits under the radio's label rather than under the radio itself.
 const INDENT = 32
 
+// The generic text cannot tell failures apart. Where it stays on screen (the web), the reason
+// goes with it so a report can be acted on.
+const withReason = (generic: string, error: unknown) => {
+  const reason = error instanceof Error ? error.message : typeof error === 'string' ? error : ''
+  return Platform.OS === 'web' && reason ? `${generic}\n${reason}` : generic
+}
+
 const ringClass = (selected: boolean) => (selected ? 'border-accent-500' : 'border-muted-strong')
 
 const Radio: React.FC<{
@@ -160,10 +167,10 @@ export const PreviewPageSheet: React.FC = () => {
       }
       applyRenderedTitle(page.url, data.title)
       close()
-    } catch {
+    } catch (error) {
       savingNow.current = false
       setSaving(false)
-      fail(t(source === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed'))
+      fail(withReason(t(source === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed'), error))
     }
   }
 
@@ -235,7 +242,11 @@ export const PreviewPageSheet: React.FC = () => {
                 }}
                 onError={(message) => {
                   setMetaRead(true)
-                  fail(t(message.includes('install Chrome') ? 'preview.browserMissing' : 'preview.screenshotFailed'))
+                  fail(
+                    message.includes('install Chrome')
+                      ? t('preview.browserMissing')
+                      : withReason(t('preview.screenshotFailed'), message),
+                  )
                 }}
               />
               {pageLoading ? (

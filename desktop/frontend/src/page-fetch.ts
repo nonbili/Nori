@@ -6,10 +6,11 @@
  * hostname. Route it through Go instead.
  */
 import { Call } from '@wailsio/runtime'
-import { setPreviewCapture, setPreviewImageFetch } from 'nori/lib/bookmark-preview'
+import { setPreviewCapture, setPreviewImageFetch, setPreviewRenderedMeta } from 'nori/lib/bookmark-preview'
 import { parsePageMeta, parsePreviewMeta, setPageFetch } from 'nori/lib/bookmark'
 import { setPreviewPageDriver } from 'nori/lib/preview-page'
 import { setRenderedTitlesSupported } from 'nori/lib/rendered-titles'
+import { applyRenderedTitle } from 'nori/lib/title-backfill'
 import { completeActiveJob, setWebViewTitleResolverAvailable, webViewResolver$ } from 'nori/lib/webview-title-resolver'
 import { PreviewResponseError } from 'nori/lib/bookmark-preview-types'
 
@@ -24,6 +25,16 @@ export function installDesktopPageFetch() {
     return result.dataUrl
   })
   setPreviewCapture((url) => Call.ByName(`${PAGE}.Screenshot`, url))
+  // A site whose bot protection turns the fetch above away (fernsehserien.de
+  // answers it with a challenge only a browser can pass) still has a cover image
+  // and a title: they are read from the page as the headless browser loads it.
+  setPreviewRenderedMeta(async (url) => {
+    const page: { url: string; html: string } = await Call.ByName(`${PAGE}.Rendered`, url)
+    const base = page.url || url
+    applyRenderedTitle(url, parsePageMeta(page.html, base, { rendered: true }).title)
+    const meta = parsePreviewMeta(page.html, base)
+    return meta.imageUrl || meta.description ? meta : null
+  })
   setPageFetch(async (url, init) => {
     const res: PageResponse = await Call.ByName(`${PAGE}.Fetch`, url, init.method, init.headers ?? {})
     const response = new Response(init.method === 'HEAD' ? null : res.body, {

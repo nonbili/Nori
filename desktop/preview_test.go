@@ -16,6 +16,14 @@ func TestPreviewImage(t *testing.T) {
 		case "/image":
 			w.Header().Set("Content-Type", "image/png")
 			_, _ = w.Write([]byte("image"))
+		case "/browsers-only":
+			// What a host does that turns bots away by their User-Agent.
+			if !strings.HasPrefix(r.UserAgent(), "Mozilla/5.0") {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+			w.Header().Set("Content-Type", "image/png")
+			_, _ = w.Write([]byte("image"))
 		case "/large":
 			w.Header().Set("Content-Type", "image/png")
 			_, _ = w.Write([]byte(strings.Repeat("a", maxPreviewBytes+1)))
@@ -35,6 +43,9 @@ func TestPreviewImage(t *testing.T) {
 	image, err := service.Image(server.URL + "/image")
 	if err != nil || image.DataURL != "data:image/png;base64,aW1hZ2U=" || image.Error != "" {
 		t.Fatalf("image = %+v, error = %v", image, err)
+	}
+	if image, err := service.Image(server.URL + "/browsers-only"); err != nil || image.Error != "" {
+		t.Fatalf("image from a host that refuses bots = %+v, error = %v", image, err)
 	}
 	for _, test := range []struct {
 		path       string
@@ -102,6 +113,10 @@ func TestRenderedPage(t *testing.T) {
 			_, _ = w.Write([]byte(`<html><head><title>Redirecting</title></head><body><script>location.replace('/posts/123')</script></body></html>`))
 			return
 		}
+		if r.URL.Path == "/agent" {
+			_, _ = w.Write([]byte(`<html><head><title>` + r.UserAgent() + `</title></head></html>`))
+			return
+		}
 		// Later than a page merely finishing its load would wait for.
 		_, _ = w.Write([]byte(`<html><head><title>Site name</title></head><body><script>setTimeout(() => { document.title = 'Set by script' }, 2500)</script></body></html>`))
 	}))
@@ -117,6 +132,10 @@ func TestRenderedPage(t *testing.T) {
 	// Relative links in the HTML belong to where the script redirected to.
 	if page.URL != server.URL+"/posts/123" {
 		t.Fatalf("url = %q", page.URL)
+	}
+	// Bot protection refuses a browser that says it is headless.
+	if page, err := service.Rendered(server.URL + "/agent"); err != nil || strings.Contains(page.HTML, "Headless") || !strings.Contains(page.HTML, "Chrome/") {
+		t.Fatalf("user agent page = %q, error = %v", page.HTML, err)
 	}
 	if _, err := service.Rendered("file:///etc/passwd"); err == nil {
 		t.Error("Rendered accepted a non-http URL")
