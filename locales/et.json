@@ -196,6 +196,8 @@
       "quickShareHint": "Salvesta jagatud URL-id sihtloendisse ilma loendit valimata.",
       "loadPagesForTitles": "Laadi lehed pealkirjade hankimiseks",
       "loadPagesForTitlesHint": "Laadi iga salvestatud link selle pealkirja lugemiseks. Kasutab rohkem andmesidet; taustal salvestatud lingid uuenevad Nori avamisel.",
+      "closeToTray": "Sulge teavitusalale",
+      "closeToTrayHint": "Akna sulgemisel jääb Nori oma teavitusala ikooni taha tööle.",
       "newAtTop": "Lisa uued järjehoidjad üles",
       "theme": "Teema",
       "themeHint": "Vali süsteemi, hele, tume või AMOLED-kujundus.",

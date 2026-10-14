@@ -87,6 +87,11 @@ const preferenceBridge: PreferenceBridge = {
     read: () => settings$.loadPagesForTitles.peek(),
     write: (value) => settings$.loadPagesForTitles.set(value === true),
   },
+  closeToTray: {
+    setting$: settings$.closeToTray,
+    read: () => settings$.closeToTray.peek(),
+    write: (value) => settings$.closeToTray.set(value !== false),
+  },
 }
 
 const preferenceKeys = Object.keys(preferenceBridge) as (keyof Preferences)[]

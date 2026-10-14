@@ -195,6 +195,8 @@
       "quickShareHint": "将分享的 URL 保存到目标列表，无需选择列表。",
       "loadPagesForTitles": "加载网页以获取标题",
       "loadPagesForTitlesHint": "加载每个保存的链接以读取标题。这会使用更多流量；后台保存的链接会在打开 Nori 时更新。",
+      "closeToTray": "关闭时最小化到托盘",
+      "closeToTrayHint": "关闭窗口后，Nori 仍在托盘图标后继续运行。",
       "newAtTop": "新书签添加到顶部",
       "theme": "主题",
       "themeHint": "在系统、浅色、深色和 AMOLED 外观之间切换。",

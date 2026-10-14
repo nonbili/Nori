@@ -195,6 +195,8 @@
       "quickShareHint": "Spara delade URL:er i en mållista utan att välja en lista.",
       "loadPagesForTitles": "Läs in sidor för att hämta titlar",
       "loadPagesForTitlesHint": "Läser in varje sparad länk för att hämta titeln. Använder mer data; länkar sparade i bakgrunden uppdateras när Nori öppnas.",
+      "closeToTray": "Stäng till systemfältet",
+      "closeToTrayHint": "När fönstret stängs fortsätter Nori att köras bakom sin ikon i systemfältet.",
       "newAtTop": "Lägg till nya bokmärken överst",
       "theme": "Tema",
       "themeHint": "Välj mellan systemets utseende, ljust, mörkt och AMOLED.",

@@ -196,6 +196,8 @@
       "quickShareHint": "Guarde URLs partilhados numa lista de destino sem ter de escolher uma lista.",
       "loadPagesForTitles": "Carregar páginas para obter títulos",
       "loadPagesForTitlesHint": "Carrega cada ligação guardada para obter o respetivo título. Consome mais dados; as ligações guardadas em segundo plano são atualizadas ao abrir o Nori.",
+      "closeToTray": "Fechar para a área de notificação",
+      "closeToTrayHint": "Ao fechar a janela, o Nori continua aberto atrás do seu ícone na área de notificação.",
       "newAtTop": "Adicionar novos marcadores no topo",
       "theme": "Tema",
       "themeHint": "Escolha entre o aspeto do sistema, claro, escuro e AMOLED.",

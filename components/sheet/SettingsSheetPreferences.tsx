@@ -18,6 +18,7 @@ import { CustomAccentPanel, CustomAccentSwatch } from '@/components/sheet/Custom
 import { languageNativeNames, supportedI18nLanguages } from '@/lib/language'
 import { getVisibleLists } from '@/lib/nori-data'
 import { canLoadPagesForTitles } from '@/lib/rendered-titles'
+import { canCloseToTray } from '@/lib/close-to-tray'
 
 /**
  * The settings every shell shares: the Expo app, the browser extension and the
@@ -45,6 +46,7 @@ export const ExperienceSection: React.FC<{
   const themeColors = useThemeColors()
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
   const loadPagesForTitles = useValue(settings$.loadPagesForTitles)
+  const closeToTray = useValue(settings$.closeToTray)
   const newBookmarksAtTop = useValue(settings$.newBookmarksAtTop)
   const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
   const quickSaveShareListId = useValue(settings$.quickSaveShareListId)
@@ -133,6 +135,28 @@ export const ExperienceSection: React.FC<{
           </Pressable>
         </View>
       </View>
+      {canCloseToTray() ? (
+        <View className="border-b-2 border-well px-4 py-4">
+          <View className="flex-row items-center gap-3">
+            <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
+              <MaterialIcons name="minimize" color={themeColors.contentMuted} size={18} />
+            </View>
+            <View className="flex-1">
+              <NoriText className="font-medium text-content">{t('settings.experience.closeToTray')}</NoriText>
+              <NoriText className="mt-1 text-sm leading-5 text-content-muted">{t('settings.experience.closeToTrayHint')}</NoriText>
+            </View>
+            <Pressable
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.experience.closeToTray')}
+              accessibilityState={{ checked: closeToTray }}
+              onPress={() => settings$.setCloseToTray(!closeToTray)}
+              className={`h-8 w-14 rounded-full p-1 ${closeToTray ? 'bg-accent-500' : 'bg-muted-strong'}`}
+            >
+              <View className={`h-6 w-6 rounded-full bg-white ${closeToTray ? 'ml-auto' : ''}`} />
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
       {/* Opening links and receiving shares are the browser's or the OS's job on the web shells. */}
       {Platform.OS !== 'web' ? (
         <>

@@ -196,6 +196,8 @@
       "quickShareHint": "Simpan URL yang dibagikan ke daftar tujuan tanpa memilih daftar terlebih dahulu.",
       "loadPagesForTitles": "Muat halaman untuk mendapatkan judul",
       "loadPagesForTitlesHint": "Memuat setiap tautan yang disimpan untuk membaca judulnya. Membutuhkan lebih banyak kuota; penyimpanan latar belakang diperbarui saat Nori dibuka.",
+      "closeToTray": "Tutup ke baki sistem",
+      "closeToTrayHint": "Saat jendela ditutup, Nori tetap berjalan di balik ikonnya di baki sistem.",
       "newAtTop": "Tambahkan markah baru di atas",
       "theme": "Tema",
       "themeHint": "Pilih tampilan sistem, terang, gelap, atau AMOLED.",

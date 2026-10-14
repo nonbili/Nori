@@ -7,12 +7,15 @@ import 'nori-extension/styles.css'
 import 'nori-extension/components/app.css'
 import './desktop.css'
 import { NativeApp } from 'nori-extension/components/NativeApp'
+import { setCloseToTraySupported } from 'nori/lib/close-to-tray'
 
 // The extension's background script owns state, storage and Supabase sync. On
 // desktop there is no separate worker context, so it runs here, in the same
 // page as the UI, ahead of the first render.
 await initDesktopBridge()
 installDesktopPageFetch()
+// The window is closed to a tray icon, which Go puts up and the settings sheet can turn off.
+setCloseToTraySupported(true)
 background.main()
 
 // `tab` is the extension's standalone-window mode, which is what a desktop

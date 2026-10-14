@@ -195,6 +195,8 @@
       "quickShareHint": "Paylaşılan URL'leri liste seçmeden hedef listeye kaydet.",
       "loadPagesForTitles": "Başlıkları almak için sayfaları yükle",
       "loadPagesForTitlesHint": "Başlığını okumak için kaydedilen her bağlantıyı yükler. Daha fazla veri kullanır; arka planda kaydedilen bağlantılar Nori açıldığında güncellenir.",
+      "closeToTray": "Kapatınca tepsiye küçült",
+      "closeToTrayHint": "Pencere kapatıldığında Nori, sistem tepsisindeki simgesinin ardında çalışmayı sürdürür.",
       "newAtTop": "Yeni yer imlerini üste ekle",
       "theme": "Tema",
       "themeHint": "Sistem, açık, koyu ve AMOLED görünümleri arasında geçiş yapın.",

@@ -195,6 +195,8 @@
       "quickShareHint": "Enregistrez les URL partagées dans une liste cible sans choisir de liste.",
       "loadPagesForTitles": "Charger les pages pour obtenir les titres",
       "loadPagesForTitlesHint": "Charge chaque lien enregistré pour lire son titre. Utilise plus de données ; les liens enregistrés en arrière-plan sont mis à jour à l’ouverture de Nori.",
+      "closeToTray": "Fermer vers la zone de notification",
+      "closeToTrayHint": "À la fermeture de la fenêtre, Nori reste ouvert derrière son icône dans la zone de notification.",
       "newAtTop": "Ajouter les nouveaux favoris en haut",
       "theme": "Thème",
       "themeHint": "Choisissez entre le thème système, clair, sombre et AMOLED.",

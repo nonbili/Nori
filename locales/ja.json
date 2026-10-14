@@ -196,6 +196,8 @@
       "quickShareHint": "リストを選択せずに、保存先リストに共有 URL を直接保存します。",
       "loadPagesForTitles": "ページを読み込んでタイトルを取得",
       "loadPagesForTitlesHint": "保存した各リンクを読み込んでタイトルを取得します。データ通信量が増加します。バックグラウンド保存分は Nori を開いたときに更新されます。",
+      "closeToTray": "閉じたらトレイに格納",
+      "closeToTrayHint": "ウィンドウを閉じても、Nori はトレイアイコンから開ける状態で動作を続けます。",
       "newAtTop": "新しいブックマークを先頭に追加",
       "theme": "テーマ",
       "themeHint": "システム、ライト、ダーク、AMOLED の表示を切り替えます。",

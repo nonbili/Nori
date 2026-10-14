@@ -196,6 +196,8 @@
       "quickShareHint": "Saglabāt kopīgotos URL mērķa sarakstā bez saraksta izvēles.",
       "loadPagesForTitles": "Ielādēt lapas, lai iegūtu virsrakstus",
       "loadPagesForTitlesHint": "Ielādē katru saglabāto saiti, lai nolasītu tās virsrakstu. Patērē vairāk datu; fonā saglabātās saites tiek atjauninātas, atverot Nori.",
+      "closeToTray": "Aizvērt uz paziņojumu joslu",
+      "closeToTrayHint": "Aizverot logu, Nori turpina darboties aiz savas ikonas paziņojumu joslā.",
       "newAtTop": "Pievienot jaunās grāmatzīmes augšā",
       "theme": "Motīvs",
       "themeHint": "Izvēlies sistēmas, gaišo, tumšo vai AMOLED izskatu.",

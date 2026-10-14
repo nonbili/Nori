@@ -196,6 +196,8 @@
       "quickShareHint": "목록을 선택하지 않고 지정된 목록에 바로 공유 URL을 저장합니다.",
       "loadPagesForTitles": "페이지를 로드하여 제목 가져오기",
       "loadPagesForTitlesHint": "제목을 읽기 위해 각 저장된 링크를 로드합니다. 데이터를 더 사용하며, 백그라운드 저장은 Nori가 열릴 때 업데이트됩니다.",
+      "closeToTray": "닫으면 트레이로 보내기",
+      "closeToTrayHint": "창을 닫아도 Nori가 트레이 아이콘 뒤에서 계속 실행됩니다.",
       "newAtTop": "새 북마크를 맨 위에 추가",
       "theme": "테마",
       "themeHint": "시스템, 밝게, 어둡게, AMOLED 테마 중에서 선택하세요.",

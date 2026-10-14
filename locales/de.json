@@ -196,6 +196,8 @@
       "quickShareHint": "Geteilte URLs direkt in einer Zielliste speichern, ohne eine Liste auszuwählen.",
       "loadPagesForTitles": "Seiten laden, um Titel abzurufen",
       "loadPagesForTitlesHint": "Jeden gespeicherten Link laden, um seinen Titel zu ermitteln. Verbraucht mehr Daten; im Hintergrund gespeicherte Links werden beim Öffnen von Nori aktualisiert.",
+      "closeToTray": "In den Infobereich schließen",
+      "closeToTrayHint": "Beim Schließen des Fensters läuft Nori hinter seinem Symbol im Infobereich weiter.",
       "newAtTop": "Neue Lesezeichen oben hinzufügen",
       "theme": "Design",
       "themeHint": "Zwischen System, Hell, Dunkel und AMOLED wechseln.",

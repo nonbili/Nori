@@ -45,6 +45,8 @@ export interface Preferences {
   newBookmarksAtTop: boolean
   /** Desktop only: the extension has no way to render a page. */
   loadPagesForTitles: boolean
+  /** Desktop only, and read there by the Go side when the window is closed. */
+  closeToTray: boolean
 }
 
 export interface StoredState {

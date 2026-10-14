@@ -23,6 +23,7 @@ func main() {
 	}
 	auth := NewAuthService()
 
+	var icon *tray
 	app := application.New(application.Options{
 		Name:        "Nori",
 		Description: "Beautiful bookmark manager and launcher",
@@ -38,7 +39,19 @@ func main() {
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
+		// The app can be open with no window to show for it, and two copies would
+		// write over each other's saved state: starting it again brings back the one
+		// already running.
+		SingleInstance: &application.SingleInstanceOptions{
+			UniqueID: "jp.nonbili.nori",
+			OnSecondInstanceLaunch: func(application.SecondInstanceData) {
+				if icon != nil {
+					icon.show()
+				}
+			},
+		},
 	})
+	icon = newTray(app, store)
 
 	windowOptions := application.WebviewWindowOptions{
 		Name:             "main",
@@ -57,11 +70,12 @@ func main() {
 		windowOptions.Hidden = true
 		app.Event.OnApplicationEvent(events.Common.ApplicationStarted, func(_ *application.ApplicationEvent) {
 			window := app.Window.NewWithOptions(windowOptions)
+			icon.adopt(window)
 			fitWindowToScreen(window, windowOptions.MinWidth, windowOptions.MinHeight)
 			window.Show()
 		})
 	} else {
-		app.Window.NewWithOptions(windowOptions)
+		icon.adopt(app.Window.NewWithOptions(windowOptions))
 	}
 
 	initUpdater(app)

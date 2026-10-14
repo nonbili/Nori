@@ -196,6 +196,8 @@
       "quickShareHint": "Megosztott URL-ek mentése céllistába lista választása nélkül.",
       "loadPagesForTitles": "Oldalak betöltése címekhez",
       "loadPagesForTitlesHint": "Minden mentett hivatkozás betöltése a cím lekéréséhez. Több adatot használ; a háttérben mentett linkek a Nori megnyitásakor frissülnek.",
+      "closeToTray": "Bezárás a tálcára",
+      "closeToTrayHint": "Az ablak bezárásakor a Nori tovább fut az értesítési területen lévő ikonja mögött.",
       "newAtTop": "Új könyvjelzők hozzáadása felülre",
       "theme": "Téma",
       "themeHint": "Válassz a rendszer, a világos, a sötét és az AMOLED megjelenés közül.",
