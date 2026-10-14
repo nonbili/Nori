@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"image/png"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestPreviewImage(t *testing.T) {
@@ -113,6 +115,11 @@ func TestRenderedPage(t *testing.T) {
 			_, _ = w.Write([]byte(`<html><head><title>Redirecting</title></head><body><script>location.replace('/posts/123')</script></body></html>`))
 			return
 		}
+		if r.URL.Path == "/stalled" {
+			// Never answers, as a page behind a hanging request never settles.
+			<-r.Context().Done()
+			return
+		}
 		if r.URL.Path == "/agent" {
 			_, _ = w.Write([]byte(`<html><head><title>` + r.UserAgent() + `</title></head></html>`))
 			return
@@ -122,7 +129,7 @@ func TestRenderedPage(t *testing.T) {
 	}))
 	defer server.Close()
 	service := NewPageService()
-	page, err := service.Rendered(server.URL + "/share")
+	page, err := service.Rendered(context.Background(), server.URL+"/share")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -134,10 +141,20 @@ func TestRenderedPage(t *testing.T) {
 		t.Fatalf("url = %q", page.URL)
 	}
 	// Bot protection refuses a browser that says it is headless.
-	if page, err := service.Rendered(server.URL + "/agent"); err != nil || strings.Contains(page.HTML, "Headless") || !strings.Contains(page.HTML, "Chrome/") {
+	if page, err := service.Rendered(context.Background(), server.URL+"/agent"); err != nil || strings.Contains(page.HTML, "Headless") || !strings.Contains(page.HTML, "Chrome/") {
 		t.Fatalf("user agent page = %q, error = %v", page.HTML, err)
 	}
-	if _, err := service.Rendered("file:///etc/passwd"); err == nil {
+	// A page nobody is waiting for any more is given up at once, not loaded to the end.
+	abandoned, abandon := context.WithCancel(context.Background())
+	time.AfterFunc(500*time.Millisecond, abandon)
+	started := time.Now()
+	if _, err := service.Rendered(abandoned, server.URL+"/stalled"); err == nil {
+		t.Error("Rendered returned a page after its caller had gone")
+	}
+	if waited := time.Since(started); waited > 5*time.Second {
+		t.Errorf("Rendered took %v to give up", waited)
+	}
+	if _, err := service.Rendered(context.Background(), "file:///etc/passwd"); err == nil {
 		t.Error("Rendered accepted a non-http URL")
 	}
 }

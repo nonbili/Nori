@@ -389,11 +389,15 @@ func (p *headlessPage) document(ctx context.Context) (RenderedPage, error) {
 //
 // The page is driven over the DevTools protocol rather than --dump-dom so the
 // HTML and its address are read from the same document.
-func (s *PageService) Rendered(value string) (RenderedPage, error) {
+//
+// The caller's context ends when the window cancels the call, as it does for a
+// preview scrolled out of view, and the browser is closed there and then rather
+// than left to load a page nobody is waiting for.
+func (s *PageService) Rendered(caller context.Context, value string) (RenderedPage, error) {
 	if err := previewURL(value); err != nil {
 		return RenderedPage{}, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
+	ctx, cancel := context.WithTimeout(caller, 25*time.Second)
 	defer cancel()
 	browser, err := openHeadlessPage(ctx, cancel)
 	if err != nil {

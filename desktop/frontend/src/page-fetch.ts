@@ -28,8 +28,19 @@ export function installDesktopPageFetch() {
   // A site whose bot protection turns the fetch above away (fernsehserien.de
   // answers it with a challenge only a browser can pass) still has a cover image
   // and a title: they are read from the page as the headless browser loads it.
-  setPreviewRenderedMeta(async (url) => {
-    const page: { url: string; html: string } = await Call.ByName(`${PAGE}.Rendered`, url)
+  setPreviewRenderedMeta(async (url, signal) => {
+    // A preview scrolled out of view is cancelled. The call is too, which closes
+    // the browser in Go and frees this worker for the previews now in view.
+    const call = Call.ByName(`${PAGE}.Rendered`, url)
+    const abandon = () => void call.cancel()
+    signal.addEventListener('abort', abandon, { once: true })
+    let page: { url: string; html: string }
+    try {
+      page = await call
+    } finally {
+      signal.removeEventListener('abort', abandon)
+    }
+    if (signal.aborted) return null
     const base = page.url || url
     applyRenderedTitle(url, parsePageMeta(page.html, base, { rendered: true }).title)
     const meta = parsePreviewMeta(page.html, base)
