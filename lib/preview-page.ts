@@ -14,6 +14,8 @@ export interface PreviewPageViewHandle {
   read(): Promise<PreviewPageRead>
   /** What the page is showing, as an image uri. */
   capture(): Promise<string>
+  /** Drops a captured image once it is saved or no longer needed, where it was left in a temp file. */
+  release?(uri: string): void
 }
 
 export interface PreviewPageViewProps {

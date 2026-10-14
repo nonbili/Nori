@@ -7,7 +7,6 @@ import { PREVIEW_IMAGE_RATIO } from '@/components/bookmark/BookmarkPreviewConten
 import { NoriText } from '@/components/common/NoriText'
 import { FullScreenModal } from '@/components/modal/BaseModal'
 import { previewSource, saveRenderedPreview, type PreviewSource } from '@/lib/bookmark-preview'
-import { previewSourceOverride } from '@/lib/bookmark-preview-types'
 import type { PreviewPageViewHandle } from '@/lib/preview-page'
 import { applyRenderedTitle } from '@/lib/title-backfill'
 import { showToast } from '@/lib/toast'
@@ -96,7 +95,7 @@ export const PreviewPageSheet: React.FC = () => {
   const savingNow = useRef(false)
   // Counts page loads, so a cover read from the page before this one is dropped.
   const load = useRef(0)
-  // What the pick starts from is the bookmark's own source; picking one also makes it the default.
+  // What the pick starts from is the bookmark's own source; a pick applies to this bookmark only.
   const [picked, setPicked] = useState<PreviewSource | null>(null)
   // The page's own cover image, read once it has loaded, so it can be shown beside the live page.
   const [coverUrl, setCoverUrl] = useState('')
@@ -113,7 +112,6 @@ export const PreviewPageSheet: React.FC = () => {
 
   const pick = (value: PreviewSource) => {
     setPicked(value)
-    settings$.previewImageSource.set(value)
   }
 
   const close = () => {
@@ -145,24 +143,29 @@ export const PreviewPageSheet: React.FC = () => {
   }
 
   const saveFromPage = async () => {
-    if (!view.current) return
+    // Held here: closing the sheet unmounts the view before the capture is released.
+    const handle = view.current
+    if (!handle) return
     savingNow.current = true
     setSaving(true)
     setError('')
+    let screenshotUri: string | undefined
     try {
-      const data = await view.current.read()
-      let screenshotUri: string | undefined
+      const data = await handle.read()
       // A site that publishes no cover image still gets one: what is on screen.
       if (source === 'screenshot' || !data.imageUrl) {
-        screenshotUri = await view.current.capture()
+        screenshotUri = await handle.capture()
+      } else {
+        // The cover may refuse to download here; what is on screen stands in for it then.
+        screenshotUri = await handle.capture().catch(() => undefined)
       }
       await saveRenderedPreview(page.url, source, {
         description: data.description,
         imageUrl: data.imageUrl,
         screenshotUri,
       })
-      // A bookmark with its own source keeps showing it, not the one just captured.
-      if (previewSourceOverride(page.previewSource) && previewSourceOverride(page.previewSource) !== source) {
+      // The bookmark shows what was just captured, without changing the default for the others.
+      if (previewSource(page.previewSource, fallback) !== source) {
         bookmarks$.update(page.id, { previewSource: source })
       }
       applyRenderedTitle(page.url, data.title)
@@ -171,6 +174,9 @@ export const PreviewPageSheet: React.FC = () => {
       savingNow.current = false
       setSaving(false)
       fail(withReason(t(source === 'screenshot' ? 'preview.screenshotFailed' : 'preview.refreshFailed'), error))
+    } finally {
+      // Saving copies the capture, so the temp file it came from is no longer needed.
+      if (screenshotUri) handle.release?.(screenshotUri)
     }
   }
 

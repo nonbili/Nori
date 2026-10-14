@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle, useRef } from 'react'
 import { Platform, Pressable, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
+import * as FileSystem from 'expo-file-system/legacy'
 import { captureRef } from 'react-native-view-shot'
 import { applyBlocklist, supportsRuntimeBlocklist } from '@/lib/blocklist'
 import { getUserAgent } from '@/lib/useragent'
@@ -31,6 +32,9 @@ export const PreviewPageView = forwardRef<PreviewPageViewHandle, PreviewPageView
         capture: async () => {
           const path = await captureRef(captureView, { format: 'jpg', quality: 0.8, result: 'tmpfile' })
           return path.startsWith('/') ? `file://${path}` : path
+        },
+        release: (uri) => {
+          if (uri.startsWith('file://')) void FileSystem.deleteAsync(uri, { idempotent: true }).catch(() => {})
         },
       }),
       [],

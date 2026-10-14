@@ -305,7 +305,8 @@ export async function saveRenderedPreview(
 ) {
   const key = previewKey(url, source)
   let imageUri = page.screenshotUri || ''
-  if (source === 'page-image' && page.imageUrl) imageUri = await imageFetch(page.imageUrl).catch(() => '')
+  // A cover that cannot be downloaded falls back to the screenshot, so the tile still gets an image.
+  if (source === 'page-image' && page.imageUrl) imageUri = (await imageFetch(page.imageUrl).catch(() => '')) || imageUri
   // Keep the image already saved when this page gives none or it fails to download.
   const cached = imageUri ? undefined : await readPreview(key)
   if (!imageUri && !page.description) throw new Error('preview_page_empty')

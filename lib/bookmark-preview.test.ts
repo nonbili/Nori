@@ -404,6 +404,21 @@ describe('bookmark previews', () => {
     })
     await expect(saveRenderedPreview('https://rendered-empty.example/', 'page-image', { description: '', imageUrl: '' })).rejects.toThrow('preview_page_empty')
   })
+  it('falls back to the captured screenshot when the cover cannot be downloaded', async () => {
+    const url = 'https://rendered-fallback.example/'
+    await updatePreviewBookmarks([url])
+    setPreviewImageFetch(async () => {
+      throw new Error('blocked')
+    })
+
+    await saveRenderedPreview(url, 'page-image', {
+      description: 'New',
+      imageUrl: 'https://rendered-fallback.example/cover.jpg',
+      screenshotUri: 'data:image/jpeg;base64,c2hvdA==',
+    })
+
+    expect(await readPreview(previewKey(url, 'page-image'))).toMatchObject({ imageUri: 'data:image/jpeg;base64,c2hvdA==' })
+  })
   it('warms saved previews so a row renders them without an async read', async () => {
     const url = 'https://warm.example/page'
     expect(shownPreview(url, 'page-image')).toBeUndefined()
