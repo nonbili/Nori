@@ -48,6 +48,14 @@ Run encoder lifecycle regression checks:
 python3 -m unittest discover -s scripts -p 'test_*.py'
 ```
 
+## Published YouTube videos
+
+- [Landscape promo](https://www.youtube.com/watch?v=ER5tvIuwYnw)
+- [Portrait promo / Short](https://www.youtube.com/watch?v=jwrhS73qNB4)
+
+Google Play has one video URL per localized listing. Each locale's `video.txt`
+uses the landscape promo; the portrait version remains available for sharing.
+
 ## App Store submission
 
 The files under `ios/` are promotional mockups at App Store preview dimensions,
