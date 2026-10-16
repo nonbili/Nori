@@ -1,13 +1,22 @@
-<h2>Funktsioonid</h2>
-<ul>
-  <li>Järjehoidjate korraldamine mitmesse loendisse</li>
-  <li>Salvestatud järjehoidjate avamine süsteemibrauseris</li>
-  <li>Teistest rakendustest jagatud linkide vastuvõtmine</li>
-  <li>Sihtloendi valimine enne jagatud lingi salvestamist</li>
-</ul>
+Nori koondab salvestatud lingid ühte kohta. Kogu artikleid, tööriistu ja ideid ning leia need uuesti eelvaadete, loendite, siltide ja märkmete abil.
 
-<h2>Kuidas see töötab</h2>
-<ul>
-  <li>Nori aitab salvestada huvitavaid linke mis tahes rakendusest ja korraldada need loenditesse.</li>
-  <li>Kui olete lugemiseks valmis, avab Nori lingi teie süsteemibrauseris parima kasutuskogemuse tagamiseks.</li>
-</ul>
+<b>Salvesta koos taustateabega</b>
+Korralda lingid enda loodud loenditesse ning lisa silte ja isiklikke märkmeid. Sirvi kaanepiltide või lehe kuvatõmmistega järjehoidjakaarte või vali kompaktne vaade.
+
+<b>Leia salvestatu üles</b>
+Otsi järjehoidjaid ja filtreeri loendi või sildi järgi. Naase ajaloo kaudu hiljuti kasutatud linkide juurde, ilma et peaksid tervet kogu läbi vaatama.
+
+<b>Korralda mitu järjehoidjat korraga</b>
+Vali mitu järjehoidjat, et neid korraga loendite vahel teisaldada, peita, jagada või kustutada.
+
+<b>Salvesta teistest rakendustest</b>
+Saada lingid Norisse Androidi jagamismenüü kaudu. Vali enne salvestamist sihtloend või lülita sisse kiirsalvestus oma eelistatud loendisse.
+
+<b>Kohanda oma maitse järgi</b>
+Vali hele, tume või süsimust AMOLED-teema. Vali aktsentvärv või määra enda oma, kohanda teksti suurust ja järjehoidjate paigutust.
+
+<b>Loe nii, nagu soovid</b>
+Ava salvestatud lingid süsteemi brauseris või rakendusesiseses brauseris.
+
+<b>Kogu on alati kaasas</b>
+Järjehoidjad salvestatakse kohalikult. Valikuline tasuline Nori Sync pakett võimaldab pärast sisselogimist loendeid ja järjehoidjaid seadmete vahel sünkroonida.

@@ -1,1 +1,1 @@
-Trình quản lý và khởi chạy dấu trang.
+Lưu và tìm liên kết bằng bản xem trước, danh sách, thẻ và ghi chú.

@@ -1,1 +1,1 @@
-Gestor y lanzador de marcadores.
+Guarda y encuentra enlaces con vistas previas, listas, etiquetas y notas.

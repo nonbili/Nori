@@ -1,13 +1,22 @@
-<h2>Fitur</h2>
-<ul>
-  <li>Atur markah ke dalam beberapa daftar</li>
-  <li>Buka markah yang disimpan di browser sistem</li>
-  <li>Terima tautan yang dibagikan dari aplikasi lain</li>
-  <li>Pilih daftar tujuan sebelum menyimpan tautan yang dibagikan</li>
-</ul>
+Nori menyatukan tautan tersimpan Anda di satu tempat. Kumpulkan artikel, alat, dan inspirasi, lalu temukan kembali dengan pratinjau, daftar, tag, dan catatan.
 
-<h2>Cara kerja</h2>
-<ul>
-  <li>Nori membantu Anda menyimpan tautan menarik dari aplikasi apa pun dan mengaturnya ke dalam daftar.</li>
-  <li>Saat Anda siap membaca, Nori membuka tautan di browser sistem untuk pengalaman terbaik.</li>
-</ul>
+<b>Simpan beserta konteksnya</b>
+Atur tautan dalam daftar khusus dan tambahkan tag serta catatan pribadi. Jelajahi kartu markah dengan gambar sampul atau tangkapan layar halaman, atau beralih ke tampilan ringkas.
+
+<b>Temukan yang sudah disimpan</b>
+Cari markah dan filter berdasarkan daftar atau tag. Kembali ke tautan yang baru digunakan melalui riwayat tanpa menelusuri seluruh koleksi.
+
+<b>Atur sekaligus</b>
+Pilih beberapa markah untuk dipindahkan antardaftar, disembunyikan, dibagikan, atau dihapus sekaligus.
+
+<b>Simpan dari aplikasi lain</b>
+Kirim tautan ke Nori melalui menu berbagi Android. Pilih daftar tujuan sebelum menyimpan, atau aktifkan simpan cepat ke daftar pilihan Anda.
+
+<b>Sesuaikan dengan selera</b>
+Pilih tema terang, gelap, atau hitam pekat AMOLED. Pilih warna aksen atau buat sendiri, sesuaikan ukuran teks, dan pilih tata letak markah.
+
+<b>Baca dengan cara Anda</b>
+Buka tautan tersimpan di browser sistem atau browser dalam aplikasi.
+
+<b>Bawa koleksi ke mana saja</b>
+Markah disimpan secara lokal. Paket berbayar opsional Nori Sync memungkinkan sinkronisasi daftar dan markah antarperangkat setelah masuk ke akun.

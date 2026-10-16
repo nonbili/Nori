@@ -1,13 +1,22 @@
-<h2>Özellikler</h2>
-<ul>
-  <li>Yer imlerini birden fazla listede düzenleyin</li>
-  <li>Kaydedilen yer imlerini sistem tarayıcısında açın</li>
-  <li>Diğer uygulamalardan paylaşılan bağlantıları alın</li>
-  <li>Paylaşılan bir bağlantıyı kaydetmeden önce hedef listeyi seçin</li>
-</ul>
+Nori, kaydettiğiniz bağlantıları tek yerde toplar. Makaleleri, araçları ve fikirleri biriktirin; önizlemeler, listeler, etiketler ve notlarla yeniden bulun.
 
-<h2>Nasıl çalışır</h2>
-<ul>
-  <li>Nori, herhangi bir uygulamadan ilginç bağlantıları kaydetmenize ve bunları listeler halinde düzenlemenize yardımcı olur.</li>
-  <li>Okumaya hazır olduğunuzda, Nori en iyi deneyim için bağlantıyı sistem tarayıcınızda açar.</li>
-</ul>
+<b>Bağlamıyla birlikte kaydedin</b>
+Bağlantıları özel listelerde düzenleyin, etiketler ve kişisel notlar ekleyin. Kapak görselleri veya sayfa ekran görüntüleri içeren yer imi kartlarına göz atın ya da kompakt görünüme geçin.
+
+<b>Kaydettiklerinizi bulun</b>
+Yer imlerinizde arama yapın, listeye veya etikete göre filtreleyin. Tüm koleksiyonunuzu taramadan geçmişten son kullanılan bağlantılara dönün.
+
+<b>Toplu düzenleyin</b>
+Birden fazla yer imini seçerek listeler arasında taşıyın, gizleyin, paylaşın veya tek seferde silin.
+
+<b>Diğer uygulamalardan kaydedin</b>
+Android paylaşım menüsünden Nori’ye bağlantı gönderin. Kaydetmeden önce hedef listeyi seçin veya tercih ettiğiniz listeye hızlı kaydetmeyi etkinleştirin.
+
+<b>Kendinize göre özelleştirin</b>
+Açık, koyu veya tam siyah AMOLED temalarını seçin. Bir vurgu rengi seçin ya da kendi renginizi oluşturun, metin boyutunu ayarlayın ve yer imi düzenini belirleyin.
+
+<b>İstediğiniz gibi okuyun</b>
+Kayıtlı bağlantıları sistem tarayıcısında veya uygulama içi tarayıcıda açın.
+
+<b>Koleksiyonunuz yanınızda olsun</b>
+Yer imleriniz yerel olarak saklanır. İsteğe bağlı ücretli Nori Sync planı, giriş yaptıktan sonra listeleri ve yer imlerini cihazlar arasında eşitlemenizi sağlar.

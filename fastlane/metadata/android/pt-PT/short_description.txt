@@ -1,1 +1,1 @@
-Gestor de favoritos e inicializador.
+Guarde e encontre ligações com pré-visualizações, listas, etiquetas e notas.

@@ -1,13 +1,22 @@
-<h2>Funcionalidades</h2>
-<ul>
-  <li>Organize os favoritos em várias listas</li>
-  <li>Abra os favoritos guardados no navegador do sistema</li>
-  <li>Receba ligações partilhadas a partir de outras aplicações</li>
-  <li>Escolha a lista de destino antes de guardar uma ligação partilhada</li>
-</ul>
+O Nori reúne as suas ligações guardadas num só lugar. Guarde artigos, ferramentas e ideias e volte a encontrá-los com pré-visualizações, listas, etiquetas e notas.
 
-<h2>Como funciona</h2>
-<ul>
-  <li>O Nori ajuda-o a guardar ligações interessantes de qualquer aplicação e a organizá-las em listas.</li>
-  <li>Quando estiver pronto para ler, o Nori abre a ligação no navegador do seu sistema para a melhor experiência.</li>
-</ul>
+<b>Guarde com contexto</b>
+Organize ligações em listas personalizadas e adicione etiquetas e notas pessoais. Explore cartões com imagens de capa ou capturas de páginas, ou mude para a vista compacta.
+
+<b>Encontre o que guardou</b>
+Pesquise os seus favoritos e filtre por lista ou etiqueta. Volte às ligações usadas recentemente através do histórico, sem percorrer toda a coleção.
+
+<b>Organize em lote</b>
+Selecione vários favoritos para os mover entre listas, ocultar, partilhar ou eliminar de uma só vez.
+
+<b>Guarde a partir de outras aplicações</b>
+Envie ligações para o Nori através do menu de partilha do Android. Escolha a lista de destino antes de guardar ou ative a gravação rápida na sua lista preferida.
+
+<b>Escolha o seu estilo</b>
+Escolha um tema claro, escuro ou preto puro AMOLED. Selecione uma cor de destaque ou crie a sua, ajuste o tamanho do texto e escolha a apresentação dos favoritos.
+
+<b>Leia como preferir</b>
+Abra as ligações guardadas no navegador do sistema ou no navegador integrado.
+
+<b>Leve a sua coleção consigo</b>
+Os favoritos são guardados localmente. O plano pago opcional Nori Sync permite sincronizar listas e favoritos entre dispositivos após iniciar sessão.

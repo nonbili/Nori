@@ -1,1 +1,1 @@
-Gerenciador e inicializador de favoritos.
+Salve e encontre links com prévias, listas, tags e notas.

@@ -1,1 +1,1 @@
-Bokmärkeshanterare och startverktyg.
+Spara och hitta länkar med förhandsvisningar, listor, taggar och anteckningar.

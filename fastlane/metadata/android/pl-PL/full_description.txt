@@ -1,13 +1,22 @@
-<h2>Funkcje</h2>
-<ul>
-  <li>Organizowanie zakładek w wiele list</li>
-  <li>Otwieranie zapisanych zakładek w przeglądarce systemowej</li>
-  <li>Odbieranie udostępnionych linków z innych aplikacji</li>
-  <li>Wybór listy docelowej przed zapisaniem udostępnionego linku</li>
-</ul>
+Nori zbiera zapisane linki w jednym miejscu. Zachowuj artykuły, narzędzia i inspiracje, a potem odnajduj je dzięki podglądom, listom, tagom i notatkom.
 
-<h2>Jak to działa</h2>
-<ul>
-  <li>Nori pomaga zapisywać interesujące linki z dowolnej aplikacji i organizować je w listy.</li>
-  <li>Gdy chcesz coś przeczytać, Nori otwiera link w przeglądarce systemowej, aby zapewnić jak najlepsze wrażenia.</li>
-</ul>
+<b>Zachowaj też kontekst</b>
+Porządkuj linki na własnych listach, dodawaj tagi i osobiste notatki. Przeglądaj karty z obrazami okładek lub zrzutami stron albo przełącz się na widok kompaktowy.
+
+<b>Znajdź zapisane linki</b>
+Przeszukuj zakładki i filtruj je według listy lub tagu. Wracaj do ostatnio używanych linków z historii bez przeglądania całej kolekcji.
+
+<b>Porządkuj zbiorczo</b>
+Wybierz kilka zakładek, aby przenieść je między listami, ukryć, udostępnić lub usunąć za jednym razem.
+
+<b>Zapisuj z innych aplikacji</b>
+Wysyłaj linki do Nori z menu udostępniania Androida. Wybierz listę docelową przed zapisem lub włącz szybki zapis na wybranej liście.
+
+<b>Dostosuj wygląd</b>
+Wybierz jasny, ciemny lub całkowicie czarny motyw AMOLED. Ustaw kolor akcentu, także własny, dostosuj rozmiar tekstu i układ zakładek.
+
+<b>Czytaj po swojemu</b>
+Otwieraj zapisane linki w przeglądarce systemowej lub wbudowanej.
+
+<b>Miej kolekcję zawsze przy sobie</b>
+Zakładki są przechowywane lokalnie. Opcjonalny płatny plan Nori Sync pozwala po zalogowaniu synchronizować listy i zakładki między urządzeniami.

@@ -1,1 +1,1 @@
-Menedżer i program uruchamiający zakładki.
+Zapisuj i znajduj linki dzięki podglądom, listom, tagom i notatkom.

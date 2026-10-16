@@ -1,1 +1,1 @@
-Gestore e avviatore di segnalibri.
+Salva e ritrova i link con anteprime, elenchi, tag e note.

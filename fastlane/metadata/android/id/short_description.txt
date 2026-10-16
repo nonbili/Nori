@@ -1,1 +1,1 @@
-Pengelola dan peluncur markah.
+Simpan dan temukan tautan dengan pratinjau, daftar, tag, dan catatan.

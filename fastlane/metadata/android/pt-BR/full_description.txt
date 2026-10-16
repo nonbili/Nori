@@ -1,13 +1,22 @@
-<h2>Recursos</h2>
-<ul>
-  <li>Organize favoritos em várias listas</li>
-  <li>Abra favoritos salvos no navegador do sistema</li>
-  <li>Receba links compartilhados de outros aplicativos</li>
-  <li>Escolha a lista de destino antes de salvar um link compartilhado</li>
-</ul>
+O Nori reúne seus links salvos em um só lugar. Guarde artigos, ferramentas e ideias e encontre tudo de novo com prévias, listas, tags e notas.
 
-<h2>Como funciona</h2>
-<ul>
-  <li>O Nori ajuda você a salvar links interessantes de qualquer aplicativo e organizá-los em listas.</li>
-  <li>Quando estiver pronto para ler, o Nori abre o link no navegador do seu sistema para a melhor experiência.</li>
-</ul>
+<b>Salve com contexto</b>
+Organize links em listas personalizadas e adicione tags e notas pessoais. Navegue por cartões com imagens de capa ou capturas de páginas, ou mude para a visualização compacta.
+
+<b>Encontre o que você salvou</b>
+Pesquise seus favoritos e filtre por lista ou tag. Volte aos links usados recentemente pelo histórico, sem percorrer toda a coleção.
+
+<b>Organize em lote</b>
+Selecione vários favoritos para movê-los entre listas, ocultá-los, compartilhá-los ou excluí-los de uma só vez.
+
+<b>Salve de outros apps</b>
+Envie links para o Nori pelo menu de compartilhamento do Android. Escolha a lista de destino antes de salvar ou ative o salvamento rápido na sua lista preferida.
+
+<b>Deixe do seu jeito</b>
+Escolha um tema claro, escuro ou preto puro AMOLED. Selecione uma cor de destaque ou crie a sua, ajuste o tamanho do texto e escolha o layout dos favoritos.
+
+<b>Leia como preferir</b>
+Abra links salvos no navegador do sistema ou no navegador integrado.
+
+<b>Leve sua coleção com você</b>
+Seus favoritos são armazenados localmente. O plano pago opcional Nori Sync permite sincronizar listas e favoritos entre dispositivos após fazer login.

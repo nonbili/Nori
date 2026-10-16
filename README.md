@@ -36,10 +36,13 @@ The Linux AppImage and tarball use the system WebKit, so they need GTK 3 and
 
 ## Features
 
-- Organize bookmarks into multiple lists
-- Open saved bookmarks in the system browser
-- Receive shared links from other apps
-- Pick the destination list before saving a shared link
+- Organize bookmarks with lists, tags, and notes
+- Browse rich previews or a compact list
+- Find links with search and tag filters
+- Move, hide, share, or delete bookmarks in batches
+- Save links directly from other apps
+- Customize themes and accent colors
+- Keep bookmarks locally, with optional paid sync across devices
 
 ## How it works
 
@@ -48,7 +51,7 @@ The Linux AppImage and tarball use the system WebKit, so they need GTK 3 and
 
 ## Screenshots
 
-<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="240"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="240"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="240"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="240">
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Rich bookmark previews and notes" width="240"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Cover images, tags, and personal notes" width="240"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Bookmark search and tag filters" width="240"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="Theme and accent customization" width="240"> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Batch bookmark organization" width="240">
 
 ## Development
 

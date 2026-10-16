@@ -1,13 +1,22 @@
-<h2>Fonctionnalités</h2>
-<ul>
-  <li>Organiser les favoris dans plusieurs listes</li>
-  <li>Ouvrir les favoris enregistrés dans le navigateur du système</li>
-  <li>Recevoir des liens partagés depuis d'autres applications</li>
-  <li>Choisir la liste de destination avant d'enregistrer un lien partagé</li>
-</ul>
+Nori rassemble vos liens enregistrés au même endroit. Conservez articles, outils et sources d’inspiration, puis retrouvez-les grâce aux aperçus, listes, tags et notes.
 
-<h2>Comment ça marche</h2>
-<ul>
-  <li>Nori vous aide à enregistrer des liens intéressants depuis n'importe quelle application et à les organiser en listes.</li>
-  <li>Lorsque vous êtes prêt à lire, Nori ouvre le lien dans le navigateur de votre système pour une expérience optimale.</li>
-</ul>
+<b>Gardez le contexte</b>
+Organisez vos liens dans des listes personnalisées et ajoutez des tags et des notes personnelles. Parcourez des fiches avec images de couverture ou captures de pages, ou passez à une vue compacte.
+
+<b>Retrouvez vos liens</b>
+Recherchez dans vos favoris et filtrez par liste ou par tag. L’historique vous permet de revenir directement aux liens récemment utilisés.
+
+<b>Organisez par lot</b>
+Sélectionnez plusieurs favoris pour les déplacer entre les listes, les masquer, les partager ou les supprimer ensemble.
+
+<b>Enregistrez depuis d’autres applications</b>
+Envoyez des liens à Nori depuis le menu de partage Android. Choisissez la liste de destination avant l’enregistrement ou activez l’enregistrement rapide dans votre liste préférée.
+
+<b>Personnalisez l’apparence</b>
+Choisissez un thème clair, sombre ou noir pur AMOLED. Sélectionnez une couleur d’accentuation ou créez la vôtre, ajustez la taille du texte et choisissez la présentation de vos favoris.
+
+<b>Lisez à votre façon</b>
+Ouvrez vos liens dans le navigateur du système ou dans le navigateur intégré.
+
+<b>Emportez votre collection</b>
+Vos favoris sont stockés localement. L’offre payante facultative Nori Sync permet de synchroniser listes et favoris entre vos appareils après connexion.

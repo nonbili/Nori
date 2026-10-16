@@ -11,6 +11,38 @@ Because this is an Expo project, the `android/` and `ios/` directories are dynam
 - `ios/`: Fastlane and Frameit configuration for iOS.
 - `assets/`: Shared assets for framing (e.g., fonts).
 
+## Current store screenshot set
+
+The English metadata screenshots use populated UI captures shared with the promo
+videos. Generate five panels for Android phones, iPhones, and iPads:
+
+```sh
+python3 -m pip install -r scripts/requirements-promo-video.txt
+python3 scripts/generate-store-screenshots.py --contact-sheet /tmp/nori-screenshots.jpg
+```
+
+This writes PNGs directly into `fastlane/metadata/`, preserving the existing
+1080×2340 Android, 1242×2688 iPhone, and 2048×2732 iPad sizes and device filenames.
+It uses the current promo copy and colors with a complete, undistorted UI capture
+inside a thin neutral frame. iPad panel four shows lists, since its existing
+appearance capture does not contain a settings sheet.
+
+For a review without changing metadata files:
+
+```sh
+python3 scripts/generate-store-screenshots.py --output-root /tmp/nori-review --contact-sheet /tmp/nori-screenshots.jpg
+```
+
+Use repeatable `--target android`, `--target iphone`, or `--target ipad` to render
+a subset. Source PNG mappings live in `scripts/generate-store-screenshots.py`;
+replace the corresponding captures in `fastlane/videos/assets/` when refreshing
+the app content. This command composes existing captures; it does not boot a
+device or capture the app. No native rebuild, Ruby gems, or FFmpeg is needed.
+
+The Maestro and Frameit workflow below is the older capture pipeline. Its flow
+and feature copy predate the current UI; update and validate them before using
+it to replace this curated set.
+
 ## Setup
 
 1. **Install Dependencies**:

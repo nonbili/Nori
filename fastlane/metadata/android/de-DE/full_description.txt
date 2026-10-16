@@ -1,13 +1,22 @@
-<h2>Funktionen</h2>
-<ul>
-  <li>Lesezeichen in mehreren Listen organisieren</li>
-  <li>Gespeicherte Lesezeichen im Systembrowser öffnen</li>
-  <li>Geteilte Links aus anderen Apps empfangen</li>
-  <li>Zielliste vor dem Speichern eines geteilten Links auswählen</li>
-</ul>
+Nori gibt deinen gespeicherten Links ein Zuhause. Sammle Artikel, Tools und Ideen und finde sie mit Vorschauen, Listen, Tags und Notizen wieder.
 
-<h2>So funktioniert es</h2>
-<ul>
-  <li>Nori hilft Ihnen, interessante Links aus jeder App zu speichern und in Listen zu organisieren.</li>
-  <li>Wenn Sie bereit zum Lesen sind, öffnet Nori den Link in Ihrem Systembrowser für das beste Erlebnis.</li>
-</ul>
+<b>Mit Kontext speichern</b>
+Ordne Links in eigenen Listen und ergänze Tags und persönliche Notizen. Durchstöbere Lesezeichen mit Titelbildern oder Seiten-Screenshots oder wechsle zur kompakten Ansicht.
+
+<b>Gespeichertes wiederfinden</b>
+Durchsuche deine Lesezeichen und filtere nach Liste oder Tag. Kehre über den Verlauf direkt zu kürzlich verwendeten Links zurück.
+
+<b>Mehrere Lesezeichen verwalten</b>
+Wähle mehrere Lesezeichen aus, um sie gemeinsam zwischen Listen zu verschieben, auszublenden, zu teilen oder zu löschen.
+
+<b>Aus anderen Apps speichern</b>
+Sende Links über das Teilen-Menü von Android an Nori. Wähle vor dem Speichern die Zielliste oder aktiviere das schnelle Speichern in deiner bevorzugten Liste.
+
+<b>Nach deinem Geschmack</b>
+Wähle ein helles, dunkles oder tiefschwarzes AMOLED-Design. Nutze eine vorgegebene oder eigene Akzentfarbe und passe Textgröße und Lesezeichenansicht an.
+
+<b>Lesen, wie du möchtest</b>
+Öffne gespeicherte Links im Systembrowser oder im integrierten Browser.
+
+<b>Deine Sammlung immer dabei</b>
+Deine Lesezeichen werden lokal gespeichert. Mit dem optionalen kostenpflichtigen Nori Sync-Tarif kannst du nach der Anmeldung Listen und Lesezeichen zwischen Geräten synchronisieren.

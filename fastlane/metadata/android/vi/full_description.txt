@@ -1,13 +1,22 @@
-<h2>Tính năng</h2>
-<ul>
-  <li>Sắp xếp dấu trang vào nhiều danh sách</li>
-  <li>Mở dấu trang đã lưu trong trình duyệt hệ thống</li>
-  <li>Nhận liên kết được chia sẻ từ các ứng dụng khác</li>
-  <li>Chọn danh sách đích trước khi lưu liên kết được chia sẻ</li>
-</ul>
+Nori tập hợp các liên kết đã lưu vào một nơi. Lưu bài viết, công cụ và ý tưởng, rồi tìm lại bằng bản xem trước, danh sách, thẻ và ghi chú.
 
-<h2>Cách hoạt động</h2>
-<ul>
-  <li>Nori giúp bạn lưu các liên kết thú vị từ bất kỳ ứng dụng nào và sắp xếp chúng vào các danh sách.</li>
-  <li>Khi bạn sẵn sàng đọc, Nori sẽ mở liên kết trong trình duyệt hệ thống để mang lại trải nghiệm tốt nhất.</li>
-</ul>
+<b>Lưu cùng ngữ cảnh</b>
+Sắp xếp liên kết vào danh sách riêng, thêm thẻ và ghi chú cá nhân. Duyệt các thẻ dấu trang có ảnh bìa hoặc ảnh chụp trang web, hoặc chuyển sang chế độ xem gọn.
+
+<b>Tìm nội dung đã lưu</b>
+Tìm kiếm dấu trang và lọc theo danh sách hoặc thẻ. Quay lại liên kết dùng gần đây qua lịch sử mà không phải tìm trong toàn bộ bộ sưu tập.
+
+<b>Sắp xếp hàng loạt</b>
+Chọn nhiều dấu trang để chuyển giữa các danh sách, ẩn, chia sẻ hoặc xóa cùng lúc.
+
+<b>Lưu từ ứng dụng khác</b>
+Gửi liên kết đến Nori qua menu chia sẻ của Android. Chọn danh sách đích trước khi lưu, hoặc bật lưu nhanh vào danh sách bạn muốn.
+
+<b>Tùy chỉnh theo ý bạn</b>
+Chọn giao diện sáng, tối hoặc đen tuyền AMOLED. Chọn màu nhấn hoặc tạo màu riêng, điều chỉnh cỡ chữ và chọn bố cục dấu trang.
+
+<b>Đọc theo cách của bạn</b>
+Mở liên kết đã lưu trong trình duyệt hệ thống hoặc trình duyệt trong ứng dụng.
+
+<b>Mang bộ sưu tập theo bạn</b>
+Dấu trang được lưu trên thiết bị. Gói Nori Sync trả phí tùy chọn cho phép đồng bộ danh sách và dấu trang giữa các thiết bị sau khi đăng nhập.

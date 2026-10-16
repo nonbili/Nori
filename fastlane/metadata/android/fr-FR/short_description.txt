@@ -1,1 +1,1 @@
-Gestionnaire et lanceur de favoris.
+Enregistrez et retrouvez vos liens avec aperçus, listes, tags et notes.

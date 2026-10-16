@@ -1,13 +1,22 @@
-<h2>Funktioner</h2>
-<ul>
-  <li>Organisera bokmärken i flera listor</li>
-  <li>Öppna sparade bokmärken i systemwebbläsaren</li>
-  <li>Ta emot delade länkar från andra appar</li>
-  <li>Välj destinationslista innan du sparar en delad länk</li>
-</ul>
+Nori samlar dina sparade länkar på ett ställe. Spara artiklar, verktyg och inspiration och hitta dem igen med förhandsvisningar, listor, taggar och anteckningar.
 
-<h2>Så fungerar det</h2>
-<ul>
-  <li>Nori hjälper dig att spara intressanta länkar från valfri app och organisera dem i listor.</li>
-  <li>När du är redo att läsa öppnar Nori länken i din systemwebbläsare för bästa upplevelse.</li>
-</ul>
+<b>Spara med sammanhang</b>
+Ordna länkar i egna listor och lägg till taggar och personliga anteckningar. Bläddra bland bokmärkeskort med omslagsbilder eller skärmbilder av sidor, eller byt till en kompakt vy.
+
+<b>Hitta det du sparat</b>
+Sök bland dina bokmärken och filtrera efter lista eller tagg. Gå tillbaka till nyligen använda länkar från historiken utan att leta igenom hela samlingen.
+
+<b>Ordna flera samtidigt</b>
+Välj flera bokmärken för att flytta dem mellan listor, dölja, dela eller ta bort dem på en gång.
+
+<b>Spara från andra appar</b>
+Skicka länkar till Nori via delningsmenyn i Android. Välj mållista innan du sparar eller aktivera snabbsparning till din föredragna lista.
+
+<b>Gör det personligt</b>
+Välj ett ljust, mörkt eller helt svart AMOLED-tema. Välj en accentfärg eller skapa en egen, justera textstorleken och välj layout för dina bokmärken.
+
+<b>Läs på ditt sätt</b>
+Öppna sparade länkar i systemets webbläsare eller i den inbyggda webbläsaren.
+
+<b>Ta med dig samlingen</b>
+Dina bokmärken lagras lokalt. Med det valfria betalabonnemanget Nori Sync kan du efter inloggning synkronisera listor och bokmärken mellan enheter.

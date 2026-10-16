@@ -1,1 +1,1 @@
-Grāmatzīmju pārvaldnieks un palaidējs.
+Saglabā un atrodi saites ar priekšskatījumiem, sarakstiem, birkām un piezīmēm.

@@ -1,13 +1,22 @@
-<h2>Caratteristiche</h2>
-<ul>
-  <li>Organizza i segnalibri in più liste</li>
-  <li>Apri i segnalibri salvati nel browser di sistema</li>
-  <li>Ricevi link condivisi da altre app</li>
-  <li>Scegli la lista di destinazione prima di salvare un link condiviso</li>
-</ul>
+Nori riunisce i tuoi link salvati in un unico posto. Raccogli articoli, strumenti e idee, poi ritrovali con anteprime, elenchi, tag e note.
 
-<h2>Come funziona</h2>
-<ul>
-  <li>Nori ti aiuta a salvare link interessanti da qualsiasi app e a organizzarli in liste.</li>
-  <li>Quando sei pronto per leggere, Nori apre il link nel browser di sistema per offrirti la migliore esperienza.</li>
-</ul>
+<b>Salva anche il contesto</b>
+Organizza i link in elenchi personalizzati e aggiungi tag e note personali. Sfoglia schede con immagini di copertina o schermate delle pagine, oppure passa alla vista compatta.
+
+<b>Ritrova ciò che hai salvato</b>
+Cerca nei segnalibri e filtra per elenco o tag. Torna ai link usati di recente dalla cronologia senza scorrere tutta la raccolta.
+
+<b>Organizza più segnalibri insieme</b>
+Seleziona più segnalibri per spostarli tra elenchi, nasconderli, condividerli o eliminarli in una sola volta.
+
+<b>Salva da altre app</b>
+Invia link a Nori dal menu di condivisione di Android. Scegli l’elenco di destinazione prima di salvare oppure attiva il salvataggio rapido nell’elenco preferito.
+
+<b>Scegli il tuo stile</b>
+Usa un tema chiaro, scuro o nero puro AMOLED. Scegli un colore di accento o creane uno, regola la dimensione del testo e scegli come visualizzare i segnalibri.
+
+<b>Leggi come preferisci</b>
+Apri i link salvati nel browser di sistema o nel browser integrato.
+
+<b>Porta con te la raccolta</b>
+I segnalibri vengono salvati in locale. Il piano a pagamento facoltativo Nori Sync permette di sincronizzare elenchi e segnalibri tra dispositivi dopo l’accesso.

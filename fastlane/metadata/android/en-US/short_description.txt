@@ -1,1 +1,1 @@
-Bookmark manager and launcher.
+Save and find links with rich previews, lists, tags, and notes.

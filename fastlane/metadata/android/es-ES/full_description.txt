@@ -1,13 +1,22 @@
-<h2>Características</h2>
-<ul>
-  <li>Organiza marcadores en múltiples listas</li>
-  <li>Abre los marcadores guardados en el navegador del sistema</li>
-  <li>Recibe enlaces compartidos de otras aplicaciones</li>
-  <li>Elige la lista de destino antes de guardar un enlace compartido</li>
-</ul>
+Nori reúne tus enlaces guardados en un solo lugar. Guarda artículos, herramientas e ideas y vuelve a encontrarlos con vistas previas, listas, etiquetas y notas.
 
-<h2>Cómo funciona</h2>
-<ul>
-  <li>Nori te ayuda a guardar enlaces interesantes de cualquier aplicación y a organizarlos en listas.</li>
-  <li>Cuando estés listo para leer, Nori abre el enlace en el navegador de tu sistema para ofrecerte la mejor experiencia.</li>
-</ul>
+<b>Guarda con contexto</b>
+Organiza enlaces en listas personalizadas y añade etiquetas y notas personales. Explora tarjetas con imágenes de portada o capturas de páginas, o cambia a una vista compacta.
+
+<b>Encuentra lo que guardaste</b>
+Busca en tus marcadores y filtra por lista o etiqueta. Vuelve a los enlaces usados recientemente desde el historial sin recorrer toda tu colección.
+
+<b>Organiza en lote</b>
+Selecciona varios marcadores para moverlos entre listas, ocultarlos, compartirlos o eliminarlos a la vez.
+
+<b>Guarda desde otras aplicaciones</b>
+Envía enlaces a Nori desde el menú de compartir de Android. Elige la lista de destino antes de guardar o activa el guardado rápido para tu lista preferida.
+
+<b>Personaliza tu espacio</b>
+Elige un tema claro, oscuro o negro puro AMOLED. Selecciona un color de acento o crea el tuyo, ajusta el tamaño del texto y elige cómo ver tus marcadores.
+
+<b>Lee a tu manera</b>
+Abre los enlaces guardados en el navegador del sistema o en el navegador integrado.
+
+<b>Lleva tu colección contigo</b>
+Tus marcadores se guardan localmente. El plan de pago opcional Nori Sync te permite sincronizar listas y marcadores entre dispositivos tras iniciar sesión.

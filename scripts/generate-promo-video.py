@@ -1,38 +1,31 @@
 #!/usr/bin/env python3
-"""
-Nori App Preview & Google Play Promo Video Generator (v2 — Creative Motion Showcase)
+"""Render Nori promotional motion graphics from committed UI screenshots.
 
-Generates 5 store-compliant promotional videos from live captures of the current Nori UI:
-  1. iOS App Store — iPhone 6.5" / 6.7" Portrait (886x1920, 30fps, 20s)
-  2. iOS App Store — iPhone 5.5" Portrait (1080x1920, 30fps, 20s)
-  3. iOS App Store — iPad Pro Portrait (1200x1600, 30fps, 20s)
-  4. Google Play Store — Landscape 16:9 Promo (1920x1080, 30fps, 20s)
-  5. Google Play Store — Portrait 9:16 Promo / Shorts (1080x1920, 30fps, 20s)
+Outputs: 20-second, 30 fps H.264 videos for iPhone-sized portrait (886x1920
+and 1080x1920), iPad-sized portrait (1200x1600), and landscape (1920x1080).
+The 1080x1920 composition is shared with the Android portrait target.
 
-Features a 5-scene dynamic choreography:
-  - Scene 1 (0.0s - 4.0s): Dual-Device Parallax Hero ("Rich Visual Bookmarks")
-    Dark Emerald & Light Blue phones in layered depth + zoomed glass callout card
-  - Scene 2 (4.0s - 8.0s): Capture & Annotate ("Cover Art, Tags & Notes")
-    Bookmark Editor sheet + floating animated #tag pills & note highlight lens
-  - Scene 3 (8.0s - 12.0s): Instant Search & Tag Filtering ("Find Anything in Seconds")
-    All Bookmarks drawer + magnified search & #tag filter bar callout
-  - Scene 4 (12.0s - 16.0s): Live Theme Morph & 3-Device Fan ("Crafted for Your Style")
-    Diagonal live theme wipe (Dark Emerald -> Light Blue -> Pure Black AMOLED Violet -> Compact Rose)
-    paired with the Appearance customization sheet & glowing accent orbs
-  - Scene 5 (16.0s - 20.0s): Batch Organize & Multi-Device Finale ("Your Bookmarks, Reimagined")
-    Liquid Glass multi-select mode -> Hero 3-device fan finale with Nori brand badge
+Five scenes showcase previews, annotation, search, personalization (or lists
+on iPad), and batch organization. These are marketing mockups, not recorded
+app interactions or submission-ready App Store previews.
+
+See fastlane/videos/README.md for setup, preview commands, and limitations.
 """
 
+import argparse
+from contextlib import contextmanager, nullcontext
 import math
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
-from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 ASSETS_DIR = ROOT_DIR / "fastlane" / "videos" / "assets"
@@ -106,29 +99,31 @@ FONT_CANDIDATES_BOLD = [
     "/System/Library/Fonts/SFNS.ttf",
     "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
     "/System/Library/Fonts/HelveticaNeue.ttc",
+    "DejaVuSans-Bold.ttf",
 ]
 
 FONT_CANDIDATES_REGULAR = [
     "/System/Library/Fonts/SFNS.ttf",
     "/System/Library/Fonts/Supplemental/Arial.ttf",
     "/System/Library/Fonts/HelveticaNeue.ttc",
+    "DejaVuSans.ttf",
 ]
 
 
+@lru_cache(maxsize=128)
 def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
     candidates = FONT_CANDIDATES_BOLD if bold else FONT_CANDIDATES_REGULAR
     for path in candidates:
-        if os.path.exists(path):
-            try:
-                font = ImageFont.truetype(path, size=size)
-                try:
-                    font.set_variation_by_name("Bold" if bold else "Regular")
-                except Exception:
-                    pass
-                return font
-            except Exception:
-                continue
-    return ImageFont.load_default()
+        try:
+            font = ImageFont.truetype(path, size=size)
+        except OSError:
+            continue
+        try:
+            font.set_variation_by_name("Bold" if bold else "Regular")
+        except (OSError, ValueError, AttributeError):
+            pass
+        return font
+    return ImageFont.load_default(size=size)
 
 
 # ---------------------------------------------------------------------------
@@ -518,41 +513,42 @@ def blend_diagonal_wipe(
 
 SCENES = [
     {
-        "badge": "Visual Bookmarking",
-        "title": "Rich Previews\n& Notes",
-        "subtitle": "Save links with cover art, hanging notes, and liquid glass navigation.",
-        "accent1": (16, 185, 129),   # Emerald
-        "accent2": (59, 130, 246),   # Cobalt Blue
+        "badge": "Visual bookmarks",
+        "title": "Links worth\nkeeping.",
+        "subtitle": "Rich previews. Your notes. One place.",
+        "accent1": (16, 185, 129),
+        "accent2": (59, 130, 246),
     },
     {
-        "badge": "Capture & Annotate",
-        "title": "Cover Art, Tags\n& Context",
-        "subtitle": "Pick cover images or page screenshots, tag topics, and attach personal notes.",
-        "accent1": (20, 184, 166),   # Teal
-        "accent2": (16, 185, 129),   # Emerald
+        "badge": "Capture & annotate",
+        "title": "Add a little\ncontext.",
+        "subtitle": "Choose a cover. Add tags and notes.",
+        "accent1": (20, 184, 166),
+        "accent2": (16, 185, 129),
     },
     {
-        "badge": "Instant Recall",
-        "title": "Find Anything\nin Seconds",
-        "subtitle": "Slide up the All Bookmarks drawer to filter by #tags, lists, or full-text search.",
-        "accent1": (56, 189, 248),   # Sky
-        "accent2": (99, 102, 241),   # Indigo
+        "badge": "Search & filter",
+        "title": "Find it\nin seconds.",
+        "subtitle": "Search your links. Filter by tag.",
+        "accent1": (56, 189, 248),
+        "accent2": (99, 102, 241),
     },
     {
-        "badge": "Crafted for Your Style",
-        "title": "Themes, Accents\n& Pure AMOLED",
-        "subtitle": "Switch live between Dark, Light, Pure Black AMOLED, Compact view, and 11 accents.",
-        "accent1": (168, 85, 247),   # Violet
-        "accent2": (244, 63, 94),    # Rose
+        "badge": "Your space",
+        "title": "Make it\nyours.",
+        "subtitle": "Light, dark, or pure black. Your accent.",
+        "accent1": (168, 85, 247),
+        "accent2": (244, 63, 94),
     },
     {
-        "badge": "Effortless Control",
-        "title": "Nori — Bookmarks,\nReimagined",
-        "subtitle": "Batch organize with the liquid glass toolbar and sync across all your devices.",
-        "accent1": (16, 185, 129),   # Emerald
-        "accent2": (139, 92, 246),   # Violet
+        "badge": "A home for your links",
+        "title": "Your bookmarks.\nAll together.",
+        "subtitle": "Organize in batches. Keep ideas close.",
+        "accent1": (16, 185, 129),
+        "accent2": (139, 92, 246),
     },
 ]
+
 
 
 # ---------------------------------------------------------------------------
@@ -568,8 +564,9 @@ def draw_scene_copy(
     icon_img: Image.Image,
 ) -> None:
     w, h = canvas.size
-    enter_p = ease_out_cubic(scene_t / 0.55)
-    exit_p = 1.0 - ease_in_out_cubic((scene_t - 3.45) / 0.55) if scene_t > 3.45 else 1.0
+    enter_p = ease_out_cubic((scene_t + (0.55 if scene_idx == 0 else 0.0)) / 0.55)
+    exit_p = (1.0 - ease_in_out_cubic((scene_t - 3.45) / 0.55)
+              if scene_t > 3.45 and scene_idx < len(SCENES) - 1 else 1.0)
     alpha_mult = clamp(enter_p * exit_p)
     slide_y = int(round((1.0 - enter_p) * 26 - (1.0 - exit_p) * 18))
 
@@ -624,7 +621,7 @@ def draw_scene_copy(
         )
 
         # Title
-        title_font = load_font(int(round(h * 0.068)), bold=True)
+        title_font = load_font(int(round(h * 0.080)), bold=True)
         title_y = badge_y + bh + int(round(h * 0.028))
         draw.multiline_text(
             (left_x, title_y),
@@ -641,7 +638,7 @@ def draw_scene_copy(
         )
 
         # Subtitle wrapped
-        sub_font = load_font(int(round(h * 0.027)), bold=False)
+        sub_font = load_font(int(round(h * 0.032)), bold=False)
         sub_y = tb[3] + int(round(h * 0.026))
         words = scene["subtitle"].split()
         lines: List[str] = []
@@ -723,13 +720,8 @@ def draw_scene_copy(
         )
 
         # Headline
-        title_font = load_font(max(32, int(round(w * 0.060))), bold=True)
-        title_single = scene["title"].replace("\n", " ")
-        tb = draw.textbbox((0, 0), title_single, font=title_font)
-        if (tb[2] - tb[0]) <= w * 0.90:
-            title_to_draw = title_single
-        else:
-            title_to_draw = scene["title"]
+        title_font = load_font(max(32, int(round(w * 0.072))), bold=True)
+        title_to_draw = scene["title"]
 
         title_y = top_y + bh + int(round(h * 0.014))
         tb_multi = draw.multiline_textbbox(
@@ -746,8 +738,8 @@ def draw_scene_copy(
         )
 
         # Subtitle
-        sub_font = load_font(max(18, int(round(w * 0.028))), bold=False)
-        sub_y = title_y + (tb_multi[3] - tb_multi[1]) + int(round(h * 0.010))
+        sub_font = load_font(max(18, int(round(w * 0.036))), bold=False)
+        sub_y = title_y + tb_multi[3] + int(round(h * 0.014))
         max_sub_w = int(round(w * 0.84))
         words = scene["subtitle"].split()
         lines = []
@@ -800,6 +792,43 @@ def draw_scene_copy(
 # Target Video Renderers
 # ---------------------------------------------------------------------------
 
+@contextmanager
+def video_encoder(ffmpeg_cmd: List[str], out_path: Path):
+    """Keep diagnostics off pipes and publish only a completed encode."""
+    with tempfile.TemporaryDirectory(prefix=".promo-", dir=out_path.parent) as work_dir:
+        staging_path = Path(work_dir) / out_path.name
+        with tempfile.TemporaryFile() as diagnostics:
+            proc = subprocess.Popen(
+                [*ffmpeg_cmd, str(staging_path)],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
+                stderr=diagnostics,
+            )
+            try:
+                assert proc.stdin is not None
+                try:
+                    yield proc.stdin
+                    proc.stdin.close()
+                except BrokenPipeError:
+                    # Report the encoder's actual error below.
+                    pass
+                ret = proc.wait()
+                if ret != 0:
+                    diagnostics.seek(0)
+                    details = diagnostics.read().decode("utf-8", errors="replace")
+                    raise RuntimeError(f"ffmpeg failed for {out_path.name} (exit {ret}):\n{details}")
+                staging_path.replace(out_path)
+            finally:
+                if proc.poll() is None:
+                    proc.kill()
+                proc.wait()
+                if proc.stdin is not None:
+                    try:
+                        proc.stdin.close()
+                    except BrokenPipeError:
+                        pass
+
+
 def render_video_target(
     name: str,
     width: int,
@@ -808,6 +837,7 @@ def render_video_target(
     out_path: Path,
     raw_screens: Dict[str, Image.Image],
     icon_img: Image.Image,
+    preview_dir: Optional[Path] = None,
 ) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     is_landscape = width > height
@@ -818,7 +848,7 @@ def render_video_target(
         base_screen_h = int(round(height * 0.76))
         base_screen_w = int(round(base_screen_h * (393.0 / 852.0)))
     elif is_tablet:
-        base_screen_h = int(round(height * 0.68))
+        base_screen_h = int(round(height * 0.60))
         base_screen_w = int(round(base_screen_h * (682.0 / 910.0)))
     else:
         base_screen_h = int(round(height * 0.68))
@@ -834,13 +864,7 @@ def render_video_target(
         dev_dark = build_framed_device(
             raw_screens["ipad_dark"], base_screen_w, base_screen_h, True, (16, 185, 129)
         )
-        dev_light = build_framed_device(
-            raw_screens["mobile_light"],
-            int(base_screen_w * 0.62),
-            int(base_screen_w * 0.62 * (852.0 / 393.0)),
-            False,
-            (59, 130, 246),
-        )
+        dev_light = dev_dark
         dev_drawer = build_framed_device(
             raw_screens["ipad_drawer"], base_screen_w, base_screen_h, True, (56, 189, 248)
         )
@@ -853,20 +877,8 @@ def render_video_target(
         dev_selection = build_framed_device(
             raw_screens["ipad_selection"], base_screen_w, base_screen_h, True, (16, 185, 129)
         )
-        dev_amoled = build_framed_device(
-            raw_screens["mobile_amoled"],
-            int(base_screen_w * 0.62),
-            int(base_screen_w * 0.62 * (852.0 / 393.0)),
-            False,
-            (168, 85, 247),
-        )
-        dev_compact = build_framed_device(
-            raw_screens["mobile_compact"],
-            int(base_screen_w * 0.62),
-            int(base_screen_w * 0.62 * (852.0 / 393.0)),
-            False,
-            (244, 63, 94),
-        )
+        dev_amoled = dev_drawer
+        dev_compact = dev_dark
     else:
         dev_dark = build_framed_device(
             raw_screens["mobile_dark"], base_screen_w, base_screen_h, False, (16, 185, 129)
@@ -893,47 +905,49 @@ def render_video_target(
             raw_screens["mobile_compact"], base_screen_w, base_screen_h, False, (244, 63, 94)
         )
 
-    # Pre-build floating zoom callout cards from mobile retina captures
+    capture_prefix = "ipad" if is_tablet else "mobile"
+
+    # Pre-build floating zoom callout cards from the matching device captures
     callout_w = int(round(base_screen_w * 0.86))
     # 1. Claude rich card + cover art + hanging note tab
-    callout_claude_card = build_zoom_callout_card(
-        raw_screens["mobile_dark"],
-        (0.04, 0.088, 0.96, 0.318),
+    callout_bookmark_card = build_zoom_callout_card(
+        raw_screens[f"{capture_prefix}_dark"],
+        (0.04, 0.088, 0.96, 0.26 if is_tablet else 0.318),
         callout_w,
         (16, 185, 129),
-        label="Cover Art + Hanging Note",
+        label="Previews & notes",
     )
     # 2. Editor preview image toggle + preview card
     callout_editor_preview = build_zoom_callout_card(
-        raw_screens["mobile_editor"],
-        (0.07, 0.285, 0.92, 0.608),
+        raw_screens[f"{capture_prefix}_editor"],
+        (0.07, 0.26, 0.92, 0.51) if is_tablet else (0.07, 0.285, 0.92, 0.608),
         callout_w,
         (20, 184, 166),
-        label="Cover Image or Screenshot",
+        label="Choose your cover",
     )
     # 3. Drawer search + #tags filter bar
     callout_drawer_tags = build_zoom_callout_card(
-        raw_screens["mobile_drawer"],
+        raw_screens[f"{capture_prefix}_drawer"],
         (0.04, 0.022, 0.96, 0.235),
         callout_w,
         (56, 189, 248),
-        label="Instant Search & #Tag Filters",
+        label="Search & tag filters",
     )
     # 4. Appearance accent swatch palette
     callout_accents = build_zoom_callout_card(
-        raw_screens["mobile_appearance"],
+        raw_screens[f"{capture_prefix}_appearance"],
         (0.06, 0.468, 0.94, 0.678),
         callout_w,
         (168, 85, 247),
-        label="11 Accent Colors & Custom Picker",
+        label="Choose your accent",
     )
     # 5. Liquid glass selection toolbar at bottom
     callout_toolbar = build_zoom_callout_card(
-        raw_screens["mobile_selection"],
+        raw_screens[f"{capture_prefix}_selection"],
         (0.03, 0.908, 0.97, 0.992),
         callout_w,
         (16, 185, 129),
-        label="Liquid Glass Batch Actions",
+        label="Organize in batches",
     )
 
     # Floating tag pills for Scene 2
@@ -952,7 +966,10 @@ def render_video_target(
 
     # Launch ffmpeg pipe
     ffmpeg_cmd = [
-        "/opt/homebrew/bin/ffmpeg",
+        shutil.which(os.environ.get("FFMPEG", "ffmpeg")) or "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
         "-y",
         "-f",
         "rawvideo",
@@ -981,7 +998,7 @@ def render_video_target(
         "-profile:v",
         "high",
         "-level",
-        "4.1",
+        "4.0",
         "-r",
         str(FPS),
         "-c:a",
@@ -995,318 +1012,327 @@ def render_video_target(
         "-shortest",
         "-movflags",
         "+faststart",
-        str(out_path),
     ]
 
-    proc = subprocess.Popen(
-        ffmpeg_cmd,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-    )
+    if preview_dir is not None:
+        preview_dir.mkdir(parents=True, exist_ok=True)
+    frame_indices = ([0, 2 * FPS, 6 * FPS, 10 * FPS, 14 * FPS, 18 * FPS, TOTAL_FRAMES - 1]
+                     if preview_dir is not None else range(TOTAL_FRAMES))
+    with (nullcontext() if preview_dir is not None else video_encoder(ffmpeg_cmd, out_path)) as encoder_stdin:
+        for frame_idx in frame_indices:
+            t = frame_idx / float(FPS)  # 0.0 .. 20.0
+            scene_idx = min(4, int(t // 4.0))
+            scene_t = t - scene_idx * 4.0  # 0.0 .. 4.0 within current scene
+            scene = SCENES[scene_idx]
+            if is_tablet and scene_idx == 3:
+                scene = {**scene, "badge": "Room to organize",
+                         "title": "Make space\nfor ideas.",
+                         "subtitle": "Separate work, reading, and inspiration."}
 
-    assert proc.stdin is not None
+            # Smoothly interpolate background colors across scene boundaries
+            next_idx = min(4, scene_idx + 1)
+            blend_bg = smoothstep(3.3, 4.0, scene_t)
+            ac1 = lerp_color(scene["accent1"], SCENES[next_idx]["accent1"], blend_bg)
+            ac2 = lerp_color(scene["accent2"], SCENES[next_idx]["accent2"], blend_bg)
 
-    for frame_idx in range(TOTAL_FRAMES):
-        t = frame_idx / float(FPS)  # 0.0 .. 20.0
-        scene_idx = min(4, int(t // 4.0))
-        scene_t = t - scene_idx * 4.0  # 0.0 .. 4.0 within current scene
-        scene = SCENES[scene_idx]
+            canvas = make_background(width, height, t, ac1, ac2)
 
-        # Smoothly interpolate background colors across scene boundaries
-        next_idx = min(4, scene_idx + 1)
-        blend_bg = smoothstep(3.3, 4.0, scene_t)
-        ac1 = lerp_color(scene["accent1"], SCENES[next_idx]["accent1"], blend_bg)
-        ac2 = lerp_color(scene["accent2"], SCENES[next_idx]["accent2"], blend_bg)
+            # Gentle continuous float
+            float_y = math.sin(t * 2.2) * (height * 0.006)
+            float_rot = math.cos(t * 1.6) * 0.65
 
-        canvas = make_background(width, height, t, ac1, ac2)
+            # -------------------------------------------------------------------
+            # SCENE 0 (0.0s - 4.0s): Dual-Device Parallax Hero + Card Callout
+            # -------------------------------------------------------------------
+            if scene_idx == 0:
+                enter = ease_out_back((scene_t + 0.85) / 0.85, overshoot=1.18)
+                exit_p = smoothstep(3.45, 4.0, scene_t)
 
-        # Gentle continuous float
-        float_y = math.sin(t * 2.2) * (height * 0.006)
-        float_rot = math.cos(t * 1.6) * 0.65
-
-        # -------------------------------------------------------------------
-        # SCENE 0 (0.0s - 4.0s): Dual-Device Parallax Hero + Card Callout
-        # -------------------------------------------------------------------
-        if scene_idx == 0:
-            enter = ease_out_back(scene_t / 0.85, overshoot=1.18)
-            exit_p = smoothstep(3.45, 4.0, scene_t)
-
-            # Secondary Light Mode phone fanned behind to the right
-            sec_x = stage_cx + base_screen_w * lerp(0.45, 0.28, enter) + exit_p * 80
-            sec_y = stage_cy + float_y * 0.7 + lerp(120, -10, enter)
-            paste_transformed(
-                canvas,
-                dev_light,
-                (sec_x, sec_y),
-                scale=lerp(0.65, 0.84, enter) * (1.0 - exit_p * 0.15),
-                angle_deg=lerp(16.0, 8.5, enter) + float_rot * 0.5,
-                opacity=clamp(enter * (1.0 - exit_p)),
-            )
-
-            # Primary Dark Emerald device in foreground left
-            pri_x = stage_cx - base_screen_w * lerp(0.32, 0.14, enter) - exit_p * 60
-            pri_y = stage_cy + float_y + lerp(140, 12, enter)
-            paste_transformed(
-                canvas,
-                dev_dark,
-                (pri_x, pri_y),
-                scale=lerp(0.75, 0.94, enter) * (1.0 - exit_p * 0.12),
-                angle_deg=lerp(-12.0, -4.5, enter) + float_rot,
-                opacity=clamp(enter * (1.0 - exit_p)),
-            )
-
-            # Pop-out zoomed Claude bookmark card with hanging note tab
-            card_enter = ease_out_back((scene_t - 0.55) / 0.65, overshoot=1.25)
-            if card_enter > 0.01:
-                card_x = stage_cx + base_screen_w * 0.08
-                card_y = stage_cy + base_screen_h * 0.25 + math.sin(t * 3.0) * 6
+                # Secondary Light Mode phone fanned behind to the right
+                sec_x = stage_cx + base_screen_w * lerp(0.45, 0.28, enter) + exit_p * 80
+                sec_y = stage_cy + float_y * 0.7 + lerp(120, -10, enter)
                 paste_transformed(
                     canvas,
-                    callout_claude_card,
-                    (card_x, card_y),
-                    scale=lerp(0.5, 1.0, card_enter) * (1.0 - exit_p * 0.25),
-                    angle_deg=lerp(-6.0, -1.5, card_enter),
-                    opacity=clamp(card_enter * (1.0 - exit_p)),
+                    dev_light,
+                    (sec_x, sec_y),
+                    scale=lerp(0.65, 0.84, enter) * (1.0 - exit_p * 0.15),
+                    angle_deg=lerp(16.0, 8.5, enter) + float_rot * 0.5,
+                    opacity=clamp(enter * (1.0 - exit_p)),
                 )
 
-        # -------------------------------------------------------------------
-        # SCENE 1 (4.0s - 8.0s): Capture & Annotate (Editor Sheet + Floating Tags)
-        # -------------------------------------------------------------------
-        elif scene_idx == 1:
-            enter = ease_out_back(scene_t / 0.75, overshoot=1.15)
-            exit_p = smoothstep(3.45, 4.0, scene_t)
-
-            # Background faded home screen
-            paste_transformed(
-                canvas,
-                dev_dark,
-                (stage_cx - base_screen_w * 0.26, stage_cy + 16),
-                scale=0.78,
-                angle_deg=-9.0,
-                opacity=0.38 * clamp(enter * (1.0 - exit_p)),
-            )
-
-            # Foreground Bookmark Editor device
-            ed_x = stage_cx + base_screen_w * 0.04
-            ed_y = stage_cy + float_y + lerp(130, 8, enter) - exit_p * 90
-            paste_transformed(
-                canvas,
-                dev_editor,
-                (ed_x, ed_y),
-                scale=lerp(0.80, 0.96, enter),
-                angle_deg=lerp(8.0, 2.0, enter) + float_rot,
-                opacity=clamp(enter * (1.0 - exit_p)),
-            )
-
-            # Zoomed Preview Image selector callout
-            c_enter = ease_out_back((scene_t - 0.50) / 0.65, overshoot=1.2)
-            if c_enter > 0.01:
+                # Primary Dark Emerald device in foreground left
+                pri_x = stage_cx - base_screen_w * lerp(0.32, 0.14, enter) - exit_p * 60
+                pri_y = stage_cy + float_y + lerp(140, 12, enter)
                 paste_transformed(
                     canvas,
-                    callout_editor_preview,
-                    (stage_cx - base_screen_w * 0.08, stage_cy + base_screen_h * 0.18 + float_y * 1.2),
-                    scale=lerp(0.6, 0.96, c_enter) * (1.0 - exit_p * 0.2),
-                    angle_deg=-2.5,
-                    opacity=clamp(c_enter * (1.0 - exit_p)),
+                    dev_dark,
+                    (pri_x, pri_y),
+                    scale=lerp(0.75, 0.94, enter) * (1.0 - exit_p * 0.12),
+                    angle_deg=lerp(-12.0, -4.5, enter) + float_rot,
+                    opacity=clamp(enter * (1.0 - exit_p)),
                 )
 
-            # Floating animated tag pills orbiting the device
-            pills = [
-                (pill_ai, -0.44, -0.26, 0.35, -7.0),
-                (pill_agents, 0.44, -0.18, 0.50, 6.5),
-                (pill_coding, 0.42, 0.04, 0.65, -4.5),
-            ]
-            for pill_img, ox, oy, delay, rot in pills:
-                p_in = ease_out_back((scene_t - delay) / 0.55, overshoot=1.35)
-                if p_in > 0.01:
-                    bob = math.sin(t * 3.4 + delay * 4.0) * 7.0
-                    px = stage_cx + base_screen_w * ox
-                    py = stage_cy + base_screen_h * oy + bob
+                # Pop-out zoomed Claude bookmark card with hanging note tab
+                card_enter = ease_out_back((scene_t - 0.55) / 0.65, overshoot=1.25)
+                if card_enter > 0.01:
+                    card_x = stage_cx + base_screen_w * 0.08
+                    card_y = stage_cy + base_screen_h * 0.25 + math.sin(t * 3.0) * 6
                     paste_transformed(
                         canvas,
-                        pill_img,
-                        (px, py),
-                        scale=lerp(0.4, 1.0, p_in) * (1.0 - exit_p * 0.3),
-                        angle_deg=rot,
-                        opacity=clamp(p_in * (1.0 - exit_p)),
+                        callout_bookmark_card,
+                        (card_x, card_y),
+                        scale=lerp(0.5, 1.0, card_enter) * (1.0 - exit_p * 0.25),
+                        angle_deg=lerp(-6.0, -1.5, card_enter),
+                        opacity=clamp(card_enter * (1.0 - exit_p)),
                     )
 
-        # -------------------------------------------------------------------
-        # SCENE 2 (8.0s - 12.0s): Instant Search & Tag Filtering (All Bookmarks Drawer)
-        # -------------------------------------------------------------------
-        elif scene_idx == 2:
-            enter = ease_out_expo(scene_t / 0.70)
-            exit_p = smoothstep(3.45, 4.0, scene_t)
+            # -------------------------------------------------------------------
+            # SCENE 1 (4.0s - 8.0s): Capture & Annotate (Editor Sheet + Floating Tags)
+            # -------------------------------------------------------------------
+            elif scene_idx == 1:
+                enter = ease_out_back(scene_t / 0.75, overshoot=1.15)
+                exit_p = smoothstep(3.45, 4.0, scene_t)
 
-            # Secondary Compact Rose view phone in background right
-            paste_transformed(
-                canvas,
-                dev_compact,
-                (stage_cx + base_screen_w * 0.30, stage_cy + 14),
-                scale=0.80,
-                angle_deg=9.5,
-                opacity=0.52 * clamp(enter * (1.0 - exit_p)),
-            )
-
-            # Primary All Bookmarks Drawer sliding up smoothly
-            dr_x = stage_cx - base_screen_w * 0.06
-            dr_y = stage_cy + float_y + lerp(160, 6, enter)
-            paste_transformed(
-                canvas,
-                dev_drawer,
-                (dr_x, dr_y),
-                scale=lerp(0.84, 0.96, enter) * (1.0 - exit_p * 0.12),
-                angle_deg=lerp(-7.0, -2.0, enter) + float_rot,
-                opacity=clamp(enter * (1.0 - exit_p)),
-            )
-
-            # Magnified Search + #Tag Filter bar lens floating across top-front of phone
-            lens_in = ease_out_back((scene_t - 0.45) / 0.65, overshoot=1.22)
-            if lens_in > 0.01:
-                lx = stage_cx + base_screen_w * 0.05
-                ly = stage_cy - base_screen_h * 0.18 + math.cos(t * 2.8) * 6
+                # Background faded home screen
                 paste_transformed(
                     canvas,
-                    callout_drawer_tags,
-                    (lx, ly),
-                    scale=lerp(0.55, 1.04, lens_in) * (1.0 - exit_p * 0.2),
-                    angle_deg=1.5,
-                    opacity=clamp(lens_in * (1.0 - exit_p)),
+                    dev_dark,
+                    (stage_cx - base_screen_w * 0.26, stage_cy + 16),
+                    scale=0.78,
+                    angle_deg=-9.0,
+                    opacity=0.38 * clamp(enter * (1.0 - exit_p)),
                 )
 
-        # -------------------------------------------------------------------
-        # SCENE 3 (12.0s - 16.0s): Live Theme Morph & Appearance Customization
-        # -------------------------------------------------------------------
-        elif scene_idx == 3:
-            enter = ease_out_back(scene_t / 0.75, overshoot=1.15)
-            exit_p = smoothstep(3.45, 4.0, scene_t)
+                # Foreground Bookmark Editor device
+                ed_x = stage_cx + base_screen_w * 0.04
+                ed_y = stage_cy + float_y + lerp(130, 8, enter) - exit_p * 90
+                paste_transformed(
+                    canvas,
+                    dev_editor,
+                    (ed_x, ed_y),
+                    scale=lerp(0.80, 0.96, enter),
+                    angle_deg=lerp(8.0, 2.0, enter) + float_rot,
+                    opacity=clamp(enter * (1.0 - exit_p)),
+                )
 
-            # Left background phone: Appearance Customization Sheet
-            app_x = stage_cx - base_screen_w * lerp(0.42, 0.25, enter)
-            app_y = stage_cy + float_y * 0.8 + 14
-            paste_transformed(
-                canvas,
-                dev_appearance,
-                (app_x, app_y),
-                scale=lerp(0.70, 0.84, enter) * (1.0 - exit_p * 0.15),
-                angle_deg=-8.5 + float_rot * 0.5,
-                opacity=clamp(enter * 0.92 * (1.0 - exit_p)),
-            )
+                # Zoomed Preview Image selector callout
+                c_enter = ease_out_back((scene_t - 0.50) / 0.65, overshoot=1.2)
+                if c_enter > 0.01:
+                    paste_transformed(
+                        canvas,
+                        callout_editor_preview,
+                        (stage_cx - base_screen_w * 0.08, stage_cy + base_screen_h * 0.18 + float_y * 1.2),
+                        scale=lerp(0.6, 0.96, c_enter) * (1.0 - exit_p * 0.2),
+                        angle_deg=-2.5,
+                        opacity=clamp(c_enter * (1.0 - exit_p)),
+                    )
 
-            # Right foreground phone: Live diagonal theme-morphing device!
-            # Morphs: Dark Emerald -> Light Blue (0.6s..1.4s) -> Pure Black AMOLED Violet (1.7s..2.5s) -> Compact Rose (2.7s..3.3s)
-            if not is_tablet:
-                w1 = smoothstep(0.55, 1.25, scene_t)
-                w2 = smoothstep(1.55, 2.25, scene_t)
-                w3 = smoothstep(2.55, 3.20, scene_t)
-                morphed = blend_diagonal_wipe(dev_dark, dev_light, w1, (59, 130, 246))
-                morphed = blend_diagonal_wipe(morphed, dev_amoled, w2, (168, 85, 247))
-                morphed = blend_diagonal_wipe(morphed, dev_compact, w3, (244, 63, 94))
+                # Floating animated tag pills orbiting the device
+                pills = [
+                    (pill_ai, -0.44, -0.26, 0.35, -7.0),
+                    (pill_agents, 0.44, -0.18, 0.50, 6.5),
+                    (pill_coding, 0.42, 0.04, 0.65, -4.5),
+                ]
+                for pill_img, ox, oy, delay, rot in pills:
+                    p_in = ease_out_back((scene_t - delay) / 0.55, overshoot=1.35)
+                    if p_in > 0.01:
+                        bob = math.sin(t * 3.4 + delay * 4.0) * 7.0
+                        px = stage_cx + base_screen_w * ox
+                        py = stage_cy + base_screen_h * oy + bob
+                        paste_transformed(
+                            canvas,
+                            pill_img,
+                            (px, py),
+                            scale=lerp(0.4, 1.0, p_in) * (1.0 - exit_p * 0.3),
+                            angle_deg=rot,
+                            opacity=clamp(p_in * (1.0 - exit_p)),
+                        )
+
+            # -------------------------------------------------------------------
+            # SCENE 2 (8.0s - 12.0s): Instant Search & Tag Filtering (All Bookmarks Drawer)
+            # -------------------------------------------------------------------
+            elif scene_idx == 2:
+                enter = ease_out_expo(scene_t / 0.70)
+                exit_p = smoothstep(3.45, 4.0, scene_t)
+
+                # Secondary Compact Rose view phone in background right
+                paste_transformed(
+                    canvas,
+                    dev_compact,
+                    (stage_cx + base_screen_w * 0.30, stage_cy + 14),
+                    scale=0.80,
+                    angle_deg=9.5,
+                    opacity=0.52 * clamp(enter * (1.0 - exit_p)),
+                )
+
+                # Primary All Bookmarks Drawer sliding up smoothly
+                dr_x = stage_cx - base_screen_w * 0.06
+                dr_y = stage_cy + float_y + lerp(160, 6, enter)
+                paste_transformed(
+                    canvas,
+                    dev_drawer,
+                    (dr_x, dr_y),
+                    scale=lerp(0.84, 0.96, enter) * (1.0 - exit_p * 0.12),
+                    angle_deg=lerp(-7.0, -2.0, enter) + float_rot,
+                    opacity=clamp(enter * (1.0 - exit_p)),
+                )
+
+                # Magnified Search + #Tag Filter bar lens floating across top-front of phone
+                lens_in = ease_out_back((scene_t - 0.45) / 0.65, overshoot=1.22)
+                if lens_in > 0.01:
+                    lx = stage_cx + base_screen_w * 0.05
+                    ly = stage_cy - base_screen_h * 0.18 + math.cos(t * 2.8) * 6
+                    paste_transformed(
+                        canvas,
+                        callout_drawer_tags,
+                        (lx, ly),
+                        scale=lerp(0.55, 1.04, lens_in) * (1.0 - exit_p * 0.2),
+                        angle_deg=1.5,
+                        opacity=clamp(lens_in * (1.0 - exit_p)),
+                    )
+
+            # -------------------------------------------------------------------
+            # SCENE 3 (12.0s - 16.0s): Live Theme Morph & Appearance Customization
+            # -------------------------------------------------------------------
+            elif scene_idx == 3:
+                enter = ease_out_back(scene_t / 0.75, overshoot=1.15)
+                exit_p = smoothstep(3.45, 4.0, scene_t)
+
+                # Left background phone: Appearance Customization Sheet
+                app_x = stage_cx - base_screen_w * lerp(0.42, 0.25, enter)
+                app_y = stage_cy + float_y * 0.8 + 14
+                paste_transformed(
+                    canvas,
+                    dev_appearance,
+                    (app_x, app_y),
+                    scale=lerp(0.70, 0.84, enter) * (1.0 - exit_p * 0.15),
+                    angle_deg=-8.5 + float_rot * 0.5,
+                    opacity=clamp(enter * 0.92 * (1.0 - exit_p)),
+                )
+
+                # Right foreground phone: Live diagonal theme-morphing device!
+                # Morphs: Dark Emerald -> Light Blue (0.6s..1.4s) -> Pure Black AMOLED Violet (1.7s..2.5s) -> Compact Rose (2.7s..3.3s)
+                if not is_tablet:
+                    w1 = smoothstep(0.55, 1.25, scene_t)
+                    w2 = smoothstep(1.55, 2.25, scene_t)
+                    w3 = smoothstep(2.55, 3.20, scene_t)
+                    morphed = blend_diagonal_wipe(dev_dark, dev_light, w1, (59, 130, 246))
+                    morphed = blend_diagonal_wipe(morphed, dev_amoled, w2, (168, 85, 247))
+                    morphed = blend_diagonal_wipe(morphed, dev_compact, w3, (244, 63, 94))
+                else:
+                    morphed = dev_appearance
+
+                morph_x = stage_cx + base_screen_w * lerp(0.32, 0.16, enter)
+                morph_y = stage_cy + float_y + 4
+                paste_transformed(
+                    canvas,
+                    morphed,
+                    (morph_x, morph_y),
+                    scale=lerp(0.78, 0.94, enter) * (1.0 - exit_p * 0.12),
+                    angle_deg=4.5 + float_rot,
+                    opacity=clamp(enter * (1.0 - exit_p)),
+                )
+
+                # Floating 11 Accent Color Swatches callout card at bottom
+                sw_in = ease_out_back((scene_t - 0.50) / 0.65, overshoot=1.22)
+                if sw_in > 0.01 and not is_tablet:
+                    paste_transformed(
+                        canvas,
+                        callout_accents,
+                        (stage_cx - base_screen_w * 0.04, stage_cy + base_screen_h * 0.27 + float_y),
+                        scale=lerp(0.55, 0.98, sw_in) * (1.0 - exit_p * 0.2),
+                        angle_deg=-1.8,
+                        opacity=clamp(sw_in * (1.0 - exit_p)),
+                    )
+
+            # -------------------------------------------------------------------
+            # SCENE 4 (16.0s - 20.0s): Batch Selection Mode & 3-Device Hero Finale
+            # -------------------------------------------------------------------
             else:
-                morphed = dev_appearance
+                enter = ease_out_back(scene_t / 0.75, overshoot=1.16)
+                finale_morph = smoothstep(1.85, 2.65, scene_t)
 
-            morph_x = stage_cx + base_screen_w * lerp(0.32, 0.16, enter)
-            morph_y = stage_cy + float_y + 4
-            paste_transformed(
-                canvas,
-                morphed,
-                (morph_x, morph_y),
-                scale=lerp(0.78, 0.94, enter) * (1.0 - exit_p * 0.12),
-                angle_deg=4.5 + float_rot,
-                opacity=clamp(enter * (1.0 - exit_p)),
-            )
-
-            # Floating 11 Accent Color Swatches callout card at bottom
-            sw_in = ease_out_back((scene_t - 0.50) / 0.65, overshoot=1.22)
-            if sw_in > 0.01:
+                # Left wing phone (AMOLED Violet) fans out during finale
+                left_wing_x = stage_cx - base_screen_w * lerp(0.12, 0.34, finale_morph)
+                left_wing_y = stage_cy + 22 + float_y * 0.7
                 paste_transformed(
                     canvas,
-                    callout_accents,
-                    (stage_cx - base_screen_w * 0.04, stage_cy + base_screen_h * 0.27 + float_y),
-                    scale=lerp(0.55, 0.98, sw_in) * (1.0 - exit_p * 0.2),
-                    angle_deg=-1.8,
-                    opacity=clamp(sw_in * (1.0 - exit_p)),
+                    dev_amoled,
+                    (left_wing_x, left_wing_y),
+                    scale=lerp(0.70, 0.80, finale_morph),
+                    angle_deg=lerp(-4.0, -12.5, finale_morph),
+                    opacity=clamp(enter * lerp(0.35, 0.90, finale_morph)),
                 )
 
-        # -------------------------------------------------------------------
-        # SCENE 4 (16.0s - 20.0s): Batch Selection Mode & 3-Device Hero Finale
-        # -------------------------------------------------------------------
-        else:
-            enter = ease_out_back(scene_t / 0.75, overshoot=1.16)
-            finale_morph = smoothstep(1.85, 2.65, scene_t)
-
-            # Left wing phone (AMOLED Violet) fans out during finale
-            left_wing_x = stage_cx - base_screen_w * lerp(0.12, 0.34, finale_morph)
-            left_wing_y = stage_cy + 22 + float_y * 0.7
-            paste_transformed(
-                canvas,
-                dev_amoled,
-                (left_wing_x, left_wing_y),
-                scale=lerp(0.70, 0.80, finale_morph),
-                angle_deg=lerp(-4.0, -12.5, finale_morph),
-                opacity=clamp(enter * lerp(0.35, 0.90, finale_morph)),
-            )
-
-            # Right wing phone (Light Blue) fans out during finale
-            right_wing_x = stage_cx + base_screen_w * lerp(0.12, 0.34, finale_morph)
-            right_wing_y = stage_cy + 22 + float_y * 0.7
-            paste_transformed(
-                canvas,
-                dev_light,
-                (right_wing_x, right_wing_y),
-                scale=lerp(0.70, 0.80, finale_morph),
-                angle_deg=lerp(4.0, 12.5, finale_morph),
-                opacity=clamp(enter * lerp(0.35, 0.90, finale_morph)),
-            )
-
-            # Center hero phone transitions from Multi-Select Edit Mode -> Rich Dark Home for finale
-            center_dev = (
-                blend_diagonal_wipe(dev_selection, dev_dark, finale_morph, (16, 185, 129))
-                if not is_tablet
-                else dev_selection
-            )
-            paste_transformed(
-                canvas,
-                center_dev,
-                (stage_cx - base_screen_w * lerp(0.04, 0.0, finale_morph), stage_cy + float_y),
-                scale=lerp(0.82, 0.95, enter),
-                angle_deg=lerp(2.5, 0.0, finale_morph) + float_rot * 0.5,
-                opacity=clamp(enter),
-            )
-
-            # Liquid Glass Batch Toolbar callout card (visible in first half of Scene 5)
-            tb_in = ease_out_back((scene_t - 0.35) / 0.55, overshoot=1.25)
-            tb_out = 1.0 - smoothstep(1.95, 2.55, scene_t)
-            if tb_in * tb_out > 0.01:
-                tb_x = stage_cx + base_screen_w * lerp(0.14, 0.04, tb_in)
-                tb_y = stage_cy + base_screen_h * lerp(0.45, 0.412, tb_in) + float_y * 1.15
+                # Right wing phone (Light Blue) fans out during finale
+                right_wing_x = stage_cx + base_screen_w * lerp(0.12, 0.34, finale_morph)
+                right_wing_y = stage_cy + 22 + float_y * 0.7
                 paste_transformed(
                     canvas,
-                    callout_toolbar,
-                    (tb_x, tb_y),
-                    scale=lerp(0.70, 1.18, tb_in) * (0.85 + 0.15 * tb_out),
-                    angle_deg=lerp(-9.5, -3.8, tb_in),
-                    opacity=clamp(tb_in * tb_out),
+                    dev_light,
+                    (right_wing_x, right_wing_y),
+                    scale=lerp(0.70, 0.80, finale_morph),
+                    angle_deg=lerp(4.0, 12.5, finale_morph),
+                    opacity=clamp(enter * lerp(0.35, 0.90, finale_morph)),
                 )
 
-        # Draw headline, badge, and progress bar
-        draw_scene_copy(canvas, scene, scene_t, scene_idx, is_landscape, icon_img)
+                # Center hero phone transitions from Multi-Select Edit Mode -> Rich Dark Home for finale
+                center_dev = (
+                    blend_diagonal_wipe(dev_selection, dev_dark, finale_morph, (16, 185, 129))
+                    if not is_tablet
+                    else dev_selection
+                )
+                paste_transformed(
+                    canvas,
+                    center_dev,
+                    (stage_cx - base_screen_w * lerp(0.04, 0.0, finale_morph), stage_cy + float_y),
+                    scale=lerp(0.82, 0.95, enter),
+                    angle_deg=lerp(2.5, 0.0, finale_morph) + float_rot * 0.5,
+                    opacity=clamp(enter),
+                )
 
-        proc.stdin.write(canvas.tobytes())
+                # Liquid Glass Batch Toolbar callout card (visible in first half of Scene 5)
+                tb_in = ease_out_back((scene_t - 0.35) / 0.55, overshoot=1.25)
+                tb_out = 1.0 - smoothstep(1.95, 2.55, scene_t)
+                if tb_in * tb_out > 0.01:
+                    tb_x = stage_cx + base_screen_w * lerp(0.14, 0.04, tb_in)
+                    tb_y = stage_cy + base_screen_h * lerp(0.45, 0.412, tb_in) + float_y * 1.15
+                    paste_transformed(
+                        canvas,
+                        callout_toolbar,
+                        (tb_x, tb_y),
+                        scale=lerp(0.70, 1.18, tb_in) * (0.85 + 0.15 * tb_out),
+                        angle_deg=lerp(-9.5, -3.8, tb_in),
+                        opacity=clamp(tb_in * tb_out),
+                    )
 
-    proc.stdin.close()
-    stderr_bytes = proc.stderr.read() if proc.stderr else b""
-    ret = proc.wait()
-    if ret != 0:
-        raise RuntimeError(
-            f"ffmpeg failed for {name} (exit {ret}):\n{stderr_bytes.decode('utf-8', errors='replace')}"
-        )
+            # Draw headline, badge, and progress bar
+            draw_scene_copy(canvas, scene, scene_t, scene_idx, is_landscape, icon_img)
+
+            if preview_dir is not None:
+                canvas.convert("RGB").save(preview_dir / f"{out_path.stem}-{frame_idx:03d}.jpg", quality=90)
+            else:
+                encoder_stdin.write(canvas.tobytes())
+                if (frame_idx + 1) % (FPS * 4) == 0:
+                    print(f"[{name}] {frame_idx + 1}/{TOTAL_FRAMES} frames", flush=True)
+
+    if preview_dir is not None:
+        print(f"✓ Preview frames: {preview_dir / out_path.stem}-*.jpg")
+        return
     size_mb = out_path.stat().st_size / (1024 * 1024)
     print(f"✓ Rendered {name} -> {out_path.relative_to(ROOT_DIR)} ({size_mb:.2f} MB)")
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--target", action="append", choices=("iphone-65", "iphone-55", "ipad", "landscape", "portrait"),
+                        help="Render only this target (repeat to select several); default: all.")
+    parser.add_argument("--preview-dir", type=Path, help="Save representative still frames here instead of encoding videos.")
+    args = parser.parse_args()
+    if args.preview_dir is None and shutil.which(os.environ.get("FFMPEG", "ffmpeg")) is None:
+        print("FFmpeg not found. Install it on PATH or set FFMPEG to its executable.", file=sys.stderr)
+        return 1
+
     required_files = {
         "mobile_dark": ASSETS_DIR / "mobile_01_preview_dark.png",
         "mobile_light": ASSETS_DIR / "mobile_02_preview_light.png",
@@ -1362,15 +1388,21 @@ def main() -> int:
         ),
     ]
 
-    for name, w, h, kind, path in targets:
-        render_video_target(name, w, h, kind, path, raw_screens, icon_img)
+    selected = set(args.target or ("iphone-65", "iphone-55", "ipad", "landscape", "portrait"))
+    for key, (name, w, h, kind, path) in zip(("iphone-65", "iphone-55", "ipad", "landscape"), targets):
+        if key in selected or (key == "iphone-55" and "portrait" in selected):
+            render_video_target(name, w, h, kind, path, raw_screens, icon_img, args.preview_dir)
 
-    # Copy 1080x1920 portrait video to Android portrait target as well
-    ios_1080 = OUT_ROOT / "ios" / "en-US" / "app-preview-iphone-55-1080x1920.mp4"
-    android_portrait = OUT_ROOT / "android" / "en-US" / "promo-portrait-1080x1920.mp4"
-    android_portrait.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(ios_1080, android_portrait)
-    print(f"✓ Copied {android_portrait.relative_to(ROOT_DIR)}")
+    # The portrait composition is shared by the two promotional targets.
+    if "portrait" in selected and args.preview_dir is None:
+        ios_1080 = OUT_ROOT / "ios" / "en-US" / "app-preview-iphone-55-1080x1920.mp4"
+        android_portrait = OUT_ROOT / "android" / "en-US" / "promo-portrait-1080x1920.mp4"
+        android_portrait.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix=".promo-", dir=android_portrait.parent) as work_dir:
+            staging_path = Path(work_dir) / android_portrait.name
+            shutil.copy2(ios_1080, staging_path)
+            staging_path.replace(android_portrait)
+        print(f"✓ Copied {android_portrait.relative_to(ROOT_DIR)}")
 
     return 0
 
