@@ -19,6 +19,7 @@ export interface BookmarkPagerViewModel {
   bookmarkEditMode: boolean
   chipScrollViewRef: React.RefObject<ScrollView | null>
   pagerScrollX: any
+  pagerSynced: any
   pageWidth: number
   themeColors: ThemeColors
   onChipRowLayout: (event: LayoutChangeEvent) => void
@@ -67,6 +68,7 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel; extraM
             isActive={list.id === pager.selectedListId}
             index={index}
             pagerScrollX={pager.pagerScrollX}
+            pagerSynced={pager.pagerSynced}
             pageWidth={pager.pageWidth}
             onPress={() => pager.onSelectList(list.id, index)}
           />

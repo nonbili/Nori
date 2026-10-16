@@ -1,5 +1,5 @@
 import { Platform, Pressable, View } from 'react-native'
-import Animated, { interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
+import Animated, { interpolate, useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated'
 import { useThemeColors } from '@/lib/theme'
 import { useTypographyStyle } from '@/components/common/NoriText'
 
@@ -9,6 +9,8 @@ export interface ListChipProps {
   onPress: () => void
   // Pager-specific props
   pagerScrollX?: SharedValue<number>
+  // False until the pager has scrolled to the selected list
+  pagerSynced?: SharedValue<boolean>
   index?: number
   pageWidth?: number
 }
@@ -18,6 +20,7 @@ export const ListChip: React.FC<ListChipProps> = ({
   isActive,
   onPress,
   pagerScrollX,
+  pagerSynced,
   index = 0,
   pageWidth = 0,
 }) => {
@@ -34,16 +37,14 @@ export const ListChip: React.FC<ListChipProps> = ({
   const activeText = themeColors.onAccent
   const inactiveText = themeColors.contentMuted
 
-  // Drive the active indicator directly from scroll position if pagerScrollX is provided
-  const activeStyle = useAnimatedStyle(() => {
-    'worklet'
-    if (!animatedPagerScrollX || pageWidth === 0) {
-      return {
-        opacity: isActive ? 1 : 0,
-        position: 'absolute',
-        inset: 0,
-        borderRadius: 9999,
-      }
+  // Drive the active indicator directly from scroll position if pagerScrollX is
+  // provided. Until the pager has snapped to the selected list, pagerScrollX is
+  // still 0, so fall back to isActive: Reanimated keeps the style computed at
+  // mount as the view's React props, and a stale "first chip active" there can
+  // resurface on a later re-render (cold start showing SNS and Later both lit).
+  const active = useDerivedValue(() => {
+    if (!animatedPagerScrollX || pageWidth === 0 || !pagerSynced?.value) {
+      return !!isActive
     }
     const progress = interpolate(
       animatedPagerScrollX.value,
@@ -51,53 +52,34 @@ export const ListChip: React.FC<ListChipProps> = ({
       [0, 1, 0],
       'clamp',
     )
+    return progress > 0.5
+  }, [isActive, animatedPagerScrollX, pagerSynced, pageWidth, index])
+
+  const activeStyle = useAnimatedStyle(() => {
+    'worklet'
     return {
-      opacity: progress > 0.5 ? 1 : 0,
+      opacity: active.value ? 1 : 0,
       position: 'absolute',
       inset: 0,
       borderRadius: 9999,
     }
-  }, [isActive, animatedPagerScrollX, pageWidth, index])
+  }, [active])
 
   const inactiveStyle = useAnimatedStyle(() => {
     'worklet'
-    if (!animatedPagerScrollX || pageWidth === 0) {
-      return {
-        opacity: isActive ? 0 : 1,
-        position: 'absolute',
-        inset: 0,
-        borderRadius: 9999,
-        backgroundColor: inactiveBg,
-      }
-    }
-    const progress = interpolate(
-      animatedPagerScrollX.value,
-      [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth],
-      [0, 1, 0],
-      'clamp',
-    )
     return {
-      opacity: progress > 0.5 ? 0 : 1,
+      opacity: active.value ? 0 : 1,
       position: 'absolute',
       inset: 0,
       borderRadius: 9999,
       backgroundColor: inactiveBg,
     }
-  }, [isActive, animatedPagerScrollX, pageWidth, index, inactiveBg])
+  }, [active, inactiveBg])
 
   const textStyle = useAnimatedStyle(() => {
     'worklet'
-    if (!animatedPagerScrollX || pageWidth === 0) {
-      return { color: isActive ? activeText : inactiveText }
-    }
-    const progress = interpolate(
-      animatedPagerScrollX.value,
-      [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth],
-      [0, 1, 0],
-      'clamp',
-    )
-    return { color: progress > 0.5 ? activeText : inactiveText }
-  }, [isActive, animatedPagerScrollX, pageWidth, index, activeText, inactiveText])
+    return { color: active.value ? activeText : inactiveText }
+  }, [active, activeText, inactiveText])
 
   return (
     <View className="items-center gap-2">

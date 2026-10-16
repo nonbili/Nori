@@ -70,6 +70,7 @@ export const BookmarkPager: React.FC<{
   const pagerRef = useAnimatedRef<Animated.ScrollView>()
   const chipScrollViewRef = useRef<ScrollView>(null)
   const pagerScrollX = useSharedValue(0)
+  const pagerSynced = useSharedValue(false)
   const pagerIndexRef = useRef(-1)
   const suppressScrollSyncRef = useRef(false)
   const animateNextPagerScrollRef = useRef(true)
@@ -233,6 +234,9 @@ export const BookmarkPager: React.FC<{
       if (pagerIndexRef.current === -1) {
         pagerIndexRef.current = selectedListIndex
         pagerRef.current?.scrollTo({ x: selectedListIndex * pageWidth, animated: false })
+        // Don't wait for the scroll event: the chips switch to pagerScrollX now
+        pagerScrollX.value = selectedListIndex * pageWidth
+        pagerSynced.value = true
         return
       }
 
@@ -246,7 +250,7 @@ export const BookmarkPager: React.FC<{
         pagerRef.current?.scrollTo({ x: selectedListIndex * pageWidth, animated: false })
       }
     }
-  }, [pageWidth, pagerRef, selectedListIndex])
+  }, [pageWidth, pagerRef, pagerScrollX, pagerSynced, selectedListIndex])
 
   useEffect(() => {
     if (!bookmarkEditMode) {
@@ -403,6 +407,7 @@ export const BookmarkPager: React.FC<{
     bookmarkEditMode,
     chipScrollViewRef,
     pagerScrollX,
+    pagerSynced,
     pageWidth,
     themeColors,
     onChipRowLayout,
