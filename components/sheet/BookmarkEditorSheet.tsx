@@ -13,7 +13,7 @@ import { settings$ } from '@/states/settings'
 import { canLoadPagesForTitles } from '@/lib/rendered-titles'
 import { ui$ } from '@/states/ui'
 import { getMeta } from '@/lib/bookmark'
-import { getAllTags, getVisibleLists } from '@/lib/nori-data'
+import { getAllTags, getVisibleLists, normalizeTags } from '@/lib/nori-data'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { showToast } from '@/lib/toast'
 import { parseHttpUrl } from '@/lib/url'
@@ -57,6 +57,9 @@ export const BookmarkEditorSheet: React.FC = () => {
     if (editor?.url) return retainEditorPreview(editor.url)
   }, [editor?.url])
   useEffect(() => { setPreviewError('') }, [editor?.id, editor?.url])
+  // The sheet stays mounted while closed, so a half-typed tag would carry into the next bookmark.
+  const editorOpen = editor != null
+  useEffect(() => { setTagInput('') }, [editor?.id, editorOpen])
   const bookmarks = useValue(bookmarks$.bookmarks)
   const editorTags = editor?.tags ?? []
   const tagSuggestions = getAllTags(bookmarks).filter((tag) => {
@@ -156,7 +159,8 @@ export const BookmarkEditorSheet: React.FC = () => {
       title,
       icon,
       ...(editor.previewSource ? { previewSource: previewSourceOverride(editor.previewSource) ?? ('default' as const) } : {}),
-      tags: editor.tags,
+      // Keep a tag still sitting in the input, which only becomes a chip on submit or a separator.
+      tags: normalizeTags([...editor.tags, tagInput]),
       note: editor.note,
     }
 
