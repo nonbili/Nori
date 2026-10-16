@@ -39,7 +39,8 @@ Published videos:
 - [Portrait promo / Short](https://www.youtube.com/watch?v=jwrhS73qNB4)
 
 Google Play has one video URL per localized listing. Each locale's `video.txt`
-uses the landscape promo; the portrait version remains available for sharing.
+uses the portrait promo to match the phone interface; the landscape version
+remains available for wider promotional placements.
 
 ## App Store previews
 
