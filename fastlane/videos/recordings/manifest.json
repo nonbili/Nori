@@ -1,0 +1,110 @@
+{
+  "iphone-65": {
+    "recording": "iphone-65.mp4",
+    "device": "Nori Preview iPhone",
+    "recorded_at": "2026-10-16T12:38:41.685005+00:00",
+    "app_version": "0.2.5",
+    "scenes": [
+      "browse",
+      "search",
+      "annotate",
+      "themes",
+      "batch"
+    ],
+    "segments": [
+      [
+        10,
+        15
+      ],
+      [
+        25,
+        30
+      ],
+      [
+        38.5,
+        43.5
+      ],
+      [
+        48.5,
+        53.5
+      ],
+      [
+        58,
+        61.4
+      ]
+    ],
+    "reviewed": true
+  },
+  "iphone-55": {
+    "recording": "iphone-55.mp4",
+    "device": "Nori Preview SE",
+    "recorded_at": "2026-10-16T12:33:36.705232+00:00",
+    "app_version": "0.2.5",
+    "scenes": [
+      "browse",
+      "search",
+      "annotate",
+      "themes",
+      "batch"
+    ],
+    "segments": [
+      [
+        8.5,
+        13.5
+      ],
+      [
+        18,
+        23
+      ],
+      [
+        30,
+        35.5
+      ],
+      [
+        38.5,
+        43
+      ],
+      [
+        46,
+        48.7
+      ]
+    ],
+    "reviewed": true
+  },
+  "ipad": {
+    "recording": "ipad.mp4",
+    "device": "Nori Preview iPad",
+    "recorded_at": "2026-10-16T12:35:38.532508+00:00",
+    "app_version": "0.2.5",
+    "scenes": [
+      "browse",
+      "search",
+      "annotate",
+      "themes",
+      "batch"
+    ],
+    "segments": [
+      [
+        9,
+        14
+      ],
+      [
+        26,
+        31
+      ],
+      [
+        41.5,
+        46.5
+      ],
+      [
+        54,
+        59
+      ],
+      [
+        66,
+        70.8
+      ]
+    ],
+    "reviewed": true
+  }
+}

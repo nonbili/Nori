@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
-"""Render Nori promotional motion graphics from committed UI screenshots.
+"""Render Google Play promotional motion graphics from committed UI screenshots.
 
-Outputs: 20-second, 30 fps H.264 videos for iPhone-sized portrait (886x1920
-and 1080x1920), iPad-sized portrait (1200x1600), and landscape (1920x1080).
-The 1080x1920 composition is shared with the Android portrait target.
+Outputs: 20-second, 30 fps H.264 landscape (1920x1080) and portrait (1080x1920)
+videos. For iOS previews made from actual app recordings, use
+scripts/generate-app-previews.py instead.
 
-Five scenes showcase previews, annotation, search, personalization (or lists
-on iPad), and batch organization. These are marketing mockups, not recorded
-app interactions or submission-ready App Store previews.
-
-See fastlane/videos/README.md for setup, preview commands, and limitations.
+See fastlane/videos/README.md for setup and usage.
 """
 
 import argparse
@@ -1325,7 +1321,7 @@ def render_video_target(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--target", action="append", choices=("iphone-65", "iphone-55", "ipad", "landscape", "portrait"),
+    parser.add_argument("--target", action="append", choices=("landscape", "portrait"),
                         help="Render only this target (repeat to select several); default: all.")
     parser.add_argument("--preview-dir", type=Path, help="Save representative still frames here instead of encoding videos.")
     args = parser.parse_args()
@@ -1357,52 +1353,17 @@ def main() -> int:
     raw_screens = {k: Image.open(p).convert("RGBA") for k, p in required_files.items()}
     icon_img = Image.open(ICON_PATH).convert("RGBA")
 
-    targets = [
-        (
-            "iOS App Preview — iPhone 6.5\" (886x1920)",
-            886,
-            1920,
-            "phone",
-            OUT_ROOT / "ios" / "en-US" / "app-preview-iphone-65-886x1920.mp4",
-        ),
-        (
-            "iOS App Preview — iPhone 5.5\" (1080x1920)",
-            1080,
-            1920,
-            "phone",
-            OUT_ROOT / "ios" / "en-US" / "app-preview-iphone-55-1080x1920.mp4",
-        ),
-        (
-            "iOS App Preview — iPad Pro (1200x1600)",
-            1200,
-            1600,
-            "tablet",
-            OUT_ROOT / "ios" / "en-US" / "app-preview-ipad-1200x1600.mp4",
-        ),
-        (
-            "Google Play Promo — Landscape 16:9 (1920x1080)",
-            1920,
-            1080,
-            "phone",
-            OUT_ROOT / "android" / "en-US" / "promo-landscape-1920x1080.mp4",
-        ),
-    ]
-
-    selected = set(args.target or ("iphone-65", "iphone-55", "ipad", "landscape", "portrait"))
-    for key, (name, w, h, kind, path) in zip(("iphone-65", "iphone-55", "ipad", "landscape"), targets):
-        if key in selected or (key == "iphone-55" and "portrait" in selected):
-            render_video_target(name, w, h, kind, path, raw_screens, icon_img, args.preview_dir)
-
-    # The portrait composition is shared by the two promotional targets.
-    if "portrait" in selected and args.preview_dir is None:
-        ios_1080 = OUT_ROOT / "ios" / "en-US" / "app-preview-iphone-55-1080x1920.mp4"
-        android_portrait = OUT_ROOT / "android" / "en-US" / "promo-portrait-1080x1920.mp4"
-        android_portrait.parent.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(prefix=".promo-", dir=android_portrait.parent) as work_dir:
-            staging_path = Path(work_dir) / android_portrait.name
-            shutil.copy2(ios_1080, staging_path)
-            staging_path.replace(android_portrait)
-        print(f"✓ Copied {android_portrait.relative_to(ROOT_DIR)}")
+    targets = {
+        "landscape": (1920, 1080, "promo-landscape-1920x1080.mp4"),
+        "portrait": (1080, 1920, "promo-portrait-1080x1920.mp4"),
+    }
+    for key in dict.fromkeys(args.target or targets):
+        width, height, filename = targets[key]
+        render_video_target(
+            f"Google Play Promo — {key}", width, height, "phone",
+            OUT_ROOT / "android" / "en-US" / filename,
+            raw_screens, icon_img, args.preview_dir,
+        )
 
     return 0
 

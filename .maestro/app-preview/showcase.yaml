@@ -1,0 +1,68 @@
+appId: jp.nonbili.nori
+---
+# These PNGs mark timing boundaries in the screen recording; they are not used
+# as video frames. Every clip comes from the running native app.
+- tapOn:
+    id: list_chip_Dev & Web
+- takeScreenshot: ${MARKER_DIR}/browse-start
+- tapOn:
+    id: list_chip_Design
+- tapOn:
+    id: list_chip_Reading
+- tapOn:
+    id: list_chip_Dev & Web
+- evalScript: ${ (function() { var end = Date.now() + 2000; while (Date.now() < end) {} })() }
+- takeScreenshot: ${MARKER_DIR}/browse-end
+
+- tapOn:
+    id: list_chip_Dev & Web
+- takeScreenshot: ${MARKER_DIR}/search-start
+- tapOn:
+    id: drawer_button
+- tapOn:
+    id: list_chip_All
+- tapOn: Search...
+- inputText: design
+- pressKey: Enter
+- assertVisible: '(?s).*Material Design.*'
+- evalScript: ${ (function() { var end = Date.now() + 2000; while (Date.now() < end) {} })() }
+- takeScreenshot: ${MARKER_DIR}/search-end
+- tapOn:
+    point: ${DRAWER_BACK_POINT}
+
+- tapOn:
+    id: list_chip_Dev & Web
+- takeScreenshot: ${MARKER_DIR}/annotate-start
+- longPressOn: '(?s).*MDN Web Docs.*'
+- tapOn: Edit
+- tapOn: design
+- scrollUntilVisible:
+    element:
+      text: Save
+    direction: DOWN
+    timeout: 10000
+    centerElement: false
+- tapOn: Save
+- evalScript: ${ (function() { var end = Date.now() + 2000; while (Date.now() < end) {} })() }
+- takeScreenshot: ${MARKER_DIR}/annotate-end
+
+- tapOn:
+    id: toolbar_settings_button
+- tapOn: '(?s).*Appearance.*'
+- takeScreenshot: ${MARKER_DIR}/themes-start
+- tapOn: Light
+- tapOn: AMOLED
+- evalScript: ${ (function() { var end = Date.now() + 2000; while (Date.now() < end) {} })() }
+- takeScreenshot: ${MARKER_DIR}/themes-end
+- tapOn: Back
+- tapOn: Close
+
+- tapOn:
+    id: list_chip_Dev & Web
+- takeScreenshot: ${MARKER_DIR}/batch-start
+- tapOn:
+    id: edit_mode_button
+- tapOn: '(?s).*MDN Web Docs.*'
+- tapOn: '(?s).*CSS-Tricks.*'
+- evalScript: ${ (function() { var end = Date.now() + 2000; while (Date.now() < end) {} })() }
+- takeScreenshot: ${MARKER_DIR}/batch-end

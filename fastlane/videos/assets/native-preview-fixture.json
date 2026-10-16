@@ -1,0 +1,162 @@
+{
+  "lists": [
+    {
+      "id": "preview-work",
+      "name": "Dev & Web"
+    },
+    {
+      "id": "preview-design",
+      "name": "Design"
+    },
+    {
+      "id": "preview-reading",
+      "name": "Reading"
+    }
+  ],
+  "bookmarks": [
+    {
+      "list": "work",
+      "url": "https://developer.mozilla.org/en-US/",
+      "title": "MDN Web Docs — Build for the open web",
+      "tags": [
+        "web",
+        "reference"
+      ],
+      "note": "A useful reference for the next project.",
+      "description": "The MDN Web Docs site provides information about Open Web technologies including HTML, CSS, and APIs for both Web sites and progressive web apps.",
+      "imageUrl": "https://developer.mozilla.org/mdn-social-image.46ac2375.png"
+    },
+    {
+      "list": "work",
+      "url": "https://css-tricks.com/",
+      "title": "CSS-Tricks — Ideas for the web",
+      "tags": [
+        "css",
+        "design"
+      ],
+      "note": "Try the grid layout ideas.",
+      "description": "CSS-Tricks is where folks around the world come to learn about front-end code and everything related to it, including HTML, CSS, and yes, CSS.",
+      "imageUrl": "https://i0.wp.com/css-tricks.com/wp-content/uploads/2019/12/css-tricks-logo-gradient-outline.png"
+    },
+    {
+      "list": "work",
+      "url": "https://web.dev/",
+      "title": "web.dev — Build a better web",
+      "tags": [
+        "web",
+        "performance"
+      ],
+      "note": "Keep a few practical patterns close.",
+      "description": "Guidance to build modern web experiences that work in every browser.\n",
+      "imageUrl": "https://web.dev/images/social-wide.jpg"
+    },
+    {
+      "list": "work",
+      "url": "https://www.w3.org/",
+      "title": "W3C — Web standards",
+      "tags": [
+        "web",
+        "reference"
+      ],
+      "note": "The foundations of an open web.",
+      "description": "The World Wide Web Consortium (W3C) develops standards and guidelines to help everyone build a web based on the principles of accessibility, internationalization, privacy and security.",
+      "imageUrl": "https://www.w3.org/assets/website-2021/images/w3c-opengraph-image.png"
+    },
+    {
+      "list": "design",
+      "url": "https://m3.material.io/",
+      "title": "Material Design — Thoughtful interfaces",
+      "tags": [
+        "design",
+        "ui"
+      ],
+      "note": "Explore color, spacing, and motion.",
+      "description": "Material Design 3 - Google's open-source design system, provides comprehensive guidelines, styles, &  components to create user-friendly interfaces.",
+      "imageUrl": "https://m3.material.io/static/assets/m3-social.jpg"
+    },
+    {
+      "list": "design",
+      "url": "https://www.figma.com/blog/",
+      "title": "Figma — A place for design",
+      "tags": [
+        "design",
+        "inspiration"
+      ],
+      "note": "Collect ideas before starting a new project.",
+      "description": "Welcome to Shortcut, Figma’s blog for telling stories about people, and the priorities, plans, and pivots they discover along the path of bringing new ideas to life.",
+      "imageUrl": "https://cdn.sanity.io/images/599r6htc/regionalized/69ca22dc90c2f095b57adec1a61a37ccc5107895-1200x630.png?w=1200&q=70&fit=max&auto=format"
+    },
+    {
+      "list": "design",
+      "url": "https://alistapart.com/",
+      "title": "A List Apart — Design for people",
+      "tags": [
+        "design",
+        "reading"
+      ],
+      "note": "Make room for thoughtful details.",
+      "description": "For people who make websites",
+      "imageUrl": "https://s0.wp.com/_si/?t=eyJpbWciOiJodHRwczpcL1wvaTAud3AuY29tXC9hbGlzdGFwYXJ0LmNvbVwvd3AtY29udGVudFwvdXBsb2Fkc1wvMjAxOVwvMDNcL2Nyb3BwZWQtaWNvbl9uYXZpZ2F0aW9uLWxhdXJlbC01MTIuanBnP2ZpdD01MTIlMkM1MTImcXVhbGl0eT04OSZzc2w9MSIsInR4dCI6IkEgTGlzdCBBcGFydCIsInRlbXBsYXRlIjoiZWRnZSIsImZvbnQiOiIiLCJibG9nX2lkIjoxNTgwOTQ3MjZ9.0oP5GNj3vHR_yLJaXkr_AaWMuS_ItN_HPB-deU1HBBgMQ"
+    },
+    {
+      "list": "design",
+      "url": "https://www.smashingmagazine.com/",
+      "title": "Smashing Magazine — Practical design",
+      "tags": [
+        "design",
+        "reading"
+      ],
+      "note": "Small improvements make a difference.",
+      "description": "Magazine on CSS, JavaScript, front-end, accessibility, UX and design. For developers, designers and front-end engineers.",
+      "imageUrl": "https://smashingmagazine.com/images/smashing-homepage.png"
+    },
+    {
+      "list": "reading",
+      "url": "https://www.nasa.gov/",
+      "title": "NASA — A little room for curiosity",
+      "tags": [
+        "science",
+        "inspiration"
+      ],
+      "note": "Something new to explore this weekend.",
+      "description": "NASA.gov brings you the latest news, images and videos from America's space agency, pioneering the future in space exploration, scientific discovery and aeronautics research.",
+      "imageUrl": "https://www.nasa.gov/wp-content/uploads/2018/07/174116main_2006_01777_highres.jpg"
+    },
+    {
+      "list": "reading",
+      "url": "https://standardebooks.org/",
+      "title": "Standard Ebooks — Read something timeless",
+      "tags": [
+        "books",
+        "reading"
+      ],
+      "note": "A few good books for quiet evenings.",
+      "description": "Free and liberated ebooks, carefully produced for the true book lover. Download free ebooks with professional-quality formatting and typography, in formats compatible with your ereader.",
+      "imageUrl": "https://standardebooks.org/images/logo.png"
+    },
+    {
+      "list": "reading",
+      "url": "https://openlibrary.org/",
+      "title": "Open Library — Discover your next book",
+      "tags": [
+        "books",
+        "reference"
+      ],
+      "note": "Build a reading list, one book at a time.",
+      "description": "Open Library is an open, editable library catalog, building towards a web page for every book ever published. Read, borrow, and discover more than 3M books for free.",
+      "imageUrl": ""
+    },
+    {
+      "list": "reading",
+      "url": "https://www.smithsonianmag.com/",
+      "title": "Smithsonian Magazine — Stories to keep",
+      "tags": [
+        "science",
+        "reading"
+      ],
+      "note": "Ideas worth coming back to.",
+      "description": "",
+      "imageUrl": ""
+    }
+  ]
+}
