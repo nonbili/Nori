@@ -1,0 +1,3 @@
+- Tag badges on preview cards and tag autocomplete in the editor
+- Fall back to a page screenshot when a cover image fails to load
+- Fix window flashing when opening a dialog on Linux
