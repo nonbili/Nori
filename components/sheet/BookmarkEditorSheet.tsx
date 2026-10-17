@@ -89,8 +89,10 @@ export const BookmarkEditorSheet: React.FC = () => {
   // The menu opens upward from the tag input: the keyboard keeps the focused input in view, but
   // not anything under it. It is laid out against the whole sheet, as Android drops touches on a
   // child drawn outside its parent's bounds.
-  const [tagSectionY, setTagSectionY] = useState(0)
-  const [tagInputY, setTagInputY] = useState(0)
+  // The tag input's top within the sheet content. Measured rather than summed from onLayout y values, which
+  // react-native-web only reports on resize, so they go stale when the preview above loads and pushes the input down.
+  const [tagInputTop, setTagInputTop] = useState(0)
+  const sheetContentRef = useRef<React.ComponentRef<typeof View>>(null)
   const [sheetContentHeight, setSheetContentHeight] = useState(0)
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (blurTimerRef.current) clearTimeout(blurTimerRef.current) }, [])
@@ -119,6 +121,9 @@ export const BookmarkEditorSheet: React.FC = () => {
   }
 
   const tagInputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
+  const measureTagInput = () => {
+    if (sheetContentRef.current) tagInputRef.current?.measureLayout(sheetContentRef.current, (_x, y) => setTagInputTop(y))
+  }
   const commitTagInput = () => {
     // The input stays focused after a submit so several tags can go in a row; an empty submit
     // is the way out of it.
@@ -250,7 +255,14 @@ export const BookmarkEditorSheet: React.FC = () => {
   return (
     <BaseCenterModal onClose={onClose}>
       <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: Math.max(220, height - keyboardHeight - 120) }}>
-      <View className="gap-5 p-6" onLayout={(event) => setSheetContentHeight(event.nativeEvent.layout.height)}>
+      <View
+        ref={sheetContentRef}
+        className="gap-5 p-6"
+        onLayout={(event) => {
+          setSheetContentHeight(event.nativeEvent.layout.height)
+          measureTagInput()
+        }}
+      >
         <NoriText className="text-xl font-semibold text-content">
           {editor.id ? t('bookmarks.edit') : t('bookmarks.add')}
         </NoriText>
@@ -306,7 +318,7 @@ export const BookmarkEditorSheet: React.FC = () => {
           </View> : null}
           {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}
         </View> : null}
-        <View className="gap-2" onLayout={(event) => setTagSectionY(event.nativeEvent.layout.y)}>
+        <View className="gap-2">
           {editor.tags.length > 0 && (
             <View className="flex-row flex-wrap gap-2">
               {editor.tags.map((tag) => (
@@ -324,12 +336,13 @@ export const BookmarkEditorSheet: React.FC = () => {
           <NoriTextInput
             ref={tagInputRef}
             value={tagInput}
-            onLayout={(event) => setTagInputY(event.nativeEvent.layout.y)}
+            onLayout={measureTagInput}
             onChangeText={onChangeTagInput}
             onSubmitEditing={commitTagInput}
             onKeyPress={(event) => onTagInputKeyPress(event.nativeEvent.key, () => event.preventDefault())}
             onFocus={() => {
               if (blurTimerRef.current) clearTimeout(blurTimerRef.current)
+              measureTagInput()
               setTagInputFocused(true)
             }}
             // A click on the web blurs the input before the menu row sees it, so hide a moment later.
@@ -403,7 +416,7 @@ export const BookmarkEditorSheet: React.FC = () => {
             query={tagQuery}
             highlighted={highlightedTag}
             onPick={pickTagSuggestion}
-            style={{ position: 'absolute', left: 24, right: 24, bottom: sheetContentHeight - tagSectionY - tagInputY + 6 }}
+            style={{ position: 'absolute', left: 24, right: 24, bottom: sheetContentHeight - tagInputTop + 6 }}
           />
         ) : null}
       </View>
