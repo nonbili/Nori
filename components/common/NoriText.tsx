@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, type ComponentRef } from 'react'
 import {
   Platform,
   StyleSheet,
@@ -13,7 +13,7 @@ import { useValue } from '@legendapp/state/react'
 import { settings$ } from '@/states/settings'
 import { fontFamilyForPlatform, normalizeFontFamily, normalizeFontScale } from '@/lib/typography'
 
-export function useTypographyStyle(style?: TextStyle): TextStyle {
+export function useTypographyStyle(style?: TextStyle | null): TextStyle {
   const scale = normalizeFontScale(useValue(settings$.fontScale))
   const family = normalizeFontFamily(useValue(settings$.fontFamily))
   return {
@@ -23,7 +23,10 @@ export function useTypographyStyle(style?: TextStyle): TextStyle {
   }
 }
 
-const StyledText = forwardRef<Text, TextProps>(({ style, ...props }, ref) => {
+type TextRef = ComponentRef<typeof Text>
+type TextInputRef = ComponentRef<typeof TextInput>
+
+const StyledText = forwardRef<TextRef, TextProps>(({ style, ...props }, ref) => {
   const typography = useTypographyStyle(StyleSheet.flatten(style))
   return <Text ref={ref} {...props} style={[style, typography]} />
 })
@@ -34,18 +37,18 @@ const withDefaultSize = (className = '') =>
     ? className
     : `text-nori-default ${className}`
 
-export const NoriText = forwardRef<Text, TextProps>(({ className, ...props }, ref) => (
+export const NoriText = forwardRef<TextRef, TextProps>(({ className, ...props }, ref) => (
   <InteropText ref={ref} {...props} className={Platform.OS === 'web' ? withDefaultSize(className) : className} />
 ))
 NoriText.displayName = 'NoriText'
 
-const StyledInput = forwardRef<TextInput, TextInputProps>(({ style, ...props }, ref) => {
+const StyledInput = forwardRef<TextInputRef, TextInputProps>(({ style, ...props }, ref) => {
   const typography = useTypographyStyle(StyleSheet.flatten(style))
   return <TextInput ref={ref} {...props} style={[style, typography]} />
 })
 StyledInput.displayName = 'StyledNoriTextInput'
 const InteropInput = cssInterop(StyledInput, { className: 'style' })
-export const NoriTextInput = forwardRef<TextInput, TextInputProps>(({ className, ...props }, ref) => (
+export const NoriTextInput = forwardRef<TextInputRef, TextInputProps>(({ className, ...props }, ref) => (
   <InteropInput ref={ref} {...props} className={Platform.OS === 'web' ? withDefaultSize(className) : className} />
 ))
 NoriTextInput.displayName = 'NoriTextInput'

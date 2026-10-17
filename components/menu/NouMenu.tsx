@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ComponentRef, type ReactNode } from 'react'
 import { Modal, Pressable as NativePressable, ScrollView, useWindowDimensions, View } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons, { type MaterialIconsIconName } from '@react-native-vector-icons/material-icons'
@@ -32,7 +32,7 @@ export const NouMenu: React.FC<{
   const themeColors = useThemeColors()
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
   const insets = useSafeAreaInsets()
-  const triggerRef = useRef<View>(null)
+  const triggerRef = useRef<ComponentRef<typeof View>>(null)
   const menuWidth = 220
   const itemHeight = 44
   const menuPadding = 16

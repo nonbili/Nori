@@ -258,7 +258,7 @@ export const BookmarkListPage = memo(({
               ? <EditModeHint iconColor={actions.iconAccentColor} canReorder={false} />
               : listBookmarks.length === 0
                 ? <EmptyBookmarksState listName={list.name} iconColor={actions.iconSubtleColor} />
-                : null
+                : undefined
           }
           ListFooterComponent={
             bookmarkEditMode && availableBookmarks.length ? (
@@ -266,7 +266,7 @@ export const BookmarkListPage = memo(({
                 <SectionLabel title={t('bookmarks.hiddenInList')} subtitle={t('bookmarks.hiddenInListHint')} />
                 <HiddenBookmarksGrid items={availableBookmarks} containerWidth={width} />
               </View>
-            ) : null
+            ) : undefined
           }
           getItemLayout={preview && !bookmarkEditMode ? undefined : getItemLayout}
           onScrollToIndexFailed={({ index, averageItemLength }) => {

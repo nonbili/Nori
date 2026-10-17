@@ -15,9 +15,9 @@ import type { BookmarkRecord } from '@/states/bookmarks'
 import type { ThemeColors } from '@/lib/theme'
 
 export interface BookmarkPagerViewModel {
-  lists: Array<{ id: string; name: string }>
+  lists: { id: string; name: string }[]
   bookmarkEditMode: boolean
-  chipScrollViewRef: React.RefObject<ScrollView | null>
+  chipScrollViewRef: React.RefObject<React.ComponentRef<typeof ScrollView> | null>
   pagerScrollX: any
   pagerSynced: any
   pageWidth: number

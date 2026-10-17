@@ -175,6 +175,7 @@ export const PreviewPageView = forwardRef<PreviewPageViewHandle, PreviewPageView
     )
   },
 )
+PreviewPageView.displayName = 'PreviewPageView'
 
 /** Blocking ads needs the app's own WebView. */
 export const PreviewPageOptions: React.FC<{ onChanged: () => void }> = () => null

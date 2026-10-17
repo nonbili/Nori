@@ -4,7 +4,7 @@ import { setPreviewCapture, setPreviewRenderedMeta } from '@/lib/bookmark-previe
 import { resolveTitleWithWebView } from '@/lib/webview-title-resolver'
 import { applyRenderedTitle } from '@/lib/title-backfill'
 import { useValue } from '@legendapp/state/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ComponentRef } from 'react'
 import { AppState, Platform, StyleSheet, View, useWindowDimensions } from 'react-native'
 import { getUserAgent } from '@/lib/useragent'
 import { NoriWebView, type NoriWebViewMessageEvent } from '@/modules/nori-view'
@@ -32,7 +32,7 @@ const PREVIEW_TIMEOUT_MS = 15000
  */
 export const WebViewTitleResolver: React.FC<{ canvasColor?: string }> = ({ canvasColor = '#fff' }) => {
   const { width } = useWindowDimensions()
-  const captureView = useRef<View>(null)
+  const captureView = useRef<ComponentRef<typeof View>>(null)
   const active = useValue(webViewResolver$.active)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 

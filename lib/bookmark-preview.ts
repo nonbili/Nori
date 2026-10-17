@@ -353,6 +353,6 @@ export async function warmShownPreviews(items: { url: string; source: PreviewSou
     } catch {}
   })
   let timer: ReturnType<typeof setTimeout> | undefined
-  await Promise.race([Promise.all(reads), new Promise((resolve) => (timer = setTimeout(resolve, timeoutMs)))])
+  await Promise.race([Promise.all(reads), new Promise<void>((resolve) => (timer = setTimeout(resolve, timeoutMs)))])
   clearTimeout(timer)
 }

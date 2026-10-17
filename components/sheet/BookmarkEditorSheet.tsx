@@ -118,7 +118,7 @@ export const BookmarkEditorSheet: React.FC = () => {
     }
   }
 
-  const tagInputRef = useRef<TextInput>(null)
+  const tagInputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const commitTagInput = () => {
     // The input stays focused after a submit so several tags can go in a row; an empty submit
     // is the way out of it.
@@ -154,7 +154,7 @@ export const BookmarkEditorSheet: React.FC = () => {
     ui$.bookmarkEditor.set({ ...editor, tags: editor.tags.filter((item) => item !== tag) })
   }
 
-  const listScrollRef = useRef<ScrollView>(null)
+  const listScrollRef = useRef<React.ComponentRef<typeof ScrollView>>(null)
   const listItemXRef = useRef<Record<string, number>>({})
   const didInitialScrollRef = useRef(false)
   const activeEditorKeyRef = useRef('')

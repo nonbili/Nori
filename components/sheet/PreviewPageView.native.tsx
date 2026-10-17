@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useImperativeHandle, useRef, type ComponentRef } from 'react'
 import { Platform, Pressable, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +16,7 @@ import { READ_PAGE_META_SCRIPT, type WebViewTitleResult } from '@/lib/webview-ti
 export const PreviewPageView = forwardRef<PreviewPageViewHandle, PreviewPageViewProps>(
   ({ url, onLoadStart, onLoadEnd }, ref) => {
     const webView = useRef<NoriWebViewHandle>(null)
-    const captureView = useRef<View>(null)
+    const captureView = useRef<ComponentRef<typeof View>>(null)
     // The page can post on its own; a message only answers the reads asked for.
     const reads = useRef<((page: PreviewPageRead) => void)[]>([])
 
@@ -72,6 +72,7 @@ export const PreviewPageView = forwardRef<PreviewPageViewHandle, PreviewPageView
     )
   },
 )
+PreviewPageView.displayName = 'PreviewPageView'
 
 export const PreviewPageOptions: React.FC<{ onChanged: () => void }> = ({ onChanged }) => {
   const { t } = useTranslation()

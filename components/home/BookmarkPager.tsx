@@ -1,7 +1,7 @@
 import { previewSourceOverride } from '@/lib/bookmark-preview-types'
-import { InteractionManager, ScrollView, Share, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
+import { ScrollView, Share, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentRef } from 'react'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated'
@@ -68,7 +68,7 @@ export const BookmarkPager: React.FC<{
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const selectedBookmarkIds = useValue(ui$.selectedBookmarkIds)
   const pagerRef = useAnimatedRef<Animated.ScrollView>()
-  const chipScrollViewRef = useRef<ScrollView>(null)
+  const chipScrollViewRef = useRef<ComponentRef<typeof ScrollView>>(null)
   const pagerScrollX = useSharedValue(0)
   const pagerSynced = useSharedValue(false)
   const pagerIndexRef = useRef(-1)
@@ -283,12 +283,12 @@ export const BookmarkPager: React.FC<{
 
   useEffect(() => {
     setRenderNearbyPages(false)
-    const interaction = InteractionManager.runAfterInteractions(() => {
+    const frame = requestAnimationFrame(() => {
       setRenderNearbyPages(true)
     })
 
     return () => {
-      interaction.cancel()
+      cancelAnimationFrame(frame)
     }
   }, [selectedListIndex])
 

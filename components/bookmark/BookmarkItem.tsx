@@ -142,7 +142,7 @@ export const BookmarkTile = memo(({
   const tags = getTags(bookmark)
   const [menuOpen, setMenuOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
-  const tileRef = useRef<View>(null)
+  const tileRef = useRef< React.ComponentRef<typeof View> >(null)
   const isMounted = useRef(true)
 
   useEffect(() => {
