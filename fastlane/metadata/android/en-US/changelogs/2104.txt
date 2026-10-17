@@ -1,0 +1,4 @@
+- Tag badges on preview cards and tag autocomplete in the editor
+- Fall back to a page screenshot when a cover image fails to load
+- Smoother drag-and-drop sorting with auto-scrolling at list edges
+- Bug fixes and performance improvements

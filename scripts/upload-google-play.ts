@@ -50,6 +50,16 @@ if (envFlag('PREBUILD', !envFlag('SKIP_BUILD', false))) {
 }
 
 if (!envFlag('SKIP_BUILD', false)) {
+  const buildGradle = await Bun.file(resolve(repoRoot, 'android/app/build.gradle')).text()
+  const expectedVersionCode = (pkg.versionCode * 100) + 4
+  if (
+    Number(buildGradle.match(/\bversionCode\s+(\d+)/)?.[1]) !== expectedVersionCode
+    || /\bsplits\s*\{/.test(buildGradle)
+    || !/signingConfig\s+signingConfigs\.release\b/.test(buildGradle)
+  ) {
+    fail('Android project is not configured for Google Play. Rerun with PREBUILD=1 to generate Play signing, the bundle version code, and disabled APK splits.')
+  }
+
   const gradleArgs = ['bundleRelease']
   for (const name of ['NB_UPLOAD_STORE_FILE', 'NB_UPLOAD_STORE_PASSWORD', 'NB_UPLOAD_KEY_ALIAS', 'NB_UPLOAD_KEY_PASSWORD']) {
     const value = process.env[name]

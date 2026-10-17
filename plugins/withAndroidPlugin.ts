@@ -2,9 +2,9 @@ import { ConfigPlugin } from '@expo/config-plugins'
 import { withAndroidManifest } from '@expo/config-plugins'
 import { withAppBuildGradle } from '@expo/config-plugins/build/plugins/android-plugins.js'
 
-const googlePlayBuild = !!process.env.GOOGLE_PLAY_BUILD
-
 const withAndroidSigningConfig: ConfigPlugin = (config) => {
+  const googlePlayBuild = !!process.env.GOOGLE_PLAY_BUILD
+
   config = withAndroidManifest(config, (config) => {
     const application = config.modResults.manifest.application?.[0]
     if (!application) {
