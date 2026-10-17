@@ -2,7 +2,7 @@ import { previewSourceOverride } from '@/lib/bookmark-preview-types'
 import { retainEditorPreview } from '@/lib/bookmark-preview'
 import { useEffect, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
-import { Keyboard, ScrollView, Pressable, View, useWindowDimensions } from 'react-native'
+import { Keyboard, Platform, ScrollView, Pressable, TextInput, View, useWindowDimensions } from 'react-native'
 import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
@@ -21,6 +21,18 @@ import { Choice } from '@/components/bookmark/PreviewSettings'
 import { BookmarkPreviewContent } from '@/components/bookmark/BookmarkPreviewContent'
 import { loadBookmarkPreview, previewSource } from '@/lib/bookmark-preview'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
+import { MAX_TAG_SUGGESTIONS, TagSuggestionMenu } from '@/components/sheet/TagSuggestionMenu'
+
+// React Native Web's Modal closes on an Escape keyup it hears on the document. Stop the one that
+// ends an Escape the tag menu already took before it gets there, so it does not close the editor too.
+const swallowEscapeKeyUp = () => {
+  const swallow = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape') return
+    event.stopPropagation()
+    document.removeEventListener('keyup', swallow, true)
+  }
+  document.addEventListener('keyup', swallow, true)
+}
 
 const getHostLabel = (url: string) => {
   try {
@@ -62,13 +74,26 @@ export const BookmarkEditorSheet: React.FC = () => {
   useEffect(() => { setTagInput('') }, [editor?.id, editorOpen])
   const bookmarks = useValue(bookmarks$.bookmarks)
   const editorTags = editor?.tags ?? []
-  const tagSuggestions = getAllTags(bookmarks).filter((tag) => {
-    const query = tagInput.trim().toLowerCase()
+  // Only suggest once something is typed: listed up front, they read as tags already on the bookmark.
+  const tagQuery = tagInput.trim().toLowerCase()
+  const tagSuggestions = tagQuery ? getAllTags(bookmarks).filter((tag) => {
     if (editorTags.some((existing) => existing.toLowerCase() === tag.toLowerCase())) {
       return false
     }
-    return query ? tag.toLowerCase().includes(query) : true
-  }).slice(0, 8)
+    return tag.toLowerCase().includes(tagQuery)
+  }).slice(0, MAX_TAG_SUGGESTIONS) : []
+  const [tagInputFocused, setTagInputFocused] = useState(false)
+  const [highlightedTag, setHighlightedTag] = useState(0)
+  useEffect(() => { setHighlightedTag(0) }, [tagQuery])
+  const showTagSuggestions = tagInputFocused && tagSuggestions.length > 0
+  // The menu opens upward from the tag input: the keyboard keeps the focused input in view, but
+  // not anything under it. It is laid out against the whole sheet, as Android drops touches on a
+  // child drawn outside its parent's bounds.
+  const [tagSectionY, setTagSectionY] = useState(0)
+  const [tagInputY, setTagInputY] = useState(0)
+  const [sheetContentHeight, setSheetContentHeight] = useState(0)
+  const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (blurTimerRef.current) clearTimeout(blurTimerRef.current) }, [])
 
   const addTag = (raw: string) => {
     const tag = raw.trim()
@@ -93,9 +118,33 @@ export const BookmarkEditorSheet: React.FC = () => {
     }
   }
 
+  const tagInputRef = useRef<TextInput>(null)
   const commitTagInput = () => {
-    addTag(tagInput)
+    // The input stays focused after a submit so several tags can go in a row; an empty submit
+    // is the way out of it.
+    if (!tagInput.trim()) {
+      tagInputRef.current?.blur()
+      return
+    }
+    addTag(showTagSuggestions ? tagSuggestions[highlightedTag] ?? tagInput : tagInput)
     setTagInput('')
+  }
+
+  const pickTagSuggestion = (tag: string) => {
+    addTag(tag)
+    setTagInput('')
+  }
+
+  const onTagInputKeyPress = (key: string, preventDefault: () => void) => {
+    if (!showTagSuggestions) return
+    if (key === 'ArrowDown' || key === 'ArrowUp') {
+      preventDefault()
+      const step = key === 'ArrowDown' ? 1 : -1
+      setHighlightedTag((index) => (index + step + tagSuggestions.length) % tagSuggestions.length)
+    } else if (key === 'Escape') {
+      if (Platform.OS === 'web') swallowEscapeKeyUp()
+      setTagInput('')
+    }
   }
 
   const removeTag = (tag: string) => {
@@ -201,7 +250,7 @@ export const BookmarkEditorSheet: React.FC = () => {
   return (
     <BaseCenterModal onClose={onClose}>
       <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: Math.max(220, height - keyboardHeight - 120) }}>
-      <View className="gap-5 p-6">
+      <View className="gap-5 p-6" onLayout={(event) => setSheetContentHeight(event.nativeEvent.layout.height)}>
         <NoriText className="text-xl font-semibold text-content">
           {editor.id ? t('bookmarks.edit') : t('bookmarks.add')}
         </NoriText>
@@ -257,7 +306,7 @@ export const BookmarkEditorSheet: React.FC = () => {
           </View> : null}
           {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}
         </View> : null}
-        <View className="gap-2">
+        <View className="gap-2" onLayout={(event) => setTagSectionY(event.nativeEvent.layout.y)}>
           {editor.tags.length > 0 && (
             <View className="flex-row flex-wrap gap-2">
               {editor.tags.map((tag) => (
@@ -273,9 +322,18 @@ export const BookmarkEditorSheet: React.FC = () => {
             </View>
           )}
           <NoriTextInput
+            ref={tagInputRef}
             value={tagInput}
+            onLayout={(event) => setTagInputY(event.nativeEvent.layout.y)}
             onChangeText={onChangeTagInput}
             onSubmitEditing={commitTagInput}
+            onKeyPress={(event) => onTagInputKeyPress(event.nativeEvent.key, () => event.preventDefault())}
+            onFocus={() => {
+              if (blurTimerRef.current) clearTimeout(blurTimerRef.current)
+              setTagInputFocused(true)
+            }}
+            // A click on the web blurs the input before the menu row sees it, so hide a moment later.
+            onBlur={() => { blurTimerRef.current = setTimeout(() => setTagInputFocused(false), 150) }}
             blurOnSubmit={false}
             autoCapitalize="none"
             autoCorrect={false}
@@ -283,22 +341,6 @@ export const BookmarkEditorSheet: React.FC = () => {
             placeholderTextColor={themeColors.contentSubtle}
             className={INPUT_CLASS}
           />
-          {tagSuggestions.length > 0 && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2" keyboardShouldPersistTaps="handled">
-              {tagSuggestions.map((tag) => (
-                <Pressable
-                  key={tag}
-                  onPress={() => {
-                    addTag(tag)
-                    setTagInput('')
-                  }}
-                  className="min-h-[28px] py-1 items-center justify-center rounded-full border border-line px-3 active:bg-muted"
-                >
-                  <NoriText className="text-sm text-content-muted">{tag}</NoriText>
-                </Pressable>
-              ))}
-            </ScrollView>
-          )}
         </View>
         <NoriTextInput
           value={editor.note}
@@ -355,6 +397,15 @@ export const BookmarkEditorSheet: React.FC = () => {
             <NoriText className="font-medium text-accent-on">{metadataLoading ? t('bookmarks.saving') : t('bookmarks.save')}</NoriText>
           </Pressable>
         </View>
+        {showTagSuggestions && sheetContentHeight > 0 ? (
+          <TagSuggestionMenu
+            suggestions={tagSuggestions}
+            query={tagQuery}
+            highlighted={highlightedTag}
+            onPick={pickTagSuggestion}
+            style={{ position: 'absolute', left: 24, right: 24, bottom: sheetContentHeight - tagSectionY - tagInputY + 6 }}
+          />
+        ) : null}
       </View>
       </ScrollView>
     </BaseCenterModal>

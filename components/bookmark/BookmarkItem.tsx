@@ -9,7 +9,7 @@ import { getBookmarkActionMenuItems } from '@/components/bookmark/BookmarkAction
 import { type NouMenuItem } from '@/components/menu/NouMenu'
 import { Favicon } from './Favicon'
 import { BookmarkPreviewContent } from './BookmarkPreviewContent'
-import { getNote } from '@/lib/nori-data'
+import { getNote, getTags } from '@/lib/nori-data'
 
 const AnchorMenu: React.FC<{
   visible: boolean
@@ -103,6 +103,8 @@ const AnchorMenu: React.FC<{
   )
 }
 
+const MAX_TILE_TAGS = 3
+
 export const BookmarkTile = memo(({
   bookmark,
   preview = false,
@@ -137,6 +139,7 @@ export const BookmarkTile = memo(({
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const note = getNote(bookmark)
+  const tags = getTags(bookmark)
   const [menuOpen, setMenuOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
   const tileRef = useRef<View>(null)
@@ -191,6 +194,20 @@ export const BookmarkTile = memo(({
 
   return (
     <View className="w-full">
+      {preview && !previewHeight && tags.length > 0 ? (
+        // Rises off the tile's top edge, on the side away from the note, so its bottom corners stay square.
+        <View
+          className="max-w-[70%] flex-row items-center gap-1.5 self-end rounded-xl bg-muted px-3 py-1.5"
+          style={{ marginRight: 16, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}
+        >
+          <MaterialIcons name="sell" size={16} color={themeColors.contentSecondary} />
+          {/* Commas, not the middle dot that page titles often use as a separator. */}
+          <NoriText className="shrink text-xs text-content-muted" numberOfLines={1}>
+            {tags.slice(0, MAX_TILE_TAGS).join(', ')}
+            {tags.length > MAX_TILE_TAGS ? ` +${tags.length - MAX_TILE_TAGS}` : ''}
+          </NoriText>
+        </View>
+      ) : null}
       <View
         ref={tileRef}
         collapsable={false}
