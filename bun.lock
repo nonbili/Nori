@@ -10,6 +10,7 @@
         "@material/material-color-utilities": "^0.4.0",
         "@react-native-async-storage/async-storage": "^2.2.0",
         "@react-native-vector-icons/material-icons": "^13.1.2",
+        "@react-native/assets-registry": "0.88.0",
         "@shopify/flash-list": "2.3.2",
         "@supabase/supabase-js": "^2.93.3",
         "cheerio": "^1.1.0",
@@ -490,6 +491,8 @@
     "@react-native-vector-icons/material-icons": ["@react-native-vector-icons/material-icons@13.1.2", "", { "dependencies": { "@react-native-vector-icons/common": "^13.0.1" }, "peerDependencies": { "@expo/config-plugins": ">=10.0.0", "react": "*", "react-native": "*" }, "optionalPeers": ["@expo/config-plugins"] }, "sha512-z8fckMFeYvvVzqfWpsM8AkSFf0pFwlwueKq8/HAKetrZEl3GsK29Mr+sv7me0N6kAl9Z+AaNXqD7gNQpCjkZgg=="],
 
     "@react-native/asset-utils": ["@react-native/asset-utils@0.88.0", "", {}, "sha512-Bj1DxQt5f4OrjdlgSVkZT37Z3hx5hUIN5AUDSqL/e99vgtTcqj5vnm067epZL1EF/QiqsniZO8Q1GSkItOakDg=="],
+
+    "@react-native/assets-registry": ["@react-native/assets-registry@0.88.0", "", { "peerDependencies": { "react-native": "*" } }, "sha512-nHFAzcqTs7jMmfqYb8sdoY0Uoxhq6GJDCNGEGGpzEXN9VIMD8xk2VSmITfjOsdQaAC5z+yRHTYFnE+u62UkJzQ=="],
 
     "@react-native/babel-plugin-codegen": ["@react-native/babel-plugin-codegen@0.88.0", "", { "dependencies": { "@babel/traverse": "^7.29.0", "@react-native/codegen": "0.88.0" } }, "sha512-leGEnCcS7Q0hTxvzvhNtr8zGQpI1gfWqXjzC4UedsFmNMv6kIo4s70o0XbtM30ZXbpfWe4BcSC8NKWuak5sI4A=="],
 
