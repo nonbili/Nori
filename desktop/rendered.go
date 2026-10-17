@@ -168,6 +168,8 @@ func (o *browserOutput) Write(data []byte) (int, error) {
 	return len(data), nil
 }
 
+var errBrowserExited = errors.New("browser exited before it was ready")
+
 var devToolsListening = regexp.MustCompile(`DevTools listening on (ws://\S+)`)
 
 func (o *browserOutput) endpoint() string {
@@ -211,7 +213,7 @@ func devToolsEndpoint(ctx context.Context, profile string, output *browserOutput
 		select {
 		case <-ticker.C:
 		case <-exited:
-			return "", errors.New("browser exited before it was ready")
+			return "", errBrowserExited
 		case <-ctx.Done():
 			return "", errors.New("browser did not start")
 		}
@@ -287,6 +289,10 @@ func openHeadlessPage(ctx context.Context, cancel context.CancelFunc) (*headless
 		// Which browser and its parting words: all a report from another machine has to go on.
 		if reason := output.reason(); reason != "" {
 			return nil, fmt.Errorf("%w (%s: %s)", err, filepath.Base(browser), reason)
+		}
+		// Quitting without a word is what a browser that policy has disabled does.
+		if errors.Is(err, errBrowserExited) {
+			return nil, fmt.Errorf("%w (%s quit without output; it may be disabled or blocked on this computer)", err, filepath.Base(browser))
 		}
 		return nil, fmt.Errorf("%w (%s)", err, filepath.Base(browser))
 	}

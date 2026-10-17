@@ -4,6 +4,15 @@
   @apply relative flex h-full flex-col overflow-hidden bg-canvas text-content;
 }
 
+/* react-native-web mounts a modal into a bare <div> on body and renders its
+   first frame in normal flow, below the app. An autoFocus input in it then
+   scrolls the overflow-hidden body down a whole screen for that frame.
+   Pinning the portal to the viewport keeps it out of
+   the scroll range. */
+body > div:not([id], [class]) {
+  @apply fixed left-0 top-0 z-[9999] h-0 w-0;
+}
+
 /* Mouse-wheel handling in App makes these usable on desktop while preserving
    the clean chip-row appearance. List rows also provide a complete picker. */
 .list-chips {
