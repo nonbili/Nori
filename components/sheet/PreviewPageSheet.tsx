@@ -155,9 +155,6 @@ export const PreviewPageSheet: React.FC = () => {
       // A site that publishes no cover image still gets one: what is on screen.
       if (source === 'screenshot' || !data.imageUrl) {
         screenshotUri = await handle.capture()
-      } else {
-        // The cover may refuse to download here; what is on screen stands in for it then.
-        screenshotUri = await handle.capture().catch(() => undefined)
       }
       await saveRenderedPreview(page.url, source, {
         description: data.description,

@@ -404,7 +404,7 @@ describe('bookmark previews', () => {
     })
     await expect(saveRenderedPreview('https://rendered-empty.example/', 'page-image', { description: '', imageUrl: '' })).rejects.toThrow('preview_page_empty')
   })
-  it('falls back to the captured screenshot when the cover cannot be downloaded', async () => {
+  it('saves the text alone, not the screenshot, when the cover cannot be downloaded', async () => {
     const url = 'https://rendered-fallback.example/'
     await updatePreviewBookmarks([url])
     setPreviewImageFetch(async () => {
@@ -417,7 +417,7 @@ describe('bookmark previews', () => {
       screenshotUri: 'data:image/jpeg;base64,c2hvdA==',
     })
 
-    expect(await readPreview(previewKey(url, 'page-image'))).toMatchObject({ imageUri: 'data:image/jpeg;base64,c2hvdA==' })
+    expect(await readPreview(previewKey(url, 'page-image'))).toMatchObject({ description: 'New', imageUri: '' })
   })
   it('warms saved previews so a row renders them without an async read', async () => {
     const url = 'https://warm.example/page'

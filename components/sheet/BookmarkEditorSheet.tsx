@@ -13,7 +13,7 @@ import { settings$ } from '@/states/settings'
 import { canLoadPagesForTitles } from '@/lib/rendered-titles'
 import { ui$ } from '@/states/ui'
 import { getMeta } from '@/lib/bookmark'
-import { getAllTags, getVisibleLists, normalizeTags } from '@/lib/nori-data'
+import { getTagsByUse, getVisibleLists, normalizeTags } from '@/lib/nori-data'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { showToast } from '@/lib/toast'
 import { parseHttpUrl } from '@/lib/url'
@@ -21,7 +21,7 @@ import { Choice } from '@/components/bookmark/PreviewSettings'
 import { BookmarkPreviewContent } from '@/components/bookmark/BookmarkPreviewContent'
 import { loadBookmarkPreview, previewSource } from '@/lib/bookmark-preview'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
-import { MAX_TAG_SUGGESTIONS, TagSuggestionMenu } from '@/components/sheet/TagSuggestionMenu'
+import { TagSuggestionMenu } from '@/components/sheet/TagSuggestionMenu'
 
 // React Native Web's Modal closes on an Escape keyup it hears on the document. Stop the one that
 // ends an Escape the tag menu already took before it gets there, so it does not close the editor too.
@@ -41,6 +41,11 @@ const getHostLabel = (url: string) => {
     return url
   }
 }
+
+// The tag menu's height when there is room for it, and the least it opens below the input with.
+const TAG_MENU_MAX_HEIGHT = 240
+const TAG_MENU_GAP = 6
+const TAG_MENU_MARGIN = 8
 
 // Shared by every text field so they stay the same height.
 const INPUT_CLASS = 'rounded-xl border border-line bg-surface px-4 py-3 text-content'
@@ -74,26 +79,39 @@ export const BookmarkEditorSheet: React.FC = () => {
   useEffect(() => { setTagInput('') }, [editor?.id, editorOpen])
   const bookmarks = useValue(bookmarks$.bookmarks)
   const editorTags = editor?.tags ?? []
-  // Only suggest once something is typed: listed up front, they read as tags already on the bookmark.
+  // Suggested in a menu that only opens with the input focused, so they never read as tags already
+  // on the bookmark. An empty input lists the tags in use, most used first, to pick one without
+  // recalling its name.
   const tagQuery = tagInput.trim().toLowerCase()
-  const tagSuggestions = tagQuery ? getAllTags(bookmarks).filter((tag) => {
+  const tagSuggestions = getTagsByUse(bookmarks).filter((tag) => {
     if (editorTags.some((existing) => existing.toLowerCase() === tag.toLowerCase())) {
       return false
     }
     return tag.toLowerCase().includes(tagQuery)
-  }).slice(0, MAX_TAG_SUGGESTIONS) : []
+  })
   const [tagInputFocused, setTagInputFocused] = useState(false)
-  const [highlightedTag, setHighlightedTag] = useState(0)
-  useEffect(() => { setHighlightedTag(0) }, [tagQuery])
-  const showTagSuggestions = tagInputFocused && tagSuggestions.length > 0
-  // The menu opens upward from the tag input: the keyboard keeps the focused input in view, but
-  // not anything under it. It is laid out against the whole sheet, as Android drops touches on a
-  // child drawn outside its parent's bounds.
-  // The tag input's top within the sheet content. Measured rather than summed from onLayout y values, which
+  // Escape closes the menu until something is typed or the input is focused again.
+  const [tagMenuDismissed, setTagMenuDismissed] = useState(false)
+  // Nothing is highlighted while the input is empty, so an empty submit still leaves the input.
+  const [highlightedTag, setHighlightedTag] = useState(-1)
+  useEffect(() => { setHighlightedTag(tagQuery ? 0 : -1) }, [tagQuery])
+  const showTagSuggestions = tagInputFocused && !tagMenuDismissed && tagSuggestions.length > 0
+  // The tag input's place within the sheet content. Measured rather than summed from onLayout y values, which
   // react-native-web only reports on resize, so they go stale when the preview above loads and pushes the input down.
-  const [tagInputTop, setTagInputTop] = useState(0)
+  const [tagInputFrame, setTagInputFrame] = useState({ top: 0, height: 0 })
   const sheetContentRef = useRef<React.ComponentRef<typeof View>>(null)
   const [sheetContentHeight, setSheetContentHeight] = useState(0)
+  // The part of the sheet content in view, which the keyboard and scrolling both change.
+  const [sheetScrollY, setSheetScrollY] = useState(0)
+  const [sheetViewportHeight, setSheetViewportHeight] = useState(0)
+  // The menu is laid out against the whole sheet content, as Android drops touches on a child drawn
+  // outside its parent's bounds, and kept to the part of it in view. It opens below the input when
+  // it fits there, else on whichever side has more room, and scrolls when it is cut short.
+  const tagInputBottom = tagInputFrame.top + tagInputFrame.height
+  const roomAboveTagInput = tagInputFrame.top - Math.max(0, sheetScrollY) - TAG_MENU_GAP - TAG_MENU_MARGIN
+  const roomBelowTagInput = Math.min(sheetContentHeight, sheetScrollY + sheetViewportHeight) - tagInputBottom - TAG_MENU_GAP - TAG_MENU_MARGIN
+  const tagMenuBelow = roomBelowTagInput >= TAG_MENU_MAX_HEIGHT || roomBelowTagInput >= roomAboveTagInput
+  const tagMenuMaxHeight = Math.min(TAG_MENU_MAX_HEIGHT, Math.max(0, tagMenuBelow ? roomBelowTagInput : roomAboveTagInput))
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (blurTimerRef.current) clearTimeout(blurTimerRef.current) }, [])
 
@@ -110,6 +128,7 @@ export const BookmarkEditorSheet: React.FC = () => {
 
   // Commit tokens as they are separated by comma or whitespace; keep any trailing partial.
   const onChangeTagInput = (value: string) => {
+    setTagMenuDismissed(false)
     if (/[,\s]/.test(value)) {
       const parts = value.split(/[,\s]+/)
       const remainder = parts.pop() ?? ''
@@ -122,22 +141,27 @@ export const BookmarkEditorSheet: React.FC = () => {
 
   const tagInputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const measureTagInput = () => {
-    if (sheetContentRef.current) tagInputRef.current?.measureLayout(sheetContentRef.current, (_x, y) => setTagInputTop(y))
+    if (sheetContentRef.current) {
+      tagInputRef.current?.measureLayout(sheetContentRef.current, (_x, top, _width, height) => setTagInputFrame({ top, height }))
+    }
   }
   const commitTagInput = () => {
     // The input stays focused after a submit so several tags can go in a row; an empty submit
     // is the way out of it.
-    if (!tagInput.trim()) {
+    if (!tagInput.trim() && !(showTagSuggestions && tagSuggestions[highlightedTag])) {
       tagInputRef.current?.blur()
       return
     }
     addTag(showTagSuggestions ? tagSuggestions[highlightedTag] ?? tagInput : tagInput)
     setTagInput('')
+    // The input may already have been empty, which leaves the query as it was.
+    setHighlightedTag(-1)
   }
 
   const pickTagSuggestion = (tag: string) => {
     addTag(tag)
     setTagInput('')
+    setHighlightedTag(-1)
   }
 
   const onTagInputKeyPress = (key: string, preventDefault: () => void) => {
@@ -145,10 +169,13 @@ export const BookmarkEditorSheet: React.FC = () => {
     if (key === 'ArrowDown' || key === 'ArrowUp') {
       preventDefault()
       const step = key === 'ArrowDown' ? 1 : -1
-      setHighlightedTag((index) => (index + step + tagSuggestions.length) % tagSuggestions.length)
+      setHighlightedTag((index) => index < 0
+        ? (step > 0 ? 0 : tagSuggestions.length - 1)
+        : (index + step + tagSuggestions.length) % tagSuggestions.length)
     } else if (key === 'Escape') {
       if (Platform.OS === 'web') swallowEscapeKeyUp()
       setTagInput('')
+      setTagMenuDismissed(true)
     }
   }
 
@@ -254,7 +281,13 @@ export const BookmarkEditorSheet: React.FC = () => {
 
   return (
     <BaseCenterModal onClose={onClose}>
-      <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: Math.max(220, height - keyboardHeight - 120) }}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        style={{ maxHeight: Math.max(220, height - keyboardHeight - 120) }}
+        onLayout={(event) => setSheetViewportHeight(event.nativeEvent.layout.height)}
+        onScroll={(event) => setSheetScrollY(event.nativeEvent.contentOffset.y)}
+        scrollEventThrottle={16}
+      >
       <View
         ref={sheetContentRef}
         className="gap-5 p-6"
@@ -343,9 +376,10 @@ export const BookmarkEditorSheet: React.FC = () => {
             onFocus={() => {
               if (blurTimerRef.current) clearTimeout(blurTimerRef.current)
               measureTagInput()
+              setTagMenuDismissed(false)
               setTagInputFocused(true)
             }}
-            // A click on the web blurs the input before the menu row sees it, so hide a moment later.
+            // A tap can blur the input before the menu row sees it, so hide a moment later. (The mouse no longer does.)
             onBlur={() => { blurTimerRef.current = setTimeout(() => setTagInputFocused(false), 150) }}
             blurOnSubmit={false}
             autoCapitalize="none"
@@ -410,13 +444,21 @@ export const BookmarkEditorSheet: React.FC = () => {
             <NoriText className="font-medium text-accent-on">{metadataLoading ? t('bookmarks.saving') : t('bookmarks.save')}</NoriText>
           </Pressable>
         </View>
-        {showTagSuggestions && sheetContentHeight > 0 ? (
+        {showTagSuggestions && sheetContentHeight > 0 && tagMenuMaxHeight > 0 ? (
           <TagSuggestionMenu
             suggestions={tagSuggestions}
             query={tagQuery}
             highlighted={highlightedTag}
             onPick={pickTagSuggestion}
-            style={{ position: 'absolute', left: 24, right: 24, bottom: sheetContentHeight - tagInputTop + 6 }}
+            maxHeight={tagMenuMaxHeight}
+            style={{
+              position: 'absolute',
+              left: 24,
+              right: 24,
+              ...(tagMenuBelow
+                ? { top: tagInputBottom + TAG_MENU_GAP }
+                : { bottom: sheetContentHeight - tagInputFrame.top + TAG_MENU_GAP }),
+            }}
           />
         ) : null}
       </View>

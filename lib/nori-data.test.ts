@@ -7,6 +7,7 @@ import {
   getAvailableBookmarks,
   getDeletedAt,
   getNote,
+  getTagsByUse,
   getVisibleBookmarks,
   getVisibleLists,
   moveItemWithinVisibleSubset,
@@ -216,5 +217,26 @@ describe('notes', () => {
   it('clears a note when patched with an empty one', () => {
     const row = { json: createRowJsonState({ note: 'hello' }) }
     expect(getNote(patchRowState(row, { note: '' }))).toBe('')
+  })
+})
+
+describe('getTagsByUse', () => {
+  it('puts the tags on the most live bookmarks first, ties in name order', () => {
+    const row = (id: string, tags: string[], deleted = false) => ({
+      id,
+      listId: 'l',
+      url: `https://${id}.example/`,
+      title: id,
+      json: createRowJsonState({ tags, ...(deleted ? { deleted_at: '2026-01-01T00:00:00.000Z' } : {}) }),
+    })
+    const bookmarks = normalizeBookmarks(normalizeLists([{ id: 'l', name: 'L', json: { visible: true } }]), [
+      row('a', ['news', 'Work']),
+      row('b', ['work', 'beta']),
+      row('c', ['alpha']),
+      row('d', ['alpha', 'alpha2'], true),
+      row('e', ['alpha2', 'alpha2x']),
+    ])
+
+    expect(getTagsByUse(bookmarks)).toEqual(['Work', 'alpha', 'alpha2', 'alpha2x', 'beta', 'news'])
   })
 })

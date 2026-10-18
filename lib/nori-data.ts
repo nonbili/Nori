@@ -349,6 +349,22 @@ export function getAllTags(bookmarks: BookmarkRecordData[]): string[] {
   return result.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 }
 
+// For picking a tag rather than browsing them: the ones on the most bookmarks come first.
+export function getTagsByUse(bookmarks: BookmarkRecordData[]): string[] {
+  const counts = new Map<string, { tag: string; count: number }>()
+  for (const bookmark of getLiveBookmarks(bookmarks)) {
+    for (const tag of getTags(bookmark)) {
+      const key = tag.toLowerCase()
+      const entry = counts.get(key)
+      if (entry) entry.count++
+      else counts.set(key, { tag, count: 1 })
+    }
+  }
+  return [...counts.values()]
+    .sort((a, b) => b.count - a.count || a.tag.toLowerCase().localeCompare(b.tag.toLowerCase()))
+    .map((entry) => entry.tag)
+}
+
 export function patchRowState<T extends { json: RowJsonState }>(row: T, patch: Partial<RowJsonState>): T {
   return {
     ...row,
