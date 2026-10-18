@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	_ "embed"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
+	"sync"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/updater"
@@ -37,21 +38,45 @@ var Version = strings.TrimSpace(versionFile)
 // updater provider can't read a `desktop/v*` tag as a semver anyway.
 const manifestURL = "https://github.com/nonbili/Nori/releases/download/desktop-latest/latest.json"
 
-// checkInterval polls on a timer for sessions long enough to outlive the
-// startup check below.
-const checkInterval = 24 * time.Hour
-
 // updateWindowCSS is layered over the built-in update window. Its stock
 // `.u__btn:hover:not(:disabled)` rule outranks `.u__btn--primary`, so a hovered
 // primary button takes the neutral surface background under its white label
 // and vanishes.
 const updateWindowCSS = `.u__btn--primary:hover:not(:disabled) { background: var(--accent); }`
 
+type UpdateService struct {
+	app       *application.App
+	mu        sync.Mutex
+	available bool
+}
+
+// CheckNow also works when automatic startup checks are disabled.
+func (s *UpdateService) CheckNow() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if !s.available {
+		return fmt.Errorf("updates are unavailable in this build")
+	}
+	return s.app.Updater.CheckAndInstall(context.Background())
+}
+
+// Missing preferences keep startup network checks off, including older installations.
+func checkForUpdatesOnStartupPreference(state string) bool {
+	var stored struct {
+		Preferences struct {
+			Enabled bool `json:"checkForUpdatesOnStartup"`
+		} `json:"preferences"`
+	}
+	return json.Unmarshal([]byte(state), &stored) == nil && stored.Preferences.Enabled
+}
+
 // initUpdater wires up the Wails updater, which swaps the running binary (or
 // the .app bundle) in place and offers a restart. The DMG and the NSIS
 // installer are first-install channels only; updates arrive as the plain
 // archives the manifest points at.
-func initUpdater(app *application.App) {
+func initUpdater(app *application.App, store *StoreService) {
+	service := &UpdateService{app: app}
+	app.RegisterService(application.NewService(service))
 	// Inside an AppImage the running binary lives on a read-only mount, and
 	// the path an in-place swap would target is the mount, not the image the
 	// user actually launched. Those builds update through the AppImage.
@@ -68,19 +93,21 @@ func initUpdater(app *application.App) {
 		CurrentVersion: Version,
 		Providers:      []updater.Provider{provider},
 		PublicKey:      updateKey,
-		CheckInterval:  checkInterval,
 		Window:         &updater.BuiltinWindow{CSS: updateWindowCSS},
 	}); err != nil {
 		log.Printf("updater: %v", err)
 		return
 	}
 
-	// The timer's first tick is a whole interval away, so short sessions would
-	// never check. Check silently on startup and only hand over to
-	// CheckAndInstall — which owns the update window — when there is something
-	// to show; CheckAndInstall alone would pop a "you're up to date" window on
-	// every launch.
+	service.available = true
+	raw, err := store.Get(stateKey)
+	if err != nil || !checkForUpdatesOnStartupPreference(raw) {
+		return
+	}
+	// Only open the updater window when a startup check finds a release.
 	go func() {
+		service.mu.Lock()
+		defer service.mu.Unlock()
 		ctx := context.Background()
 		rel, err := app.Updater.Check(ctx)
 		if err != nil || rel == nil {

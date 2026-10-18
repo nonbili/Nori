@@ -129,8 +129,9 @@ export function SortableGrid<T extends { id: string }>({
       document.removeEventListener('pointerover', trackPointer, true)
       document.removeEventListener('pointerdown', trackPointer, true)
       touchDragging = false
+      autoScroll.setActive(false)
     }
-  }, [editMode])
+  }, [editMode, autoScroll])
 
   if (!editMode) {
     return (
@@ -225,6 +226,7 @@ function DraggableTile<T extends { id: string }>({
   const dragX = useSharedValue(0)
   const dragY = useSharedValue(0)
   const startScroll = useSharedValue(0)
+  const startPositions = useSharedValue<Record<string, number>>({})
 
   const getCoords = (index: number) => {
     'worklet'
@@ -291,6 +293,7 @@ function DraggableTile<T extends { id: string }>({
 
   const createPan = () => Gesture.Pan()
     .onStart((event) => {
+      startPositions.value = { ...positions.value }
       isDragging.value = true
       const pos = getCoords(positions.value[id] ?? initialIndex)
       startX.value = pos.x
@@ -307,12 +310,16 @@ function DraggableTile<T extends { id: string }>({
       pointerY.value = event.absoluteY
       moveDragged()
     })
-    .onEnd(() => {
+    .onEnd((_event, success) => {
+      if (success) runOnJS(onDragEnd)(positions.value)
+    })
+    .onFinalize((_event, success) => {
+      if (!isDragging.value) return
+      if (!success) positions.value = startPositions.value
       isDragging.value = false
       translateX.value = withSpring(0)
       translateY.value = withSpring(0)
       runOnJS(onDragging)(false)
-      runOnJS(onDragEnd)(positions.value)
     })
 
   // On web a tile covers most of the page, so a finger swipe over it has to scroll. A finger
@@ -326,7 +333,7 @@ function DraggableTile<T extends { id: string }>({
           if (event.pointerType !== PointerType.TOUCH) state.fail()
         }),
       )
-    : createPan()
+    : createPan().activateAfterLongPress(HOLD_TO_DRAG_MS)
 
   const animatedStyle = useAnimatedStyle(() => {
     const pos = getCoords(positions.value[id] ?? initialIndex)

@@ -174,6 +174,8 @@ export function loadBookmarkPreview(
   refresh = false,
   options: { signal?: AbortSignal } = {},
 ): Promise<BookmarkPreview> {
+  // A deliberate text-only choice never starts a page or image request. Reuse any saved description.
+  if (source === 'none') return getCachedBookmarkPreview(url, source).then((value) => value ?? { description: '', imageUrl: '', imageUri: '', savedAt: 0 })
   let key: string
   try {
     key = previewKey(url, source)
@@ -304,13 +306,12 @@ export async function saveRenderedPreview(
   page: { description: string; imageUrl: string; screenshotUri?: string },
 ) {
   const key = previewKey(url, source)
-  let imageUri = page.screenshotUri || ''
+  let imageUri = source === 'screenshot' ? page.screenshotUri || '' : ''
   // A cover that cannot be downloaded never falls back to the screenshot, which may show a cookie
   // banner or a block page: the tile keeps its saved image, or shows its text alone.
   if (source === 'page-image' && page.imageUrl) imageUri = await imageFetch(page.imageUrl).catch(() => '')
   // Keep the image already saved when this page gives none or it fails to download.
   const cached = imageUri ? undefined : await readPreview(key)
-  if (!imageUri && !page.description) throw new Error('preview_page_empty')
   pending.get(key)?.controller.abort()
   await writePreview(key, {
     description: page.description || cached?.description || '',
@@ -321,8 +322,9 @@ export async function saveRenderedPreview(
   listeners.forEach((listener) => listener(key))
 }
 
-export function getCachedBookmarkPreview(url: string, source: PreviewSource) {
-  return readPreview(previewKey(url, source))
+export async function getCachedBookmarkPreview(url: string, source: PreviewSource) {
+  const saved = await readPreview(previewKey(url, source === 'none' ? 'page-image' : source))
+  return source === 'none' && saved ? { ...saved, imageUrl: '', imageUri: '' } : saved
 }
 
 // What each row last showed. A row scrolled back into view mounts at its final height instead of

@@ -87,6 +87,11 @@ const preferenceBridge: PreferenceBridge = {
     read: () => settings$.loadPagesForTitles.peek(),
     write: (value) => settings$.loadPagesForTitles.set(value === true),
   },
+  checkForUpdatesOnStartup: {
+    setting$: settings$.checkForUpdatesOnStartup,
+    read: () => settings$.checkForUpdatesOnStartup.peek(),
+    write: (value) => settings$.checkForUpdatesOnStartup.set(value === true),
+  },
   closeToTray: {
     setting$: settings$.closeToTray,
     read: () => settings$.closeToTray.peek(),

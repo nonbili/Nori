@@ -168,12 +168,12 @@ export const BookmarkListPage = memo(({
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
     viewportHeightRef.current = event.nativeEvent.layout.height
-    updateBottomState(0)
+    updateBottomState(offsetYRef.current)
   }, [updateBottomState])
 
   const onContentSizeChange = useCallback((_width: number, height: number) => {
     contentHeightRef.current = height
-    updateBottomState(0)
+    updateBottomState(offsetYRef.current)
   }, [updateBottomState])
 
   const onScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {

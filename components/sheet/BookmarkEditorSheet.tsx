@@ -342,7 +342,7 @@ export const BookmarkEditorSheet: React.FC = () => {
         {previewMode ? <View className="gap-3">
           <NoriText className="text-xs font-medium uppercase tracking-[0.12em] text-content-subtle">{t('preview.imageSource')}</NoriText>
           <View className="flex-row flex-wrap gap-2">
-            {(['default', 'page-image', 'screenshot'] as const).map((source) => <Choice
+            {(['default', 'page-image', 'screenshot', 'none'] as const).map((source) => <Choice
               key={source}
               label={t(`preview.${source}`)}
               active={(editor.previewSource ?? 'default') === source}
@@ -356,7 +356,7 @@ export const BookmarkEditorSheet: React.FC = () => {
             </View>
             {/* Beside the image and clear of the text fields, which a stylus tap near them opens instead. */}
             <Pressable
-              disabled={previewLoading}
+              disabled={previewLoading || editor.previewSource === 'none'}
               accessibilityRole="button"
               accessibilityLabel={t('preview.refresh')}
               hitSlop={6}
@@ -384,14 +384,17 @@ export const BookmarkEditorSheet: React.FC = () => {
           {editor.tags.length > 0 && (
             <View className="flex-row flex-wrap gap-2">
               {editor.tags.map((tag) => (
-                <Pressable
-                  key={tag}
-                  onPress={() => removeTag(tag)}
-                  className="min-h-[32px] py-1.5 flex-row items-center gap-1 rounded-full bg-muted px-3 active:bg-muted-strong"
-                >
+                <View key={tag} className="min-h-[32px] flex-row items-center rounded-full bg-muted pl-3">
                   <NoriText className="text-sm font-medium text-content-secondary">{tag}</NoriText>
-                  <MaterialIcons name="close" size={14} color={themeColors.contentMuted} />
-                </Pressable>
+                  <Pressable
+                    onPress={() => removeTag(tag)}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('bookmarks.removeTag', { tag })}
+                    className="min-h-[32px] min-w-[32px] items-center justify-center rounded-full active:bg-muted-strong"
+                  >
+                    <MaterialIcons name="close" size={14} color={themeColors.contentMuted} />
+                  </Pressable>
+                </View>
               ))}
             </View>
           )}

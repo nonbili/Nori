@@ -47,6 +47,7 @@ export interface Preferences {
   loadPagesForTitles: boolean
   /** Desktop only, and read there by the Go side when the window is closed. */
   closeToTray: boolean
+  checkForUpdatesOnStartup: boolean
 }
 
 export interface StoredState {

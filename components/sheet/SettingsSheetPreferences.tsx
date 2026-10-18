@@ -18,6 +18,7 @@ import { CustomAccentPanel, CustomAccentSwatch } from '@/components/sheet/Custom
 import { languageNativeNames, supportedI18nLanguages } from '@/lib/language'
 import { getVisibleLists } from '@/lib/nori-data'
 import { canLoadPagesForTitles } from '@/lib/rendered-titles'
+import { canCheckDesktopUpdates, checkDesktopUpdates } from '@/lib/desktop-updates'
 import { canCloseToTray } from '@/lib/close-to-tray'
 
 /**
@@ -46,6 +47,9 @@ export const ExperienceSection: React.FC<{
   const themeColors = useThemeColors()
   const openInSystemBrowser = useValue(settings$.openInSystemBrowser)
   const loadPagesForTitles = useValue(settings$.loadPagesForTitles)
+  const [checkingUpdates, setCheckingUpdates] = useState(false)
+  const [updateError, setUpdateError] = useState('')
+  const checkForUpdatesOnStartup = useValue(settings$.checkForUpdatesOnStartup)
   const closeToTray = useValue(settings$.closeToTray)
   const newBookmarksAtTop = useValue(settings$.newBookmarksAtTop)
   const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
@@ -155,6 +159,42 @@ export const ExperienceSection: React.FC<{
               <View className={`h-6 w-6 rounded-full bg-white ${closeToTray ? 'ml-auto' : ''}`} />
             </Pressable>
           </View>
+        </View>
+      ) : null}
+      {canCheckDesktopUpdates() ? (
+        <View className="gap-3 border-b-2 border-well px-4 py-4">
+          <View className="flex-row items-center gap-3">
+            <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
+              <MaterialIcons name="system-update" color={themeColors.contentMuted} size={18} />
+            </View>
+            <View className="flex-1">
+              <NoriText className="font-medium text-content">{t('settings.experience.checkForUpdatesOnStartup')}</NoriText>
+            </View>
+            <Pressable
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.experience.checkForUpdatesOnStartup')}
+              accessibilityState={{ checked: checkForUpdatesOnStartup }}
+              onPress={() => settings$.checkForUpdatesOnStartup.set(!checkForUpdatesOnStartup)}
+              className={`h-8 w-14 rounded-full p-1 ${checkForUpdatesOnStartup ? 'bg-accent-500' : 'bg-muted-strong'}`}
+            >
+              <View className={`h-6 w-6 rounded-full bg-white ${checkForUpdatesOnStartup ? 'ml-auto' : ''}`} />
+            </Pressable>
+          </View>
+          <Pressable
+            disabled={checkingUpdates}
+            accessibilityRole="button"
+            onPress={async () => {
+              setCheckingUpdates(true)
+              setUpdateError('')
+              try { await checkDesktopUpdates() }
+              catch (error) { setUpdateError(error instanceof Error ? error.message : String(error)) }
+              finally { setCheckingUpdates(false) }
+            }}
+            className="self-end rounded-full bg-muted px-4 py-2 active:bg-muted-strong"
+          >
+            <NoriText className="text-content">{t(checkingUpdates ? 'settings.experience.checkingUpdates' : 'settings.experience.checkUpdatesNow')}</NoriText>
+          </Pressable>
+          {updateError ? <NoriText accessibilityRole="alert" className="text-sm text-content-muted">{updateError}</NoriText> : null}
         </View>
       ) : null}
       {/* Opening links and receiving shares are the browser's or the OS's job on the web shells. */}

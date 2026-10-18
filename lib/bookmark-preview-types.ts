@@ -1,6 +1,6 @@
 import { parseHttpUrl } from './url'
 
-export type PreviewSource = 'page-image' | 'screenshot'
+export type PreviewSource = 'page-image' | 'screenshot' | 'none'
 export class PreviewResponseError extends Error {
   constructor(
     message: string,
@@ -26,7 +26,7 @@ export interface BookmarkPreview {
   retryAfter?: number
 }
 export function previewSource(value: unknown, fallback: PreviewSource = 'page-image'): PreviewSource {
-  return value === 'page-image' || value === 'screenshot' ? value : fallback
+  return value === 'page-image' || value === 'screenshot' || value === 'none' ? value : fallback
 }
 export function previewKey(url: string, source: PreviewSource) {
   return `${source}:${parseHttpUrl(url).href}`
@@ -43,5 +43,5 @@ export function previewHeight(fontScale: number, systemFontScale = 1, rem = 16) 
 }
 
 export function previewSourceOverride(value: unknown): PreviewSource | undefined {
-  return value === 'page-image' || value === 'screenshot' ? value : undefined
+  return value === 'page-image' || value === 'screenshot' || value === 'none' ? value : undefined
 }

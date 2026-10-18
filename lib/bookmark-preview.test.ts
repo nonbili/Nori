@@ -402,7 +402,7 @@ describe('bookmark previews', () => {
       imageUrl: 'https://rendered-keep.example/old.jpg',
       imageUri: 'data:image/jpeg;base64,b2xk',
     })
-    await expect(saveRenderedPreview('https://rendered-empty.example/', 'page-image', { description: '', imageUrl: '' })).rejects.toThrow('preview_page_empty')
+
   })
   it('saves the text alone, not the screenshot, when the cover cannot be downloaded', async () => {
     const url = 'https://rendered-fallback.example/'
@@ -418,6 +418,26 @@ describe('bookmark previews', () => {
     })
 
     expect(await readPreview(previewKey(url, 'page-image'))).toMatchObject({ description: 'New', imageUri: '' })
+  })
+  it('saves a missing cover as text only even without a description', async () => {
+    const url = 'https://no-cover.example/'
+    await updatePreviewBookmarks([url])
+    await saveRenderedPreview(url, 'page-image', { description: '', imageUrl: '', screenshotUri: 'data:image/jpeg;base64,c2hvdA==' })
+    expect(await readPreview(previewKey(url, 'page-image'))).toMatchObject({ description: '', imageUrl: '', imageUri: '' })
+  })
+  it('suppresses images and all network requests for an explicit no-image choice', async () => {
+    const url = 'https://text-only.example/'
+    await updatePreviewBookmarks([url])
+    await writePreview(previewKey(url, 'page-image'), { description: 'Saved description', imageUrl: url + 'cover.jpg', imageUri: 'data:image/jpeg;base64,b2xk', savedAt: 1 })
+    let requests = 0
+    setPageFetch(async () => { requests++; throw new Error('unexpected fetch') })
+    setPreviewImageFetch(async () => { requests++; throw new Error('unexpected image') })
+    setPreviewCapture(async () => { requests++; throw new Error('unexpected capture') })
+    expect(previewSource('none')).toBe('none')
+    expect(await loadBookmarkPreview(url, 'none', true)).toMatchObject({ description: 'Saved description', imageUri: '', imageUrl: '' })
+    expect(requests).toBe(0)
+    // Choosing no image leaves the other source available if the user switches back.
+    expect((await readPreview(previewKey(url, 'page-image')))?.imageUri).toBe('data:image/jpeg;base64,b2xk')
   })
   it('warms saved previews so a row renders them without an async read', async () => {
     const url = 'https://warm.example/page'

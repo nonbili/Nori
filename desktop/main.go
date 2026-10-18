@@ -79,7 +79,7 @@ func main() {
 		icon.adopt(app.Window.NewWithOptions(windowOptions))
 	}
 
-	initUpdater(app)
+	initUpdater(app, store)
 
 	if err := app.Run(); err != nil {
 		log.Fatal(err)

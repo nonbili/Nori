@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, type ComponentRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, type ComponentRef } from 'react'
 import { Platform, Pressable, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
@@ -18,15 +18,26 @@ export const PreviewPageView = forwardRef<PreviewPageViewHandle, PreviewPageView
     const webView = useRef<NoriWebViewHandle>(null)
     const captureView = useRef<ComponentRef<typeof View>>(null)
     // The page can post on its own; a message only answers the reads asked for.
-    const reads = useRef<((page: PreviewPageRead) => void)[]>([])
+    const reads = useRef(new Set<{ resolve: (page: PreviewPageRead) => void; reject: (error: Error) => void; timer: ReturnType<typeof setTimeout> }>())
+    useEffect(() => () => {
+      for (const read of reads.current) {
+        clearTimeout(read.timer)
+        read.reject(new Error('preview_page_closed'))
+      }
+      reads.current.clear()
+    }, [])
 
     useImperativeHandle(
       ref,
       () => ({
         reload: () => webView.current?.reload(),
         read: () =>
-          new Promise<PreviewPageRead>((resolve) => {
-            reads.current.push(resolve)
+          new Promise<PreviewPageRead>((resolve, reject) => {
+            const read = { resolve, reject, timer: setTimeout(() => {
+              reads.current.delete(read)
+              reject(new Error('preview_page_read_timeout'))
+            }, 1500) }
+            reads.current.add(read)
             webView.current?.injectJavaScript(READ_PAGE_META_SCRIPT)
           }),
         capture: async () => {
@@ -47,14 +58,14 @@ export const PreviewPageView = forwardRef<PreviewPageViewHandle, PreviewPageView
       } catch {
         return
       }
-      const waiting = reads.current
-      reads.current = []
+      const waiting = [...reads.current]
+      reads.current.clear()
       const page = {
         title: (data.title || '').trim(),
         description: (data.description || '').trim().slice(0, 2000),
         imageUrl: /^https?:\/\//i.test(data.imageUrl || '') ? data.imageUrl! : '',
       }
-      waiting.forEach((resolve) => resolve(page))
+      waiting.forEach((read) => { clearTimeout(read.timer); read.resolve(page) })
     }
 
     return (

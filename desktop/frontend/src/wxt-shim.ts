@@ -104,7 +104,7 @@ export const browser = {
     },
     // The desktop window has no browsing context to read a current page from.
     async query(_filter?: Record<string, unknown>) {
-      return [] as { url?: string; title?: string; favIconUrl?: string }[]
+      return [] as { id?: number; url?: string; title?: string; favIconUrl?: string }[]
     },
   },
 

@@ -9,7 +9,7 @@ export interface BookmarkEditorState {
   title: string
   icon: string
   listId: string
-  previewSource?: 'default' | 'page-image' | 'screenshot'
+  previewSource?: 'default' | 'page-image' | 'screenshot' | 'none'
   tags: string[]
   note: string
 }

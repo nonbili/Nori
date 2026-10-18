@@ -84,3 +84,18 @@ func TestUpdateHelperProcess(t *testing.T) {
 	runUpdateHelper()
 	t.Fatal("update helper returned instead of exiting")
 }
+
+func TestCheckForUpdatesOnStartupPreference(t *testing.T) {
+	for state, want := range map[string]bool{
+		"":                   false,
+		`{}`:                 false,
+		`{"preferences":{}}`: false,
+		`{"preferences":{"checkForUpdatesOnStartup":true}}`:   true,
+		`{"preferences":{"checkForUpdatesOnStartup":false}}`:  false,
+		`{"preferences":{"checkForUpdatesOnStartup":"true"}}`: false,
+	} {
+		if got := checkForUpdatesOnStartupPreference(state); got != want {
+			t.Errorf("preference(%q) = %v, want %v", state, got, want)
+		}
+	}
+}

@@ -25,6 +25,7 @@ export interface Settings {
   newBookmarksAtTop: boolean
   /** Desktop only: closing the window leaves the app running behind its tray icon. */
   closeToTray: boolean
+  checkForUpdatesOnStartup: boolean
   quickSaveSharedLinks: boolean
   quickSaveShareListId: string
 }
@@ -65,6 +66,7 @@ export const settings$: Observable<Store> = observable<Store>({
   loadPagesForTitles: false,
   newBookmarksAtTop: true,
   closeToTray: true,
+  checkForUpdatesOnStartup: false,
   quickSaveSharedLinks: false,
   quickSaveShareListId: '',
   cycleTheme: () => {

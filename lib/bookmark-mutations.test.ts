@@ -41,6 +41,13 @@ describe('bookmark mutations', () => {
     expect(result!.bookmarks[0].json).not.toHaveProperty('previewSource')
   })
 
+  it('preserves the no-image choice through bookmark serialization', () => {
+    const lists = normalizeLists([{ id: 'read', name: 'Read' }])
+    const result = addBookmarkRecord(lists, [], { listId: 'read', url: 'https://example.com', previewSource: 'none' }, 'new', 'now')!
+    const restored = normalizeBookmarks(lists, JSON.parse(JSON.stringify(result.bookmarks)))
+    expect(restored.find((bookmark) => bookmark.id === 'new')?.json.previewSource).toBe('none')
+  })
+
   it('adds ahead of the first bookmark when new ones go at the top', () => {
     const lists = normalizeLists([{ id: 'mine', name: 'Mine', json: { visible: true } }])
     const order = (newAtTop: boolean) => {

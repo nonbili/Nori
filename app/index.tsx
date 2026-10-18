@@ -17,6 +17,7 @@ const DRAWER_OPEN_FLICK_DISTANCE = 48
 const DRAWER_OPEN_VELOCITY = 900
 
 export default function HomeScreen() {
+  const drawerOpen = useValue(ui$.drawerOpen)
   const bookmarkEditMode = useValue(ui$.bookmarkEditMode)
   const bookmarkListAtBottom = useValue(ui$.bookmarkListAtBottom)
   const toggleDrawer = useCallback((open: boolean) => {
@@ -32,7 +33,7 @@ export default function HomeScreen() {
   // long enough drag or a fast flick.
   const openTriggered = useRef(false)
   const openDrawerGesture = Gesture.Pan()
-    .enabled(!bookmarkEditMode && bookmarkListAtBottom)
+    .enabled(!drawerOpen && !bookmarkEditMode && bookmarkListAtBottom)
     .activeOffsetY([-24, 10000])
     .failOffsetX([-60, 60])
     .runOnJS(true)

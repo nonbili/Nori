@@ -94,7 +94,7 @@ export function BookmarkPreviewContent({
   } catch {}
   const wideHeight = wideImageHeight(imageKey)
   // A page that could not be read leaves only its hostname as the title; show which page it is.
-  const description = preview?.description || (hasPlaceholderTitle(bookmark.title, bookmark.url) ? bookmark.url : '')
+  const description = (source === 'none' ? bookmark.url : preview?.description) || (hasPlaceholderTitle(bookmark.title, bookmark.url) ? bookmark.url : '')
   return (
     <>
       <View className="min-w-0 flex-1 justify-center gap-2 p-4">
@@ -113,7 +113,7 @@ export function BookmarkPreviewContent({
           </NoriText>
         ) : null}
       </View>
-      {preview?.imageUri && !failedImage ? (
+      {source !== 'none' && preview?.imageUri && !failedImage ? (
         // The slot keeps its size, so a shorter image never changes the row height. The tile clips
         // the corners of an image that fills it; a shorter one rounds all its own corners, as the tile clips none of them.
         <View style={{ width: IMAGE_WIDTH, minHeight: IMAGE_HEIGHT, alignSelf: 'stretch', justifyContent: 'center' }}>

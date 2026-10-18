@@ -15,7 +15,7 @@ export interface BookmarkDraftData {
   url: string
   title?: string
   icon?: string
-  previewSource?: 'default' | 'page-image' | 'screenshot'
+  previewSource?: 'default' | 'page-image' | 'screenshot' | 'none'
   tags?: string[]
   note?: string
 }

@@ -35,6 +35,8 @@ export function AllBookmarksDrawer() {
   const [filterTags, setFilterTags] = useState<string[]>([])
   const [rendered, setRendered] = useState(drawerOpen)
   const scrollOffset = useSharedValue(0)
+  const touchStartY = useSharedValue(0)
+  const dragStartedAtTop = useSharedValue(false)
   const scrollRef = useRef(null)
   const { height: windowHeight } = useWindowDimensions()
   const closedTranslateY = windowHeight + 200
@@ -87,13 +89,18 @@ export function AllBookmarksDrawer() {
   const closeDrawerPanGesture = Gesture.Pan()
     .manualActivation(true)
     .simultaneousWithExternalGesture(scrollRef)
-    .onTouchesMove((_event, manager) => {
+    .onTouchesDown((event) => {
       'worklet'
-      if (scrollOffset.value <= 0) {
-        manager.activate()
-      } else {
-        manager.fail()
-      }
+      touchStartY.value = event.allTouches[0]?.absoluteY ?? 0
+      dragStartedAtTop.value = scrollOffset.value <= 0
+    })
+    .onTouchesMove((event, manager) => {
+      'worklet'
+      const dy = (event.allTouches[0]?.absoluteY ?? touchStartY.value) - touchStartY.value
+      // An upward swipe at the top belongs to the list. Never take over a scroll
+      // that reached the top partway through the same gesture.
+      if (!dragStartedAtTop.value || dy < -8) manager.fail()
+      else if (dy > 8) manager.activate()
     })
     .onUpdate((event) => {
       'worklet'
@@ -101,8 +108,9 @@ export function AllBookmarksDrawer() {
         drawerTranslateY.value = event.translationY
       }
     })
-    .onEnd((event) => {
+    .onEnd((event, success) => {
       'worklet'
+      if (!success) return
       if (drawerTranslateY.value > 0) {
         if (event.translationY > 100 || event.velocityY > 500) {
           drawerTranslateY.value = withTiming(closedTranslateY, { duration: 180 }, (finished) => {
@@ -118,6 +126,10 @@ export function AllBookmarksDrawer() {
           })
         }
       }
+    })
+    .onFinalize((_event, success) => {
+      'worklet'
+      if (!success) drawerTranslateY.value = withSpring(0, { damping: 18, stiffness: 120, overshootClamping: true })
     })
 
   const editBookmark = useCallback((bookmark: BookmarkRecord) => {

@@ -77,13 +77,14 @@ describe('buildHomeWidgetSnapshot', () => {
   it('points each row at the preview record for its own image source', () => {
     const snapshot = buildHomeWidgetSnapshot(
       [list('a', 0)],
-      [bookmark('shot', 'a', 0, { previewSource: 'screenshot' }), bookmark('plain', 'a', 1)],
+      [bookmark('shot', 'a', 0, { previewSource: 'screenshot' }), bookmark('plain', 'a', 1), bookmark('text', 'a', 2, { previewSource: 'none' })],
       options,
     )
 
     expect(snapshot.lists[0].items.map((item) => item.preview)).toEqual([
       previewRecordFile('screenshot:https://shot.example/page'),
       previewRecordFile('page-image:https://plain.example/page'),
+      '',
     ])
   })
 

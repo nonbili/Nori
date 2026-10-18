@@ -109,7 +109,8 @@ export const PreviewPageSheet: React.FC = () => {
     return null
   }
 
-  const source = picked ?? previewSource(page.previewSource, fallback)
+  const selectedSource = picked ?? previewSource(page.previewSource, fallback)
+  const source = selectedSource === 'none' ? 'screenshot' : selectedSource
 
   const pick = (value: PreviewSource) => {
     setPicked(value)
@@ -152,11 +153,9 @@ export const PreviewPageSheet: React.FC = () => {
     setError('')
     let screenshotUri: string | undefined
     try {
-      const data = await handle.read()
-      // A site that publishes no cover image still gets one: what is on screen.
-      if (source === 'screenshot' || !data.imageUrl) {
-        screenshotUri = await handle.capture()
-      }
+      // Capture first: metadata must not delay the shot until a cookie banner appears.
+      if (source === 'screenshot') screenshotUri = await handle.capture()
+      const data = await handle.read().catch(() => ({ title: '', description: '', imageUrl: '' }))
       await saveRenderedPreview(page.url, source, {
         description: data.description,
         imageUrl: data.imageUrl,
@@ -274,7 +273,12 @@ export const PreviewPageSheet: React.FC = () => {
             </View>
           </View>
         </View>
-        <PreviewPageOptions onChanged={() => view.current?.reload()} />
+        <View className="flex-row items-center gap-3">
+          <View className="flex-1"><PreviewPageOptions onChanged={() => view.current?.reload()} /></View>
+          <Pressable disabled={saving} accessibilityRole="button" onPress={() => view.current?.reload()} className="rounded-full bg-muted px-4 py-2 active:bg-muted-strong">
+            <NoriText className="text-content">{t('preview.refresh')}</NoriText>
+          </Pressable>
+        </View>
         {error ? <NoriText className="text-sm text-content-muted">{error}</NoriText> : null}
         <Pressable
           disabled={saving}

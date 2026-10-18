@@ -24,6 +24,7 @@ export interface HomeWidgetSnapshot extends HomeWidgetOptions {
 
 function previewFile(bookmark: BookmarkRecordData, fallback: PreviewSource) {
   try {
+    if (bookmark.json?.previewSource === 'none') return ''
     return previewRecordFile(previewKey(bookmark.url, previewSource(bookmark.json?.previewSource, fallback)))
   } catch {
     return ''

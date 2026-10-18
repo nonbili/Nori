@@ -9,6 +9,7 @@ import 'nori-extension/styles.css'
 import 'nori-extension/components/app.css'
 import './desktop.css'
 import { NativeApp } from 'nori-extension/components/NativeApp'
+import { setDesktopUpdateCheck } from 'nori/lib/desktop-updates'
 import { setCloseToTraySupported } from 'nori/lib/close-to-tray'
 
 // The extension's background script owns state, storage and Supabase sync. On
@@ -18,6 +19,7 @@ await initDesktopBridge()
 installDesktopPageFetch()
 // The window is closed to a tray icon, which Go puts up and the settings sheet can turn off.
 setCloseToTraySupported(true)
+setDesktopUpdateCheck(() => Call.ByName('main.UpdateService.CheckNow').then(() => {}))
 // The tray menu is drawn by Go, which has no translations of its own.
 const sendTrayLabels = () =>
   // eslint-disable-next-line import/no-named-as-default-member
