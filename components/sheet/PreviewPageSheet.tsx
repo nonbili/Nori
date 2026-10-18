@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { PREVIEW_IMAGE_RATIO } from '@/components/bookmark/BookmarkPreviewContent'
 import { NoriText } from '@/components/common/NoriText'
 import { FullScreenModal } from '@/components/modal/BaseModal'
+import { hasPlaceholderTitle } from '@/lib/bookmark-title'
 import { previewSource, saveRenderedPreview, type PreviewSource } from '@/lib/bookmark-preview'
 import type { PreviewPageViewHandle } from '@/lib/preview-page'
 import { applyRenderedTitle } from '@/lib/title-backfill'
@@ -162,10 +163,23 @@ export const PreviewPageSheet: React.FC = () => {
         screenshotUri,
       })
       // The bookmark shows what was just captured, without changing the default for the others.
-      if (previewSource(page.previewSource, fallback) !== source) {
-        bookmarks$.update(page.id, { previewSource: source })
+      if (page.fromEditor) {
+        // The editor saves the pick, and a title for an empty field, with the rest of its edits.
+        const editor = ui$.bookmarkEditor.peek()
+        if (editor) {
+          const title = !editor.title.trim() && data.title && !hasPlaceholderTitle(data.title, page.url) ? data.title : editor.title
+          ui$.bookmarkEditor.set({
+            ...editor,
+            title,
+            ...(previewSource(editor.previewSource, fallback) !== source ? { previewSource: source } : {}),
+          })
+        }
+      } else {
+        if (previewSource(page.previewSource, fallback) !== source) {
+          bookmarks$.update(page.id, { previewSource: source })
+        }
+        applyRenderedTitle(page.url, data.title)
       }
-      applyRenderedTitle(page.url, data.title)
       close()
     } catch (error) {
       savingNow.current = false

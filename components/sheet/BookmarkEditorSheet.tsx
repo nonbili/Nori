@@ -21,6 +21,7 @@ import { Choice } from '@/components/bookmark/PreviewSettings'
 import { BookmarkPreviewContent } from '@/components/bookmark/BookmarkPreviewContent'
 import { loadBookmarkPreview, previewSource } from '@/lib/bookmark-preview'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
+import { previewPageDriver } from '@/lib/preview-page'
 import { TagSuggestionMenu } from '@/components/sheet/TagSuggestionMenu'
 
 // React Native Web's Modal closes on an Escape keyup it hears on the document. Stop the one that
@@ -63,6 +64,9 @@ export const BookmarkEditorSheet: React.FC = () => {
   const themeColors = useThemeColors()
   const lists = useValue(lists$.lists)
   const editor = useValue(ui$.bookmarkEditor)
+  // Hidden, though kept with its edits, while its page is open to capture a preview from: a modal
+  // over this one is unreliable on Android and the web.
+  const capturing = useValue(() => ui$.previewPage.get()?.fromEditor === true)
   const visibleLists = getVisibleLists(lists)
   const [metadataLoading, setMetadataLoading] = useState(false)
   const [tagInput, setTagInput] = useState('')
@@ -208,7 +212,7 @@ export const BookmarkEditorSheet: React.FC = () => {
     didInitialScrollRef.current = false
   }
 
-  if (!editor) {
+  if (!editor || capturing) {
     return null
   }
 
@@ -275,6 +279,20 @@ export const BookmarkEditorSheet: React.FC = () => {
         setPreviewError(message ? `${generic}\n${message}` : generic)
       }
     } finally { setPreviewLoading(false) }
+  }
+
+  // The page in view, to dismiss a banner or get past a captcha that the refresh above captures as is.
+  const canCapturePage = Platform.OS !== 'web' || previewPageDriver() != null
+  const capturePage = () => {
+    let url: string
+    try {
+      url = parseHttpUrl(editor.url).href
+    } catch {
+      setPreviewError(t('bookmarks.invalidUrl'))
+      return
+    }
+    setPreviewError('')
+    ui$.previewPage.set({ id: editor.id ?? '', url, previewSource: editor.previewSource, fromEditor: true })
   }
 
   const onClose = () => ui$.bookmarkEditor.set(null)
@@ -348,6 +366,17 @@ export const BookmarkEditorSheet: React.FC = () => {
             >
               <MaterialIcons name="refresh" size={22} color={themeColors.content} />
             </Pressable>
+            {canCapturePage ? <Pressable
+              disabled={previewLoading}
+              accessibilityRole="button"
+              accessibilityLabel={t('preview.capturePreview')}
+              hitSlop={6}
+              onPress={capturePage}
+              className="h-11 w-11 items-center justify-center rounded-full bg-muted active:bg-muted-strong"
+              style={{ opacity: previewLoading ? 0.5 : 1 }}
+            >
+              <MaterialIcons name="web" size={22} color={themeColors.content} />
+            </Pressable> : null}
           </View> : null}
           {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}
         </View> : null}
