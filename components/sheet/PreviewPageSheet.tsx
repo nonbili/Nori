@@ -136,12 +136,17 @@ export const PreviewPageSheet: React.FC = () => {
   // Once a page has loaded: note its cover image, so it can be picked beside the live page.
   const readCover = async () => {
     const current = load.current
-    const data = await view.current?.read().catch(() => null)
-    if (!data || current !== load.current || savingNow.current) return
-    // Replaces the last page's image, so a page without one never leaves it selectable.
-    setCoverUrl(data.imageUrl)
-    setCoverLoading(Boolean(data.imageUrl))
-    setMetaRead(true)
+    try {
+      const data = await view.current?.read()
+      if (!data || current !== load.current || savingNow.current) return
+      // Replaces the last page's image, so a page without one never leaves it selectable.
+      setCoverUrl(data.imageUrl)
+      setCoverLoading(Boolean(data.imageUrl))
+    } catch (error) {
+      if (current === load.current && !savingNow.current) setError(withReason(t('preview.refreshFailed'), error))
+    } finally {
+      if (current === load.current && !savingNow.current) setMetaRead(true)
+    }
   }
 
   const saveFromPage = async () => {
@@ -155,7 +160,11 @@ export const PreviewPageSheet: React.FC = () => {
     try {
       // Capture first: metadata must not delay the shot until a cookie banner appears.
       if (source === 'screenshot') screenshotUri = await handle.capture()
-      const data = await handle.read().catch(() => ({ title: '', description: '', imageUrl: '' }))
+      const data = await handle.read().catch((error) => {
+        // A shot already captured is usable without metadata. A cover still needs a successful read.
+        if (source !== 'screenshot') throw error
+        return { title: '', description: '', imageUrl: '' }
+      })
       await saveRenderedPreview(page.url, source, {
         description: data.description,
         imageUrl: data.imageUrl,
@@ -246,6 +255,7 @@ export const PreviewPageSheet: React.FC = () => {
                 ref={view}
                 url={page.url}
                 onLoadStart={() => {
+                  setError('')
                   load.current++
                   setPageLoading(true)
                   setMetaRead(false)

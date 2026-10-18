@@ -19,7 +19,9 @@ await initDesktopBridge()
 installDesktopPageFetch()
 // The window is closed to a tray icon, which Go puts up and the settings sheet can turn off.
 setCloseToTraySupported(true)
-setDesktopUpdateCheck(() => Call.ByName('main.UpdateService.CheckNow').then(() => {}))
+if (await Call.ByName('main.UpdateService.Available').catch(() => false)) {
+  setDesktopUpdateCheck(() => Call.ByName('main.UpdateService.CheckNow').then(() => {}))
+}
 // The tray menu is drawn by Go, which has no translations of its own.
 const sendTrayLabels = () =>
   // eslint-disable-next-line import/no-named-as-default-member

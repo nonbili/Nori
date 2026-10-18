@@ -50,6 +50,9 @@ type UpdateService struct {
 	available bool
 }
 
+// Available reports whether this build can install updates.
+func (s *UpdateService) Available() bool { return s.available }
+
 // CheckNow also works when automatic startup checks are disabled.
 func (s *UpdateService) CheckNow() error {
 	s.mu.Lock()

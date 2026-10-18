@@ -224,7 +224,7 @@ export const BookmarkTile = memo(({
               : 'border-transparent bg-surface'
           } ${isDragging ? 'opacity-50' : ''}`}
         >
-          {preview ? <BookmarkPreviewContent bookmark={bookmark} titleClassName={titleClassName} /> : <>
+          {preview ? <BookmarkPreviewContent reordering={!!previewHeight} bookmark={bookmark} titleClassName={titleClassName} /> : <>
             <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={24} iconSize={20} />
             <NoriText className={`flex-1 text-sm font-medium ${titleClassName}`} numberOfLines={1}>
               {bookmark.title}

@@ -37,9 +37,11 @@ function wideImageHeight(key: string) {
 export function BookmarkPreviewContent({
   bookmark,
   cachedOnly = false,
+  reordering = false,
   titleClassName = 'text-content',
 }: {
   cachedOnly?: boolean
+  reordering?: boolean
   titleClassName?: string
   bookmark: { url: string; title: string; icon?: string; json?: Record<string, unknown> }
 }) {
@@ -94,7 +96,7 @@ export function BookmarkPreviewContent({
   } catch {}
   const wideHeight = wideImageHeight(imageKey)
   // A page that could not be read leaves only its hostname as the title; show which page it is.
-  const description = (source === 'none' ? bookmark.url : preview?.description) || (hasPlaceholderTitle(bookmark.title, bookmark.url) ? bookmark.url : '')
+  const description = preview?.description || (source !== 'none' && hasPlaceholderTitle(bookmark.title, bookmark.url) ? bookmark.url : '')
   return (
     <>
       <View className="min-w-0 flex-1 justify-center gap-2 p-4">
@@ -107,10 +109,14 @@ export function BookmarkPreviewContent({
         <NoriText className={`text-sm font-medium ${titleClassName}`} numberOfLines={2}>
           {bookmark.title}
         </NoriText>
-        {description ? (
+        {/* Fixed-height reorder rows reserve the text-only card's last lines for its URL. */}
+        {description && !(source === 'none' && reordering) ? (
           <NoriText className="text-xs text-content-muted" numberOfLines={2}>
             {description}
           </NoriText>
+        ) : null}
+        {source === 'none' ? (
+          <NoriText className="text-xs text-content-muted" numberOfLines={2}>{bookmark.url}</NoriText>
         ) : null}
       </View>
       {source !== 'none' && preview?.imageUri && !failedImage ? (

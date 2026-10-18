@@ -36,7 +36,7 @@ export const PreviewPageView = forwardRef<PreviewPageViewHandle, PreviewPageView
             const read = { resolve, reject, timer: setTimeout(() => {
               reads.current.delete(read)
               reject(new Error('preview_page_read_timeout'))
-            }, 1500) }
+            }, 5000) }
             reads.current.add(read)
             webView.current?.injectJavaScript(READ_PAGE_META_SCRIPT)
           }),
