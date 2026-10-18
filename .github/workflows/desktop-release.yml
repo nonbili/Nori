@@ -185,7 +185,22 @@ jobs:
             if [ -n "${APPLE_ID:-}" ] && [ -n "${APPLE_APP_SPECIFIC_PASSWORD:-}" ]; then
               xcrun notarytool submit "$DMG_PATH" --apple-id "$APPLE_ID" \
                 --password "$APPLE_APP_SPECIFIC_PASSWORD" --team-id "$TEAM_ID" --wait
-              xcrun stapler staple "$DMG_PATH"
+              # Apple's ticket service can briefly fail even after notarization
+              # is accepted. Retry stapling, but still fail if it never succeeds.
+              for attempt in 1 2 3 4 5; do
+                if xcrun stapler staple "$DMG_PATH"; then
+                  break
+                else
+                  status=$?
+                fi
+                if [ "$attempt" -eq 5 ]; then
+                  echo "::error::DMG stapling failed after $attempt attempts (exit $status)"
+                  exit "$status"
+                fi
+                delay=$((attempt * 15))
+                echo "::warning::DMG stapling failed (exit $status); retrying in ${delay}s"
+                sleep "$delay"
+              done
               xcrun stapler validate "$DMG_PATH"
             else
               echo "::warning::notarization secrets not set — skipping notarization"

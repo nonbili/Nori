@@ -1,0 +1,5 @@
+- Capture previews directly from the live page in the bookmark editor
+- Collapsible preview image controls with "No image" default option
+- Show tag suggestions on focus, sorted by most used first
+- Manual update check and preference for checking for updates on startup
+- Improved touch scrolling and text-only preview rendering
