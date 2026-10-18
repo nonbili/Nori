@@ -51,6 +51,8 @@ const FULL_PULL_INTERVAL_MS = 24 * 60 * 60 * 1000
 // cycles. Callers translate it; nothing was lost, the follow-up still runs.
 export const SYNC_PENDING_ERROR = 'sync-pending-changes'
 
+class SyncInterrupted extends Error {}
+
 function canSync() {
   const { userId, plan } = auth$.peek()
   return Boolean(userId && plan && plan !== 'free')
@@ -94,8 +96,10 @@ async function fetchAllRows<T extends { id: string; updated_at: string }>(
   table: 'lists' | 'bookmarks',
   columns: string,
   cursor?: string,
+  assertCurrent: () => void = () => {},
 ) {
   return collectPagedRows<T>(async (keyset) => {
+    assertCurrent()
     let query = supabase
       .from(table)
       .select(columns)
@@ -110,6 +114,7 @@ async function fetchAllRows<T extends { id: string; updated_at: string }>(
     }
 
     const { data, error } = await query
+    assertCurrent()
     if (error) {
       throw error
     }
@@ -119,13 +124,14 @@ async function fetchAllRows<T extends { id: string; updated_at: string }>(
 
 // Every page of both tables, or it throws. Reconciling against a truncated
 // snapshot would read the rows that did not fit as missing from the server.
-async function fetchRemoteRows(listCursor?: string, bookmarkCursor?: string) {
+async function fetchRemoteRows(assertCurrent: () => void, listCursor?: string, bookmarkCursor?: string) {
   const [listRows, bookmarkRows] = await Promise.all([
-    fetchAllRows<RemoteListRow>('lists', 'id,name,json,created_at,updated_at', listCursor),
+    fetchAllRows<RemoteListRow>('lists', 'id,name,json,created_at,updated_at', listCursor, assertCurrent),
     fetchAllRows<RemoteBookmarkRow>(
       'bookmarks',
       'id,list_id,url,title,icon,json,created_at,updated_at',
       bookmarkCursor,
+      assertCurrent,
     ),
   ])
 
@@ -144,9 +150,12 @@ function advanceSyncCursor(
   pulled: { lists: { updatedAt: string }[]; bookmarks: { updatedAt: string }[] },
   wasFullPull: boolean,
 ) {
+  const sameAccount = syncMeta$.syncUserId.peek() === userId
+  const listCursor = sameAccount ? syncMeta$.syncListsCursor.peek() : undefined
+  const bookmarkCursor = sameAccount ? syncMeta$.syncBookmarksCursor.peek() : undefined
   syncMeta$.syncUserId.set(userId)
-  syncMeta$.syncListsCursor.set(nextSyncCursor(pulled.lists, syncMeta$.syncListsCursor.peek()))
-  syncMeta$.syncBookmarksCursor.set(nextSyncCursor(pulled.bookmarks, syncMeta$.syncBookmarksCursor.peek()))
+  syncMeta$.syncListsCursor.set(nextSyncCursor(pulled.lists, listCursor))
+  syncMeta$.syncBookmarksCursor.set(nextSyncCursor(pulled.bookmarks, bookmarkCursor))
   if (wasFullPull) {
     syncMeta$.lastFullPullAt.set(Date.now())
   }
@@ -155,10 +164,11 @@ function advanceSyncCursor(
 // Batched for the same reason reads are paged: an upsert echoes the rows back
 // through `select`, and anything past `max_rows` would be dropped from the
 // response, leaving this device without the server timestamps it just wrote.
-async function pushLists(userId: string, rows: BookmarkListData[]) {
+async function pushLists(userId: string, rows: BookmarkListData[], assertCurrent: () => void) {
   const pushed: BookmarkListData[] = []
 
   for (const batch of toBatches(rows, SYNC_PAGE_SIZE)) {
+    assertCurrent()
     const { data, error } = await supabase
       .from('lists')
       .upsert(
@@ -166,6 +176,8 @@ async function pushLists(userId: string, rows: BookmarkListData[]) {
         { onConflict: 'user_id,id' },
       )
       .select('id,name,json,created_at,updated_at')
+
+    assertCurrent()
 
     if (error) {
       throw error
@@ -177,10 +189,11 @@ async function pushLists(userId: string, rows: BookmarkListData[]) {
   return pushed
 }
 
-async function pushBookmarks(userId: string, rows: BookmarkRecordData[]) {
+async function pushBookmarks(userId: string, rows: BookmarkRecordData[], assertCurrent: () => void) {
   const pushed: BookmarkRecordData[] = []
 
   for (const batch of toBatches(rows, SYNC_PAGE_SIZE)) {
+    assertCurrent()
     const { data, error } = await supabase
       .from('bookmarks')
       .upsert(
@@ -188,6 +201,8 @@ async function pushBookmarks(userId: string, rows: BookmarkRecordData[]) {
         { onConflict: 'user_id,id' },
       )
       .select('id,list_id,url,title,icon,json,created_at,updated_at')
+
+    assertCurrent()
 
     if (error) {
       throw error
@@ -359,6 +374,10 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
     return 'skipped'
   }
 
+  const assertCurrent = () => {
+    if (auth$.userId.peek() !== userId || !canSync()) throw new SyncInterrupted()
+  }
+
   const fetchRevision = localRevision
   const localLists = snapshotLists()
   const localBookmarks = snapshotBookmarks(localLists)
@@ -373,7 +392,10 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   const bookmarkCursor = isSameAccount ? syncMeta$.syncBookmarksCursor.peek() : undefined
   const lastFullPullAt = syncMeta$.lastFullPullAt.peek() || 0
   const isFullPull = !listCursor || !bookmarkCursor || Date.now() - lastFullPullAt >= FULL_PULL_INTERVAL_MS
-  const remote = isFullPull ? await fetchRemoteRows() : await fetchRemoteRows(listCursor, bookmarkCursor)
+  const remote = isFullPull ? await fetchRemoteRows(assertCurrent) : await fetchRemoteRows(assertCurrent, listCursor, bookmarkCursor)
+  // Auth can change while the request is running. Its response and subsequent
+  // uploads belong to the account that started it, not the new session.
+  if (auth$.userId.peek() !== userId || !canSync()) return 'skipped'
   if (localRevision !== fetchRevision) {
     return 'conflict'
   }
@@ -420,7 +442,9 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   const pushedLists = await pushLists(
     userId,
     snapshotLists().filter((item) => nextPendingListIds.has(item.id)),
+    assertCurrent,
   )
+  if (auth$.userId.peek() !== userId || !canSync()) return 'skipped'
   if (localRevision !== listPushRevision) {
     return 'conflict'
   }
@@ -434,7 +458,9 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   const pushedBookmarks = await pushBookmarks(
     userId,
     snapshotBookmarks(snapshotLists()).filter((item) => nextPendingBookmarkIds.has(item.id)),
+    assertCurrent,
   )
+  if (auth$.userId.peek() !== userId || !canSync()) return 'skipped'
   if (localRevision !== bookmarkPushRevision) {
     return 'conflict'
   }
@@ -470,6 +496,7 @@ async function runSyncCycle(): Promise<SyncAttemptOutcome> {
     }
     return outcome
   } catch (error) {
+    if (error instanceof SyncInterrupted) return 'skipped'
     syncMeta$.lastError.set(describeSyncError(error))
     throw error
   } finally {

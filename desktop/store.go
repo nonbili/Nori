@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"maps"
 	"os"
 	"path/filepath"
 	"sync"
@@ -47,13 +49,21 @@ func (s *StoreService) load() error {
 	if len(data) == 0 {
 		return nil
 	}
-	return json.Unmarshal(data, &s.values)
+	var values map[string]json.RawMessage
+	if err := json.Unmarshal(data, &values); err != nil {
+		return err
+	}
+	if values == nil {
+		values = map[string]json.RawMessage{}
+	}
+	s.values = values
+	return nil
 }
 
 // persist writes the whole map through a temporary file so a crash mid-write
 // cannot leave a truncated store behind.
-func (s *StoreService) persist() error {
-	data, err := json.Marshal(s.values)
+func (s *StoreService) persist(values map[string]json.RawMessage) error {
+	data, err := json.Marshal(values)
 	if err != nil {
 		return err
 	}
@@ -61,7 +71,14 @@ func (s *StoreService) persist() error {
 	if err := os.WriteFile(temp, data, 0o600); err != nil {
 		return err
 	}
-	return os.Rename(temp, s.path)
+	if err := os.Rename(temp, s.path); err != nil {
+		_ = os.Remove(temp)
+		return err
+	}
+	// Publish only after the durable write succeeds. Failed writes must not
+	// change what subsequent Get calls or unrelated writes see.
+	s.values = values
+	return nil
 }
 
 // Get returns the raw JSON stored under key, or an empty string when unset.
@@ -79,8 +96,15 @@ func (s *StoreService) Get(key string) (string, error) {
 func (s *StoreService) Set(key string, value string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.values[key] = json.RawMessage(value)
-	return s.persist()
+	if !json.Valid([]byte(value)) {
+		return errors.New("invalid JSON value")
+	}
+	values := maps.Clone(s.values)
+	if values == nil {
+		values = map[string]json.RawMessage{}
+	}
+	values[key] = json.RawMessage(value)
+	return s.persist(values)
 }
 
 // Delete removes key from the store.
@@ -90,6 +114,7 @@ func (s *StoreService) Delete(key string) error {
 	if _, ok := s.values[key]; !ok {
 		return nil
 	}
-	delete(s.values, key)
-	return s.persist()
+	values := maps.Clone(s.values)
+	delete(values, key)
+	return s.persist(values)
 }
