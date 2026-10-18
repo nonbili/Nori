@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react'
+import { type ReactNode, useEffect, useReducer, useState } from 'react'
 import { Image } from 'expo-image'
 import { Platform, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
@@ -39,8 +39,11 @@ export function BookmarkPreviewContent({
   cachedOnly = false,
   reordering = false,
   titleClassName = 'text-content',
+  emptyImage,
 }: {
   cachedOnly?: boolean
+  // Fills the image slot while there is no image to show, so an editor can say one is missing.
+  emptyImage?: ReactNode
   reordering?: boolean
   titleClassName?: string
   bookmark: { url: string; title: string; icon?: string; json?: Record<string, unknown> }
@@ -149,6 +152,8 @@ export function BookmarkPreviewContent({
             accessible={false}
           />
         </View>
+      ) : source !== 'none' && emptyImage ? (
+        <View style={{ width: IMAGE_WIDTH, minHeight: IMAGE_HEIGHT, alignSelf: 'stretch' }}>{emptyImage}</View>
       ) : null}
     </>
   )

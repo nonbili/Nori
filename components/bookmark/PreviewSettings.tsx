@@ -45,7 +45,7 @@ export function PreviewSettings() {
             </View>
           </View>
           <View className="flex-row flex-wrap justify-end gap-2">
-            {(['page-image', 'screenshot'] as const).map((value) => (
+            {(['page-image', 'screenshot', 'none'] as const).map((value) => (
               <Choice
                 key={value}
                 label={t(`preview.${value}`)}
@@ -65,12 +65,15 @@ export function Choice({
   active,
   onPress,
   tinted,
+  grow,
 }: {
   label: string
   active: boolean
   onPress: () => void
   // Tint instead of fill, for dialogs where a solid accent button is the primary action.
   tinted?: boolean
+  // Share a row evenly with its neighbours, so a grid of choices lines up whatever the label lengths.
+  grow?: boolean
 }) {
   const themeColors = useThemeColors()
   const className = tinted
@@ -79,8 +82,14 @@ export function Choice({
       }`
     : `rounded-full px-4 py-2 ${active ? 'bg-accent-fill' : 'bg-muted'}`
   return (
-    <Pressable accessibilityRole="radio" accessibilityState={{ selected: active }} onPress={onPress} className={className}>
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      className={grow ? `min-w-0 flex-1 items-center ${className}` : className}
+    >
       <NoriText
+        numberOfLines={grow ? 1 : undefined}
         className={`text-sm ${active && !tinted ? 'text-accent-on' : 'text-content-secondary'}`}
         style={active && tinted ? { color: themeColors.accent } : undefined}
       >

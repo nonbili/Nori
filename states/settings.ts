@@ -19,7 +19,7 @@ export interface Settings {
   openInSystemBrowser: boolean
   showFavicon: boolean
   bookmarkView: 'compact' | 'preview'
-  previewImageSource: 'page-image' | 'screenshot'
+  previewImageSource: 'page-image' | 'screenshot' | 'none'
   bookmarkColumns: 1 | 2
   loadPagesForTitles: boolean
   newBookmarksAtTop: boolean

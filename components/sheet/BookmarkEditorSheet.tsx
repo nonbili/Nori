@@ -2,7 +2,7 @@ import { previewSourceOverride } from '@/lib/bookmark-preview-types'
 import { retainEditorPreview } from '@/lib/bookmark-preview'
 import { useEffect, useRef, useState } from 'react'
 import { useValue } from '@legendapp/state/react'
-import { Keyboard, Platform, ScrollView, Pressable, TextInput, View, useWindowDimensions } from 'react-native'
+import { ActivityIndicator, Keyboard, Platform, ScrollView, Pressable, TextInput, View, useWindowDimensions } from 'react-native'
 import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import { useTranslation } from 'react-i18next'
 import { BaseCenterModal } from '@/components/modal/BaseCenterModal'
@@ -78,6 +78,10 @@ export const BookmarkEditorSheet: React.FC = () => {
     if (editor?.url) return retainEditorPreview(editor.url)
   }, [editor?.url])
   useEffect(() => { setPreviewError('') }, [editor?.id, editor?.url])
+  // Folded by default, as most bookmarks never need their image changed. It stays open over a
+  // capture, which keeps the sheet mounted and the bookmark the same.
+  const [previewOpen, setPreviewOpen] = useState(false)
+  useEffect(() => { setPreviewOpen(false) }, [editor == null, editor?.id])
   // The sheet stays mounted while closed, so a half-typed tag would carry into the next bookmark.
   const editorOpen = editor != null
   useEffect(() => { setTagInput('') }, [editor?.id, editorOpen])
@@ -340,45 +344,67 @@ export const BookmarkEditorSheet: React.FC = () => {
           />
         </View>
         {previewMode ? <View className="gap-3">
-          <NoriText className="text-xs font-medium uppercase tracking-[0.12em] text-content-subtle">{t('preview.imageSource')}</NoriText>
-          <View className="flex-row flex-wrap gap-2">
-            {(['default', 'page-image', 'screenshot', 'none'] as const).map((source) => <Choice
-              key={source}
-              label={t(`preview.${source}`)}
-              active={(editor.previewSource ?? 'default') === source}
-              tinted
-              onPress={() => { setPreviewError(''); ui$.bookmarkEditor.set({ ...editor, previewSource: source }) }}
-            />)}
-          </View>
-          {/^https?:\/\//i.test(editor.url) ? <View className="flex-row items-center gap-2">
-            <View className="min-w-0 flex-1 flex-row overflow-hidden rounded-2xl bg-surface">
-              <BookmarkPreviewContent cachedOnly bookmark={{ ...editor, json: { previewSource: editor.previewSource } }} />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: previewOpen }}
+            onPress={() => setPreviewOpen(!previewOpen)}
+            className="-mx-2 min-h-[36px] flex-row items-center gap-2 rounded-xl px-2 active:bg-muted"
+          >
+            <NoriText className="flex-1 text-xs font-medium uppercase tracking-[0.12em] text-content-subtle">{t('preview.imageSource')}</NoriText>
+            {/* Says what the default stands for, as it may be any of the three. */}
+            <NoriText numberOfLines={1} className="shrink text-sm text-content-muted">
+              {editor.previewSource && editor.previewSource !== 'default'
+                ? t(`preview.${editor.previewSource}`)
+                : `${t('preview.default')} · ${t(`preview.${defaultImageSource}`)}`}
+            </NoriText>
+            <MaterialIcons name={previewOpen ? 'expand-less' : 'expand-more'} size={20} color={themeColors.contentMuted} />
+          </Pressable>
+          {previewOpen ? <>
+            {/* Two even rows rather than wrapped pills, which leave the last choice alone on a line. */}
+            <View className="gap-2">
+              {([['default', 'page-image'], ['screenshot', 'none']] as const).map((row) => <View key={row[0]} className="flex-row gap-2">
+                {row.map((source) => <Choice
+                  key={source}
+                  label={t(`preview.${source}`)}
+                  active={(editor.previewSource ?? 'default') === source}
+                  tinted
+                  grow
+                  onPress={() => { setPreviewError(''); ui$.bookmarkEditor.set({ ...editor, previewSource: source }) }}
+                />)}
+              </View>)}
             </View>
-            {/* Beside the image and clear of the text fields, which a stylus tap near them opens instead. */}
-            <Pressable
-              disabled={previewLoading || editor.previewSource === 'none'}
-              accessibilityRole="button"
-              accessibilityLabel={t('preview.refresh')}
-              hitSlop={6}
-              onPress={() => void refreshPreview()}
-              className="h-11 w-11 items-center justify-center rounded-full bg-muted active:bg-muted-strong"
-              style={{ opacity: previewLoading ? 0.5 : 1 }}
-            >
-              <MaterialIcons name="refresh" size={22} color={themeColors.content} />
-            </Pressable>
-            {canCapturePage ? <Pressable
-              disabled={previewLoading}
-              accessibilityRole="button"
-              accessibilityLabel={t('preview.capturePreview')}
-              hitSlop={6}
-              onPress={capturePage}
-              className="h-11 w-11 items-center justify-center rounded-full bg-muted active:bg-muted-strong"
-              style={{ opacity: previewLoading ? 0.5 : 1 }}
-            >
-              <MaterialIcons name="web" size={22} color={themeColors.content} />
-            </Pressable> : null}
-          </View> : null}
-          {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}
+            {/^https?:\/\//i.test(editor.url) ? <View className="flex-row items-center gap-2">
+              <View className="min-w-0 flex-1 flex-row overflow-hidden rounded-2xl bg-surface">
+                <BookmarkPreviewContent
+                  cachedOnly
+                  bookmark={{ ...editor, json: { previewSource: editor.previewSource } }}
+                  emptyImage={<View className="flex-1 items-center justify-center bg-muted">
+                    {previewLoading
+                      ? <ActivityIndicator color={themeColors.contentMuted} />
+                      : <MaterialIcons name="image-not-supported" size={24} color={themeColors.contentSubtle} />}
+                  </View>}
+                />
+              </View>
+              {/* Beside the image and clear of the text fields, which a stylus tap near them opens instead. */}
+              <View className="w-16 gap-1">
+                <PreviewAction
+                  icon="refresh"
+                  label={t('preview.refreshAction')}
+                  accessibilityLabel={t('preview.refresh')}
+                  disabled={previewLoading || previewSource(editor.previewSource, defaultImageSource) === 'none'}
+                  onPress={() => void refreshPreview()}
+                />
+                {canCapturePage ? <PreviewAction
+                  icon="preview"
+                  label={t('preview.capture')}
+                  accessibilityLabel={t('preview.capturePreview')}
+                  disabled={previewLoading}
+                  onPress={capturePage}
+                /> : null}
+              </View>
+            </View> : null}
+            {previewError ? <NoriText accessibilityRole="alert" className="text-xs text-content-muted">{previewError}</NoriText> : null}
+          </> : null}
         </View> : null}
         <View className="gap-2">
           {editor.tags.length > 0 && (
@@ -496,5 +522,33 @@ export const BookmarkEditorSheet: React.FC = () => {
       </View>
       </ScrollView>
     </BaseCenterModal>
+  )
+}
+
+// An icon with a caption, as an icon alone does not say what of the preview it acts on.
+function PreviewAction({ icon, label, accessibilityLabel, disabled, onPress }: {
+  icon: 'refresh' | 'preview'
+  label: string
+  accessibilityLabel: string
+  disabled: boolean
+  onPress: () => void
+}) {
+  const themeColors = useThemeColors()
+  return (
+    <Pressable
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}
+      className="items-center gap-1 rounded-xl py-1.5 active:bg-muted"
+      style={{ opacity: disabled ? 0.4 : 1 }}
+    >
+      <View className="h-8 w-8 items-center justify-center rounded-full bg-muted">
+        <MaterialIcons name={icon} size={18} color={themeColors.contentSecondary} />
+      </View>
+      <NoriText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} className="text-[11px] text-content-muted">
+        {label}
+      </NoriText>
+    </Pressable>
   )
 }

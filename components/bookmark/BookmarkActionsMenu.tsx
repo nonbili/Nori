@@ -18,7 +18,7 @@ export function getBookmarkActionMenuItems(
     { label: t('bookmarks.editAction'), icon: 'edit', handler: onEdit },
     { label: t('bookmarks.copyUrl'), icon: 'content-copy', handler: onCopyUrl },
     { label: t('bookmarks.share'), icon: 'share', handler: onShare },
-    ...(onLoadPreview ? [{ label: t('preview.capturePreview'), icon: 'web' as const, handler: onLoadPreview }] : []),
+    ...(onLoadPreview ? [{ label: t('preview.capturePreview'), icon: 'preview' as const, handler: onLoadPreview }] : []),
     { label: t('bookmarks.delete'), icon: 'delete', handler: onDelete },
   ]
 }

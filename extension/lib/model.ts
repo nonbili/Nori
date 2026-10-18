@@ -40,7 +40,7 @@ export interface Preferences {
   language: string | null
   lastListId: string
   bookmarkView: 'compact' | 'preview'
-  previewImageSource: 'page-image' | 'screenshot'
+  previewImageSource: 'page-image' | 'screenshot' | 'none'
   showFavicons: boolean
   newBookmarksAtTop: boolean
   /** Desktop only: the extension has no way to render a page. */
