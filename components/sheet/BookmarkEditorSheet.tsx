@@ -66,7 +66,9 @@ export const BookmarkEditorSheet: React.FC = () => {
   const editor = useValue(ui$.bookmarkEditor)
   // Hidden, though kept with its edits, while its page is open to capture a preview from: a modal
   // over this one is unreliable on Android and the web.
-  const capturing = useValue(() => ui$.previewPage.get()?.fromEditor === true)
+  // Observed directly rather than through a selector: the extension and desktop alias useValue to
+  // extension/lib/legend-react.ts, which only takes observables.
+  const capturing = useValue(ui$.previewPage)?.fromEditor === true
   const visibleLists = getVisibleLists(lists)
   const [metadataLoading, setMetadataLoading] = useState(false)
   const [tagInput, setTagInput] = useState('')

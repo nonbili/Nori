@@ -1,0 +1,1 @@
+- Fix blank window on startup
