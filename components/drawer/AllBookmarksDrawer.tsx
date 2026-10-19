@@ -40,10 +40,17 @@ export function AllBookmarksDrawer() {
   const scrollRef = useRef(null)
   const { height: windowHeight } = useWindowDimensions()
   const closedTranslateY = windowHeight + 200
-  const drawerTranslateY = useSharedValue(closedTranslateY)
+  // Mounted open when the activity was recreated while the app was away, in a browser, with the
+  // drawer up: start in place, or it sits off screen while the button only reopens it.
+  const drawerTranslateY = useSharedValue(drawerOpen ? 0 : closedTranslateY)
 
+  // Follows drawerOpen itself rather than whether the drawer is rendered: a close animation cut
+  // short (the app left for a browser) never unrenders it, and the next open must still slide in.
+  const wasOpen = useRef(drawerOpen)
   useEffect(() => {
-    if (drawerOpen && !rendered) {
+    if (drawerOpen === wasOpen.current) return
+    wasOpen.current = drawerOpen
+    if (drawerOpen) {
       setRendered(true)
       drawerTranslateY.value = windowHeight
       drawerTranslateY.value = withSpring(0, {
@@ -52,7 +59,7 @@ export function AllBookmarksDrawer() {
         overshootClamping: true,
       })
       scrollOffset.value = 0
-    } else if (!drawerOpen && rendered) {
+    } else {
       drawerTranslateY.value = withTiming(closedTranslateY, { duration: 220 }, (finished) => {
         if (finished) {
           runOnJS(setRendered)(false)
@@ -61,7 +68,7 @@ export function AllBookmarksDrawer() {
       setSearchQuery('')
       setFilterTags([])
     }
-  }, [drawerOpen, rendered, drawerTranslateY, scrollOffset, closedTranslateY, windowHeight])
+  }, [drawerOpen, drawerTranslateY, scrollOffset, closedTranslateY, windowHeight])
 
   const drawerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: drawerTranslateY.value }],
