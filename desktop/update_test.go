@@ -87,12 +87,14 @@ func TestUpdateHelperProcess(t *testing.T) {
 
 func TestCheckForUpdatesOnStartupPreference(t *testing.T) {
 	for state, want := range map[string]bool{
-		"":                   false,
-		`{}`:                 false,
-		`{"preferences":{}}`: false,
-		`{"preferences":{"checkForUpdatesOnStartup":true}}`:   true,
-		`{"preferences":{"checkForUpdatesOnStartup":false}}`:  false,
-		`{"preferences":{"checkForUpdatesOnStartup":"true"}}`: false,
+		"":                   true,
+		"not json":           true,
+		`{}`:                 true,
+		`{"preferences":{}}`: true,
+		`{"preferences":{"checkForUpdatesOnStartup":false}}`: true,
+		`{"preferences":{"autoCheckUpdates":true}}`:          true,
+		`{"preferences":{"autoCheckUpdates":false}}`:         false,
+		`{"preferences":{"autoCheckUpdates":"true"}}`:        true,
 	} {
 		if got := checkForUpdatesOnStartupPreference(state); got != want {
 			t.Errorf("preference(%q) = %v, want %v", state, got, want)

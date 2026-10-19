@@ -25,7 +25,7 @@ export const defaultState = (): StoredState => ({
     newBookmarksAtTop: true,
     loadPagesForTitles: false,
     closeToTray: true,
-    checkForUpdatesOnStartup: false,
+    autoCheckUpdates: true,
   },
 })
 
@@ -48,7 +48,7 @@ export async function loadState(): Promise<StoredState> {
     // Likewise newer than v1, and on unless it was turned off.
     stored.preferences.newBookmarksAtTop = stored.preferences.newBookmarksAtTop !== false
     stored.preferences.loadPagesForTitles = stored.preferences.loadPagesForTitles === true
-    stored.preferences.checkForUpdatesOnStartup = stored.preferences.checkForUpdatesOnStartup === true
+    stored.preferences.autoCheckUpdates = stored.preferences.autoCheckUpdates !== false
     stored.preferences.closeToTray = stored.preferences.closeToTray !== false
   }
   return stored

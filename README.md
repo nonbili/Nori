@@ -32,6 +32,10 @@ The Linux AppImage and tarball use the system WebKit, so they need GTK 3 and
 `webkit2gtk-4.1` installed (`libwebkit2gtk-4.1-0` on Debian/Ubuntu,
 `webkit2gtk4.1` on Fedora, `webkit2gtk-4.1` on Arch).
 
+The AppImage does not update itself from inside the app. It carries update
+information instead, so AppImageUpdate, Gear Lever or AppImageLauncher can
+update it in place.
+
 </details>
 
 ## Features

@@ -228,11 +228,16 @@ jobs:
           mkdir -p dist
           tar -C desktop/bin -czf "dist/${{ matrix.artifact }}.tar.gz" nori
 
+      # The in-app updater cannot swap a binary inside the image's read-only
+      # mount, so the image carries update information for AppImageUpdate,
+      # Gear Lever and the like. It names a .zsync on the rolling
+      # desktop-latest release, published by the release job below.
       - name: package linux AppImage
         if: startsWith(matrix.os, 'ubuntu')
         env:
           APPIMAGE_EXTRACT_AND_RUN: '1'
           LDAI_OUTPUT: dist/${{ matrix.artifact }}.AppImage
+          LDAI_UPDATE_INFORMATION: gh-releases-zsync|${{ github.repository_owner }}|${{ github.event.repository.name }}|desktop-latest|${{ matrix.artifact }}.AppImage.zsync
         run: |
           set -euo pipefail
           mkdir -p dist
@@ -268,6 +273,15 @@ jobs:
           # linuxdeploy re-resolves dependencies whenever it touches an AppDir,
           # so package via the plugin directly to keep usr/lib empty.
           ./linuxdeploy-plugin-appimage --appdir AppDir
+
+          embedded=$("$LDAI_OUTPUT" --appimage-updateinformation)
+          if [ "$embedded" != "$LDAI_UPDATE_INFORMATION" ]; then
+            echo "AppImage update information is '$embedded', want '$LDAI_UPDATE_INFORMATION'."
+            exit 1
+          fi
+          # The plugin's .zsync points at an AppImage beside it, on the rolling
+          # release; the release job makes one that points at the versioned asset.
+          rm -f dist/*.zsync
 
       # -------------------------------------------------------------- Windows
       - name: install NSIS
@@ -376,6 +390,16 @@ jobs:
           rm -f "$KEY"
           cat latest.json
 
+      # Read through the update information embedded in the AppImage. Its URL
+      # is absolute, as the AppImage itself stays on the versioned release.
+      - name: generate AppImage zsync
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends zsync
+          zsyncmake -u "https://github.com/${{ github.repository }}/releases/download/$TAG/nori-linux-amd64.AppImage" \
+            -o nori-linux-amd64.AppImage.zsync dist/nori-linux-amd64.AppImage
+
       # The app polls the manifest at a fixed URL, so it lives on a rolling
       # release rather than the versioned one. Uploading it only after the
       # versioned release exists keeps the manifest from ever pointing at
@@ -387,6 +411,9 @@ jobs:
           name: Desktop update manifest
           body: >-
             Rolling pointer to the newest desktop release, read by the in-app
-            updater. Not a download — see the desktop/v* releases.
+            updater and AppImage updaters. Not a download — see the desktop/v*
+            releases.
           make_latest: false
-          files: latest.json
+          files: |
+            latest.json
+            nori-linux-amd64.AppImage.zsync

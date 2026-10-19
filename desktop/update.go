@@ -63,14 +63,19 @@ func (s *UpdateService) CheckNow() error {
 	return s.app.Updater.CheckAndInstall(context.Background())
 }
 
-// Missing preferences keep startup network checks off, including older installations.
+// On unless turned off, as the frontend reads it too: a fresh install, or one from before the
+// setting, still hears about releases. The key replaces checkForUpdatesOnStartup, which was off by
+// default and so saved as false on installs that never chose it.
 func checkForUpdatesOnStartupPreference(state string) bool {
 	var stored struct {
 		Preferences struct {
-			Enabled bool `json:"checkForUpdatesOnStartup"`
+			Enabled json.RawMessage `json:"autoCheckUpdates"`
 		} `json:"preferences"`
 	}
-	return json.Unmarshal([]byte(state), &stored) == nil && stored.Preferences.Enabled
+	if json.Unmarshal([]byte(state), &stored) != nil {
+		return true
+	}
+	return string(stored.Preferences.Enabled) != "false"
 }
 
 // initUpdater wires up the Wails updater, which swaps the running binary (or
@@ -82,7 +87,8 @@ func initUpdater(app *application.App, store *StoreService) {
 	app.RegisterService(application.NewService(service))
 	// Inside an AppImage the running binary lives on a read-only mount, and
 	// the path an in-place swap would target is the mount, not the image the
-	// user actually launched. Those builds update through the AppImage.
+	// user actually launched. Those builds update through the update
+	// information embedded in the image (AppImageUpdate, Gear Lever, …).
 	if os.Getenv("APPIMAGE") != "" {
 		return
 	}
