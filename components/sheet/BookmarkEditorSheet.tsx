@@ -47,6 +47,8 @@ const getHostLabel = (url: string) => {
 const TAG_MENU_MAX_HEIGHT = 240
 const TAG_MENU_GAP = 6
 const TAG_MENU_MARGIN = 8
+// A suggestion row: py-2.5 around a text-sm line.
+const TAG_MENU_ROW_HEIGHT = 40
 
 // Shared by every text field so they stay the same height.
 const INPUT_CLASS = 'rounded-xl border border-line bg-surface px-4 py-3 text-content'
@@ -80,10 +82,10 @@ export const BookmarkEditorSheet: React.FC = () => {
     if (editor?.url) return retainEditorPreview(editor.url)
   }, [editor?.url])
   useEffect(() => { setPreviewError('') }, [editor?.id, editor?.url])
-  // Folded by default, as most bookmarks never need their image changed. It stays open over a
-  // capture, which keeps the sheet mounted and the bookmark the same.
-  const [previewOpen, setPreviewOpen] = useState(false)
-  useEffect(() => { setPreviewOpen(false) }, [editor == null, editor?.id])
+  // Folded at first, as most bookmarks never need their image changed, then left as it was last
+  // set: someone who edits images on every bookmark should not have to unfold it each time.
+  const previewOpen = useValue(settings$.editorPreviewOpen)
+  const setPreviewOpen = (open: boolean) => settings$.editorPreviewOpen.set(open)
   // The sheet stays mounted while closed, so a half-typed tag would carry into the next bookmark.
   const editorOpen = editor != null
   useEffect(() => { setTagInput('') }, [editor?.id, editorOpen])
@@ -100,6 +102,9 @@ export const BookmarkEditorSheet: React.FC = () => {
     return tag.toLowerCase().includes(tagQuery)
   })
   const [tagInputFocused, setTagInputFocused] = useState(false)
+  // Closing the sheet unmounts a focused input without a blur, which would leave the menu open
+  // over the next bookmark before its tag input is ever tapped.
+  useEffect(() => { setTagInputFocused(false) }, [editor?.id, editorOpen])
   // Escape closes the menu until something is typed or the input is focused again.
   const [tagMenuDismissed, setTagMenuDismissed] = useState(false)
   // Nothing is highlighted while the input is empty, so an empty submit still leaves the input.
@@ -116,11 +121,13 @@ export const BookmarkEditorSheet: React.FC = () => {
   const [sheetViewportHeight, setSheetViewportHeight] = useState(0)
   // The menu is laid out against the whole sheet content, as Android drops touches on a child drawn
   // outside its parent's bounds, and kept to the part of it in view. It opens below the input when
-  // it fits there, else on whichever side has more room, and scrolls when it is cut short.
+  // its rows fit there, so a short list never covers the preview above, else on whichever side has
+  // more room, and scrolls when it is cut short.
   const tagInputBottom = tagInputFrame.top + tagInputFrame.height
   const roomAboveTagInput = tagInputFrame.top - Math.max(0, sheetScrollY) - TAG_MENU_GAP - TAG_MENU_MARGIN
   const roomBelowTagInput = Math.min(sheetContentHeight, sheetScrollY + sheetViewportHeight) - tagInputBottom - TAG_MENU_GAP - TAG_MENU_MARGIN
-  const tagMenuBelow = roomBelowTagInput >= TAG_MENU_MAX_HEIGHT || roomBelowTagInput >= roomAboveTagInput
+  const tagMenuHeight = Math.min(TAG_MENU_MAX_HEIGHT, tagSuggestions.length * TAG_MENU_ROW_HEIGHT)
+  const tagMenuBelow = roomBelowTagInput >= tagMenuHeight || roomBelowTagInput >= roomAboveTagInput
   const tagMenuMaxHeight = Math.min(TAG_MENU_MAX_HEIGHT, Math.max(0, tagMenuBelow ? roomBelowTagInput : roomAboveTagInput))
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (blurTimerRef.current) clearTimeout(blurTimerRef.current) }, [])

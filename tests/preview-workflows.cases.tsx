@@ -69,6 +69,7 @@ const settings$ = observable({
   previewImageSource: 'page-image' as PreviewSource,
   bookmarkView: 'preview',
   loadPagesForTitles: false,
+  editorPreviewOpen: false,
   setLastSelectedListId: mock(),
 })
 const add = mock((_bookmark: BookmarkEditorState) => 'saved-id')
@@ -145,6 +146,7 @@ beforeEach(async () => {
   capture.mockReset(); capture.mockImplementation(async () => 'data:image/png;base64,c2hvdA==')
   for (const fn of [release, add, update, applyRenderedTitle, imageFetch, pageFetch]) fn.mockClear()
   settings$.previewImageSource.set('page-image')
+  settings$.editorPreviewOpen.set(false)
   ui$.previewPage.set(null)
   ui$.bookmarkEditor.set({ url, title: 'Unsaved title', icon: 'custom-icon', listId: 'my-list', tags: ['reading'], note: 'Unsaved note' })
   preview.setPreviewImageFetch(imageFetch)
@@ -189,6 +191,18 @@ describe('editor capture round trip', () => {
     expect(capture).not.toHaveBeenCalled()
     expect(add).not.toHaveBeenCalled()
     expect(update).not.toHaveBeenCalled()
+  })
+
+  test('the image controls open the next bookmark as they were left', async () => {
+    await mount()
+    expect(container.textContent).not.toContain('preview.capturePreview')
+    await click('preview.imageSourcepreview.default · preview.page-image')
+    await click('bookmarks.cancel')
+    await act(async () => ui$.bookmarkEditor.set({ url: `${url}/next`, title: '', icon: '', listId: 'my-list', tags: [], note: '' }))
+    await flush()
+    expect(button('preview.capturePreview').disabled).toBe(false)
+    await click('preview.imageSourcepreview.default · preview.page-image')
+    expect(container.textContent).not.toContain('preview.capturePreview')
   })
 
   test.each(['', 'Written by me', '   '])('fills only an empty title (%j)', async (title) => {

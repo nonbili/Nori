@@ -28,6 +28,8 @@ export interface Settings {
   checkForUpdatesOnStartup: boolean
   quickSaveSharedLinks: boolean
   quickSaveShareListId: string
+  /** Whether the editor's image options were left open, to open them that way next time. */
+  editorPreviewOpen: boolean
 }
 
 interface Store extends Settings {
@@ -66,9 +68,10 @@ export const settings$: Observable<Store> = observable<Store>({
   loadPagesForTitles: false,
   newBookmarksAtTop: true,
   closeToTray: true,
-  checkForUpdatesOnStartup: false,
+  checkForUpdatesOnStartup: true,
   quickSaveSharedLinks: false,
   quickSaveShareListId: '',
+  editorPreviewOpen: false,
   cycleTheme: () => {
     const current = settings$.theme.get()
     const index = themes.indexOf(current)
