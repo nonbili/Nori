@@ -1,22 +1,30 @@
-Nori koondab salvestatud lingid ühte kohta. Kogu artikleid, tööriistu ja ideid ning leia need uuesti eelvaadete, loendite, siltide ja märkmete abil.
+Nori on järjehoidjate haldur ja hiljem lugemise rakendus, mis annab sinu salvestatud linkidele kodu. Kogu artikleid, videoid, tööriistu ja inspiratsiooni ning leia need uuesti visuaalsete eelvaadete, loendite, siltide ja märkmete abil.
 
-<b>Salvesta koos taustateabega</b>
-Korralda lingid enda loodud loenditesse ning lisa silte ja isiklikke märkmeid. Sirvi kaanepiltide või lehe kuvatõmmistega järjehoidjakaarte või vali kompaktne vaade.
+<b>Salvesta linke igast rakendusest</b>
+Jaga linki oma brauserist või mõnest muust rakendusest Norisse ja vali sobiv loend. Pea lugemisloendit hilisemaks või kogu materjale projekti jaoks. Lülita sisse kiirsalvestus, et lisada lingid ühe puudutusega oma lemmikloendisse.
 
-<b>Leia salvestatu üles</b>
-Otsi järjehoidjaid ja filtreeri loendi või sildi järgi. Naase ajaloo kaudu hiljuti kasutatud linkide juurde, ilma et peaksid tervet kogu läbi vaatama.
+<b>Visuaalsed järjehoidjad koos kontekstiga</b>
+Igast järjehoidjast saab kaart kaanepildi või lehe ekraanipildiga. Lisa silte ja isiklikke märkmeid, et mäletada, miks selle salvestasid, või vaheta kompaktse loendi vastu.
 
-<b>Korralda mitu järjehoidjat korraga</b>
-Vali mitu järjehoidjat, et neid korraga loendite vahel teisaldada, peita, jagada või kustutada.
+<b>Leia iga link sekunditega</b>
+Otsi järjehoidjate seast ja filtreeri loendi või sildi järgi. Naase ajaloost hiljuti avatud linkide juurde.
 
-<b>Salvesta teistest rakendustest</b>
-Saada lingid Norisse Androidi jagamismenüü kaudu. Vali enne salvestamist sihtloend või lülita sisse kiirsalvestus oma eelistatud loendisse.
+<b>Korrasta mitut korraga</b>
+Sorteeri järjehoidjad oma loenditesse. Vali mitu korraga, et neid koos teisaldada, peita, jagada või kustutada.
 
-<b>Kohanda oma maitse järgi</b>
-Vali hele, tume või süsimust AMOLED-teema. Vali aktsentvärv või määra enda oma, kohanda teksti suurust ja järjehoidjate paigutust.
+<b>Avakuva vidin</b>
+Kinnita loend eelvaatepiltidega oma avakuvale ja ava lingid ühe puudutusega.
 
-<b>Loe nii, nagu soovid</b>
-Ava salvestatud lingid süsteemi brauseris või rakendusesiseses brauseris.
+<b>Import ja eksport</b>
+Too järjehoidjad üle oma brauserist või teisest järjehoidjate haldurist HTML-faili või lihtsa URL-ide loendina. Ekspordi igal ajal HTML-i või lihttekstina.
 
-<b>Kogu on alati kaasas</b>
-Järjehoidjad salvestatakse kohalikult. Valikuline tasuline Nori Sync pakett võimaldab pärast sisselogimist loendeid ja järjehoidjaid seadmete vahel sünkroonida.
+<b>Tee see enda omaks</b>
+Vali hele, tume või täismust AMOLED-teema. Vali rõhuvärv või loo oma, kohanda teksti suurust ja vali endale sobiv järjehoidjate paigutus.
+
+<b>Loe omal moel</b>
+Ava salvestatud lingid otse Noris või oma vaikebrauseris.
+
+<b>Telefonis, arvutis ja brauseris</b>
+Nori on saadaval Androidile, iPhone'ile, iPadile, Windowsile, macOS-ile ja Linuxile ning laiendusena Chrome'ile ja Firefoxile. Järjehoidjad salvestatakse sinu seadmesse ning valikuline tasuline Nori Synci pakett hoiab pärast sisselogimist loendid ja järjehoidjad kõigis seadmetes sünkroonis.
+
+Otsid pärast Pocketit oma lugemisloendile uut kodu? Nori hoiab selle lihtsa, visuaalse ja sinu omana.

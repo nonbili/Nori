@@ -1,0 +1,27 @@
+O Nori é um gerenciador de favoritos e app para ler depois que dá um lar aos seus links salvos. Reúna artigos, vídeos, ferramentas e inspirações e encontre tudo de novo com prévias visuais, listas, tags e notas.
+
+Salve links de qualquer app
+Compartilhe um link do navegador ou de qualquer outro app com o Nori e escolha a lista dele. Mantenha uma lista de leitura para depois ou reúna materiais para um projeto.
+
+Favoritos visuais com contexto
+Cada favorito vira um cartão com imagem de capa ou captura da página. Adicione tags e notas pessoais para lembrar por que salvou, ou mude para uma lista compacta.
+
+Encontre qualquer link em segundos
+Pesquise nos seus favoritos e filtre por lista ou tag. Volte aos links abertos recentemente pelo histórico.
+
+Organize em lote
+Separe os favoritos em listas personalizadas. Selecione vários de uma vez para mover, ocultar, compartilhar ou excluir juntos.
+
+Importe e exporte
+Traga favoritos do navegador ou de outro gerenciador de favoritos por um arquivo HTML ou uma lista simples de URLs. Exporte para HTML ou texto simples quando quiser.
+
+Do seu jeito
+Escolha temas claro, escuro ou preto puro AMOLED. Selecione uma cor de destaque ou crie a sua, ajuste o tamanho do texto e escolha o layout que combina com você.
+
+Leia como preferir
+Abra os links salvos dentro do Nori ou no navegador padrão.
+
+No celular, no computador e no navegador
+O Nori está disponível para Android, iPhone, iPad, Windows, macOS e Linux, com extensões para Chrome e Firefox. Seus favoritos ficam armazenados no seu dispositivo, e o plano pago opcional Nori Sync mantém listas e favoritos sincronizados em todos eles após o login.
+
+Termos de Uso (EULA): https://www.apple.com/legal/macapps/stdeula/

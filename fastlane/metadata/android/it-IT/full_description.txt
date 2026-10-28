@@ -1,22 +1,30 @@
-Nori riunisce i tuoi link salvati in un unico posto. Raccogli articoli, strumenti e idee, poi ritrovali con anteprime, elenchi, tag e note.
+Nori è un gestore di segnalibri e un'app per leggere più tardi che dà una casa ai tuoi link salvati. Raccogli articoli, video, strumenti e ispirazioni, poi ritrovali con anteprime visive, liste, tag e note.
 
-<b>Salva anche il contesto</b>
-Organizza i link in elenchi personalizzati e aggiungi tag e note personali. Sfoglia schede con immagini di copertina o schermate delle pagine, oppure passa alla vista compatta.
+<b>Salva link da qualsiasi app</b>
+Condividi un link dal browser o da un'altra app con Nori e scegli la lista in cui salvarlo. Tieni una lista di lettura per dopo o raccogli risorse per un progetto. Attiva il salvataggio rapido per inviare i link alla tua lista preferita con un tocco.
 
-<b>Ritrova ciò che hai salvato</b>
-Cerca nei segnalibri e filtra per elenco o tag. Torna ai link usati di recente dalla cronologia senza scorrere tutta la raccolta.
+<b>Segnalibri visivi con contesto</b>
+Ogni segnalibro diventa una scheda con immagine di copertina o screenshot della pagina. Aggiungi tag e note personali per ricordare perché l'hai salvato, oppure passa a un elenco compatto.
 
-<b>Organizza più segnalibri insieme</b>
-Seleziona più segnalibri per spostarli tra elenchi, nasconderli, condividerli o eliminarli in una sola volta.
+<b>Trova qualsiasi link in pochi secondi</b>
+Cerca tra i segnalibri e filtra per lista o tag. Torna ai link aperti di recente dalla cronologia.
 
-<b>Salva da altre app</b>
-Invia link a Nori dal menu di condivisione di Android. Scegli l’elenco di destinazione prima di salvare oppure attiva il salvataggio rapido nell’elenco preferito.
+<b>Organizza in blocco</b>
+Ordina i segnalibri in liste personalizzate. Selezionane diversi per spostarli, nasconderli, condividerli o eliminarli insieme.
 
-<b>Scegli il tuo stile</b>
-Usa un tema chiaro, scuro o nero puro AMOLED. Scegli un colore di accento o creane uno, regola la dimensione del testo e scegli come visualizzare i segnalibri.
+<b>Widget per la schermata Home</b>
+Fissa una lista con miniature nella schermata Home e apri i link con un tocco.
 
-<b>Leggi come preferisci</b>
-Apri i link salvati nel browser di sistema o nel browser integrato.
+<b>Importa ed esporta</b>
+Porta i segnalibri dal browser o da un altro gestore di segnalibri con un file HTML o un semplice elenco di URL. Esporta in HTML o testo semplice quando vuoi.
 
-<b>Porta con te la raccolta</b>
-I segnalibri vengono salvati in locale. Il piano a pagamento facoltativo Nori Sync permette di sincronizzare elenchi e segnalibri tra dispositivi dopo l’accesso.
+<b>Rendila tua</b>
+Scegli tra tema chiaro, scuro o nero puro AMOLED. Seleziona un colore d'accento o creane uno tuo, regola la dimensione del testo e scegli il layout che preferisci.
+
+<b>Leggi a modo tuo</b>
+Apri i link salvati dentro Nori o nel browser predefinito.
+
+<b>Su telefono, computer e browser</b>
+Nori è disponibile per Android, iPhone, iPad, Windows, macOS e Linux, con estensioni per Chrome e Firefox. I segnalibri sono salvati sul tuo dispositivo e il piano a pagamento facoltativo Nori Sync mantiene liste e segnalibri sincronizzati su tutti i dispositivi dopo l'accesso.
+
+Cerchi una nuova casa per la tua lista di lettura dopo Pocket? Nori la mantiene semplice, visiva e tua.

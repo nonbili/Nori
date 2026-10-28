@@ -1,22 +1,30 @@
-Nori rassemble vos liens enregistrés au même endroit. Conservez articles, outils et sources d’inspiration, puis retrouvez-les grâce aux aperçus, listes, tags et notes.
+Nori est un gestionnaire de favoris et une app de lecture différée qui rassemble vos liens enregistrés au même endroit. Conservez articles, vidéos, outils et sources d’inspiration, puis retrouvez-les grâce aux aperçus visuels, listes, tags et notes.
 
-<b>Gardez le contexte</b>
-Organisez vos liens dans des listes personnalisées et ajoutez des tags et des notes personnelles. Parcourez des fiches avec images de couverture ou captures de pages, ou passez à une vue compacte.
+<b>Enregistrez des liens depuis n’importe quelle app</b>
+Partagez un lien depuis votre navigateur ou une autre app vers Nori et choisissez sa liste. Constituez une liste de lecture pour plus tard ou rassemblez des ressources pour un projet. Activez l’enregistrement rapide pour ranger un lien dans votre liste préférée en un geste.
 
-<b>Retrouvez vos liens</b>
-Recherchez dans vos favoris et filtrez par liste ou par tag. L’historique vous permet de revenir directement aux liens récemment utilisés.
+<b>Des favoris visuels avec leur contexte</b>
+Chaque favori devient une carte avec image de couverture ou capture de la page. Ajoutez des tags et des notes personnelles pour vous rappeler pourquoi vous l’avez gardé, ou passez à une liste compacte.
 
-<b>Organisez par lot</b>
-Sélectionnez plusieurs favoris pour les déplacer entre les listes, les masquer, les partager ou les supprimer ensemble.
+<b>Retrouvez n’importe quel lien en quelques secondes</b>
+Recherchez dans vos favoris et filtrez par liste ou par tag. Revenez aux liens ouverts récemment depuis l’historique.
 
-<b>Enregistrez depuis d’autres applications</b>
-Envoyez des liens à Nori depuis le menu de partage Android. Choisissez la liste de destination avant l’enregistrement ou activez l’enregistrement rapide dans votre liste préférée.
+<b>Organisez par lots</b>
+Classez vos favoris dans des listes personnalisées. Sélectionnez-en plusieurs pour les déplacer, masquer, partager ou supprimer ensemble.
 
-<b>Personnalisez l’apparence</b>
-Choisissez un thème clair, sombre ou noir pur AMOLED. Sélectionnez une couleur d’accentuation ou créez la vôtre, ajustez la taille du texte et choisissez la présentation de vos favoris.
+<b>Widget d’écran d’accueil</b>
+Épinglez une liste avec miniatures sur votre écran d’accueil et ouvrez vos liens d’un geste.
+
+<b>Import et export</b>
+Importez vos favoris depuis votre navigateur ou un autre gestionnaire de favoris via un fichier HTML ou une simple liste d’URL. Exportez en HTML ou en texte brut à tout moment.
+
+<b>À votre image</b>
+Choisissez un thème clair, sombre ou noir pur AMOLED. Sélectionnez une couleur d’accent ou créez la vôtre, ajustez la taille du texte et choisissez la disposition qui vous convient.
 
 <b>Lisez à votre façon</b>
-Ouvrez vos liens dans le navigateur du système ou dans le navigateur intégré.
+Ouvrez vos liens dans Nori ou dans votre navigateur par défaut.
 
-<b>Emportez votre collection</b>
-Vos favoris sont stockés localement. L’offre payante facultative Nori Sync permet de synchroniser listes et favoris entre vos appareils après connexion.
+<b>Sur votre téléphone, votre ordinateur et votre navigateur</b>
+Nori est disponible sur Android, iPhone, iPad, Windows, macOS et Linux, avec des extensions pour Chrome et Firefox. Vos favoris sont stockés sur votre appareil, et l’offre payante facultative Nori Sync synchronise listes et favoris sur tous vos appareils après connexion.
+
+Vous cherchez un nouveau foyer pour votre liste de lecture après Pocket ? Nori la garde simple, visuelle et à vous.

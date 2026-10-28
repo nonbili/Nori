@@ -32,6 +32,9 @@ platform :ios do
     build_number = ENV["IOS_BUILD_NUMBER"]
     release_notes_path = ENV["IOS_RELEASE_NOTES_PATH"] || File.expand_path("../../fastlane/metadata/ios/en-US/release_notes.txt", __dir__)
     release_notes = File.exist?(release_notes_path) ? File.read(release_notes_path).strip : nil
+    metadata_path = File.expand_path("../../fastlane/metadata/ios", __dir__)
+    # App Store Connect requires What's New for every listed locale, so reuse the English notes.
+    locales = Dir.children(metadata_path).select { |name| File.directory?(File.join(metadata_path, name)) }
 
     if build_before_upload
       build_app(
@@ -53,9 +56,9 @@ platform :ios do
       app_identifier: app_identifier,
       app_version: app_version,
       force: true,
-      metadata_path: File.expand_path("../../fastlane/metadata/ios", __dir__),
-      screenshots_path: File.expand_path("../../fastlane/metadata/ios", __dir__),
-      release_notes: release_notes.to_s.empty? ? nil : { "en-US" => release_notes },
+      metadata_path: metadata_path,
+      screenshots_path: metadata_path,
+      release_notes: release_notes.to_s.empty? ? nil : locales.to_h { |locale| [locale, release_notes] },
       skip_metadata: release_notes.to_s.empty?,
       skip_binary_upload: skip_binary_upload,
       skip_screenshots: true,

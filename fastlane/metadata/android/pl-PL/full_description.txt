@@ -1,22 +1,30 @@
-Nori zbiera zapisane linki w jednym miejscu. Zachowuj artykuły, narzędzia i inspiracje, a potem odnajduj je dzięki podglądom, listom, tagom i notatkom.
+Nori to menedżer zakładek i aplikacja do czytania później, która daje Twoim zapisanym linkom dom. Zbieraj artykuły, filmy, narzędzia i inspiracje, a potem odnajduj je dzięki wizualnym podglądom, listom, tagom i notatkom.
 
-<b>Zachowaj też kontekst</b>
-Porządkuj linki na własnych listach, dodawaj tagi i osobiste notatki. Przeglądaj karty z obrazami okładek lub zrzutami stron albo przełącz się na widok kompaktowy.
+<b>Zapisuj linki z dowolnej aplikacji</b>
+Udostępnij link z przeglądarki lub innej aplikacji do Nori i wybierz jego listę. Prowadź listę do przeczytania później albo zbieraj materiały do projektu. Włącz szybkie zapisywanie, aby jednym dotknięciem dodawać linki do ulubionej listy.
 
-<b>Znajdź zapisane linki</b>
-Przeszukuj zakładki i filtruj je według listy lub tagu. Wracaj do ostatnio używanych linków z historii bez przeglądania całej kolekcji.
+<b>Wizualne zakładki z kontekstem</b>
+Każda zakładka staje się kartą z obrazem okładki lub zrzutem strony. Dodawaj tagi i osobiste notatki, by pamiętać, dlaczego ją zapisano, albo przełącz się na kompaktową listę.
 
-<b>Porządkuj zbiorczo</b>
-Wybierz kilka zakładek, aby przenieść je między listami, ukryć, udostępnić lub usunąć za jednym razem.
+<b>Znajdź każdy link w kilka sekund</b>
+Przeszukuj zakładki i filtruj według listy lub tagu. Wracaj do niedawno otwartych linków z historii.
 
-<b>Zapisuj z innych aplikacji</b>
-Wysyłaj linki do Nori z menu udostępniania Androida. Wybierz listę docelową przed zapisem lub włącz szybki zapis na wybranej liście.
+<b>Porządkuj wiele naraz</b>
+Układaj zakładki we własnych listach. Zaznacz kilka naraz, aby je razem przenieść, ukryć, udostępnić lub usunąć.
 
-<b>Dostosuj wygląd</b>
-Wybierz jasny, ciemny lub całkowicie czarny motyw AMOLED. Ustaw kolor akcentu, także własny, dostosuj rozmiar tekstu i układ zakładek.
+<b>Widżet na ekranie głównym</b>
+Przypnij listę z miniaturami na ekranie głównym i otwieraj linki jednym dotknięciem.
+
+<b>Import i eksport</b>
+Przenieś zakładki z przeglądarki lub innego menedżera zakładek jako plik HTML lub zwykłą listę adresów URL. Eksportuj do HTML lub zwykłego tekstu w dowolnym momencie.
+
+<b>Dopasuj do siebie</b>
+Wybierz jasny, ciemny lub czysto czarny motyw AMOLED. Wybierz kolor akcentu lub utwórz własny, dostosuj rozmiar tekstu i wybierz układ zakładek, który Ci odpowiada.
 
 <b>Czytaj po swojemu</b>
-Otwieraj zapisane linki w przeglądarce systemowej lub wbudowanej.
+Otwieraj zapisane linki w Nori lub w domyślnej przeglądarce.
 
-<b>Miej kolekcję zawsze przy sobie</b>
-Zakładki są przechowywane lokalnie. Opcjonalny płatny plan Nori Sync pozwala po zalogowaniu synchronizować listy i zakładki między urządzeniami.
+<b>Na telefonie, komputerze i w przeglądarce</b>
+Nori jest dostępne na Androida, iPhone'a, iPada, Windows, macOS i Linuksa, a także jako rozszerzenie do Chrome i Firefoksa. Zakładki są przechowywane na Twoim urządzeniu, a opcjonalny płatny plan Nori Sync po zalogowaniu synchronizuje listy i zakładki na wszystkich urządzeniach.
+
+Szukasz nowego miejsca na listę lektur po Pocket? Nori dba, by była prosta, wizualna i Twoja.

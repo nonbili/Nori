@@ -1,0 +1,27 @@
+Nori adalah pengelola bookmark dan aplikasi baca nanti yang memberi rumah bagi tautan yang Anda simpan. Kumpulkan artikel, video, alat, dan inspirasi, lalu temukan kembali dengan pratinjau visual, daftar, tag, dan catatan.
+
+Simpan tautan dari aplikasi mana pun
+Bagikan tautan dari browser atau aplikasi lain ke Nori dan pilih daftarnya. Buat daftar bacaan untuk nanti, atau kumpulkan bahan untuk sebuah proyek.
+
+Bookmark visual dengan konteks
+Setiap bookmark menjadi kartu dengan gambar sampul atau tangkapan layar halaman. Tambahkan tag dan catatan pribadi agar Anda ingat alasan menyimpannya, atau beralih ke daftar ringkas.
+
+Temukan tautan apa pun dalam hitungan detik
+Cari bookmark dan filter berdasarkan daftar atau tag. Kembali ke tautan yang baru dibuka dari riwayat.
+
+Atur sekaligus
+Kelompokkan bookmark ke daftar buatan Anda. Pilih beberapa sekaligus untuk memindahkan, menyembunyikan, membagikan, atau menghapusnya bersama.
+
+Impor dan ekspor
+Pindahkan bookmark dari browser atau pengelola bookmark lain lewat file HTML atau daftar URL biasa. Ekspor ke HTML atau teks biasa kapan saja.
+
+Sesuaikan dengan selera Anda
+Pilih tema terang, gelap, atau hitam pekat AMOLED. Pilih warna aksen atau buat sendiri, atur ukuran teks, dan pilih tata letak bookmark yang cocok untuk Anda.
+
+Baca dengan cara Anda
+Buka tautan tersimpan di dalam Nori atau di browser default Anda.
+
+Di ponsel, komputer, dan browser
+Nori tersedia untuk Android, iPhone, iPad, Windows, macOS, dan Linux, dengan ekstensi untuk Chrome dan Firefox. Bookmark disimpan di perangkat Anda, dan paket berbayar opsional Nori Sync menjaga daftar dan bookmark tetap tersinkron di semua perangkat setelah masuk.
+
+Ketentuan Penggunaan (EULA): https://www.apple.com/legal/macapps/stdeula/

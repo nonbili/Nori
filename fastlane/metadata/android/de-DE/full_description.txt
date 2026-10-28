@@ -1,22 +1,30 @@
-Nori gibt deinen gespeicherten Links ein Zuhause. Sammle Artikel, Tools und Ideen und finde sie mit Vorschauen, Listen, Tags und Notizen wieder.
+Nori ist ein Lesezeichen-Manager und eine Später-lesen-App, die deinen gespeicherten Links ein Zuhause gibt. Sammle Artikel, Videos, Tools und Inspiration und finde sie mit visuellen Vorschauen, Listen, Tags und Notizen wieder.
 
-<b>Mit Kontext speichern</b>
-Ordne Links in eigenen Listen und ergänze Tags und persönliche Notizen. Durchstöbere Lesezeichen mit Titelbildern oder Seiten-Screenshots oder wechsle zur kompakten Ansicht.
+<b>Links aus jeder App speichern</b>
+Teile einen Link aus deinem Browser oder einer anderen App mit Nori und wähle die passende Liste. Führe eine Leseliste für später oder sammle Material für ein Projekt. Mit Schnellspeichern landen Links mit einem Tipp in deiner Lieblingsliste.
 
-<b>Gespeichertes wiederfinden</b>
-Durchsuche deine Lesezeichen und filtere nach Liste oder Tag. Kehre über den Verlauf direkt zu kürzlich verwendeten Links zurück.
+<b>Visuelle Lesezeichen mit Kontext</b>
+Jedes Lesezeichen wird zur Karte mit Titelbild oder Screenshot der Seite. Füge Tags und persönliche Notizen hinzu, damit du weißt, warum du es gespeichert hast, oder wechsle zur kompakten Liste.
 
-<b>Mehrere Lesezeichen verwalten</b>
-Wähle mehrere Lesezeichen aus, um sie gemeinsam zwischen Listen zu verschieben, auszublenden, zu teilen oder zu löschen.
+<b>Jeden Link in Sekunden finden</b>
+Durchsuche deine Lesezeichen und filtere nach Liste oder Tag. Kehre über den Verlauf zu kürzlich geöffneten Links zurück.
 
-<b>Aus anderen Apps speichern</b>
-Sende Links über das Teilen-Menü von Android an Nori. Wähle vor dem Speichern die Zielliste oder aktiviere das schnelle Speichern in deiner bevorzugten Liste.
+<b>Mehrere auf einmal organisieren</b>
+Sortiere Lesezeichen in eigene Listen. Wähle mehrere aus, um sie gemeinsam zu verschieben, auszublenden, zu teilen oder zu löschen.
 
-<b>Nach deinem Geschmack</b>
-Wähle ein helles, dunkles oder tiefschwarzes AMOLED-Design. Nutze eine vorgegebene oder eigene Akzentfarbe und passe Textgröße und Lesezeichenansicht an.
+<b>Startbildschirm-Widget</b>
+Lege eine Liste mit Vorschaubildern auf deinen Startbildschirm und öffne Links mit einem Tipp.
 
-<b>Lesen, wie du möchtest</b>
-Öffne gespeicherte Links im Systembrowser oder im integrierten Browser.
+<b>Import und Export</b>
+Übernimm Lesezeichen aus deinem Browser oder einem anderen Lesezeichen-Manager als HTML-Datei oder einfache URL-Liste. Exportiere jederzeit als HTML oder Text.
 
-<b>Deine Sammlung immer dabei</b>
-Deine Lesezeichen werden lokal gespeichert. Mit dem optionalen kostenpflichtigen Nori Sync-Tarif kannst du nach der Anmeldung Listen und Lesezeichen zwischen Geräten synchronisieren.
+<b>Ganz nach deinem Geschmack</b>
+Wähle helles, dunkles oder tiefschwarzes AMOLED-Design. Nimm eine Akzentfarbe oder erstelle deine eigene, passe die Textgröße an und wähle das Layout, das zu dir passt.
+
+<b>Lesen, wie du willst</b>
+Öffne gespeicherte Links direkt in Nori oder in deinem Standardbrowser.
+
+<b>Auf Smartphone, Computer und im Browser</b>
+Nori gibt es für Android, iPhone, iPad, Windows, macOS und Linux sowie als Erweiterung für Chrome und Firefox. Deine Lesezeichen werden auf deinem Gerät gespeichert; mit dem optionalen kostenpflichtigen Nori Sync-Tarif bleiben Listen und Lesezeichen nach der Anmeldung auf allen Geräten synchron.
+
+Suchst du nach Pocket ein neues Zuhause für deine Leseliste? Nori hält sie einfach, visuell und ganz bei dir.

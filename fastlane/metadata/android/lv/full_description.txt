@@ -1,22 +1,30 @@
-Nori apkopo saglabātās saites vienuviet. Krāj rakstus, rīkus un idejas un atrodi tos atkal ar priekšskatījumiem, sarakstiem, birkām un piezīmēm.
+Nori ir grāmatzīmju pārvaldnieks un lietotne lasīšanai vēlāk, kas dod mājas tavām saglabātajām saitēm. Vāc rakstus, video, rīkus un iedvesmu un atrodi tos atkal ar vizuāliem priekšskatījumiem, sarakstiem, tagiem un piezīmēm.
 
-<b>Saglabā arī kontekstu</b>
-Kārto saites savos sarakstos un pievieno birkas un personīgas piezīmes. Pārlūko grāmatzīmju kartītes ar vāka attēliem vai lapu ekrānuzņēmumiem vai pārslēdzies uz kompakto skatu.
+<b>Saglabā saites no jebkuras lietotnes</b>
+Kopīgo saiti no pārlūka vai citas lietotnes ar Nori un izvēlies tai sarakstu. Veido lasāmo sarakstu vēlākam laikam vai vāc materiālus projektam. Ieslēdz ātro saglabāšanu, lai ar vienu pieskārienu sūtītu saites uz savu iecienīto sarakstu.
 
-<b>Atrodi saglabāto</b>
-Meklē grāmatzīmes un filtrē tās pēc saraksta vai birkas. Atgriezies pie nesen izmantotām saitēm vēsturē, nepārlūkojot visu kolekciju.
+<b>Vizuālas grāmatzīmes ar kontekstu</b>
+Katra grāmatzīme kļūst par kartīti ar vāka attēlu vai lapas ekrānuzņēmumu. Pievieno tagus un personīgas piezīmes, lai atcerētos, kāpēc to saglabāji, vai pārslēdzies uz kompaktu sarakstu.
 
-<b>Kārto vairākas grāmatzīmes reizē</b>
-Atlasi vairākas grāmatzīmes, lai tās vienlaikus pārvietotu starp sarakstiem, paslēptu, kopīgotu vai dzēstu.
+<b>Atrodi jebkuru saiti dažās sekundēs</b>
+Meklē grāmatzīmēs un filtrē pēc saraksta vai taga. Atgriezies pie nesen atvērtām saitēm no vēstures.
 
-<b>Saglabā no citām lietotnēm</b>
-Sūti saites uz Nori ar Android kopīgošanas izvēlni. Pirms saglabāšanas izvēlies mērķa sarakstu vai ieslēdz ātro saglabāšanu vēlamajā sarakstā.
+<b>Kārto vairākas uzreiz</b>
+Šķiro grāmatzīmes savos sarakstos. Atlasi vairākas uzreiz, lai tās kopā pārvietotu, paslēptu, kopīgotu vai dzēstu.
 
-<b>Pielāgo savam stilam</b>
-Izvēlies gaišu, tumšu vai pilnīgi melnu AMOLED motīvu. Izvēlies akcenta krāsu vai izveido savu, pielāgo teksta izmēru un grāmatzīmju izkārtojumu.
+<b>Sākuma ekrāna logrīks</b>
+Piesprauž sākuma ekrānam sarakstu ar priekšskatījuma attēliem un atver saites ar vienu pieskārienu.
 
-<b>Lasi, kā vēlies</b>
-Atver saglabātās saites sistēmas pārlūkā vai lietotnē iebūvētajā pārlūkā.
+<b>Imports un eksports</b>
+Pārnes grāmatzīmes no pārlūka vai cita grāmatzīmju pārvaldnieka kā HTML failu vai vienkāršu URL sarakstu. Eksportē HTML vai vienkāršā tekstā jebkurā laikā.
 
-<b>Kolekcija vienmēr līdzi</b>
-Grāmatzīmes tiek glabātas lokāli. Izvēles maksas plāns Nori Sync pēc pierakstīšanās ļauj sinhronizēt sarakstus un grāmatzīmes starp ierīcēm.
+<b>Padari to savu</b>
+Izvēlies gaišu, tumšu vai pilnīgi melnu AMOLED tēmu. Izvēlies akcenta krāsu vai izveido savu, pielāgo teksta lielumu un izvēlies sev piemērotu izkārtojumu.
+
+<b>Lasi savā veidā</b>
+Atver saglabātās saites tieši Nori vai noklusējuma pārlūkā.
+
+<b>Tālrunī, datorā un pārlūkā</b>
+Nori ir pieejama Android, iPhone, iPad, Windows, macOS un Linux, kā arī kā paplašinājums Chrome un Firefox. Grāmatzīmes tiek glabātas tavā ierīcē, un izvēles maksas plāns Nori Sync pēc pierakstīšanās uztur sarakstus un grāmatzīmes sinhronizētas visās ierīcēs.
+
+Meklē jaunas mājas savam lasāmo sarakstam pēc Pocket? Nori to saglabā vienkāršu, vizuālu un tavu.

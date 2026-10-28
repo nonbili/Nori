@@ -1,22 +1,30 @@
-Nori reúne tus enlaces guardados en un solo lugar. Guarda artículos, herramientas e ideas y vuelve a encontrarlos con vistas previas, listas, etiquetas y notas.
+Nori es un gestor de marcadores y una app para leer más tarde que reúne tus enlaces guardados en un solo lugar. Guarda artículos, vídeos, herramientas e ideas y vuelve a encontrarlos con vistas previas, listas, etiquetas y notas.
 
-<b>Guarda con contexto</b>
-Organiza enlaces en listas personalizadas y añade etiquetas y notas personales. Explora tarjetas con imágenes de portada o capturas de páginas, o cambia a una vista compacta.
+<b>Guarda enlaces desde cualquier app</b>
+Comparte un enlace desde tu navegador o cualquier otra app con Nori y elige la lista donde guardarlo. Ten una lista de lectura para más tarde o reúne recursos para un proyecto. Activa el guardado rápido para enviar enlaces a tu lista favorita con un toque.
 
-<b>Encuentra lo que guardaste</b>
-Busca en tus marcadores y filtra por lista o etiqueta. Vuelve a los enlaces usados recientemente desde el historial sin recorrer toda tu colección.
+<b>Marcadores visuales con contexto</b>
+Cada marcador se convierte en una tarjeta con imagen de portada o captura de la página. Añade etiquetas y notas personales para recordar por qué lo guardaste, o cambia a una lista compacta.
 
-<b>Organiza en lote</b>
-Selecciona varios marcadores para moverlos entre listas, ocultarlos, compartirlos o eliminarlos a la vez.
+<b>Encuentra cualquier enlace en segundos</b>
+Busca en tus marcadores y filtra por lista o etiqueta. Vuelve a los enlaces abiertos recientemente desde el historial.
 
-<b>Guarda desde otras aplicaciones</b>
-Envía enlaces a Nori desde el menú de compartir de Android. Elige la lista de destino antes de guardar o activa el guardado rápido para tu lista preferida.
+<b>Organiza por lotes</b>
+Ordena tus marcadores en listas personalizadas. Selecciona varios a la vez para moverlos, ocultarlos, compartirlos o eliminarlos juntos.
 
-<b>Personaliza tu espacio</b>
-Elige un tema claro, oscuro o negro puro AMOLED. Selecciona un color de acento o crea el tuyo, ajusta el tamaño del texto y elige cómo ver tus marcadores.
+<b>Widget para la pantalla de inicio</b>
+Fija una lista con miniaturas en tu pantalla de inicio y abre enlaces con un toque.
+
+<b>Importa y exporta</b>
+Trae tus marcadores desde el navegador u otro gestor de marcadores con un archivo HTML o una lista de URL. Exporta a HTML o texto plano cuando quieras.
+
+<b>Hazla tuya</b>
+Elige entre temas claro, oscuro o negro puro AMOLED. Escoge un color de acento o crea el tuyo, ajusta el tamaño del texto y elige el diseño de marcadores que mejor te encaje.
 
 <b>Lee a tu manera</b>
-Abre los enlaces guardados en el navegador del sistema o en el navegador integrado.
+Abre los enlaces guardados dentro de Nori o en tu navegador predeterminado.
 
-<b>Lleva tu colección contigo</b>
-Tus marcadores se guardan localmente. El plan de pago opcional Nori Sync te permite sincronizar listas y marcadores entre dispositivos tras iniciar sesión.
+<b>En tu móvil, tu ordenador y tu navegador</b>
+Nori está disponible para Android, iPhone, iPad, Windows, macOS y Linux, con extensiones para Chrome y Firefox. Tus marcadores se guardan en tu dispositivo, y el plan de pago opcional Nori Sync mantiene listas y marcadores sincronizados en todos ellos tras iniciar sesión.
+
+¿Buscas un nuevo hogar para tu lista de lectura después de Pocket? Nori la mantiene sencilla, visual y tuya.

@@ -1,0 +1,27 @@
+Nori là ứng dụng quản lý dấu trang và đọc sau, mang đến một ngôi nhà cho những liên kết bạn đã lưu. Thu thập bài viết, video, công cụ và cảm hứng, rồi tìm lại chúng với bản xem trước trực quan, danh sách, thẻ và ghi chú.
+
+Lưu liên kết từ mọi ứng dụng
+Chia sẻ liên kết từ trình duyệt hoặc ứng dụng khác sang Nori và chọn danh sách cho nó. Giữ một danh sách đọc để xem sau, hoặc gom tài liệu cho một dự án.
+
+Dấu trang trực quan kèm ngữ cảnh
+Mỗi dấu trang trở thành một thẻ với ảnh bìa hoặc ảnh chụp trang. Thêm thẻ và ghi chú cá nhân để nhớ vì sao bạn đã lưu, hoặc chuyển sang danh sách gọn.
+
+Tìm mọi liên kết trong vài giây
+Tìm kiếm dấu trang và lọc theo danh sách hoặc thẻ. Quay lại các liên kết mới mở từ lịch sử.
+
+Sắp xếp hàng loạt
+Phân dấu trang vào các danh sách riêng. Chọn nhiều mục cùng lúc để di chuyển, ẩn, chia sẻ hoặc xóa chúng.
+
+Nhập và xuất
+Chuyển dấu trang từ trình duyệt hoặc trình quản lý dấu trang khác bằng tệp HTML hoặc danh sách URL đơn giản. Xuất sang HTML hoặc văn bản thuần bất cứ lúc nào.
+
+Theo phong cách của bạn
+Chọn giao diện sáng, tối hoặc đen tuyền AMOLED. Chọn màu nhấn hoặc tự tạo, chỉnh cỡ chữ và chọn bố cục dấu trang phù hợp với bạn.
+
+Đọc theo cách của bạn
+Mở liên kết đã lưu ngay trong Nori hoặc trong trình duyệt mặc định.
+
+Trên điện thoại, máy tính và trình duyệt
+Nori có trên Android, iPhone, iPad, Windows, macOS và Linux, cùng tiện ích mở rộng cho Chrome và Firefox. Dấu trang được lưu trên thiết bị của bạn, và gói trả phí tùy chọn Nori Sync giữ danh sách và dấu trang đồng bộ trên mọi thiết bị sau khi đăng nhập.
+
+Điều khoản sử dụng (EULA): https://www.apple.com/legal/macapps/stdeula/

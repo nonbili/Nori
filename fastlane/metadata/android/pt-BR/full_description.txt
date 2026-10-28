@@ -1,22 +1,30 @@
-O Nori reúne seus links salvos em um só lugar. Guarde artigos, ferramentas e ideias e encontre tudo de novo com prévias, listas, tags e notas.
+O Nori é um gerenciador de favoritos e app para ler depois que dá um lar aos seus links salvos. Reúna artigos, vídeos, ferramentas e inspirações e encontre tudo de novo com prévias visuais, listas, tags e notas.
 
-<b>Salve com contexto</b>
-Organize links em listas personalizadas e adicione tags e notas pessoais. Navegue por cartões com imagens de capa ou capturas de páginas, ou mude para a visualização compacta.
+<b>Salve links de qualquer app</b>
+Compartilhe um link do navegador ou de qualquer outro app com o Nori e escolha a lista dele. Mantenha uma lista de leitura para depois ou reúna materiais para um projeto. Ative o salvamento rápido para enviar links à sua lista favorita com um toque.
 
-<b>Encontre o que você salvou</b>
-Pesquise seus favoritos e filtre por lista ou tag. Volte aos links usados recentemente pelo histórico, sem percorrer toda a coleção.
+<b>Favoritos visuais com contexto</b>
+Cada favorito vira um cartão com imagem de capa ou captura da página. Adicione tags e notas pessoais para lembrar por que salvou, ou mude para uma lista compacta.
+
+<b>Encontre qualquer link em segundos</b>
+Pesquise nos seus favoritos e filtre por lista ou tag. Volte aos links abertos recentemente pelo histórico.
 
 <b>Organize em lote</b>
-Selecione vários favoritos para movê-los entre listas, ocultá-los, compartilhá-los ou excluí-los de uma só vez.
+Separe os favoritos em listas personalizadas. Selecione vários de uma vez para mover, ocultar, compartilhar ou excluir juntos.
 
-<b>Salve de outros apps</b>
-Envie links para o Nori pelo menu de compartilhamento do Android. Escolha a lista de destino antes de salvar ou ative o salvamento rápido na sua lista preferida.
+<b>Widget na tela inicial</b>
+Fixe uma lista com miniaturas na tela inicial e abra links com um toque.
 
-<b>Deixe do seu jeito</b>
-Escolha um tema claro, escuro ou preto puro AMOLED. Selecione uma cor de destaque ou crie a sua, ajuste o tamanho do texto e escolha o layout dos favoritos.
+<b>Importe e exporte</b>
+Traga favoritos do navegador ou de outro gerenciador de favoritos por um arquivo HTML ou uma lista simples de URLs. Exporte para HTML ou texto simples quando quiser.
+
+<b>Do seu jeito</b>
+Escolha temas claro, escuro ou preto puro AMOLED. Selecione uma cor de destaque ou crie a sua, ajuste o tamanho do texto e escolha o layout que combina com você.
 
 <b>Leia como preferir</b>
-Abra links salvos no navegador do sistema ou no navegador integrado.
+Abra os links salvos dentro do Nori ou no navegador padrão.
 
-<b>Leve sua coleção com você</b>
-Seus favoritos são armazenados localmente. O plano pago opcional Nori Sync permite sincronizar listas e favoritos entre dispositivos após fazer login.
+<b>No celular, no computador e no navegador</b>
+O Nori está disponível para Android, iPhone, iPad, Windows, macOS e Linux, com extensões para Chrome e Firefox. Seus favoritos ficam armazenados no seu dispositivo, e o plano pago opcional Nori Sync mantém listas e favoritos sincronizados em todos eles após o login.
+
+Procurando um novo lar para sua lista de leitura depois do Pocket? O Nori a mantém simples, visual e sua.

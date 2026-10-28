@@ -1,0 +1,27 @@
+Nori är en bokmärkeshanterare och läs senare-app som ger dina sparade länkar ett hem. Samla artiklar, videor, verktyg och inspiration och hitta dem igen med visuella förhandsvisningar, listor, taggar och anteckningar.
+
+Spara länkar från alla appar
+Dela en länk från webbläsaren eller någon annan app till Nori och välj vilken lista den hör till. Håll en läslista till senare eller samla material till ett projekt.
+
+Visuella bokmärken med sammanhang
+Varje bokmärke blir ett kort med omslagsbild eller skärmbild av sidan. Lägg till taggar och egna anteckningar så att du minns varför du sparade det, eller byt till en kompakt lista.
+
+Hitta vilken länk som helst på några sekunder
+Sök bland dina bokmärken och filtrera på lista eller tagg. Gå tillbaka till nyligen öppnade länkar via historiken.
+
+Organisera flera på en gång
+Sortera bokmärken i egna listor. Markera flera samtidigt för att flytta, dölja, dela eller ta bort dem tillsammans.
+
+Import och export
+Ta med bokmärken från webbläsaren eller en annan bokmärkeshanterare som HTML-fil eller en enkel lista med URL:er. Exportera till HTML eller vanlig text när du vill.
+
+Gör den till din
+Välj ljust, mörkt eller kolsvart AMOLED-tema. Välj en accentfärg eller skapa en egen, justera textstorleken och välj den layout som passar dig.
+
+Läs på ditt sätt
+Öppna sparade länkar direkt i Nori eller i din standardwebbläsare.
+
+I mobilen, datorn och webbläsaren
+Nori finns för Android, iPhone, iPad, Windows, macOS och Linux, med tillägg för Chrome och Firefox. Dina bokmärken lagras på din enhet, och det valfria betalabonnemanget Nori Sync håller listor och bokmärken synkade på alla enheter efter inloggning.
+
+Användarvillkor (EULA): https://www.apple.com/legal/macapps/stdeula/

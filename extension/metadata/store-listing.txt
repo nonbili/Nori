@@ -1,0 +1,27 @@
+Nori is a bookmark manager and read-later list for your browser. Save the current tab in one click, with a page preview, tags, and a personal note, then find it again from any device.
+
+Save the current tab
+Open the Nori popup to save the page you are on. Pick a list, add tags and a note, and choose a cover image or a captured page screenshot as its preview.
+
+Visual bookmarks with context
+Browse your bookmarks as rich cards with cover images, or switch to a compact list. Notes remind you why you saved each link.
+
+Find any link in seconds
+Search your bookmarks and filter by list or tag. Open the full Nori view in a tab to organize, move, hide, or delete bookmarks in batches.
+
+Import and export
+Bring bookmarks over from your browser or another bookmark manager as an HTML file or a plain list of URLs. Export to HTML or plain text at any time.
+
+Make it yours
+Light, dark, or pure black themes, with accent colors you can pick or create.
+
+On every device
+Nori is also available for Android, iPhone, iPad, Windows, macOS, and Linux. Your bookmarks are stored locally, and an optional paid Nori Sync plan keeps lists and bookmarks in sync across your browser, phone, and computer after you sign in.
+
+Privacy
+No page content is read. Nori only receives the links you choose to save.
+
+Get the apps
+App Store: https://apps.apple.com/app/nori-bookmark-manager/id6761264972
+Google Play: https://play.google.com/store/apps/details?id=jp.nonbili.nori
+Desktop: https://github.com/nonbili/Nori/releases/latest

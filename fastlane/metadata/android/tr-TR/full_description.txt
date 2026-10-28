@@ -1,22 +1,30 @@
-Nori, kaydettiğiniz bağlantıları tek yerde toplar. Makaleleri, araçları ve fikirleri biriktirin; önizlemeler, listeler, etiketler ve notlarla yeniden bulun.
+Nori, kaydettiğiniz bağlantılara bir yuva sunan bir yer imi yöneticisi ve sonra oku uygulamasıdır. Makaleleri, videoları, araçları ve ilham kaynaklarını biriktirin; görsel önizlemeler, listeler, etiketler ve notlarla yeniden bulun.
 
-<b>Bağlamıyla birlikte kaydedin</b>
-Bağlantıları özel listelerde düzenleyin, etiketler ve kişisel notlar ekleyin. Kapak görselleri veya sayfa ekran görüntüleri içeren yer imi kartlarına göz atın ya da kompakt görünüme geçin.
+<b>Her uygulamadan bağlantı kaydedin</b>
+Tarayıcınızdan veya başka bir uygulamadan bir bağlantıyı Nori ile paylaşın ve listesini seçin. Sonra okumak için bir okuma listesi tutun ya da bir proje için kaynak toplayın. Hızlı kaydetmeyi açın, bağlantılar tek dokunuşla favori listenize gitsin.
 
-<b>Kaydettiklerinizi bulun</b>
-Yer imlerinizde arama yapın, listeye veya etikete göre filtreleyin. Tüm koleksiyonunuzu taramadan geçmişten son kullanılan bağlantılara dönün.
+<b>Bağlamıyla görsel yer imleri</b>
+Her yer imi, kapak görseli veya sayfa ekran görüntüsü içeren bir karta dönüşür. Neden kaydettiğinizi hatırlamak için etiket ve kişisel notlar ekleyin ya da kompakt listeye geçin.
+
+<b>Her bağlantıyı saniyeler içinde bulun</b>
+Yer imlerinizde arayın, listeye veya etikete göre filtreleyin. Son açtığınız bağlantılara geçmişten hızla dönün.
 
 <b>Toplu düzenleyin</b>
-Birden fazla yer imini seçerek listeler arasında taşıyın, gizleyin, paylaşın veya tek seferde silin.
+Yer imlerinizi kendi listelerinize ayırın. Birden fazlasını seçip birlikte taşıyın, gizleyin, paylaşın veya silin.
 
-<b>Diğer uygulamalardan kaydedin</b>
-Android paylaşım menüsünden Nori’ye bağlantı gönderin. Kaydetmeden önce hedef listeyi seçin veya tercih ettiğiniz listeye hızlı kaydetmeyi etkinleştirin.
+<b>Ana ekran widget'ı</b>
+Önizleme görselli bir listeyi ana ekranınıza sabitleyin ve bağlantıları tek dokunuşla açın.
 
-<b>Kendinize göre özelleştirin</b>
-Açık, koyu veya tam siyah AMOLED temalarını seçin. Bir vurgu rengi seçin ya da kendi renginizi oluşturun, metin boyutunu ayarlayın ve yer imi düzenini belirleyin.
+<b>İçe ve dışa aktarma</b>
+Yer imlerinizi tarayıcınızdan veya başka bir yer imi yöneticisinden HTML dosyası ya da düz URL listesiyle aktarın. İstediğiniz zaman HTML veya düz metin olarak dışa aktarın.
+
+<b>Size göre ayarlayın</b>
+Açık, koyu veya simsiyah AMOLED temalarından birini seçin. Bir vurgu rengi seçin ya da kendinizinkini oluşturun, yazı boyutunu ayarlayın ve size uyan düzeni seçin.
 
 <b>İstediğiniz gibi okuyun</b>
-Kayıtlı bağlantıları sistem tarayıcısında veya uygulama içi tarayıcıda açın.
+Kayıtlı bağlantıları Nori içinde veya varsayılan tarayıcınızda açın.
 
-<b>Koleksiyonunuz yanınızda olsun</b>
-Yer imleriniz yerel olarak saklanır. İsteğe bağlı ücretli Nori Sync planı, giriş yaptıktan sonra listeleri ve yer imlerini cihazlar arasında eşitlemenizi sağlar.
+<b>Telefonda, bilgisayarda ve tarayıcıda</b>
+Nori; Android, iPhone, iPad, Windows, macOS ve Linux için, ayrıca Chrome ve Firefox eklentisi olarak kullanılabilir. Yer imleriniz cihazınızda saklanır; isteğe bağlı ücretli Nori Sync planı oturum açtıktan sonra listeleri ve yer imlerini tüm cihazlarınızda eşitler.
+
+Pocket'tan sonra okuma listeniz için yeni bir yuva mı arıyorsunuz? Nori onu sade, görsel ve size ait tutar.

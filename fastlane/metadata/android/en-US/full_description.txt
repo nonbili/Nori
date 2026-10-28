@@ -1,22 +1,30 @@
-Nori gives your saved links a home. Collect articles, tools, and inspiration, then find them again with visual previews, lists, tags, and notes.
+Nori is a bookmark manager and read-later app that gives your saved links a home. Collect articles, videos, tools, and inspiration, then find them again with visual previews, lists, tags, and notes.
 
-<b>Save with context</b>
-Keep links in custom lists, add tags, and attach personal notes. Browse rich bookmark cards with cover images or page screenshots, or switch to a compact view.
+<b>Save links from any app</b>
+Share a link from your browser or any other app to Nori and pick the list it belongs in. Keep a reading list for later, or gather resources for a project. Turn on quick save to file links into your favorite list in one tap.
 
-<b>Find what you saved</b>
-Search your bookmarks and filter by list or tag. Jump back to recently used links from history without hunting through your collection.
+<b>Visual bookmarks with context</b>
+Every bookmark becomes a rich card with a cover image or page screenshot. Add tags and personal notes so you remember why you saved it, or switch to a compact list.
+
+<b>Find any link in seconds</b>
+Search your bookmarks and filter by list or tag. Jump back to recently opened links from history.
 
 <b>Organize in batches</b>
-Select several bookmarks to move them between lists, hide them, share them, or delete them together.
+Sort bookmarks into custom lists. Select several at once to move, hide, share, or delete them together.
 
-<b>Save from other apps</b>
-Send links to Nori through Android's share menu. Choose the destination list before saving, or enable quick save for your preferred list.
+<b>Home screen widget</b>
+Pin a list to your home screen with preview thumbnails and open links in one tap.
+
+<b>Import and export</b>
+Bring bookmarks over from your browser or another bookmark manager as an HTML file or a plain list of URLs. Export to HTML or plain text at any time.
 
 <b>Make it yours</b>
 Choose light, dark, or pure black AMOLED themes. Pick an accent color or create your own, adjust text size, and choose the bookmark layout that suits you.
 
 <b>Read your way</b>
-Open saved links in your system browser or an in-app browser.
+Open saved links inside Nori or in your default browser.
 
-<b>Keep your collection with you</b>
-Your bookmarks are stored locally. An optional paid Nori Sync plan lets you sync lists and bookmarks across devices after signing in.
+<b>On your phone, computer, and browser</b>
+Nori is available for Android, iPhone, iPad, Windows, macOS, and Linux, with extensions for Chrome and Firefox. Your bookmarks are stored on your device, and an optional paid Nori Sync plan keeps lists and bookmarks in sync across all of them after you sign in.
+
+Looking for a new home for your reading list after Pocket? Nori keeps it simple, visual, and yours.

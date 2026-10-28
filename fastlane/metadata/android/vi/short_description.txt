@@ -1,1 +1,1 @@
-Lưu và tìm liên kết bằng bản xem trước, danh sách, thẻ và ghi chú.
+Quản lý dấu trang & đọc sau: lưu liên kết kèm bản xem trước, thẻ và ghi chú

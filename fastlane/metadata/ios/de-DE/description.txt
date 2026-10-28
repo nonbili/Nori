@@ -1,0 +1,27 @@
+Nori ist ein Lesezeichen-Manager und eine Später-lesen-App, die deinen gespeicherten Links ein Zuhause gibt. Sammle Artikel, Videos, Tools und Inspiration und finde sie mit visuellen Vorschauen, Listen, Tags und Notizen wieder.
+
+Links aus jeder App speichern
+Teile einen Link aus deinem Browser oder einer anderen App mit Nori und wähle die passende Liste. Führe eine Leseliste für später oder sammle Material für ein Projekt.
+
+Visuelle Lesezeichen mit Kontext
+Jedes Lesezeichen wird zur Karte mit Titelbild oder Screenshot der Seite. Füge Tags und persönliche Notizen hinzu, damit du weißt, warum du es gespeichert hast, oder wechsle zur kompakten Liste.
+
+Jeden Link in Sekunden finden
+Durchsuche deine Lesezeichen und filtere nach Liste oder Tag. Kehre über den Verlauf zu kürzlich geöffneten Links zurück.
+
+Mehrere auf einmal organisieren
+Sortiere Lesezeichen in eigene Listen. Wähle mehrere aus, um sie gemeinsam zu verschieben, auszublenden, zu teilen oder zu löschen.
+
+Import und Export
+Übernimm Lesezeichen aus deinem Browser oder einem anderen Lesezeichen-Manager als HTML-Datei oder einfache URL-Liste. Exportiere jederzeit als HTML oder Text.
+
+Ganz nach deinem Geschmack
+Wähle helles, dunkles oder tiefschwarzes AMOLED-Design. Nimm eine Akzentfarbe oder erstelle deine eigene, passe die Textgröße an und wähle das Layout, das zu dir passt.
+
+Lesen, wie du willst
+Öffne gespeicherte Links direkt in Nori oder in deinem Standardbrowser.
+
+Auf Smartphone, Computer und im Browser
+Nori gibt es für Android, iPhone, iPad, Windows, macOS und Linux sowie als Erweiterung für Chrome und Firefox. Deine Lesezeichen werden auf deinem Gerät gespeichert; mit dem optionalen kostenpflichtigen Nori Sync-Tarif bleiben Listen und Lesezeichen nach der Anmeldung auf allen Geräten synchron.
+
+Nutzungsbedingungen (EULA): https://www.apple.com/legal/macapps/stdeula/

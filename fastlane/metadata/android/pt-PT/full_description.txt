@@ -1,22 +1,30 @@
-O Nori reúne as suas ligações guardadas num só lugar. Guarde artigos, ferramentas e ideias e volte a encontrá-los com pré-visualizações, listas, etiquetas e notas.
+O Nori é um gestor de marcadores e uma app para ler mais tarde que dá uma casa às suas ligações guardadas. Reúna artigos, vídeos, ferramentas e inspiração e volte a encontrá-los com pré-visualizações, listas, etiquetas e notas.
 
-<b>Guarde com contexto</b>
-Organize ligações em listas personalizadas e adicione etiquetas e notas pessoais. Explore cartões com imagens de capa ou capturas de páginas, ou mude para a vista compacta.
+<b>Guarde ligações a partir de qualquer app</b>
+Partilhe uma ligação do navegador ou de outra app com o Nori e escolha a lista certa. Mantenha uma lista de leitura para mais tarde ou reúna recursos para um projeto. Ative a gravação rápida para enviar ligações para a sua lista preferida com um toque.
 
-<b>Encontre o que guardou</b>
-Pesquise os seus favoritos e filtre por lista ou etiqueta. Volte às ligações usadas recentemente através do histórico, sem percorrer toda a coleção.
+<b>Marcadores visuais com contexto</b>
+Cada marcador torna-se um cartão com imagem de capa ou captura da página. Adicione etiquetas e notas pessoais para se lembrar porque o guardou, ou mude para uma lista compacta.
+
+<b>Encontre qualquer ligação em segundos</b>
+Pesquise os seus marcadores e filtre por lista ou etiqueta. Volte às ligações abertas recentemente a partir do histórico.
 
 <b>Organize em lote</b>
-Selecione vários favoritos para os mover entre listas, ocultar, partilhar ou eliminar de uma só vez.
+Arrume os marcadores em listas personalizadas. Selecione vários de uma vez para os mover, ocultar, partilhar ou eliminar em conjunto.
 
-<b>Guarde a partir de outras aplicações</b>
-Envie ligações para o Nori através do menu de partilha do Android. Escolha a lista de destino antes de guardar ou ative a gravação rápida na sua lista preferida.
+<b>Widget no ecrã principal</b>
+Afixe uma lista com miniaturas no ecrã principal e abra ligações com um toque.
 
-<b>Escolha o seu estilo</b>
-Escolha um tema claro, escuro ou preto puro AMOLED. Selecione uma cor de destaque ou crie a sua, ajuste o tamanho do texto e escolha a apresentação dos favoritos.
+<b>Importar e exportar</b>
+Traga os marcadores do navegador ou de outro gestor de marcadores através de um ficheiro HTML ou de uma lista simples de URLs. Exporte para HTML ou texto simples sempre que quiser.
 
-<b>Leia como preferir</b>
-Abra as ligações guardadas no navegador do sistema ou no navegador integrado.
+<b>À sua medida</b>
+Escolha temas claro, escuro ou preto puro AMOLED. Escolha uma cor de destaque ou crie a sua, ajuste o tamanho do texto e escolha a disposição que lhe convém.
 
-<b>Leve a sua coleção consigo</b>
-Os favoritos são guardados localmente. O plano pago opcional Nori Sync permite sincronizar listas e favoritos entre dispositivos após iniciar sessão.
+<b>Leia à sua maneira</b>
+Abra as ligações guardadas dentro do Nori ou no navegador predefinido.
+
+<b>No telemóvel, no computador e no navegador</b>
+O Nori está disponível para Android, iPhone, iPad, Windows, macOS e Linux, com extensões para Chrome e Firefox. Os seus marcadores ficam guardados no seu dispositivo, e o plano pago opcional Nori Sync mantém listas e marcadores sincronizados em todos eles após iniciar sessão.
+
+Procura uma nova casa para a sua lista de leitura depois do Pocket? O Nori mantém-na simples, visual e sua.

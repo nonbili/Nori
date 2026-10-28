@@ -1,22 +1,30 @@
-Nori menyatukan tautan tersimpan Anda di satu tempat. Kumpulkan artikel, alat, dan inspirasi, lalu temukan kembali dengan pratinjau, daftar, tag, dan catatan.
+Nori adalah pengelola bookmark dan aplikasi baca nanti yang memberi rumah bagi tautan yang Anda simpan. Kumpulkan artikel, video, alat, dan inspirasi, lalu temukan kembali dengan pratinjau visual, daftar, tag, dan catatan.
 
-<b>Simpan beserta konteksnya</b>
-Atur tautan dalam daftar khusus dan tambahkan tag serta catatan pribadi. Jelajahi kartu markah dengan gambar sampul atau tangkapan layar halaman, atau beralih ke tampilan ringkas.
+<b>Simpan tautan dari aplikasi mana pun</b>
+Bagikan tautan dari browser atau aplikasi lain ke Nori dan pilih daftarnya. Buat daftar bacaan untuk nanti, atau kumpulkan bahan untuk sebuah proyek. Aktifkan simpan cepat untuk memasukkan tautan ke daftar favorit Anda dengan satu ketukan.
 
-<b>Temukan yang sudah disimpan</b>
-Cari markah dan filter berdasarkan daftar atau tag. Kembali ke tautan yang baru digunakan melalui riwayat tanpa menelusuri seluruh koleksi.
+<b>Bookmark visual dengan konteks</b>
+Setiap bookmark menjadi kartu dengan gambar sampul atau tangkapan layar halaman. Tambahkan tag dan catatan pribadi agar Anda ingat alasan menyimpannya, atau beralih ke daftar ringkas.
+
+<b>Temukan tautan apa pun dalam hitungan detik</b>
+Cari bookmark dan filter berdasarkan daftar atau tag. Kembali ke tautan yang baru dibuka dari riwayat.
 
 <b>Atur sekaligus</b>
-Pilih beberapa markah untuk dipindahkan antardaftar, disembunyikan, dibagikan, atau dihapus sekaligus.
+Kelompokkan bookmark ke daftar buatan Anda. Pilih beberapa sekaligus untuk memindahkan, menyembunyikan, membagikan, atau menghapusnya bersama.
 
-<b>Simpan dari aplikasi lain</b>
-Kirim tautan ke Nori melalui menu berbagi Android. Pilih daftar tujuan sebelum menyimpan, atau aktifkan simpan cepat ke daftar pilihan Anda.
+<b>Widget layar utama</b>
+Sematkan daftar dengan gambar pratinjau di layar utama dan buka tautan dengan satu ketukan.
 
-<b>Sesuaikan dengan selera</b>
-Pilih tema terang, gelap, atau hitam pekat AMOLED. Pilih warna aksen atau buat sendiri, sesuaikan ukuran teks, dan pilih tata letak markah.
+<b>Impor dan ekspor</b>
+Pindahkan bookmark dari browser atau pengelola bookmark lain lewat file HTML atau daftar URL biasa. Ekspor ke HTML atau teks biasa kapan saja.
+
+<b>Sesuaikan dengan selera Anda</b>
+Pilih tema terang, gelap, atau hitam pekat AMOLED. Pilih warna aksen atau buat sendiri, atur ukuran teks, dan pilih tata letak bookmark yang cocok untuk Anda.
 
 <b>Baca dengan cara Anda</b>
-Buka tautan tersimpan di browser sistem atau browser dalam aplikasi.
+Buka tautan tersimpan di dalam Nori atau di browser default Anda.
 
-<b>Bawa koleksi ke mana saja</b>
-Markah disimpan secara lokal. Paket berbayar opsional Nori Sync memungkinkan sinkronisasi daftar dan markah antarperangkat setelah masuk ke akun.
+<b>Di ponsel, komputer, dan browser</b>
+Nori tersedia untuk Android, iPhone, iPad, Windows, macOS, dan Linux, dengan ekstensi untuk Chrome dan Firefox. Bookmark disimpan di perangkat Anda, dan paket berbayar opsional Nori Sync menjaga daftar dan bookmark tetap tersinkron di semua perangkat setelah masuk.
+
+Mencari rumah baru untuk daftar bacaan Anda setelah Pocket? Nori membuatnya sederhana, visual, dan milik Anda.

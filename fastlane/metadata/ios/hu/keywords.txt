@@ -1,0 +1,1 @@
+könyvjelző,olvasási,lista,mentés,cikkek,url,jegyzetek,rendszerező,gyűjtemény,kedvencek,web,sync

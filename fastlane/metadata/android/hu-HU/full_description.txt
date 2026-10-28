@@ -1,22 +1,30 @@
-A Nori egy helyre gyűjti a mentett linkjeidet. Ments cikkeket, eszközöket és ötleteket, majd találd meg őket újra előnézetek, listák, címkék és jegyzetek segítségével.
+A Nori könyvjelzőkezelő és később olvasó alkalmazás, amely otthont ad a mentett linkjeidnek. Gyűjts cikkeket, videókat, eszközöket és ötleteket, majd találd meg őket újra vizuális előnézetek, listák, címkék és jegyzetek segítségével.
 
-<b>Mentsd el a fontos részleteket is</b>
-Rendezd a linkeket saját listákba, és adj hozzá címkéket és személyes jegyzeteket. Böngéssz borítóképes vagy az oldal képernyőképét mutató kártyák között, vagy válts tömör nézetre.
+<b>Ments linkeket bármelyik alkalmazásból</b>
+Oszd meg a linket a böngésződből vagy bármely más alkalmazásból a Norival, és válaszd ki a listáját. Vezess olvasási listát későbbre, vagy gyűjts anyagot egy projekthez. Kapcsold be a gyors mentést, és a linkek egy koppintással a kedvenc listádba kerülnek.
 
-<b>Találd meg, amit elmentettél</b>
-Keress a könyvjelzőid között, és szűrj lista vagy címke szerint. Az előzményekből közvetlenül visszatérhetsz a nemrég használt linkekhez.
+<b>Vizuális könyvjelzők, kontextussal</b>
+Minden könyvjelzőből kártya lesz borítóképpel vagy az oldal képernyőképével. Adj hozzá címkéket és saját jegyzeteket, hogy emlékezz, miért mentetted el, vagy válts tömör listanézetre.
 
-<b>Rendezz több könyvjelzőt egyszerre</b>
-Jelölj ki több könyvjelzőt, és helyezd át őket listák között, rejtsd el, oszd meg vagy töröld őket egyszerre.
+<b>Bármely link másodpercek alatt</b>
+Keress a könyvjelzőid között, és szűrj lista vagy címke szerint. Az előzményekből visszatérhetsz a nemrég megnyitott linkekhez.
 
-<b>Mentés más alkalmazásokból</b>
-Küldj linkeket a Noriba az Android megosztási menüjéből. Mentés előtt válaszd ki a célként használt listát, vagy kapcsold be a gyorsmentést a kedvenc listádba.
+<b>Rendszerezés egyszerre több elemmel</b>
+Rendezd a könyvjelzőket saját listákba. Jelölj ki többet egyszerre, hogy együtt áthelyezd, elrejtsd, megoszd vagy töröld őket.
 
-<b>Szabd a saját ízlésedre</b>
-Válassz világos, sötét vagy teljesen fekete AMOLED-témát. Válassz kiemelőszínt vagy adj meg sajátot, állítsd be a szövegméretet és a könyvjelzők elrendezését.
+<b>Kezdőképernyő-widget</b>
+Tűzz ki egy listát előnézeti képekkel a kezdőképernyődre, és nyisd meg a linkeket egy koppintással.
 
-<b>Olvass, ahogy szeretnél</b>
-Nyisd meg a mentett linkeket a rendszer böngészőjében vagy a beépített böngészőben.
+<b>Importálás és exportálás</b>
+Hozd át a könyvjelzőidet a böngésződből vagy egy másik könyvjelzőkezelőből HTML-fájlként vagy egyszerű URL-listaként. Exportálj bármikor HTML-be vagy egyszerű szövegbe.
 
-<b>A gyűjteményed mindig veled</b>
-A könyvjelzőket helyben tároljuk. A választható, fizetős Nori Sync csomaggal bejelentkezés után szinkronizálhatod a listákat és könyvjelzőket az eszközeid között.
+<b>Legyen a tiéd</b>
+Válassz világos, sötét vagy teljesen fekete AMOLED témát. Válassz kiemelőszínt vagy hozd létre a sajátodat, állítsd be a betűméretet, és válaszd a hozzád illő elrendezést.
+
+<b>Olvass a saját módodon</b>
+Nyisd meg a mentett linkeket a Noriban vagy az alapértelmezett böngésződben.
+
+<b>Telefonon, számítógépen és böngészőben</b>
+A Nori elérhető Androidra, iPhone-ra, iPadre, Windowsra, macOS-re és Linuxra, valamint bővítményként Chrome-hoz és Firefoxhoz. A könyvjelzőidet az eszközödön tároljuk, a választható, fizetős Nori Sync csomag pedig bejelentkezés után minden eszközöd között szinkronban tartja a listákat és könyvjelzőket.
+
+Új otthont keresel az olvasási listádnak a Pocket után? A Nori egyszerű, vizuális és a tiéd marad.

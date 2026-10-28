@@ -1,0 +1,1 @@
+reading,list,save,url,article,web,clipper,organizer,collection,favorites,launcher,inbox,library,sync

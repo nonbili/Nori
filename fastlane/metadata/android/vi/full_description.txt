@@ -1,22 +1,30 @@
-Nori tập hợp các liên kết đã lưu vào một nơi. Lưu bài viết, công cụ và ý tưởng, rồi tìm lại bằng bản xem trước, danh sách, thẻ và ghi chú.
+Nori là ứng dụng quản lý dấu trang và đọc sau, mang đến một ngôi nhà cho những liên kết bạn đã lưu. Thu thập bài viết, video, công cụ và cảm hứng, rồi tìm lại chúng với bản xem trước trực quan, danh sách, thẻ và ghi chú.
 
-<b>Lưu cùng ngữ cảnh</b>
-Sắp xếp liên kết vào danh sách riêng, thêm thẻ và ghi chú cá nhân. Duyệt các thẻ dấu trang có ảnh bìa hoặc ảnh chụp trang web, hoặc chuyển sang chế độ xem gọn.
+<b>Lưu liên kết từ mọi ứng dụng</b>
+Chia sẻ liên kết từ trình duyệt hoặc ứng dụng khác sang Nori và chọn danh sách cho nó. Giữ một danh sách đọc để xem sau, hoặc gom tài liệu cho một dự án. Bật lưu nhanh để đưa liên kết vào danh sách yêu thích chỉ với một chạm.
 
-<b>Tìm nội dung đã lưu</b>
-Tìm kiếm dấu trang và lọc theo danh sách hoặc thẻ. Quay lại liên kết dùng gần đây qua lịch sử mà không phải tìm trong toàn bộ bộ sưu tập.
+<b>Dấu trang trực quan kèm ngữ cảnh</b>
+Mỗi dấu trang trở thành một thẻ với ảnh bìa hoặc ảnh chụp trang. Thêm thẻ và ghi chú cá nhân để nhớ vì sao bạn đã lưu, hoặc chuyển sang danh sách gọn.
+
+<b>Tìm mọi liên kết trong vài giây</b>
+Tìm kiếm dấu trang và lọc theo danh sách hoặc thẻ. Quay lại các liên kết mới mở từ lịch sử.
 
 <b>Sắp xếp hàng loạt</b>
-Chọn nhiều dấu trang để chuyển giữa các danh sách, ẩn, chia sẻ hoặc xóa cùng lúc.
+Phân dấu trang vào các danh sách riêng. Chọn nhiều mục cùng lúc để di chuyển, ẩn, chia sẻ hoặc xóa chúng.
 
-<b>Lưu từ ứng dụng khác</b>
-Gửi liên kết đến Nori qua menu chia sẻ của Android. Chọn danh sách đích trước khi lưu, hoặc bật lưu nhanh vào danh sách bạn muốn.
+<b>Tiện ích màn hình chính</b>
+Ghim một danh sách có ảnh xem trước lên màn hình chính và mở liên kết chỉ với một chạm.
 
-<b>Tùy chỉnh theo ý bạn</b>
-Chọn giao diện sáng, tối hoặc đen tuyền AMOLED. Chọn màu nhấn hoặc tạo màu riêng, điều chỉnh cỡ chữ và chọn bố cục dấu trang.
+<b>Nhập và xuất</b>
+Chuyển dấu trang từ trình duyệt hoặc trình quản lý dấu trang khác bằng tệp HTML hoặc danh sách URL đơn giản. Xuất sang HTML hoặc văn bản thuần bất cứ lúc nào.
+
+<b>Theo phong cách của bạn</b>
+Chọn giao diện sáng, tối hoặc đen tuyền AMOLED. Chọn màu nhấn hoặc tự tạo, chỉnh cỡ chữ và chọn bố cục dấu trang phù hợp với bạn.
 
 <b>Đọc theo cách của bạn</b>
-Mở liên kết đã lưu trong trình duyệt hệ thống hoặc trình duyệt trong ứng dụng.
+Mở liên kết đã lưu ngay trong Nori hoặc trong trình duyệt mặc định.
 
-<b>Mang bộ sưu tập theo bạn</b>
-Dấu trang được lưu trên thiết bị. Gói Nori Sync trả phí tùy chọn cho phép đồng bộ danh sách và dấu trang giữa các thiết bị sau khi đăng nhập.
+<b>Trên điện thoại, máy tính và trình duyệt</b>
+Nori có trên Android, iPhone, iPad, Windows, macOS và Linux, cùng tiện ích mở rộng cho Chrome và Firefox. Dấu trang được lưu trên thiết bị của bạn, và gói trả phí tùy chọn Nori Sync giữ danh sách và dấu trang đồng bộ trên mọi thiết bị sau khi đăng nhập.
+
+Đang tìm ngôi nhà mới cho danh sách đọc sau khi rời Pocket? Nori giữ nó đơn giản, trực quan và là của riêng bạn.

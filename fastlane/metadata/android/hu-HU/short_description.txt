@@ -1,1 +1,1 @@
-Linkek mentése és keresése előnézetekkel, listákkal, címkékkel és jegyzetekkel.
+Könyvjelzőkezelő és később olvasás: linkek előnézettel, címkékkel, jegyzetekkel

@@ -1,0 +1,27 @@
+Nori, kaydettiğiniz bağlantılara bir yuva sunan bir yer imi yöneticisi ve sonra oku uygulamasıdır. Makaleleri, videoları, araçları ve ilham kaynaklarını biriktirin; görsel önizlemeler, listeler, etiketler ve notlarla yeniden bulun.
+
+Her uygulamadan bağlantı kaydedin
+Tarayıcınızdan veya başka bir uygulamadan bir bağlantıyı Nori ile paylaşın ve listesini seçin. Sonra okumak için bir okuma listesi tutun ya da bir proje için kaynak toplayın.
+
+Bağlamıyla görsel yer imleri
+Her yer imi, kapak görseli veya sayfa ekran görüntüsü içeren bir karta dönüşür. Neden kaydettiğinizi hatırlamak için etiket ve kişisel notlar ekleyin ya da kompakt listeye geçin.
+
+Her bağlantıyı saniyeler içinde bulun
+Yer imlerinizde arayın, listeye veya etikete göre filtreleyin. Son açtığınız bağlantılara geçmişten hızla dönün.
+
+Toplu düzenleyin
+Yer imlerinizi kendi listelerinize ayırın. Birden fazlasını seçip birlikte taşıyın, gizleyin, paylaşın veya silin.
+
+İçe ve dışa aktarma
+Yer imlerinizi tarayıcınızdan veya başka bir yer imi yöneticisinden HTML dosyası ya da düz URL listesiyle aktarın. İstediğiniz zaman HTML veya düz metin olarak dışa aktarın.
+
+Size göre ayarlayın
+Açık, koyu veya simsiyah AMOLED temalarından birini seçin. Bir vurgu rengi seçin ya da kendinizinkini oluşturun, yazı boyutunu ayarlayın ve size uyan düzeni seçin.
+
+İstediğiniz gibi okuyun
+Kayıtlı bağlantıları Nori içinde veya varsayılan tarayıcınızda açın.
+
+Telefonda, bilgisayarda ve tarayıcıda
+Nori; Android, iPhone, iPad, Windows, macOS ve Linux için, ayrıca Chrome ve Firefox eklentisi olarak kullanılabilir. Yer imleriniz cihazınızda saklanır; isteğe bağlı ücretli Nori Sync planı oturum açtıktan sonra listeleri ve yer imlerini tüm cihazlarınızda eşitler.
+
+Kullanım Koşulları (EULA): https://www.apple.com/legal/macapps/stdeula/

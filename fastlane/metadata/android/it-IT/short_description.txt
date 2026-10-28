@@ -1,1 +1,1 @@
-Salva e ritrova i link con anteprime, elenchi, tag e note.
+Gestore di segnalibri e lettura differita: link con anteprime, tag e note

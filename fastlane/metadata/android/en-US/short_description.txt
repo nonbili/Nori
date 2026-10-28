@@ -1,1 +1,1 @@
-Save and find links with rich previews, lists, tags, and notes.
+Bookmark manager & read-later app: save links with previews, tags and notes.

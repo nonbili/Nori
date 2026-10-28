@@ -1,0 +1,1 @@
+favoris,signets,marque-pages,lecture,liste,enregistrer,articles,url,tags,organiser,collection,web

@@ -1,0 +1,1 @@
+yer imi,favoriler,okuma,listesi,kaydet,makale,url,etiket,koleksiyon,düzenle,web,senkron

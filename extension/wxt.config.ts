@@ -74,7 +74,7 @@ export default defineConfig({
   },
   manifest: ({ browser }) => ({
     name: 'Nori',
-    description: 'Beautiful bookmark manager and launcher',
+    description: 'Bookmark manager and read-later list: save the current tab with a preview, tags and notes, then find it again on any device.',
     icons: { 16: 'icon.png', 32: 'icon.png', 48: 'icon.png', 128: 'icon.png' },
     permissions: ['storage', 'activeTab', 'identity', 'alarms'],
     host_permissions: [

@@ -1,0 +1,27 @@
+Nori es un gestor de marcadores y una app para leer más tarde que reúne tus enlaces guardados en un solo lugar. Guarda artículos, vídeos, herramientas e ideas y vuelve a encontrarlos con vistas previas, listas, etiquetas y notas.
+
+Guarda enlaces desde cualquier app
+Comparte un enlace desde tu navegador o cualquier otra app con Nori y elige la lista donde guardarlo. Ten una lista de lectura para más tarde o reúne recursos para un proyecto.
+
+Marcadores visuales con contexto
+Cada marcador se convierte en una tarjeta con imagen de portada o captura de la página. Añade etiquetas y notas personales para recordar por qué lo guardaste, o cambia a una lista compacta.
+
+Encuentra cualquier enlace en segundos
+Busca en tus marcadores y filtra por lista o etiqueta. Vuelve a los enlaces abiertos recientemente desde el historial.
+
+Organiza por lotes
+Ordena tus marcadores en listas personalizadas. Selecciona varios a la vez para moverlos, ocultarlos, compartirlos o eliminarlos juntos.
+
+Importa y exporta
+Trae tus marcadores desde el navegador u otro gestor de marcadores con un archivo HTML o una lista de URL. Exporta a HTML o texto plano cuando quieras.
+
+Hazla tuya
+Elige entre temas claro, oscuro o negro puro AMOLED. Escoge un color de acento o crea el tuyo, ajusta el tamaño del texto y elige el diseño de marcadores que mejor te encaje.
+
+Lee a tu manera
+Abre los enlaces guardados dentro de Nori o en tu navegador predeterminado.
+
+En tu móvil, tu ordenador y tu navegador
+Nori está disponible para Android, iPhone, iPad, Windows, macOS y Linux, con extensiones para Chrome y Firefox. Tus marcadores se guardan en tu dispositivo, y el plan de pago opcional Nori Sync mantiene listas y marcadores sincronizados en todos ellos tras iniciar sesión.
+
+Condiciones de uso (EULA): https://www.apple.com/legal/macapps/stdeula/

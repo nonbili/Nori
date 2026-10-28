@@ -1,22 +1,30 @@
-Nori samlar dina sparade länkar på ett ställe. Spara artiklar, verktyg och inspiration och hitta dem igen med förhandsvisningar, listor, taggar och anteckningar.
+Nori är en bokmärkeshanterare och läs senare-app som ger dina sparade länkar ett hem. Samla artiklar, videor, verktyg och inspiration och hitta dem igen med visuella förhandsvisningar, listor, taggar och anteckningar.
 
-<b>Spara med sammanhang</b>
-Ordna länkar i egna listor och lägg till taggar och personliga anteckningar. Bläddra bland bokmärkeskort med omslagsbilder eller skärmbilder av sidor, eller byt till en kompakt vy.
+<b>Spara länkar från alla appar</b>
+Dela en länk från webbläsaren eller någon annan app till Nori och välj vilken lista den hör till. Håll en läslista till senare eller samla material till ett projekt. Slå på snabbsparning för att lägga länkar i din favoritlista med ett tryck.
 
-<b>Hitta det du sparat</b>
-Sök bland dina bokmärken och filtrera efter lista eller tagg. Gå tillbaka till nyligen använda länkar från historiken utan att leta igenom hela samlingen.
+<b>Visuella bokmärken med sammanhang</b>
+Varje bokmärke blir ett kort med omslagsbild eller skärmbild av sidan. Lägg till taggar och egna anteckningar så att du minns varför du sparade det, eller byt till en kompakt lista.
 
-<b>Ordna flera samtidigt</b>
-Välj flera bokmärken för att flytta dem mellan listor, dölja, dela eller ta bort dem på en gång.
+<b>Hitta vilken länk som helst på några sekunder</b>
+Sök bland dina bokmärken och filtrera på lista eller tagg. Gå tillbaka till nyligen öppnade länkar via historiken.
 
-<b>Spara från andra appar</b>
-Skicka länkar till Nori via delningsmenyn i Android. Välj mållista innan du sparar eller aktivera snabbsparning till din föredragna lista.
+<b>Organisera flera på en gång</b>
+Sortera bokmärken i egna listor. Markera flera samtidigt för att flytta, dölja, dela eller ta bort dem tillsammans.
 
-<b>Gör det personligt</b>
-Välj ett ljust, mörkt eller helt svart AMOLED-tema. Välj en accentfärg eller skapa en egen, justera textstorleken och välj layout för dina bokmärken.
+<b>Widget för hemskärmen</b>
+Fäst en lista med förhandsbilder på hemskärmen och öppna länkar med ett tryck.
+
+<b>Import och export</b>
+Ta med bokmärken från webbläsaren eller en annan bokmärkeshanterare som HTML-fil eller en enkel lista med URL:er. Exportera till HTML eller vanlig text när du vill.
+
+<b>Gör den till din</b>
+Välj ljust, mörkt eller kolsvart AMOLED-tema. Välj en accentfärg eller skapa en egen, justera textstorleken och välj den layout som passar dig.
 
 <b>Läs på ditt sätt</b>
-Öppna sparade länkar i systemets webbläsare eller i den inbyggda webbläsaren.
+Öppna sparade länkar direkt i Nori eller i din standardwebbläsare.
 
-<b>Ta med dig samlingen</b>
-Dina bokmärken lagras lokalt. Med det valfria betalabonnemanget Nori Sync kan du efter inloggning synkronisera listor och bokmärken mellan enheter.
+<b>I mobilen, datorn och webbläsaren</b>
+Nori finns för Android, iPhone, iPad, Windows, macOS och Linux, med tillägg för Chrome och Firefox. Dina bokmärken lagras på din enhet, och det valfria betalabonnemanget Nori Sync håller listor och bokmärken synkade på alla enheter efter inloggning.
+
+Letar du efter ett nytt hem för din läslista efter Pocket? Nori håller den enkel, visuell och din.

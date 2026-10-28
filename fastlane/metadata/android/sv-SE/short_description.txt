@@ -1,1 +1,1 @@
-Spara och hitta länkar med förhandsvisningar, listor, taggar och anteckningar.
+Bokmärkeshanterare och läs senare: spara länkar med förhandsvisning och taggar

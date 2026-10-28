@@ -1,1 +1,1 @@
-Salve e encontre links com prévias, listas, tags e notas.
+Gerenciador de favoritos e ler depois: salve links com prévias, tags e notas

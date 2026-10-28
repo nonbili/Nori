@@ -1,1 +1,1 @@
-Enregistrez et retrouvez vos liens avec aperçus, listes, tags et notes.
+Gestionnaire de favoris et lecture différée : liens, aperçus, tags et notes

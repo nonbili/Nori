@@ -1,0 +1,27 @@
+A Nori könyvjelzőkezelő és később olvasó alkalmazás, amely otthont ad a mentett linkjeidnek. Gyűjts cikkeket, videókat, eszközöket és ötleteket, majd találd meg őket újra vizuális előnézetek, listák, címkék és jegyzetek segítségével.
+
+Ments linkeket bármelyik alkalmazásból
+Oszd meg a linket a böngésződből vagy bármely más alkalmazásból a Norival, és válaszd ki a listáját. Vezess olvasási listát későbbre, vagy gyűjts anyagot egy projekthez.
+
+Vizuális könyvjelzők, kontextussal
+Minden könyvjelzőből kártya lesz borítóképpel vagy az oldal képernyőképével. Adj hozzá címkéket és saját jegyzeteket, hogy emlékezz, miért mentetted el, vagy válts tömör listanézetre.
+
+Bármely link másodpercek alatt
+Keress a könyvjelzőid között, és szűrj lista vagy címke szerint. Az előzményekből visszatérhetsz a nemrég megnyitott linkekhez.
+
+Rendszerezés egyszerre több elemmel
+Rendezd a könyvjelzőket saját listákba. Jelölj ki többet egyszerre, hogy együtt áthelyezd, elrejtsd, megoszd vagy töröld őket.
+
+Importálás és exportálás
+Hozd át a könyvjelzőidet a böngésződből vagy egy másik könyvjelzőkezelőből HTML-fájlként vagy egyszerű URL-listaként. Exportálj bármikor HTML-be vagy egyszerű szövegbe.
+
+Legyen a tiéd
+Válassz világos, sötét vagy teljesen fekete AMOLED témát. Válassz kiemelőszínt vagy hozd létre a sajátodat, állítsd be a betűméretet, és válaszd a hozzád illő elrendezést.
+
+Olvass a saját módodon
+Nyisd meg a mentett linkeket a Noriban vagy az alapértelmezett böngésződben.
+
+Telefonon, számítógépen és böngészőben
+A Nori elérhető Androidra, iPhone-ra, iPadre, Windowsra, macOS-re és Linuxra, valamint bővítményként Chrome-hoz és Firefoxhoz. A könyvjelzőidet az eszközödön tároljuk, a választható, fizetős Nori Sync csomag pedig bejelentkezés után minden eszközöd között szinkronban tartja a listákat és könyvjelzőket.
+
+Felhasználási feltételek (EULA): https://www.apple.com/legal/macapps/stdeula/

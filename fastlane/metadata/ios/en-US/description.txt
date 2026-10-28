@@ -1,0 +1,27 @@
+Nori is a bookmark manager and read-later app that gives your saved links a home. Collect articles, videos, tools, and inspiration, then find them again with visual previews, lists, tags, and notes.
+
+Save links from any app
+Share a link from your browser or any other app to Nori and pick the list it belongs in. Keep a reading list for later, or gather resources for a project.
+
+Visual bookmarks with context
+Every bookmark becomes a rich card with a cover image or page screenshot. Add tags and personal notes so you remember why you saved it, or switch to a compact list.
+
+Find any link in seconds
+Search your bookmarks and filter by list or tag. Jump back to recently opened links from history.
+
+Organize in batches
+Sort bookmarks into custom lists. Select several at once to move, hide, share, or delete them together.
+
+Import and export
+Bring bookmarks over from your browser or another bookmark manager as an HTML file or a plain list of URLs. Export to HTML or plain text at any time.
+
+Make it yours
+Choose light, dark, or pure black AMOLED themes. Pick an accent color or create your own, adjust text size, and choose the bookmark layout that suits you.
+
+Read your way
+Open saved links inside Nori or in your default browser.
+
+On your phone, computer, and browser
+Nori is available for Android, iPhone, iPad, Windows, macOS, and Linux, with extensions for Chrome and Firefox. Your bookmarks are stored on your device, and an optional paid Nori Sync plan keeps lists and bookmarks in sync across all of them after you sign in.
+
+Terms of Use (EULA): https://www.apple.com/legal/macapps/stdeula/

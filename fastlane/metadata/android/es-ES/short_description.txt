@@ -1,1 +1,1 @@
-Guarda y encuentra enlaces con vistas previas, listas, etiquetas y notas.
+Gestor de marcadores para leer más tarde: enlaces con vistas previas y notas

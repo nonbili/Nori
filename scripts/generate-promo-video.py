@@ -509,14 +509,14 @@ def blend_diagonal_wipe(
 
 SCENES = [
     {
-        "badge": "Visual bookmarks",
+        "badge": "Bookmark manager",
         "title": "Links worth\nkeeping.",
-        "subtitle": "Rich previews. Your notes. One place.",
+        "subtitle": "Save links now. Read them later.",
         "accent1": (16, 185, 129),
         "accent2": (59, 130, 246),
     },
     {
-        "badge": "Capture & annotate",
+        "badge": "Tags & notes",
         "title": "Add a little\ncontext.",
         "subtitle": "Choose a cover. Add tags and notes.",
         "accent1": (20, 184, 166),
@@ -530,14 +530,14 @@ SCENES = [
         "accent2": (99, 102, 241),
     },
     {
-        "badge": "Your space",
+        "badge": "Themes & accent colors",
         "title": "Make it\nyours.",
         "subtitle": "Light, dark, or pure black. Your accent.",
         "accent1": (168, 85, 247),
         "accent2": (244, 63, 94),
     },
     {
-        "badge": "A home for your links",
+        "badge": "Lists & batch edits",
         "title": "Your bookmarks.\nAll together.",
         "subtitle": "Organize in batches. Keep ideas close.",
         "accent1": (16, 185, 129),

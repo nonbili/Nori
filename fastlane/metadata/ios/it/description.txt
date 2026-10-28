@@ -1,0 +1,27 @@
+Nori è un gestore di segnalibri e un'app per leggere più tardi che dà una casa ai tuoi link salvati. Raccogli articoli, video, strumenti e ispirazioni, poi ritrovali con anteprime visive, liste, tag e note.
+
+Salva link da qualsiasi app
+Condividi un link dal browser o da un'altra app con Nori e scegli la lista in cui salvarlo. Tieni una lista di lettura per dopo o raccogli risorse per un progetto.
+
+Segnalibri visivi con contesto
+Ogni segnalibro diventa una scheda con immagine di copertina o screenshot della pagina. Aggiungi tag e note personali per ricordare perché l'hai salvato, oppure passa a un elenco compatto.
+
+Trova qualsiasi link in pochi secondi
+Cerca tra i segnalibri e filtra per lista o tag. Torna ai link aperti di recente dalla cronologia.
+
+Organizza in blocco
+Ordina i segnalibri in liste personalizzate. Selezionane diversi per spostarli, nasconderli, condividerli o eliminarli insieme.
+
+Importa ed esporta
+Porta i segnalibri dal browser o da un altro gestore di segnalibri con un file HTML o un semplice elenco di URL. Esporta in HTML o testo semplice quando vuoi.
+
+Rendila tua
+Scegli tra tema chiaro, scuro o nero puro AMOLED. Seleziona un colore d'accento o creane uno tuo, regola la dimensione del testo e scegli il layout che preferisci.
+
+Leggi a modo tuo
+Apri i link salvati dentro Nori o nel browser predefinito.
+
+Su telefono, computer e browser
+Nori è disponibile per Android, iPhone, iPad, Windows, macOS e Linux, con estensioni per Chrome e Firefox. I segnalibri sono salvati sul tuo dispositivo e il piano a pagamento facoltativo Nori Sync mantiene liste e segnalibri sincronizzati su tutti i dispositivi dopo l'accesso.
+
+Termini di utilizzo (EULA): https://www.apple.com/legal/macapps/stdeula/

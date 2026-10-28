@@ -1,0 +1,1 @@
+favoritos,marcadores,lista,leitura,salvar,artigos,url,coleção,organizar,web,sync,mais tarde
