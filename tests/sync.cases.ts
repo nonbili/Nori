@@ -20,6 +20,8 @@ mock.module('@/states/auth', () => ({ auth$ }))
 mock.module('@/states/lists', () => ({ lists$ }))
 mock.module('@/states/bookmarks', () => ({ bookmarks$ }))
 mock.module('@/states/sync-meta', () => ({ syncMeta$ }))
+const syncOwner$ = observable({ ownerUserId: undefined as string | undefined, switchBackup: undefined as { fromUserId?: string; savedAt: number; json: string } | undefined })
+mock.module('@/states/sync-owner', () => ({ syncOwner$ }))
 mock.module('@/lib/supabase/client', () => ({ supabase: server }))
 const runScreenshotSync = mock(async () => {})
 const removeOrphans = mock(async () => {})
@@ -51,6 +53,7 @@ beforeEach(() => {
   lists$.lists.set(createStarterLists())
   bookmarks$.bookmarks.set([...createStarterBookmarks(), bookmark()])
   syncMeta$.set(initialMeta())
+  syncOwner$.set({ ownerUserId: undefined, switchBackup: undefined })
   auth$.userId.set('user-a')
 })
 afterEach(async () => {
@@ -142,7 +145,72 @@ describe('complete sync cycle', () => {
     expect(syncMeta$.syncUserId.peek()).toBeUndefined()
   })
 
+  test('pauses sync on another account until the user chooses, sending nothing meanwhile', async () => {
+    syncMeta$.pendingBookmarkIds.set(['local'])
+    await settle(syncSupabase())
+    expect(syncOwner$.ownerUserId.peek()).toBe('user-a')
+    server.reset()
+    auth$.userId.set('user-b')
+    await settle(syncSupabase())
+    edit('Edited on the other account')
+    await advance(5000)
+    expect(server.calls).toEqual([])
+    expect(syncOwner$.ownerUserId.peek()).toBe('user-a')
+  })
+
+  test('treats data last synced before owners were kept as that account\'s', async () => {
+    syncMeta$.assign({ syncUserId: 'user-b' })
+    await settle(syncSupabase())
+    expect(server.calls).toEqual([])
+  })
+
+  test('using the account replaces the device, pushing nothing of the old account', async () => {
+    const { resolveAccountChoice } = await import('../lib/supabase/sync-account')
+    syncMeta$.pendingBookmarkIds.set(['local'])
+    await settle(syncSupabase())
+    server.reset()
+    auth$.userId.set('user-b')
+    server.tables.bookmarks = [{ id: 'theirs', list_id: 'builtin-later', url: 'https://b.example/', title: 'B', icon: '', json: {}, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-01T00:00:00.000Z', user_id: 'user-b' }]
+    await settle(resolveAccountChoice('useAccount'))
+    expect(bookmarks$.bookmarks.peek().map((row) => row.id)).toContain('theirs')
+    expect(bookmarks$.bookmarks.peek().map((row) => row.id)).not.toContain('local')
+    expect(server.tables.bookmarks.map((row) => row.id)).not.toContain('local')
+    expect(syncOwner$.ownerUserId.peek()).toBe('user-b')
+    expect(syncOwner$.switchBackup.peek()).toMatchObject({ fromUserId: 'user-a' })
+    expect(syncOwner$.switchBackup.peek()!.json).toContain('https://local.example/')
+  })
+
+  test('merging keeps the account\'s rows, adds the device\'s and pushes only those', async () => {
+    const { resolveAccountChoice } = await import('../lib/supabase/sync-account')
+    syncMeta$.pendingBookmarkIds.set(['local'])
+    await settle(syncSupabase())
+    server.reset()
+    auth$.userId.set('user-b')
+    server.tables.bookmarks = [{ id: 'theirs', list_id: 'builtin-later', url: 'https://b.example/', title: 'B', icon: '', json: {}, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-01T00:00:00.000Z', user_id: 'user-b' }]
+    await settle(resolveAccountChoice('mergeDevice'))
+    expect(server.tables.bookmarks.find((row) => row.id === 'local')).toMatchObject({ user_id: 'user-b' })
+    expect(server.tables.bookmarks.find((row) => row.id === 'theirs')).toMatchObject({ title: 'B' })
+    expect(syncMeta$.pendingBookmarkIds.peek()).toEqual([])
+    expect(syncOwner$.ownerUserId.peek()).toBe('user-b')
+  })
+
+  test('drops an account choice whose account changed and came back while it was reading', async () => {
+    const { resolveAccountChoice } = await import('../lib/supabase/sync-account')
+    syncOwner$.ownerUserId.set('user-a')
+    auth$.userId.set('user-b')
+    const held = server.holdNext((query) => query.table === 'bookmarks' && !query.write)
+    const choosing = resolveAccountChoice('useAccount')
+    await held.entered
+    auth$.userId.set('user-a')
+    auth$.userId.set('user-b')
+    held.release()
+    await settle(choosing)
+    expect(syncOwner$.ownerUserId.peek()).toBe('user-a')
+    expect(local()).toBeDefined()
+  })
+
   test('switching accounts forces a full pull instead of reusing the previous account cursors', async () => {
+    syncOwner$.ownerUserId.set('user-a')
     syncMeta$.assign({
       syncUserId: 'user-b', syncListsCursor: '2026-10-17T00:00:00.000Z',
       syncBookmarksCursor: '2026-10-17T00:00:00.000Z', lastFullPullAt: Date.now(),

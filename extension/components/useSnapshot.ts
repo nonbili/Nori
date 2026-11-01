@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { browser } from 'wxt/browser'
 import { notifyPreviewChange } from 'nori-root/lib/bookmark-preview'
-import { getSnapshot } from '../lib/client'
+import { getSnapshot, request } from '../lib/client'
 import type { AppSnapshot, StateChangedMessage } from '../lib/model'
 
 export function useSnapshot() {
@@ -21,6 +21,13 @@ export function useSnapshot() {
     }
   }, [])
   useEffect(() => () => void (requestSequence.current += 1), [])
+  useEffect(() => {
+    // Coming back is when another device's changes are most likely waiting.
+    const onReturn = () => void request({ type: 'sync-on-return' }).catch(() => undefined)
+    onReturn()
+    window.addEventListener('focus', onReturn)
+    return () => window.removeEventListener('focus', onReturn)
+  }, [])
   useEffect(() => {
     void refresh()
   }, [refresh])

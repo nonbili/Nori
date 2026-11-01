@@ -128,7 +128,16 @@
       "errorSignInRestore": "Inicie sessão para restaurar compras",
       "errorNoPurchase": "Nenhuma compra do Nori Sync encontrada para restaurar",
       "errorPending": "As suas alterações mais recentes ainda estão a sincronizar. Tente novamente dentro de momentos.",
-      "purchasePending": "Compra pendente de aprovação. A sincronização será ativada assim que for aprovada."
+      "purchasePending": "Compra pendente de aprovação. A sincronização será ativada assim que for aprovada.",
+      "accountChoiceTitle": "Dados de outra conta",
+      "accountChoiceMessage": "As listas e os marcadores deste dispositivo foram sincronizados com outra conta Nori. A sincronização está em pausa até escolheres o que fazer com eles.",
+      "accountChoiceHint": "Usar os dados desta conta substitui o que está neste dispositivo. Combinar adiciona a esta conta o que só este dispositivo tem. Em ambos os casos, é primeiro guardada uma cópia de segurança deste dispositivo.",
+      "accountChoiceUseAccount": "Usar os dados desta conta",
+      "accountChoiceMerge": "Combinar este dispositivo com a conta",
+      "accountChoiceLater": "Mais tarde",
+      "accountChoiceFailed": "Não foi possível passar os dados para esta conta: {{message}}",
+      "exportSwitchBackup": "Exportar os dados anteriores à mudança",
+      "exportSwitchBackupHint": "Guardado em {{date}}. Restaura-o nas Definições para o recuperar."
     },
     "plan": {
       "label": "Plano atual",

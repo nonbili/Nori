@@ -128,7 +128,16 @@
       "errorSignInRestore": "Melden Sie sich an, um Käufe wiederherzustellen",
       "errorNoPurchase": "Kein Nori Sync-Kauf zum Wiederherstellen gefunden",
       "errorPending": "Ihre neuesten Änderungen werden noch synchronisiert. Versuchen Sie es gleich noch einmal.",
-      "purchasePending": "Kauf wartet auf Genehmigung. Die Synchronisierung wird nach der Genehmigung freigeschaltet."
+      "purchasePending": "Kauf wartet auf Genehmigung. Die Synchronisierung wird nach der Genehmigung freigeschaltet.",
+      "accountChoiceTitle": "Daten aus einem anderen Konto",
+      "accountChoiceMessage": "Die Listen und Lesezeichen auf diesem Gerät wurden mit einem anderen Nori-Konto synchronisiert. Die Synchronisierung pausiert, bis du entscheidest, was damit geschehen soll.",
+      "accountChoiceHint": "Wenn du die Daten dieses Kontos verwendest, wird der Inhalt dieses Geräts ersetzt. Beim Zusammenführen wird diesem Konto hinzugefügt, was nur auf diesem Gerät vorhanden ist. In beiden Fällen wird zuerst eine Sicherung dieses Geräts angelegt.",
+      "accountChoiceUseAccount": "Daten dieses Kontos verwenden",
+      "accountChoiceMerge": "Gerät mit Konto zusammenführen",
+      "accountChoiceLater": "Später",
+      "accountChoiceFailed": "Die Daten konnten nicht zu diesem Konto wechseln: {{message}}",
+      "exportSwitchBackup": "Daten von vor dem Wechsel exportieren",
+      "exportSwitchBackupHint": "Gespeichert am {{date}}. Stelle sie in den Einstellungen wieder her, um sie zurückzuholen."
     },
     "plan": {
       "label": "Aktueller Tarif",

@@ -127,7 +127,16 @@
       "errorSignInRestore": "Accedi per ripristinare gli acquisti",
       "errorNoPurchase": "Nessun acquisto di Nori Sync trovato da ripristinare",
       "errorPending": "Le tue ultime modifiche sono ancora in sincronizzazione. Riprova tra un momento.",
-      "purchasePending": "Acquisto in attesa di approvazione. La sincronizzazione si sbloccherà una volta approvata."
+      "purchasePending": "Acquisto in attesa di approvazione. La sincronizzazione si sbloccherà una volta approvata.",
+      "accountChoiceTitle": "Dati di un altro account",
+      "accountChoiceMessage": "Gli elenchi e i segnalibri su questo dispositivo sono stati sincronizzati con un altro account Nori. La sincronizzazione è in pausa finché non scegli cosa farne.",
+      "accountChoiceHint": "Usare i dati di questo account sostituisce il contenuto del dispositivo. Unire aggiunge a questo account ciò che si trova solo su questo dispositivo. In entrambi i casi viene prima conservato un backup del dispositivo.",
+      "accountChoiceUseAccount": "Usa i dati di questo account",
+      "accountChoiceMerge": "Unisci il dispositivo all'account",
+      "accountChoiceLater": "Più tardi",
+      "accountChoiceFailed": "Impossibile spostare i dati su questo account: {{message}}",
+      "exportSwitchBackup": "Esporta i dati precedenti al cambio",
+      "exportSwitchBackupHint": "Salvato il {{date}}. Ripristinalo nelle Impostazioni per recuperarlo."
     },
     "plan": {
       "label": "Piano attuale",

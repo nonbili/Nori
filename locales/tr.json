@@ -127,7 +127,16 @@
       "errorSignInRestore": "Satın alımları geri yüklemek için giriş yapın",
       "errorNoPurchase": "Geri yüklenecek Nori Sync satın alımı bulunamadı",
       "errorPending": "Son değişiklikleriniz hâlâ eşitleniyor. Birazdan tekrar deneyin.",
-      "purchasePending": "Satın alma onayı bekleniyor. Senkronizasyon onaylandıktan sonra açılacaktır."
+      "purchasePending": "Satın alma onayı bekleniyor. Senkronizasyon onaylandıktan sonra açılacaktır.",
+      "accountChoiceTitle": "Başka bir hesabın verileri",
+      "accountChoiceMessage": "Bu cihazdaki listeler ve yer imleri başka bir Nori hesabıyla eşitlendi. Onlarla ne yapılacağını seçene kadar eşitleme duraklatıldı.",
+      "accountChoiceHint": "Bu hesabın verilerini kullanmak, bu cihazdakilerin yerini alır. Birleştirmek, yalnızca bu cihazda olanları bu hesaba ekler. Her iki durumda da önce bu cihazın bir yedeği saklanır.",
+      "accountChoiceUseAccount": "Bu hesabın verilerini kullan",
+      "accountChoiceMerge": "Bu cihazı hesapla birleştir",
+      "accountChoiceLater": "Daha sonra",
+      "accountChoiceFailed": "Veriler bu hesaba geçirilemedi: {{message}}",
+      "exportSwitchBackup": "Geçişten önceki verileri dışa aktar",
+      "exportSwitchBackupHint": "{{date}} tarihinde kaydedildi. Geri getirmek için Ayarlar'dan geri yükleyin."
     },
     "plan": {
       "label": "Mevcut plan",

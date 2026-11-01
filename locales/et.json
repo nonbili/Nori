@@ -128,7 +128,16 @@
       "errorSignInRestore": "Ostude taastamiseks logi sisse",
       "errorNoPurchase": "Taastatavat Nori Synci ostu ei leitud",
       "errorPending": "Sinu viimaseid muudatusi veel sünkroonitakse. Proovi hetke pärast uuesti.",
-      "purchasePending": "Ost ootab kinnitust. Sünkroonimine avaneb pärast kinnitamist."
+      "purchasePending": "Ost ootab kinnitust. Sünkroonimine avaneb pärast kinnitamist.",
+      "accountChoiceTitle": "Teise konto andmed",
+      "accountChoiceMessage": "Selle seadme loendid ja järjehoidjad on sünkroonitud teise Nori kontoga. Sünkroonimine on peatatud, kuni valid, mida nendega teha.",
+      "accountChoiceHint": "Selle konto andmete kasutamine asendab seadmes oleva. Ühendamine lisab sellele kontole selle, mis on ainult selles seadmes. Mõlemal juhul tehakse esmalt seadmest varukoopia.",
+      "accountChoiceUseAccount": "Kasuta selle konto andmeid",
+      "accountChoiceMerge": "Ühenda seade kontoga",
+      "accountChoiceLater": "Hiljem",
+      "accountChoiceFailed": "Andmeid ei õnnestunud sellele kontole viia: {{message}}",
+      "exportSwitchBackup": "Ekspordi vahetuse-eelsed andmed",
+      "exportSwitchBackupHint": "Salvestatud {{date}}. Taasta need seadetes."
     },
     "plan": {
       "label": "Praegune pakett",

@@ -16,6 +16,12 @@ The component suites render React in Happy DOM; native layout, gestures, and
 OS share delivery still need device testing. Sync tests use fake timers and
 deferred requests to control when edits and account changes happen.
 
+`tests/sync-local/` runs the real sync code on separate device processes against
+a local Supabase stack, for what the in-memory server cannot show: RLS, the
+`updated_at` triggers, API row limits and Storage. Start the stack from an Inks
+checkout with `bun scripts/sync-stack.ts start` (Docker required), then run
+`bun run test:sync:local` here.
+
 Desktop tests run with `cd desktop && go test ./...`. Linux needs the Wails GTK
 and WebKit development packages; use `-tags gtk3` with GTK3/WebKitGTK 4.1.
 Chrome, Chromium, or Edge is needed for browser-dependent cases. The desktop

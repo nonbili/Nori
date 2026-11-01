@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Linking, Pressable, View } from 'react-native'
 import { NoriText } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
@@ -7,6 +8,10 @@ import { useTranslation } from 'react-i18next'
 import { NouMenu, type NouMenuItem } from '@/components/menu/NouMenu'
 import { auth$ } from '@/states/auth'
 import { syncMeta$ } from '@/states/sync-meta'
+import { syncOwner$ } from '@/states/sync-owner'
+import { chooseAccountData } from '@/hooks/useAccountChoicePrompt'
+import type { AccountChoice } from '@/lib/supabase/sync-account'
+import { accountChoice$ } from '@/lib/supabase/sync-session'
 import { useThemeColors } from '@/lib/theme'
 import { isIos } from '@/lib/utils'
 import { signOut, startHostedSignIn } from '@/lib/supabase/auth'
@@ -35,6 +40,7 @@ export interface SettingsActions {
   onManualSync: () => void
   onImportBookmarks: () => void
   onExportBookmarks: (format: BookmarkTransferFormat, target?: BookmarkExportTarget) => void
+  onExportSwitchBackup: () => void
   onDeleteAccount: () => void
   onOpenAbout: () => void
   onOpenChangelog: () => void
@@ -57,8 +63,88 @@ export const SyncSettingsSections: React.FC<{ actions: SettingsActions }> = ({ a
   return (
     <>
       <AccountSection actions={actions} />
+      <AccountChoiceSection />
       <PlanSection actions={actions} />
+      <SwitchBackupSection actions={actions} />
     </>
+  )
+}
+
+const AccountChoiceButton: React.FC<{ label: string; filled?: boolean; busy: boolean; onPress: () => void }> = ({
+  label,
+  filled,
+  busy,
+  onPress,
+}) => (
+  <Pressable
+    disabled={busy}
+    onPress={onPress}
+    className={`items-center rounded-full px-5 py-2.5 ${filled ? 'bg-accent-fill active:bg-accent-fill-pressed' : 'bg-well'} ${busy ? 'opacity-50' : ''}`}
+  >
+    <NoriText className={`text-sm font-medium ${filled ? 'text-accent-on' : 'text-content'}`}>{label}</NoriText>
+  </Pressable>
+)
+
+const AccountChoiceSection: React.FC = () => {
+  const { t } = useTranslation()
+  const needed = useValue(accountChoice$)
+  const [choosing, setChoosing] = useState(false)
+  if (!needed) return null
+
+  const choose = async (choice: AccountChoice) => {
+    setChoosing(true)
+    try {
+      await chooseAccountData(choice)
+    } finally {
+      setChoosing(false)
+    }
+  }
+
+  return (
+    <SectionCard title={t('settings.sync.accountChoiceTitle')}>
+      <View className="px-5 py-5">
+        <NoriText className="text-sm leading-6 text-content-muted">{t('settings.sync.accountChoiceMessage')}</NoriText>
+        <NoriText className="mt-2 text-sm leading-6 text-content-muted">{t('settings.sync.accountChoiceHint')}</NoriText>
+        <View className="mt-5 gap-3">
+          <AccountChoiceButton
+            filled
+            busy={choosing}
+            label={t('settings.sync.accountChoiceUseAccount')}
+            onPress={() => void choose('useAccount')}
+          />
+          <AccountChoiceButton
+            busy={choosing}
+            label={t('settings.sync.accountChoiceMerge')}
+            onPress={() => void choose('mergeDevice')}
+          />
+        </View>
+      </View>
+    </SectionCard>
+  )
+}
+
+const SwitchBackupSection: React.FC<{ actions: SettingsActions }> = ({ actions }) => {
+  const { t } = useTranslation()
+  const backup = useValue(syncOwner$.switchBackup)
+  const needed = useValue(accountChoice$)
+  if (!backup || needed) return null
+
+  return (
+    <SectionCard title={t('settings.sync.exportSwitchBackup')}>
+      <View className="gap-3 px-5 py-5">
+        <NoriText className="text-sm leading-6 text-content-muted">
+          {t('settings.sync.exportSwitchBackupHint', {
+            date: new Date(backup.savedAt).toLocaleString(),
+            interpolation: { escapeValue: false },
+          })}
+        </NoriText>
+        <AccountChoiceButton
+          busy={actions.busyAction !== null}
+          label={t('settings.sync.exportSwitchBackup')}
+          onPress={actions.onExportSwitchBackup}
+        />
+      </View>
+    </SectionCard>
   )
 }
 

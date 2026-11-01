@@ -127,7 +127,16 @@
       "errorSignInRestore": "登入以復原購買",
       "errorNoPurchase": "未找到可復原的 Nori 同步購買紀錄",
       "errorPending": "最新變更仍在同步，請稍後再試。",
-      "purchasePending": "購買待核准。核准後即可解鎖同步。"
+      "purchasePending": "購買待核准。核准後即可解鎖同步。",
+      "accountChoiceTitle": "來自其他帳號的資料",
+      "accountChoiceMessage": "此裝置上的清單和書籤已與另一個 Nori 帳號同步。在你選擇如何處理之前，同步已暫停。",
+      "accountChoiceHint": "使用此帳號的資料會取代此裝置上的內容。合併會將僅此裝置擁有的內容加入此帳號。無論哪種方式，都會先保留此裝置的備份。",
+      "accountChoiceUseAccount": "使用此帳號的資料",
+      "accountChoiceMerge": "將此裝置合併到帳號",
+      "accountChoiceLater": "稍後",
+      "accountChoiceFailed": "無法將資料切換到此帳號：{{message}}",
+      "exportSwitchBackup": "匯出切換前的資料",
+      "exportSwitchBackupHint": "儲存於 {{date}}。在設定中還原即可找回。"
     },
     "plan": {
       "label": "目前方案",

@@ -128,7 +128,16 @@
       "errorSignInRestore": "Pierakstieties, lai atjaunotu pirkumus",
       "errorNoPurchase": "Nav atrasts neviens atjaunojams Nori Sync pirkums",
       "errorPending": "Jūsu pēdējās izmaiņas joprojām tiek sinhronizētas. Pēc brīža mēģiniet vēlreiz.",
-      "purchasePending": "Pirkums gaida apstiprinājumu. Sinhronizācija tiks atbloķēta pēc tā apstiprināšanas."
+      "purchasePending": "Pirkums gaida apstiprinājumu. Sinhronizācija tiks atbloķēta pēc tā apstiprināšanas.",
+      "accountChoiceTitle": "Citā konta dati",
+      "accountChoiceMessage": "Šīs ierīces saraksti un grāmatzīmes tika sinhronizēti ar citu Nori kontu. Sinhronizācija ir apturēta, līdz izvēlēsieties, ko ar tiem darīt.",
+      "accountChoiceHint": "Izmantojot šī konta datus, ierīces saturs tiek aizstāts. Apvienojot šim kontam tiek pievienots tas, kas ir tikai šajā ierīcē. Abos gadījumos vispirms tiek saglabāta ierīces rezerves kopija.",
+      "accountChoiceUseAccount": "Izmantot šī konta datus",
+      "accountChoiceMerge": "Apvienot ierīci ar kontu",
+      "accountChoiceLater": "Vēlāk",
+      "accountChoiceFailed": "Neizdevās pārcelt datus uz šo kontu: {{message}}",
+      "exportSwitchBackup": "Eksportēt datus no laika pirms maiņas",
+      "exportSwitchBackupHint": "Saglabāts {{date}}. Atjaunojiet tos iestatījumos."
     },
     "plan": {
       "label": "Pašreizējais plāns",

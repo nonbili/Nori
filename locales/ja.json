@@ -128,7 +128,16 @@
       "errorSignInRestore": "購入を復元するにはサインインしてください",
       "errorNoPurchase": "復元可能な Nori Sync の購入が見つかりませんでした",
       "errorPending": "最新の変更は現在同期中です。しばらくしてからもう一度お試しください。",
-      "purchasePending": "購入の承認待ちです。承認されると同期が利用可能になります。"
+      "purchasePending": "購入の承認待ちです。承認されると同期が利用可能になります。",
+      "accountChoiceTitle": "別のアカウントのデータ",
+      "accountChoiceMessage": "このデバイスのリストとブックマークは別の Nori アカウントと同期されていました。どうするかを選ぶまで同期は一時停止します。",
+      "accountChoiceHint": "このアカウントのデータを使うと、このデバイスの内容が置き換えられます。統合すると、このデバイスにしかないものがこのアカウントに追加されます。どちらの場合も、先にこのデバイスのバックアップが保存されます。",
+      "accountChoiceUseAccount": "このアカウントのデータを使う",
+      "accountChoiceMerge": "このデバイスをアカウントに統合",
+      "accountChoiceLater": "後で",
+      "accountChoiceFailed": "データをこのアカウントに切り替えられませんでした: {{message}}",
+      "exportSwitchBackup": "切り替え前のデータを書き出す",
+      "exportSwitchBackupHint": "{{date}} に保存。設定から復元すると元に戻せます。"
     },
     "plan": {
       "label": "現在のプラン",

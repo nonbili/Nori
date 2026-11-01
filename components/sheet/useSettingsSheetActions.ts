@@ -29,6 +29,7 @@ import { lists$ } from '@/states/lists'
 import { auth$, refreshEntitlement } from '@/states/auth'
 import { isIos, isWeb } from '@/lib/utils'
 import { showToast } from '@/lib/toast'
+import { syncOwner$ } from '@/states/sync-owner'
 import type { SettingsBusyAction } from '@/components/sheet/SettingsSheetSections'
 
 const TRANSFER_MIME = {
@@ -263,38 +264,49 @@ export function useSettingsSheetActions() {
           ? exportBookmarksToJson(lists, bookmarks)
           : exportBookmarksToPlainText(lists, bookmarks)
       const date = new Date().toISOString().slice(0, 10)
-      const filename = `nori-bookmarks-${date}.${TRANSFER_EXTENSION[format]}`
-      const mimeType = TRANSFER_MIME[format]
-
-      if (isWeb) {
-        downloadOnWeb(filename, content, mimeType)
-        showToast(t('settings.transfer.exported'))
-        return
-      }
-
-      if (target === 'save') {
-        // The system picker writes straight to Files, a USB drive or a cloud folder.
-        if (await saveTextFile(filename, mimeType, content)) {
-          showToast(t('settings.transfer.exported'))
-        }
-        return
-      }
-
-      const cacheDirectory = FileSystem.cacheDirectory
-      if (!cacheDirectory) {
-        throw new Error(t('settings.transfer.shareUnavailable'))
-      }
-      const uri = `${cacheDirectory}${filename}`
-      await FileSystem.writeAsStringAsync(uri, content)
-      if (!(await Sharing.isAvailableAsync())) {
-        throw new Error(t('settings.transfer.shareUnavailable'))
-      }
-      await Sharing.shareAsync(uri, {
-        mimeType,
-        UTI: TRANSFER_UTI[format],
-        dialogTitle: t('settings.transfer.exportTitle'),
-      })
+      await deliverExport(`nori-bookmarks-${date}.${TRANSFER_EXTENSION[format]}`, content, format, target)
     })
+
+  const onExportSwitchBackup = () =>
+    runAction(TRANSFER_BUSY_ACTION.json, async () => {
+      const backup = syncOwner$.switchBackup.peek()
+      if (!backup) return
+      const date = new Date(backup.savedAt).toISOString().slice(0, 10)
+      await deliverExport(`nori-before-account-switch-${date}.json`, backup.json, 'json', 'share')
+    })
+
+  const deliverExport = async (filename: string, content: string, format: BookmarkTransferFormat, target: BookmarkExportTarget) => {
+    const mimeType = TRANSFER_MIME[format]
+
+    if (isWeb) {
+      downloadOnWeb(filename, content, mimeType)
+      showToast(t('settings.transfer.exported'))
+      return
+    }
+
+    if (target === 'save') {
+      // The system picker writes straight to Files, a USB drive or a cloud folder.
+      if (await saveTextFile(filename, mimeType, content)) {
+        showToast(t('settings.transfer.exported'))
+      }
+      return
+    }
+
+    const cacheDirectory = FileSystem.cacheDirectory
+    if (!cacheDirectory) {
+      throw new Error(t('settings.transfer.shareUnavailable'))
+    }
+    const uri = `${cacheDirectory}${filename}`
+    await FileSystem.writeAsStringAsync(uri, content)
+    if (!(await Sharing.isAvailableAsync())) {
+      throw new Error(t('settings.transfer.shareUnavailable'))
+    }
+    await Sharing.shareAsync(uri, {
+      mimeType,
+      UTI: TRANSFER_UTI[format],
+      dialogTitle: t('settings.transfer.exportTitle'),
+    })
+  }
 
   return {
     actionError,
@@ -308,6 +320,7 @@ export function useSettingsSheetActions() {
     onManualSync,
     onImportBookmarks,
     onExportBookmarks,
+    onExportSwitchBackup,
     onDeleteAccount: () => setPendingExternalAction('delete-account'),
   }
 }

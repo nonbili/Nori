@@ -12,6 +12,9 @@ let auth: AuthState = { loaded: false, plan: 'free', source: 'none' }
 let syncing = false
 let syncError: string | undefined
 let syncTimer: ReturnType<typeof setTimeout> | undefined
+let lastSyncRunAt = 0
+// Opening the UI or focusing its window syncs at most this often.
+const RETURN_SYNC_THROTTLE_MS = 30 * 1000
 let operation = Promise.resolve<unknown>(undefined)
 
 function enqueue<T>(run: () => Promise<T>) {
@@ -68,6 +71,7 @@ let runScreenshotSync = async () => {}
 async function runSync(broadcast = true) {
   if (syncing) return
   syncing = true
+  lastSyncRunAt = Date.now()
   syncError = undefined
   try {
     const state = await loadState()
@@ -127,6 +131,10 @@ async function handleMessage(message: RequestMessage): Promise<ResponseMessage> 
     if (message.type === 'sync') {
       await runSync()
       return { ok: true, data: await snapshot() }
+    }
+    if (message.type === 'sync-on-return') {
+      if (Date.now() - lastSyncRunAt >= RETURN_SYNC_THROTTLE_MS) queueSync()
+      return { ok: true }
     }
     if (message.type === 'sync-screenshots') {
       void runScreenshotSync()

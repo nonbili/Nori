@@ -91,6 +91,7 @@ export type RequestMessage =
   | { type: 'sign-out' }
   | { type: 'sync' }
   | { type: 'sync-screenshots' }
+  | { type: 'sync-on-return' }
 
 export interface StateChangedMessage {
   type: 'state-changed'

@@ -9,6 +9,7 @@ import {
   type BookmarkListData,
 } from '@/lib/nori-data'
 import {
+  mergeDeviceIntoAccount,
   collectChangedRowIds,
   collectUnsyncedRowIds,
   dropExpiredSyncTombstones,
@@ -170,5 +171,34 @@ describe('supabase sync merge helpers', () => {
     ))
 
     expect(isPristineStarterSeed(deletedLists, bookmarks)).toBe(false)
+  })
+})
+
+describe('mergeDeviceIntoAccount', () => {
+  const list = (id: string, deleted = false) => ({ id, name: id, json: { deleted_at: deleted ? '2026-01-01T00:00:00.000Z' : null }, createdAt: '', updatedAt: '' })
+  const bookmark = (id: string, url: string, json: Record<string, unknown> = {}, listId = 'l') => ({ id, listId, url, title: id, icon: '', json, createdAt: '', updatedAt: '' })
+
+  it('keeps the account rows and pushes only what is new to it', () => {
+    const merged = mergeDeviceIntoAccount(
+      [list('l'), list('mine'), list('gone', true)],
+      [
+        bookmark('same-id', 'https://device.example/'),
+        bookmark('same-page', 'https://both.example/'),
+        bookmark('other-list', 'https://both.example/', {}, 'mine'),
+        bookmark('new', 'https://new.example/'),
+        bookmark('deleted', 'https://deleted.example/', { deleted_at: '2026-01-01T00:00:00.000Z' }),
+      ],
+      [list('l')],
+      [bookmark('same-id', 'https://account.example/'), bookmark('theirs', 'https://both.example/')],
+    )
+    expect(merged.pendingListIds).toEqual(['mine'])
+    expect(merged.pendingBookmarkIds).toEqual(['other-list', 'new'])
+    expect(merged.bookmarks.find((row) => row.id === 'same-id')!.url).toBe('https://account.example/')
+  })
+
+  it('drops a screenshot pointer into the old account so the capture uploads again', () => {
+    const ref = { path: 'old-user/x.jpg', savedAt: 1, url: 'https://new.example/' }
+    const merged = mergeDeviceIntoAccount([], [bookmark('new', 'https://new.example/', { screenshot: ref, note: 'kept' })], [], [])
+    expect(merged.bookmarks[0].json).toEqual({ note: 'kept' })
   })
 })

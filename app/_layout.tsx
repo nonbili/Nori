@@ -14,6 +14,7 @@ import i18n from 'i18next'
 import { colorScheme as nativeWindColorScheme, vars } from 'nativewind'
 import { onReceiveAuthUrl } from '@/lib/supabase/auth'
 import { startSupabaseSyncWatchers, syncSupabase } from '@/lib/supabase/sync'
+import { useAccountChoicePrompt } from '@/hooks/useAccountChoicePrompt'
 import { purgeExpiredTombstones } from '@/lib/tombstone-purge'
 import { useAppColorScheme, useThemeColors } from '@/lib/theme'
 import { accentVariables, applyAccentToDocument, normalizeAccent } from '@/lib/accent'
@@ -40,6 +41,9 @@ LogBox.ignoreAllLogs()
 const holdSplash = Platform.OS !== 'web' && settings$.bookmarkView.peek() === 'preview'
 if (holdSplash) void SplashScreen.preventAutoHideAsync().catch(() => {})
 
+// Coming back to the app syncs at most this often.
+const RETURN_SYNC_THROTTLE_MS = 30 * 1000
+
 function warmPreviews() {
   const fallback = settings$.previewImageSource.peek()
   const items = bookmarks$.bookmarks
@@ -55,6 +59,7 @@ function LayoutContent() {
   const themeColors = useThemeColors()
   const userId = useValue(auth$.userId)
   const plan = useValue(auth$.plan)
+  useAccountChoicePrompt()
   const theme = useValue(settings$.theme)
   const accent = useValue(settings$.accent)
   const fontScale = useValue(settings$.fontScale)
@@ -162,12 +167,22 @@ function LayoutContent() {
       return
     }
 
-    void syncSupabase().catch(() => undefined)
-    const timer = setInterval(() => {
+    let lastRunAt = 0
+    const runSync = () => {
+      lastRunAt = Date.now()
       void syncSupabase().catch(() => undefined)
-    }, 10 * 60 * 1000)
+    }
+    runSync()
+    const timer = setInterval(runSync, 10 * 60 * 1000)
+    // Coming back to the app is when another device's changes are most likely waiting.
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active' && Date.now() - lastRunAt >= RETURN_SYNC_THROTTLE_MS) runSync()
+    })
 
-    return () => clearInterval(timer)
+    return () => {
+      clearInterval(timer)
+      appState.remove()
+    }
   }, [plan, userId])
 
   return (

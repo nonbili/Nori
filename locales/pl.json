@@ -127,7 +127,16 @@
       "errorSignInRestore": "Zaloguj się, aby przywrócić zakupy",
       "errorNoPurchase": "Nie znaleziono zakupu Nori Sync do przywrócenia",
       "errorPending": "Twoje najnowsze zmiany są nadal synchronizowane. Spróbuj ponownie za chwilę.",
-      "purchasePending": "Zakup oczekuje na zatwierdzenie. Synchronizacja zostanie odblokowana po zatwierdzeniu."
+      "purchasePending": "Zakup oczekuje na zatwierdzenie. Synchronizacja zostanie odblokowana po zatwierdzeniu.",
+      "accountChoiceTitle": "Dane z innego konta",
+      "accountChoiceMessage": "Listy i zakładki na tym urządzeniu były synchronizowane z innym kontem Nori. Synchronizacja jest wstrzymana, dopóki nie zdecydujesz, co z nimi zrobić.",
+      "accountChoiceHint": "Użycie danych tego konta zastąpi zawartość tego urządzenia. Scalenie doda do tego konta to, co jest tylko na tym urządzeniu. W obu przypadkach najpierw zostanie zachowana kopia zapasowa urządzenia.",
+      "accountChoiceUseAccount": "Użyj danych tego konta",
+      "accountChoiceMerge": "Scal urządzenie z kontem",
+      "accountChoiceLater": "Później",
+      "accountChoiceFailed": "Nie udało się przenieść danych na to konto: {{message}}",
+      "exportSwitchBackup": "Eksportuj dane sprzed przełączenia",
+      "exportSwitchBackupHint": "Zapisano {{date}}. Przywróć je w Ustawieniach."
     },
     "plan": {
       "label": "Aktualny plan",

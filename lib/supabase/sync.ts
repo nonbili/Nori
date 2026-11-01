@@ -1,5 +1,4 @@
 import { setScreenshotCaptured } from '@/lib/bookmark-preview'
-import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { syncMeta$ } from '@/states/sync-meta'
@@ -26,6 +25,7 @@ import {
 import { runWithConflictRetry, type SyncAttemptOutcome } from '@/lib/supabase/sync-scheduler'
 import { removeOrphans, runScreenshotSync } from './screenshots'
 import { supabase } from './client'
+import { beginSync, canSync, isCurrentSession } from './sync-session'
 
 let watchersStarted = false
 let applyingRemote = false
@@ -54,11 +54,6 @@ const FULL_PULL_INTERVAL_MS = 24 * 60 * 60 * 1000
 export const SYNC_PENDING_ERROR = 'sync-pending-changes'
 
 class SyncInterrupted extends Error {}
-
-function canSync() {
-  const { userId, plan } = auth$.peek()
-  return Boolean(userId && plan && plan !== 'free')
-}
 
 function uniqueIds(ids: string[]) {
   return [...new Set(ids)]
@@ -126,7 +121,7 @@ async function fetchAllRows<T extends { id: string; updated_at: string }>(
 
 // Every page of both tables, or it throws. Reconciling against a truncated
 // snapshot would read the rows that did not fit as missing from the server.
-async function fetchRemoteRows(assertCurrent: () => void, listCursor?: string, bookmarkCursor?: string) {
+export async function fetchRemoteRows(assertCurrent: () => void, listCursor?: string, bookmarkCursor?: string) {
   const [listRows, bookmarkRows] = await Promise.all([
     fetchAllRows<RemoteListRow>('lists', 'id,name,json,created_at,updated_at', listCursor, assertCurrent),
     fetchAllRows<RemoteBookmarkRow>(
@@ -368,17 +363,15 @@ export function startSupabaseSyncWatchers() {
 }
 
 async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
-  if (!canSync()) {
+  const session = beginSync()
+  if (!session) {
     return 'skipped'
   }
 
-  const userId = auth$.userId.peek()
-  if (!userId) {
-    return 'skipped'
-  }
-
+  const { userId } = session
+  const isCurrent = () => isCurrentSession(session)
   const assertCurrent = () => {
-    if (auth$.userId.peek() !== userId || !canSync()) throw new SyncInterrupted()
+    if (!isCurrent()) throw new SyncInterrupted()
   }
 
   const fetchRevision = localRevision
@@ -398,7 +391,7 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   const remote = isFullPull ? await fetchRemoteRows(assertCurrent) : await fetchRemoteRows(assertCurrent, listCursor, bookmarkCursor)
   // Auth can change while the request is running. Its response and subsequent
   // uploads belong to the account that started it, not the new session.
-  if (auth$.userId.peek() !== userId || !canSync()) return 'skipped'
+  if (!isCurrent()) return 'skipped'
   if (localRevision !== fetchRevision) {
     return 'conflict'
   }
@@ -447,7 +440,7 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
     snapshotLists().filter((item) => nextPendingListIds.has(item.id)),
     assertCurrent,
   )
-  if (auth$.userId.peek() !== userId || !canSync()) return 'skipped'
+  if (!isCurrent()) return 'skipped'
   if (localRevision !== listPushRevision) {
     return 'conflict'
   }
@@ -463,7 +456,7 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
     snapshotBookmarks(snapshotLists()).filter((item) => nextPendingBookmarkIds.has(item.id)),
     assertCurrent,
   )
-  if (auth$.userId.peek() !== userId || !canSync()) return 'skipped'
+  if (!isCurrent()) return 'skipped'
   if (localRevision !== bookmarkPushRevision) {
     return 'conflict'
   }
@@ -508,6 +501,26 @@ async function runSyncCycle(): Promise<SyncAttemptOutcome> {
   } finally {
     syncMeta$.inFlight.set(false)
   }
+}
+
+/** Puts an account's data in place of this device's, as a new device of that account would start. */
+export function applyAccountData(
+  lists: BookmarkListData[],
+  bookmarks: BookmarkRecordData[],
+  pendingListIds: string[],
+  pendingBookmarkIds: string[],
+) {
+  localRevision += 1
+  applyRemoteState(lists, bookmarks)
+  syncMeta$.assign({
+    pendingListIds,
+    pendingBookmarkIds,
+    syncUserId: undefined,
+    syncListsCursor: undefined,
+    syncBookmarksCursor: undefined,
+    lastFullPullAt: undefined,
+    lastError: undefined,
+  })
 }
 
 export function syncSupabase() {

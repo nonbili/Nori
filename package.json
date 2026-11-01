@@ -14,7 +14,8 @@
     "android": "expo run:android",
     "tokens": "bun scripts/build-tokens.ts",
     "ios": "expo run:ios",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test:sync:local": "bun scripts/test-sync-local.ts"
   },
   "dependencies": {
     "@expo/ui": "~58.0.20",
@@ -77,6 +78,7 @@
     "typescript": "~6.0.3"
   },
   "patchedDependencies": {
+    "@legendapp/state@3.0.0-beta.48": "patches/@legendapp%2Fstate@3.0.0-beta.48.patch",
     "react-native-css-interop@0.2.3": "patches/react-native-css-interop@0.2.3.patch"
   }
 }

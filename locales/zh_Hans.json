@@ -127,7 +127,16 @@
       "errorSignInRestore": "登录以恢复购买",
       "errorNoPurchase": "未找到可恢复的 Nori 同步购买记录",
       "errorPending": "最新更改仍在同步，请稍后再试。",
-      "purchasePending": "购买待批准。批准后即可解锁同步。"
+      "purchasePending": "购买待批准。批准后即可解锁同步。",
+      "accountChoiceTitle": "来自其他账户的数据",
+      "accountChoiceMessage": "此设备上的列表和书签已与另一个 Nori 账户同步。在你选择如何处理之前，同步已暂停。",
+      "accountChoiceHint": "使用此账户的数据会替换此设备上的内容。合并会将仅此设备拥有的内容添加到此账户。无论哪种方式，都会先保留此设备的备份。",
+      "accountChoiceUseAccount": "使用此账户的数据",
+      "accountChoiceMerge": "将此设备合并到账户",
+      "accountChoiceLater": "稍后",
+      "accountChoiceFailed": "无法将数据切换到此账户：{{message}}",
+      "exportSwitchBackup": "导出切换前的数据",
+      "exportSwitchBackupHint": "保存于 {{date}}。在设置中恢复即可找回。"
     },
     "plan": {
       "label": "当前套餐",

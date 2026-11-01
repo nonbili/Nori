@@ -127,7 +127,16 @@
       "errorSignInRestore": "Logga in för att återställa köp",
       "errorNoPurchase": "Inget köp av Nori Synk hittades att återställa",
       "errorPending": "Dina senaste ändringar synkroniseras fortfarande. Försök igen om en stund.",
-      "purchasePending": "Köp väntar på godkännande. Synkroniseringen låses upp när det har godkänts."
+      "purchasePending": "Köp väntar på godkännande. Synkroniseringen låses upp när det har godkänts.",
+      "accountChoiceTitle": "Data från ett annat konto",
+      "accountChoiceMessage": "Listorna och bokmärkena på den här enheten synkades med ett annat Nori-konto. Synkningen är pausad tills du väljer vad som ska göras med dem.",
+      "accountChoiceHint": "Om du använder det här kontots data ersätts innehållet på enheten. Om du sammanfogar läggs det som bara finns på den här enheten till i kontot. I båda fallen sparas först en säkerhetskopia av enheten.",
+      "accountChoiceUseAccount": "Använd det här kontots data",
+      "accountChoiceMerge": "Sammanfoga enheten med kontot",
+      "accountChoiceLater": "Senare",
+      "accountChoiceFailed": "Det gick inte att flytta data till det här kontot: {{message}}",
+      "exportSwitchBackup": "Exportera data från före bytet",
+      "exportSwitchBackupHint": "Sparades {{date}}. Återställ den i Inställningar för att få tillbaka den."
     },
     "plan": {
       "label": "Nuvarande plan",

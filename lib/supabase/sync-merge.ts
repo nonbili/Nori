@@ -1,7 +1,9 @@
+import { getBookmarkUrlKey } from '../bookmark-mutations'
 import {
   createStarterBookmarks,
   createStarterLists,
   getDeletedAt,
+  isDeleted,
   type BookmarkListData,
   type BookmarkRecordData,
 } from '../nori-data'
@@ -106,6 +108,33 @@ export function dropExpiredSyncTombstones<T extends { id: string; json: Record<s
     }
     return now - parseSyncUpdatedAt(deletedAt) < TOMBSTONE_RETENTION_MS
   })
+}
+
+/**
+ * This device's rows added to an account: what the account has stays, and only what is new to it
+ * is pushed. A deleted row has nothing to add, and neither has a page already in that list.
+ */
+export function mergeDeviceIntoAccount(
+  localLists: BookmarkListData[],
+  localBookmarks: BookmarkRecordData[],
+  remoteLists: BookmarkListData[],
+  remoteBookmarks: BookmarkRecordData[],
+) {
+  const urlKey = (row: BookmarkRecordData) => `${row.listId} ${getBookmarkUrlKey(row.url)}`
+  const listIds = new Set(remoteLists.map((row) => row.id))
+  const bookmarkIds = new Set(remoteBookmarks.map((row) => row.id))
+  const urls = new Set(remoteBookmarks.filter((row) => !isDeleted(row)).map(urlKey))
+  const lists = localLists.filter((row) => !listIds.has(row.id) && !isDeleted(row))
+  const bookmarks = localBookmarks
+    .filter((row) => !bookmarkIds.has(row.id) && !isDeleted(row) && !urls.has(urlKey(row)))
+    // The object is in the old account's folder, out of this one's reach: the capture uploads again.
+    .map(({ json: { screenshot: _screenshot, ...json }, ...row }) => ({ ...row, json }))
+  return {
+    lists: [...remoteLists, ...lists],
+    bookmarks: [...remoteBookmarks, ...bookmarks],
+    pendingListIds: lists.map((row) => row.id),
+    pendingBookmarkIds: bookmarks.map((row) => row.id),
+  }
 }
 
 export function isPristineStarterSeed(

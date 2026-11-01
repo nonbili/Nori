@@ -128,7 +128,16 @@
       "errorSignInRestore": "Jelentkezzen be a vásárlások visszaállításához",
       "errorNoPurchase": "Nem található visszaállítható Nori Sync vásárlás",
       "errorPending": "A legutóbbi módosítások még szinkronizálás alatt állnak. Próbálja újra egy pillanat múlva.",
-      "purchasePending": "A vásárlás jóváhagyásra vár. A szinkronizálás a jóváhagyás után aktiválódik."
+      "purchasePending": "A vásárlás jóváhagyásra vár. A szinkronizálás a jóváhagyás után aktiválódik.",
+      "accountChoiceTitle": "Másik fiók adatai",
+      "accountChoiceMessage": "Az eszközön lévő listák és könyvjelzők egy másik Nori-fiókkal lettek szinkronizálva. A szinkronizálás szünetel, amíg nem választod ki, mi legyen velük.",
+      "accountChoiceHint": "A fiók adatainak használata lecseréli az eszköz tartalmát. Az egyesítés hozzáadja a fiókhoz azt, ami csak ezen az eszközön van meg. Mindkét esetben előbb biztonsági mentés készül az eszközről.",
+      "accountChoiceUseAccount": "A fiók adatainak használata",
+      "accountChoiceMerge": "Eszköz egyesítése a fiókkal",
+      "accountChoiceLater": "Később",
+      "accountChoiceFailed": "Nem sikerült áthelyezni az adatokat ebbe a fiókba: {{message}}",
+      "exportSwitchBackup": "A váltás előtti adatok exportálása",
+      "exportSwitchBackupHint": "Mentve: {{date}}. A Beállításokban állíthatod vissza."
     },
     "plan": {
       "label": "Jelenlegi csomag",

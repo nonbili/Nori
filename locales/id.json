@@ -128,7 +128,16 @@
       "errorSignInRestore": "Masuk untuk memulihkan pembelian",
       "errorNoPurchase": "Tidak ada pembelian Nori Sync yang ditemukan untuk dipulihkan",
       "errorPending": "Perubahan terbaru Anda masih disinkronkan. Coba lagi sebentar lagi.",
-      "purchasePending": "Pembelian menunggu persetujuan. Sinkronisasi akan aktif setelah disetujui."
+      "purchasePending": "Pembelian menunggu persetujuan. Sinkronisasi akan aktif setelah disetujui.",
+      "accountChoiceTitle": "Data dari akun lain",
+      "accountChoiceMessage": "Daftar dan bookmark di perangkat ini disinkronkan dengan akun Nori lain. Sinkronisasi dijeda sampai Anda memilih apa yang akan dilakukan.",
+      "accountChoiceHint": "Menggunakan data akun ini akan mengganti isi perangkat ini. Menggabungkan akan menambahkan ke akun ini hal yang hanya ada di perangkat ini. Apa pun pilihannya, cadangan perangkat ini disimpan terlebih dahulu.",
+      "accountChoiceUseAccount": "Gunakan data akun ini",
+      "accountChoiceMerge": "Gabungkan perangkat ke akun",
+      "accountChoiceLater": "Nanti",
+      "accountChoiceFailed": "Tidak dapat memindahkan data ke akun ini: {{message}}",
+      "exportSwitchBackup": "Ekspor data sebelum peralihan",
+      "exportSwitchBackupHint": "Disimpan {{date}}. Pulihkan di Pengaturan untuk mengembalikannya."
     },
     "plan": {
       "label": "Paket saat ini",

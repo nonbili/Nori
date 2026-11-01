@@ -8,12 +8,13 @@ import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { settings$ } from '@/states/settings'
 import { screenshotBucket } from './client'
+import { canSync } from './sync-session'
 
 const store = createScreenshotStore(screenshotBucket, (url) => fetchPreviewImage(url))
 
 export const runScreenshotSync = singlePass(async () => {
-  const { userId, plan } = auth$.peek()
-  if (!userId || !plan || plan === 'free') return
+  const userId = auth$.userId.peek()
+  if (!userId || !canSync()) return
   await syncScreenshots(userId, bookmarks$.bookmarks.peek(), settings$.previewImageSource.peek(), {
     store,
     read: readPreview,

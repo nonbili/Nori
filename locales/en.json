@@ -128,7 +128,16 @@
       "errorSignInRestore": "Sign in to restore purchases",
       "errorNoPurchase": "No Nori Sync purchase found to restore",
       "errorPending": "Your latest changes are still syncing. Try again in a moment.",
-      "purchasePending": "Purchase pending approval. Sync unlocks once it is approved."
+      "purchasePending": "Purchase pending approval. Sync unlocks once it is approved.",
+      "accountChoiceTitle": "Data from another account",
+      "accountChoiceMessage": "The lists and bookmarks on this device were synced with another Nori account. Sync is paused until you choose what to do with them.",
+      "accountChoiceHint": "Using this account's data replaces what is on this device. Merging adds what only this device has to this account. Either way, a backup of this device is kept first.",
+      "accountChoiceUseAccount": "Use this account's data",
+      "accountChoiceMerge": "Merge this device into account",
+      "accountChoiceLater": "Later",
+      "accountChoiceFailed": "Could not switch the data to this account: {{message}}",
+      "exportSwitchBackup": "Export data from before the switch",
+      "exportSwitchBackupHint": "Saved {{date}}. Restore it in Settings to bring it back."
     },
     "plan": {
       "label": "Current plan",

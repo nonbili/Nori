@@ -127,6 +127,7 @@
     },
   },
   "patchedDependencies": {
+    "@legendapp/state@3.0.0-beta.48": "patches/@legendapp%2Fstate@3.0.0-beta.48.patch",
     "react-native-css-interop@0.2.3": "patches/react-native-css-interop@0.2.3.patch",
   },
   "packages": {

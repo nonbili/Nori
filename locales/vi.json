@@ -128,7 +128,16 @@
       "errorSignInRestore": "Đăng nhập để khôi phục giao dịch mua",
       "errorNoPurchase": "Không tìm thấy giao dịch mua Nori Sync nào để khôi phục",
       "errorPending": "Các thay đổi mới nhất vẫn đang được đồng bộ. Vui lòng thử lại sau giây lát.",
-      "purchasePending": "Giao dịch đang chờ phê duyệt. Đồng bộ sẽ mở khóa sau khi được phê duyệt."
+      "purchasePending": "Giao dịch đang chờ phê duyệt. Đồng bộ sẽ mở khóa sau khi được phê duyệt.",
+      "accountChoiceTitle": "Dữ liệu từ tài khoản khác",
+      "accountChoiceMessage": "Danh sách và dấu trang trên thiết bị này đã được đồng bộ với một tài khoản Nori khác. Đồng bộ sẽ tạm dừng cho đến khi bạn chọn cách xử lý.",
+      "accountChoiceHint": "Dùng dữ liệu của tài khoản này sẽ thay thế nội dung trên thiết bị. Hợp nhất sẽ thêm vào tài khoản này những gì chỉ có trên thiết bị. Dù chọn cách nào, bản sao lưu của thiết bị cũng được lưu trước.",
+      "accountChoiceUseAccount": "Dùng dữ liệu của tài khoản này",
+      "accountChoiceMerge": "Hợp nhất thiết bị vào tài khoản",
+      "accountChoiceLater": "Để sau",
+      "accountChoiceFailed": "Không thể chuyển dữ liệu sang tài khoản này: {{message}}",
+      "exportSwitchBackup": "Xuất dữ liệu trước khi chuyển",
+      "exportSwitchBackupHint": "Đã lưu {{date}}. Khôi phục trong Cài đặt để lấy lại."
     },
     "plan": {
       "label": "Gói hiện tại",
