@@ -7,6 +7,7 @@ import {
   setPreviewImageFetch,
   setPreviewRenderedMeta,
   setScreenshotCaptured,
+  setScreenshotOwner,
   forgetScreenshots,
   onPreviewChange,
   updatePreviewBookmarks,
@@ -23,6 +24,7 @@ afterEach(() => {
   setPageFetch((url, init) => fetch(url, { ...init, redirect: 'follow' }))
   setPreviewCapture(undefined)
   setScreenshotCaptured(undefined)
+  setScreenshotOwner(undefined)
 })
 
 describe('bookmark previews', () => {
@@ -182,6 +184,27 @@ describe('bookmark previews', () => {
     expect((await loadBookmarkPreview('https://blocked.example/', 'screenshot', true)).imageUri).toBe(
       'data:image/png;base64,c2NyZWVu',
     )
+  })
+  it('stamps a screenshot with the signed-in account, and a cover with no one', async () => {
+    setScreenshotOwner(() => 'user-1')
+    const url = 'https://owned.example/'
+    setPreviewCapture(async () => 'data:image/png;base64,c2NyZWVu')
+    expect((await loadBookmarkPreview(url, 'screenshot', true)).owner).toBe('user-1')
+    await saveRenderedPreview(url, 'screenshot', { description: '', imageUrl: '', screenshotUri: 'data:image/jpeg;base64,c2hvdA==' })
+    expect((await readPreview(previewKey(url, 'screenshot')))!.owner).toBe('user-1')
+    await saveRenderedPreview(url, 'page-image', { description: '', imageUrl: '' })
+    expect((await readPreview(previewKey(url, 'page-image')))!.owner).toBeUndefined()
+  })
+  it('does not erase a screenshot that arrives while a tile is loading its text', async () => {
+    const url = 'https://arriving.example/'
+    const key = previewKey(url, 'screenshot')
+    const arrived = { description: '', imageUrl: '', imageUri: 'data:image/jpeg;base64,c2hvdA==', savedAt: 5 }
+    setPageFetch(async () => {
+      await writePreview(key, arrived)
+      return new Response(html, { headers: { 'content-type': 'text/html' } })
+    })
+    expect((await loadBookmarkPreview(url, 'screenshot')).imageUri).toBe(arrived.imageUri)
+    expect((await readPreview(key))!.imageUri).toBe(arrived.imageUri)
   })
   it('forgets saved screenshots but keeps their text and other previews', async () => {
     const url = 'https://forget.example/'

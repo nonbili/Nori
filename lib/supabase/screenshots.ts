@@ -4,25 +4,27 @@ import { fetchPreviewImage } from '@/lib/preview-image'
 import { shrinkScreenshot } from '@/lib/screenshot-shrink'
 import { createScreenshotStore, removeOrphanedScreenshots, singlePass, syncScreenshots } from '@/lib/screenshot-sync'
 import { genId } from '@/lib/utils'
-import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { settings$ } from '@/states/settings'
 import { screenshotBucket } from './client'
-import { canSync } from './sync-session'
+import { beginSync, isCurrentSession } from './sync-session'
 
 const store = createScreenshotStore(screenshotBucket, (url) => fetchPreviewImage(url))
 
 export const runScreenshotSync = singlePass(async () => {
-  const userId = auth$.userId.peek()
-  if (!userId || !canSync()) return
+  const session = beginSync()
+  if (!session) return
+  const { userId } = session
   await syncScreenshots(userId, bookmarks$.bookmarks.peek(), settings$.previewImageSource.peek(), {
     store,
     read: readPreview,
-    write: writePreview,
+    // The pass outlives a change of account, and what it fetched is not the next account's.
+    write: async (key, preview) => {
+      if (isCurrentSession(session)) await writePreview(key, preview)
+    },
     shrink: shrinkScreenshot,
-    // The pass outlives a sign-out. The pointer belongs to the account that uploaded it.
     setRef: (ids, ref) => {
-      if (auth$.userId.peek() === userId) bookmarks$.setScreenshot(ids, ref)
+      if (isCurrentSession(session)) bookmarks$.setScreenshot(ids, ref)
     },
     changed: notifyPreviewChange,
     newId: () => genId(16),

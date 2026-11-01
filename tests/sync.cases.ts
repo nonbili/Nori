@@ -24,7 +24,7 @@ const syncOwner$ = observable({ ownerUserId: undefined as string | undefined, sw
 mock.module('@/states/sync-owner', () => ({ syncOwner$ }))
 mock.module('@/lib/supabase/client', () => ({ supabase: server }))
 const forgetScreenshots = mock(async (_urls: string[]) => {})
-mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots, setScreenshotCaptured: () => {} }))
+mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots, setScreenshotCaptured: () => {}, setScreenshotOwner: () => {} }))
 const runScreenshotSync = mock(async () => {})
 const removeOrphans = mock(async () => {})
 mock.module('@/lib/supabase/screenshots', () => ({ runScreenshotSync, removeOrphans }))

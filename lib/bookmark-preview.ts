@@ -23,6 +23,11 @@ export function setPreviewCapture(handler: typeof capture) {
 export function setPreviewImageFetch(handler: typeof imageFetch) {
   imageFetch = handler
 }
+let screenshotOwner: (() => string | undefined) | undefined
+/** Who a screenshot taken now belongs to: no one while signed out. */
+export function setScreenshotOwner(handler: typeof screenshotOwner) {
+  screenshotOwner = handler
+}
 let screenshotCaptured: (() => void) | undefined
 /** Called once a screenshot is saved, for the host to sync it to the other devices. */
 export function setScreenshotCaptured(handler: typeof screenshotCaptured) {
@@ -256,11 +261,18 @@ export function loadBookmarkPreview(
         }
       }
       checkCancelled(signal)
+      // This load cannot take a screenshot, and one may have arrived from another device meanwhile.
+      if (source === 'screenshot' && !imageUri) {
+        const latest = await readPreview(key)
+        if (latest?.imageUri) return latest
+      }
+      const owner = source === 'screenshot' && imageUri ? screenshotOwner?.() : undefined
       const preview: BookmarkPreview = {
         ...meta,
         imageUri: imageUri || (retryAfter ? cached?.imageUri || '' : ''),
         savedAt: Date.now(),
         ...(retryAfter ? { retryAfter } : {}),
+        ...(owner ? { owner } : {}),
       }
       await writePreview(key, preview)
       checkCancelled(signal)
@@ -324,11 +336,13 @@ export async function saveRenderedPreview(
   // Keep the image already saved when this page gives none or it fails to download.
   const cached = imageUri ? undefined : await readPreview(key)
   pending.get(key)?.controller.abort()
+  const owner = source === 'screenshot' ? (imageUri ? screenshotOwner?.() : cached?.owner) : undefined
   await writePreview(key, {
     description: page.description || cached?.description || '',
     imageUrl: imageUri ? page.imageUrl : cached?.imageUrl || page.imageUrl,
     imageUri: imageUri || cached?.imageUri || '',
     savedAt: Date.now(),
+    ...(owner ? { owner } : {}),
   })
   listeners.forEach((listener) => listener(key))
   if (source === 'screenshot' && imageUri) screenshotCaptured?.()
@@ -349,7 +363,8 @@ export async function forgetScreenshots(urls: string[]) {
     const saved = await readPreview(key)
     if (!saved?.imageUri) continue
     pending.get(key)?.controller.abort()
-    await writePreview(key, { ...saved, imageUri: '', savedAt: 0 })
+    const { owner: _owner, ...kept } = saved
+    await writePreview(key, { ...kept, imageUri: '', savedAt: 0 })
     shownPreviews.delete(key)
     listeners.forEach((listener) => listener(key))
   }

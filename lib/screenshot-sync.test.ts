@@ -131,6 +131,26 @@ describe('syncScreenshots', () => {
     expect(refs.map(({ ids }) => ids)).toEqual([['b']])
   })
 
+  it('never uploads another account\'s capture, and replaces it with this account\'s', async () => {
+    const foreign = { ...preview(500), owner: 'other-user' }
+    const alone = createHost({ [KEY_A]: foreign })
+    await syncScreenshots(USER, [bookmark('a')], 'page-image', alone.host)
+    expect(alone.uploads).toEqual([])
+    expect(alone.previews.get(KEY_A)!.owner).toBe('other-user')
+
+    const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
+    const pointed = createHost({ [KEY_A]: foreign })
+    await syncScreenshots(USER, [bookmark('a', { screenshot: ref })], 'page-image', pointed.host)
+    expect(pointed.uploads).toEqual([])
+    expect(pointed.previews.get(KEY_A)).toMatchObject({ owner: USER, savedAt: 100 })
+  })
+
+  it('gives an unowned capture to the account that uploads it', async () => {
+    const { host, previews } = createHost({ [KEY_A]: preview(100) })
+    await syncScreenshots(USER, [bookmark('a')], 'page-image', host)
+    expect(previews.get(KEY_A)!.owner).toBe(USER)
+  })
+
   it('keeps a capture saved while a download was in flight', async () => {
     const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
     const { host, previews, changed } = createHost({ [KEY_A]: preview(50) })

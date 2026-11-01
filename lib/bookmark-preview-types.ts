@@ -24,6 +24,8 @@ export interface BookmarkPreview {
   imageUri: string
   savedAt: number
   retryAfter?: number
+  /** The account a screenshot belongs to, since the cache is shared and keyed by URL alone. */
+  owner?: string
 }
 export function previewSource(value: unknown, fallback: PreviewSource = 'page-image'): PreviewSource {
   return value === 'page-image' || value === 'screenshot' || value === 'none' ? value : fallback

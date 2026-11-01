@@ -1,3 +1,4 @@
+import { getBookmarkUrlKey } from '@/lib/bookmark-mutations'
 import { forgetScreenshots } from '@/lib/bookmark-preview'
 import { exportBookmarksToJson } from '@/lib/bookmark-transfer'
 import { createStarterBookmarks, createStarterLists } from '@/lib/nori-data'
@@ -42,8 +43,10 @@ export async function resolveAccountChoice(choice: AccountChoice) {
     const bookmarks = bookmarks$.bookmarks.peek()
 
     // Screenshots are keyed by URL, so one left here would count as this account's and upload to it.
-    const accountUrls = new Set(remote.bookmarks.map((row) => row.url))
-    await forgetScreenshots(bookmarks.map((row) => row.url).filter((url) => choice === 'useAccount' || accountUrls.has(url)))
+    const accountPages = new Set(remote.bookmarks.map((row) => getBookmarkUrlKey(row.url)))
+    await forgetScreenshots(
+      bookmarks.map((row) => row.url).filter((url) => choice === 'useAccount' || accountPages.has(getBookmarkUrlKey(url))),
+    )
     if (getSyncGeneration() !== started || auth$.userId.peek() !== userId) return
 
     // Taken right before the data changes hands, so it has what was changed here while reading.
