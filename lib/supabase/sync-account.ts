@@ -2,6 +2,7 @@ import { getBookmarkUrlKey } from '@/lib/bookmark-mutations'
 import { adoptScreenshots, forgetScreenshots } from '@/lib/bookmark-preview'
 import { exportBookmarksToJson } from '@/lib/bookmark-transfer'
 import { createStarterBookmarks, createStarterLists } from '@/lib/nori-data'
+import { screenshotRef } from '@/lib/screenshot-sync'
 import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -43,17 +44,11 @@ export async function resolveAccountChoice(choice: AccountChoice) {
     const bookmarks = bookmarks$.bookmarks.peek()
 
     // Screenshots are keyed by URL, so one left here would count as this account's and upload to it.
-    const accountPages = new Set(remote.bookmarks.map((row) => getBookmarkUrlKey(row.url)))
-    await forgetScreenshots(
-      bookmarks.map((row) => row.url).filter((url) => choice === 'useAccount' || accountPages.has(getBookmarkUrlKey(url))),
-    )
-    const mergeNow = () => mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)
-    // What the merge keeps goes with its bookmarks, so those captures are this account's now.
-    if (choice === 'mergeDevice') {
-      const preview = mergeNow()
-      const added = new Set(preview.pendingBookmarkIds)
-      await adoptScreenshots(preview.bookmarks.filter((row) => added.has(row.id)).map((row) => row.url), userId)
-    }
+    // A merge keeps the account's own screenshots, and hands it the captures of every other page.
+    const accountShots = new Set(remote.bookmarks.filter((row) => screenshotRef(row)).map((row) => getBookmarkUrlKey(row.url)))
+    const urls = bookmarks.map((row) => row.url)
+    await forgetScreenshots(urls.filter((url) => choice === 'useAccount' || accountShots.has(getBookmarkUrlKey(url))))
+    if (choice === 'mergeDevice') await adoptScreenshots(urls, userId)
     if (getSyncGeneration() !== started || auth$.userId.peek() !== userId) return
 
     // Taken right before the data changes hands, so it has what was changed here while reading.
@@ -65,7 +60,7 @@ export async function resolveAccountChoice(choice: AccountChoice) {
 
     if (choice === 'mergeDevice') {
       // Merged again here, as the waits above leave the device open to edits.
-      const merged = mergeNow()
+      const merged = mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)
       applyAccountData(merged.lists, merged.bookmarks, merged.pendingListIds, merged.pendingBookmarkIds)
     } else {
       const empty = !remote.lists.length && !remote.bookmarks.length

@@ -193,13 +193,35 @@ describe('complete sync cycle', () => {
     server.tables.bookmarks = [{ id: 'theirs', list_id: 'builtin-later', url: 'https://b.example/', title: 'B', icon: '', json: {}, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-01T00:00:00.000Z', user_id: 'user-b' }]
     forgetScreenshots.mockClear()
     await settle(resolveAccountChoice('mergeDevice'))
-    // Only the pages the account has: the device's own captures go with its bookmarks.
+    // The account has no screenshots here, so every capture goes with the device's bookmarks.
     expect(forgetScreenshots.mock.lastCall![0]).toEqual([])
     expect(adoptScreenshots.mock.lastCall).toEqual([expect.arrayContaining(['https://local.example/']), 'user-b'])
     expect(server.tables.bookmarks.find((row) => row.id === 'local')).toMatchObject({ user_id: 'user-b' })
     expect(server.tables.bookmarks.find((row) => row.id === 'theirs')).toMatchObject({ title: 'B' })
     expect(syncMeta$.pendingBookmarkIds.peek()).toEqual([])
     expect(syncOwner$.ownerUserId.peek()).toBe('user-b')
+  })
+
+  test('merging drops a capture only where the account has its own screenshot', async () => {
+    const { resolveAccountChoice } = await import('../lib/supabase/sync-account')
+    syncMeta$.pendingBookmarkIds.set(['local'])
+    await settle(syncSupabase())
+    server.reset()
+    auth$.userId.set('user-b')
+    const url = 'https://local.example'
+    const row = { list_id: 'builtin-inbox', title: 'B', icon: '', created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-01T00:00:00.000Z', user_id: 'user-b' }
+    // The same page as the device's bookmark, spelled differently and in another list.
+    server.tables.bookmarks = [{ ...row, id: 'shot', url, json: { screenshot: { path: 'user-b/x.jpg', savedAt: 1, url } } }]
+    forgetScreenshots.mockClear()
+    await settle(resolveAccountChoice('mergeDevice'))
+    expect(forgetScreenshots.mock.lastCall![0]).toEqual(['https://local.example/'])
+
+    server.reset()
+    syncOwner$.ownerUserId.set('user-a')
+    server.tables.bookmarks = [{ ...row, id: 'plain', url, json: {} }]
+    forgetScreenshots.mockClear()
+    await settle(resolveAccountChoice('mergeDevice'))
+    expect(forgetScreenshots.mock.lastCall![0]).toEqual([])
   })
 
   test('merging keeps an edit made while screenshots were changing hands', async () => {
