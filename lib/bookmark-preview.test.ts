@@ -6,6 +6,7 @@ import {
   setPreviewCapture,
   setPreviewImageFetch,
   setPreviewRenderedMeta,
+  setScreenshotCaptured,
   onPreviewChange,
   updatePreviewBookmarks,
   retainEditorPreview,
@@ -20,6 +21,7 @@ const html = '<meta property="og:description" content=" Saved article "><meta pr
 afterEach(() => {
   setPageFetch((url, init) => fetch(url, { ...init, redirect: 'follow' }))
   setPreviewCapture(undefined)
+  setScreenshotCaptured(undefined)
 })
 
 describe('bookmark previews', () => {
@@ -179,6 +181,26 @@ describe('bookmark previews', () => {
     expect((await loadBookmarkPreview('https://blocked.example/', 'screenshot', true)).imageUri).toBe(
       'data:image/png;base64,c2NyZWVu',
     )
+  })
+  it('reports a saved screenshot for syncing, but not a cover image or a failed capture', async () => {
+    let captured = 0
+    setScreenshotCaptured(() => captured++)
+    const url = 'https://capture-sync.example/'
+    setPageFetch(async () => new Response(html, { headers: { 'content-type': 'text/html' } }))
+    setPreviewImageFetch(async () => 'data:image/jpeg;base64,Y292ZXI=')
+    await loadBookmarkPreview(url, 'page-image', true)
+    await saveRenderedPreview(url, 'page-image', { description: '', imageUrl: 'https://capture-sync.example/c.jpg' })
+    expect(captured).toBe(0)
+    setPreviewCapture(async () => {
+      throw new Error('tab changed')
+    })
+    await loadBookmarkPreview(url, 'screenshot', true).catch(() => {})
+    expect(captured).toBe(0)
+    setPreviewCapture(async () => 'data:image/png;base64,c2NyZWVu')
+    await loadBookmarkPreview(url, 'screenshot', true)
+    expect(captured).toBe(1)
+    await saveRenderedPreview(url, 'screenshot', { description: '', imageUrl: '', screenshotUri: 'data:image/jpeg;base64,c2hvdA==' })
+    expect(captured).toBe(2)
   })
   it('normalizes per-bookmark source overrides', () => {
     expect(previewSource('default', 'screenshot')).toBe('screenshot')

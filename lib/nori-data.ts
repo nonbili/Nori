@@ -1,4 +1,5 @@
 import { getGoogleFavicon } from './favicon'
+import type { ScreenshotRef } from './screenshot-sync'
 
 export interface RowJsonState {
   visible?: boolean
@@ -373,6 +374,14 @@ export function patchRowState<T extends { json: RowJsonState }>(row: T, patch: P
       ...patch,
     }),
   }
+}
+
+export function withScreenshotRef<T extends { id: string; updatedAt: string; json: RowJsonState }>(
+  rows: T[],
+  ids: string[],
+  screenshot: ScreenshotRef,
+) {
+  return rows.map((row) => (ids.includes(row.id) ? withUpdatedAt(patchRowState(row, { screenshot })) : row))
 }
 
 export function withUpdatedAt<T extends { updatedAt: string }>(row: T, updatedAt = isoNow()): T {

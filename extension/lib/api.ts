@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { browser } from 'wxt/browser'
 import { mergeRows, createProfile } from './domain'
+import { readPreview, writePreview } from 'nori/lib/bookmark-preview-storage'
 import { fetchNoriMe } from 'nori/lib/nori-api'
 import { normalizeBookmarks, normalizeLists } from 'nori/lib/nori-data'
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from 'nori/lib/supabase/config'
@@ -20,8 +21,17 @@ import {
   type RemoteBookmarkRow,
   type RemoteListRow,
 } from 'nori/lib/supabase/sync-rows'
+import { fetchPreviewImage } from 'nori/lib/preview-image'
+import { shrinkScreenshot } from 'nori/lib/screenshot-shrink'
+import {
+  createScreenshotStore,
+  removeOrphanedScreenshots,
+  SCREENSHOT_BUCKET,
+  syncScreenshots,
+  type ScreenshotRef,
+} from 'nori/lib/screenshot-sync'
 import { supabaseStorage } from './storage'
-import type { AuthState, NoriBookmark, NoriList, ProfileData, StoredState } from './model'
+import type { AuthState, NoriBookmark, NoriList, Preferences, ProfileData, StoredState } from './model'
 
 const AUTH_HOST = 'https://nori.inks.page/auth/extension'
 
@@ -29,6 +39,7 @@ const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { storage: supabaseStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
 })
 const db = client.schema('nori')
+const screenshotStore = createScreenshotStore(client.storage.from(SCREENSHOT_BUCKET), (url) => fetchPreviewImage(url))
 
 export async function getAuthState(): Promise<AuthState> {
   const { data } = await client.auth.getSession()
@@ -179,8 +190,29 @@ export async function syncProfile(profile: ProfileData, auth: AuthState) {
   profile.listsCursor = nextSyncCursor(remoteLists, profile.listsCursor)
   profile.bookmarksCursor = nextSyncCursor(remoteBookmarks, profile.bookmarksCursor)
   profile.lastSyncAt = Date.now()
-  if (full) profile.lastFullPullAt = Date.now()
+  if (full) {
+    profile.lastFullPullAt = Date.now()
+    // A full pull is when this device can tell which objects nothing points at any more.
+    void removeOrphanedScreenshots(auth.userId, profile.bookmarks, screenshotStore).catch(() => {})
+  }
   return true
+}
+
+export function syncProfileScreenshots(
+  profile: ProfileData,
+  auth: AuthState,
+  fallback: Preferences['previewImageSource'],
+  host: { setRef: (ids: string[], ref: ScreenshotRef) => Promise<void>; changed: (key: string) => void },
+) {
+  if (!auth.userId || auth.plan === 'free') return Promise.resolve()
+  return syncScreenshots(auth.userId, profile.bookmarks, fallback, {
+    ...host,
+    store: screenshotStore,
+    read: readPreview,
+    write: writePreview,
+    shrink: shrinkScreenshot,
+    newId: () => crypto.randomUUID(),
+  })
 }
 
 export function activateAccount(state: StoredState, auth: AuthState) {

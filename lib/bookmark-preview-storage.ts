@@ -1,7 +1,8 @@
 import type { BookmarkPreview } from './bookmark-preview-types'
 
 // Keep previews for live bookmark URLs, including both selectable image sources.
-// Separate from bookmark data: image bytes never enter sync or bookmark exports.
+// Separate from bookmark data: image bytes never enter bookmark rows or exports. Screenshots sync
+// through their own bucket, see screenshot-sync.ts.
 let liveKeys: ReadonlySet<string> | undefined
 let database: Promise<IDBDatabase> | undefined
 function open() {

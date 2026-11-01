@@ -20,12 +20,15 @@ import { SettingsSheet } from './parts/SettingsSheet'
 import { useSnapshot } from './useSnapshot'
 import { useSharedStateBridge } from './useSharedStateBridge'
 import { installPreviewCapture } from '../lib/preview-capture'
+import { request } from '../lib/client'
+import { setScreenshotCaptured } from 'nori-root/lib/bookmark-preview'
 import { systemLanguage } from '../lib/language'
 import './native-fonts.css'
 import './nativewind-interop'
 
 setDynamicLoadingEnabled(false)
 installPreviewCapture()
+setScreenshotCaptured(() => void request({ type: 'sync-screenshots' }).catch(() => undefined))
 setUrlOpener((url) => browser.tabs.create({ url }))
 
 function ReadyApp({

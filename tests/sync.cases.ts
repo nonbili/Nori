@@ -21,6 +21,9 @@ mock.module('@/states/lists', () => ({ lists$ }))
 mock.module('@/states/bookmarks', () => ({ bookmarks$ }))
 mock.module('@/states/sync-meta', () => ({ syncMeta$ }))
 mock.module('@/lib/supabase/client', () => ({ supabase: server }))
+const runScreenshotSync = mock(async () => {})
+const removeOrphans = mock(async () => {})
+mock.module('@/lib/supabase/screenshots', () => ({ runScreenshotSync, removeOrphans }))
 const { startSupabaseSyncWatchers, syncSupabase } = await import('../lib/supabase/sync')
 startSupabaseSyncWatchers()
 
@@ -67,6 +70,20 @@ describe('complete sync cycle', () => {
     expect(syncMeta$.lastSyncAt.peek()).toBe(Date.now())
     expect(syncMeta$.inFlight.peek()).toBe(false)
     expect(syncMeta$.lastError.peek()).toBeUndefined()
+  })
+
+  test('a successful cycle syncs screenshots, and only a full pull looks for orphans', async () => {
+    runScreenshotSync.mockClear()
+    removeOrphans.mockClear()
+    await settle(syncSupabase())
+    expect(runScreenshotSync).toHaveBeenCalledTimes(1)
+    expect(removeOrphans).toHaveBeenCalledTimes(1)
+    // Cursors from an earlier pull make the next cycle incremental.
+    const cursor = '2026-10-17T00:00:00.000Z'
+    syncMeta$.assign({ syncListsCursor: cursor, syncBookmarksCursor: cursor, lastFullPullAt: Date.now() })
+    await settle(syncSupabase())
+    expect(runScreenshotSync).toHaveBeenCalledTimes(2)
+    expect(removeOrphans).toHaveBeenCalledTimes(1)
   })
 
   test('an edit during a pull survives the stale response and is uploaded by the retry', async () => {

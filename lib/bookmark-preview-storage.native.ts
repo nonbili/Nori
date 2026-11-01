@@ -3,7 +3,8 @@ import { createNativePreviewStorage } from './native-preview-storage'
 
 // Saved previews are retained: automatic loads never evict manual screenshots
 // or other cached images for live bookmarks. Documents preserves offline images
-// and may be included in OS device backups; bookmark exports/sync exclude them.
+// and may be included in OS device backups; bookmark exports exclude them, and
+// only screenshots sync, through their own bucket (see screenshot-sync.ts).
 // Persist only file names, never iOS container paths.
 const storage = createNativePreviewStorage(FileSystem, `${FileSystem.documentDirectory}bookmark-previews/`)
 export const readPreview = storage.readPreview

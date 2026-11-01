@@ -23,6 +23,11 @@ export function setPreviewCapture(handler: typeof capture) {
 export function setPreviewImageFetch(handler: typeof imageFetch) {
   imageFetch = handler
 }
+let screenshotCaptured: (() => void) | undefined
+/** Called once a screenshot is saved, for the host to sync it to the other devices. */
+export function setScreenshotCaptured(handler: typeof screenshotCaptured) {
+  screenshotCaptured = handler
+}
 // Native only: reads the same metadata from a page rendered in a hidden WebView,
 // for sites whose bot protection rejects the plain fetch.
 let renderedMeta:
@@ -168,6 +173,11 @@ export function onPreviewChange(listener: (key: string) => void) {
   }
 }
 
+/** A preview changed outside this module, such as a screenshot arriving from another device. */
+export function notifyPreviewChange(key: string) {
+  listeners.forEach((listener) => listener(key))
+}
+
 export function loadBookmarkPreview(
   url: string,
   source: PreviewSource,
@@ -257,6 +267,7 @@ export function loadBookmarkPreview(
       const saved = await readPreview(key)
       if (!saved) throw new Error('preview_cache_failed')
       listeners.forEach((listener) => listener(key))
+      if (source === 'screenshot' && refresh) screenshotCaptured?.()
       return saved
     },
   }
@@ -320,6 +331,7 @@ export async function saveRenderedPreview(
     savedAt: Date.now(),
   })
   listeners.forEach((listener) => listener(key))
+  if (source === 'screenshot' && imageUri) screenshotCaptured?.()
 }
 
 export async function getCachedBookmarkPreview(url: string, source: PreviewSource) {

@@ -1,3 +1,4 @@
+import { setScreenshotCaptured } from '@/lib/bookmark-preview'
 import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -23,6 +24,7 @@ import {
   type RemoteListRow,
 } from '@/lib/supabase/sync-rows'
 import { runWithConflictRetry, type SyncAttemptOutcome } from '@/lib/supabase/sync-scheduler'
+import { removeOrphans, runScreenshotSync } from './screenshots'
 import { supabase } from './client'
 
 let watchersStarted = false
@@ -328,6 +330,7 @@ export function startSupabaseSyncWatchers() {
     return
   }
   watchersStarted = true
+  setScreenshotCaptured(() => void runScreenshotSync())
 
   lists$.lists.onChange(({ value, getPrevious }) => {
     if (applyingRemote) {
@@ -473,6 +476,8 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   }
 
   advanceSyncCursor(userId, remote, isFullPull)
+  // A full pull is when this device can tell which objects nothing points at any more.
+  if (isFullPull) void removeOrphans(userId).catch(() => {})
   return 'synced'
 }
 
@@ -493,6 +498,7 @@ async function runSyncCycle(): Promise<SyncAttemptOutcome> {
       // A skipped cycle never talked to the server, so stamping lastSyncAt here
       // would permanently disable the first-run remote seeding below.
       syncMeta$.lastSyncAt.set(Date.now())
+      void runScreenshotSync()
     }
     return outcome
   } catch (error) {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { browser } from 'wxt/browser'
+import { notifyPreviewChange } from 'nori-root/lib/bookmark-preview'
 import { getSnapshot } from '../lib/client'
 import type { AppSnapshot, StateChangedMessage } from '../lib/model'
 
@@ -25,7 +26,10 @@ export function useSnapshot() {
   }, [refresh])
   useEffect(() => {
     const onMessage = (message: unknown) => {
-      if ((message as StateChangedMessage | undefined)?.type === 'state-changed') void refresh()
+      const changed = message as StateChangedMessage | undefined
+      if (changed?.type !== 'state-changed') return
+      changed.previewKeys?.forEach(notifyPreviewChange)
+      void refresh()
     }
     browser.runtime.onMessage.addListener(onMessage)
     return () => browser.runtime.onMessage.removeListener(onMessage)

@@ -10,6 +10,7 @@ let nextUser = 'alice'
 const signOutHost = mock(async () => { session = null; return { error: null } })
 mock.module('@supabase/supabase-js', () => ({ createClient: () => ({
   schema: () => server,
+  storage: { from: () => ({ list: async () => ({ data: [], error: null }) }) },
   auth: {
     getSession: async () => ({ data: { session } }),
     signOut: signOutHost,

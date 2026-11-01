@@ -1,7 +1,9 @@
 import { browser } from 'wxt/browser'
-import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile } from '../lib/api'
+import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile, syncProfileScreenshots } from '../lib/api'
 import { createProfile } from '../lib/domain'
 import { describeSyncError } from 'nori/lib/supabase/sync-error'
+import { withScreenshotRef } from 'nori/lib/nori-data'
+import { singlePass, type ScreenshotRef } from 'nori/lib/screenshot-sync'
 import { collectChangedRowIds } from 'nori/lib/supabase/sync-merge'
 import { loadState, saveState } from '../lib/storage'
 import type { AppSnapshot, AuthState, RequestMessage, ResponseMessage, StateChangedMessage } from '../lib/model'
@@ -32,6 +34,37 @@ function notifyStateChanged() {
   void browser.runtime.sendMessage(message).catch(() => undefined)
 }
 
+function saveScreenshotRef(profileId: string, ids: string[], ref: ScreenshotRef) {
+  return enqueue(async () => {
+    const state = await loadState()
+    const profile = state.profiles[profileId]
+    if (!profile) return
+    profile.bookmarks = withScreenshotRef(profile.bookmarks, ids, ref)
+    profile.pendingBookmarkIds = [...new Set([...profile.pendingBookmarkIds, ...ids])]
+    await saveState(state)
+    notifyStateChanged()
+    queueSync()
+  })
+}
+
+async function screenshotPass() {
+  const state = await loadState()
+  const profileId = state.activeProfileId
+  const profile = state.profiles[profileId]
+  if (!profile) return
+  await syncProfileScreenshots(profile, auth, state.preferences.previewImageSource, {
+    setRef: (ids, ref) => saveScreenshotRef(profileId, ids, ref),
+    changed: (key) => {
+      const message: StateChangedMessage = { type: 'state-changed', previewKeys: [key] }
+      void browser.runtime.sendMessage(message).catch(() => undefined)
+    },
+  })
+}
+
+// Outside the operation queue: an upload must not hold up the UI's reads and edits. Set in main,
+// because WXT evaluates this file at build time and a top-level call keeps every import alive.
+let runScreenshotSync = async () => {}
+
 async function runSync(broadcast = true) {
   if (syncing) return
   syncing = true
@@ -39,8 +72,10 @@ async function runSync(broadcast = true) {
   try {
     const state = await loadState()
     const profile = state.profiles[state.activeProfileId] || (state.profiles[state.activeProfileId] = createProfile())
-    if (await syncProfile(profile, auth)) finishPromotion(state, profile)
+    const synced = await syncProfile(profile, auth)
+    if (synced) finishPromotion(state, profile)
     await saveState(state)
+    if (synced) void runScreenshotSync()
   } catch (error) {
     syncError = describeSyncError(error)
     throw error
@@ -93,6 +128,10 @@ async function handleMessage(message: RequestMessage): Promise<ResponseMessage> 
       await runSync()
       return { ok: true, data: await snapshot() }
     }
+    if (message.type === 'sync-screenshots') {
+      void runScreenshotSync()
+      return { ok: true }
+    }
     const data = await mutate(message)
     return { ok: true, data }
   } catch (error) {
@@ -126,6 +165,7 @@ async function handleSignIn(): Promise<ResponseMessage> {
 }
 
 export default defineBackground(() => {
+  runScreenshotSync = singlePass(screenshotPass)
   void enqueue(async () => {
     const next = await getAuthState()
     auth = next

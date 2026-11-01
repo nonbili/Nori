@@ -90,9 +90,12 @@ export type RequestMessage =
   | { type: 'sign-in' }
   | { type: 'sign-out' }
   | { type: 'sync' }
+  | { type: 'sync-screenshots' }
 
 export interface StateChangedMessage {
   type: 'state-changed'
+  /** Previews replaced in storage, for the tiles showing them to read again. */
+  previewKeys?: string[]
 }
 
 export interface ResponseMessage<T = unknown> {
