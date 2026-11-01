@@ -321,6 +321,8 @@ describe('sync against local Supabase', () => {
       const jpeg = { contentType: 'image/jpeg' }
       expect((await bucket(users[0]).upload(path, JPEG, jpeg)).error).toBeNull()
       expect((await bucket(users[1]).upload(`${users[0].id}/b.jpg`, JPEG, jpeg)).error).not.toBeNull()
+      // Account deletion lists one folder, so nothing may sit deeper.
+      expect((await bucket(users[0]).upload(`${users[0].id}/nested/b.jpg`, JPEG, jpeg)).error).not.toBeNull()
       expect((await bucket(users[1]).createSignedUrl(path, 60)).error).not.toBeNull()
       expect((await bucket(users[1]).list(users[0].id)).data).toEqual([])
       await bucket(users[1]).remove([path])

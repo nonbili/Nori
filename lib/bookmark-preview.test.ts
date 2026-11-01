@@ -7,6 +7,7 @@ import {
   setPreviewImageFetch,
   setPreviewRenderedMeta,
   setScreenshotCaptured,
+  forgetScreenshots,
   onPreviewChange,
   updatePreviewBookmarks,
   retainEditorPreview,
@@ -181,6 +182,15 @@ describe('bookmark previews', () => {
     expect((await loadBookmarkPreview('https://blocked.example/', 'screenshot', true)).imageUri).toBe(
       'data:image/png;base64,c2NyZWVu',
     )
+  })
+  it('forgets saved screenshots but keeps their text and other previews', async () => {
+    const url = 'https://forget.example/'
+    const value = { description: 'Saved', imageUrl: '', imageUri: 'data:image/jpeg;base64,c2hvdA==', savedAt: 5 }
+    await writePreview(previewKey(url, 'screenshot'), value)
+    await writePreview(previewKey(url, 'page-image'), value)
+    await forgetScreenshots([url, url, 'not a url'])
+    expect(await readPreview(previewKey(url, 'screenshot'))).toMatchObject({ description: 'Saved', imageUri: '', savedAt: 0 })
+    expect(await readPreview(previewKey(url, 'page-image'))).toEqual(value)
   })
   it('reports a saved screenshot for syncing, but not a cover image or a failed capture', async () => {
     let captured = 0

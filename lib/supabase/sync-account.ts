@@ -1,3 +1,4 @@
+import { forgetScreenshots } from '@/lib/bookmark-preview'
 import { exportBookmarksToJson } from '@/lib/bookmark-transfer'
 import { createStarterBookmarks, createStarterLists } from '@/lib/nori-data'
 import { auth$ } from '@/states/auth'
@@ -38,10 +39,19 @@ export async function resolveAccountChoice(choice: AccountChoice) {
     const remote = await fetchRemoteRows(() => {})
     if (getSyncGeneration() !== started || auth$.userId.peek() !== userId) return
 
-    // Taken right before the data changes hands, so it has what was changed here while reading.
-    const lists = lists$.lists.peek()
     const bookmarks = bookmarks$.bookmarks.peek()
-    syncOwner$.switchBackup.set({ fromUserId, savedAt: Date.now(), json: exportBookmarksToJson(lists, bookmarks) })
+
+    // Screenshots are keyed by URL, so one left here would count as this account's and upload to it.
+    const accountUrls = new Set(remote.bookmarks.map((row) => row.url))
+    await forgetScreenshots(bookmarks.map((row) => row.url).filter((url) => choice === 'useAccount' || accountUrls.has(url)))
+    if (getSyncGeneration() !== started || auth$.userId.peek() !== userId) return
+
+    // Taken right before the data changes hands, so it has what was changed here while reading.
+    syncOwner$.switchBackup.set({
+      fromUserId,
+      savedAt: Date.now(),
+      json: exportBookmarksToJson(lists$.lists.peek(), bookmarks$.bookmarks.peek()),
+    })
 
     if (choice === 'useAccount') {
       const empty = !remote.lists.length && !remote.bookmarks.length
@@ -52,7 +62,7 @@ export async function resolveAccountChoice(choice: AccountChoice) {
         [],
       )
     } else {
-      const merged = mergeDeviceIntoAccount(lists, bookmarks, remote.lists, remote.bookmarks)
+      const merged = mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)
       applyAccountData(merged.lists, merged.bookmarks, merged.pendingListIds, merged.pendingBookmarkIds)
     }
     syncOwner$.ownerUserId.set(userId)

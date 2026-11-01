@@ -53,6 +53,7 @@ mock.module('@/states/bookmarks', () => ({ bookmarks$ }))
 mock.module('@/states/sync-meta', () => ({ syncMeta$ }))
 mock.module('@/states/sync-owner', () => ({ syncOwner$ }))
 mock.module('@/lib/supabase/client', () => ({ supabase: client.schema('nori') }))
+mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots: async () => {}, setScreenshotCaptured: () => {} }))
 mock.module('@/lib/supabase/screenshots', () => ({ runScreenshotSync: async () => {}, removeOrphans: async () => {} }))
 
 const { startSupabaseSyncWatchers, syncSupabase } = await import('@/lib/supabase/sync')

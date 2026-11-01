@@ -334,6 +334,27 @@ export async function saveRenderedPreview(
   if (source === 'screenshot' && imageUri) screenshotCaptured?.()
 }
 
+/**
+ * Drops the screenshots saved here for these pages, keeping their text. For a change of account:
+ * they are keyed by URL, so they would otherwise count as the new account's and upload to it.
+ */
+export async function forgetScreenshots(urls: string[]) {
+  for (const url of new Set(urls)) {
+    let key: string
+    try {
+      key = previewKey(url, 'screenshot')
+    } catch {
+      continue
+    }
+    const saved = await readPreview(key)
+    if (!saved?.imageUri) continue
+    pending.get(key)?.controller.abort()
+    await writePreview(key, { ...saved, imageUri: '', savedAt: 0 })
+    shownPreviews.delete(key)
+    listeners.forEach((listener) => listener(key))
+  }
+}
+
 export async function getCachedBookmarkPreview(url: string, source: PreviewSource) {
   const saved = await readPreview(previewKey(url, source === 'none' ? 'page-image' : source))
   return source === 'none' && saved ? { ...saved, imageUrl: '', imageUri: '' } : saved

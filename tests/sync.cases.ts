@@ -23,6 +23,8 @@ mock.module('@/states/sync-meta', () => ({ syncMeta$ }))
 const syncOwner$ = observable({ ownerUserId: undefined as string | undefined, switchBackup: undefined as { fromUserId?: string; savedAt: number; json: string } | undefined })
 mock.module('@/states/sync-owner', () => ({ syncOwner$ }))
 mock.module('@/lib/supabase/client', () => ({ supabase: server }))
+const forgetScreenshots = mock(async (_urls: string[]) => {})
+mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots, setScreenshotCaptured: () => {} }))
 const runScreenshotSync = mock(async () => {})
 const removeOrphans = mock(async () => {})
 mock.module('@/lib/supabase/screenshots', () => ({ runScreenshotSync, removeOrphans }))
@@ -178,6 +180,7 @@ describe('complete sync cycle', () => {
     expect(syncOwner$.ownerUserId.peek()).toBe('user-b')
     expect(syncOwner$.switchBackup.peek()).toMatchObject({ fromUserId: 'user-a' })
     expect(syncOwner$.switchBackup.peek()!.json).toContain('https://local.example/')
+    expect(forgetScreenshots.mock.lastCall![0]).toContain('https://local.example/')
   })
 
   test('merging keeps the account\'s rows, adds the device\'s and pushes only those', async () => {
@@ -187,7 +190,10 @@ describe('complete sync cycle', () => {
     server.reset()
     auth$.userId.set('user-b')
     server.tables.bookmarks = [{ id: 'theirs', list_id: 'builtin-later', url: 'https://b.example/', title: 'B', icon: '', json: {}, created_at: '2026-01-01T00:00:00.000Z', updated_at: '2026-01-01T00:00:00.000Z', user_id: 'user-b' }]
+    forgetScreenshots.mockClear()
     await settle(resolveAccountChoice('mergeDevice'))
+    // Only the pages the account has: the device's own captures go with its bookmarks.
+    expect(forgetScreenshots.mock.lastCall![0]).toEqual([])
     expect(server.tables.bookmarks.find((row) => row.id === 'local')).toMatchObject({ user_id: 'user-b' })
     expect(server.tables.bookmarks.find((row) => row.id === 'theirs')).toMatchObject({ title: 'B' })
     expect(syncMeta$.pendingBookmarkIds.peek()).toEqual([])

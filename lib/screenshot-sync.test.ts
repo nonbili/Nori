@@ -131,6 +131,18 @@ describe('syncScreenshots', () => {
     expect(refs.map(({ ids }) => ids)).toEqual([['b']])
   })
 
+  it('keeps a capture saved while a download was in flight', async () => {
+    const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
+    const { host, previews, changed } = createHost({ [KEY_A]: preview(50) })
+    host.store.download = async () => {
+      previews.set(KEY_A, preview(300, 'data:image/jpeg;base64,bmV3'))
+      return 'data:image/jpeg;base64,cmVtb3Rl'
+    }
+    await syncScreenshots(USER, [bookmark('a', { screenshot: ref })], 'page-image', host)
+    expect(previews.get(KEY_A)).toMatchObject({ savedAt: 300, imageUri: 'data:image/jpeg;base64,bmV3' })
+    expect(changed).toEqual([])
+  })
+
   it('keeps the local capture when a download fails', async () => {
     const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
     const { host, previews } = createHost({ [KEY_A]: preview(50) })

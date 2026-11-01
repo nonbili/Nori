@@ -84,9 +84,12 @@ async function syncOne(userId: string, group: ScreenshotBookmark[], host: Screen
   if (!ref) return
   if (!localImage || ref.savedAt > localImage.savedAt) {
     const imageUri = await host.store.download(ref.path)
+    // A capture saved while this was downloading is newer: the next pass uploads it.
+    const latest = await host.read(key)
+    if (latest?.imageUri && latest.savedAt >= ref.savedAt) return
     await host.write(key, {
-      description: local?.description || '',
-      imageUrl: local?.imageUrl || '',
+      description: latest?.description || '',
+      imageUrl: latest?.imageUrl || '',
       imageUri,
       savedAt: ref.savedAt,
     })
