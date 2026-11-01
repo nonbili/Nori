@@ -381,7 +381,14 @@ export function withScreenshotRef<T extends { id: string; updatedAt: string; jso
   ids: string[],
   screenshot: ScreenshotRef,
 ) {
-  return rows.map((row) => (ids.includes(row.id) ? withUpdatedAt(patchRowState(row, { screenshot })) : row))
+  // An upload can finish after sync brought a newer capture's pointer from another device.
+  const isNewer = (row: T) => {
+    const current = row.json.screenshot as Partial<ScreenshotRef> | null | undefined
+    return current?.url === screenshot.url && (current.savedAt ?? 0) > screenshot.savedAt
+  }
+  return rows.map((row) =>
+    ids.includes(row.id) && !isNewer(row) ? withUpdatedAt(patchRowState(row, { screenshot })) : row,
+  )
 }
 
 export function withUpdatedAt<T extends { updatedAt: string }>(row: T, updatedAt = isoNow()): T {

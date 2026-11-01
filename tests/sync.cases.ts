@@ -202,6 +202,18 @@ describe('complete sync cycle', () => {
     expect(syncOwner$.ownerUserId.peek()).toBe('user-b')
   })
 
+  test('merging keeps an edit made while screenshots were changing hands', async () => {
+    const { resolveAccountChoice } = await import('../lib/supabase/sync-account')
+    syncMeta$.pendingBookmarkIds.set(['local'])
+    await settle(syncSupabase())
+    server.reset()
+    auth$.userId.set('user-b')
+    adoptScreenshots.mockImplementationOnce(async () => edit('Edited during the merge'))
+    await settle(resolveAccountChoice('mergeDevice'))
+    expect(local().title).toBe('Edited during the merge')
+    expect(server.tables.bookmarks.find((row) => row.id === 'local')).toMatchObject({ title: 'Edited during the merge' })
+  })
+
   test('drops an account choice whose account changed and came back while it was reading', async () => {
     const { resolveAccountChoice } = await import('../lib/supabase/sync-account')
     syncOwner$.ownerUserId.set('user-a')

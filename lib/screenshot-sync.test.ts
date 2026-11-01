@@ -9,6 +9,7 @@ import {
   type ScreenshotSyncHost,
 } from './screenshot-sync'
 import { previewKey, type BookmarkPreview } from './bookmark-preview-types'
+import { withScreenshotRef } from './nori-data'
 
 const URL_A = 'https://example.com/a'
 const KEY_A = previewKey(URL_A, 'screenshot')
@@ -181,6 +182,25 @@ describe('syncScreenshots', () => {
     }
     await syncScreenshots(USER, [bookmark('a', { screenshot: ref })], 'page-image', host)
     expect(previews.get(KEY_A)!.savedAt).toBe(50)
+  })
+})
+
+describe('withScreenshotRef', () => {
+  const row = (screenshot?: ScreenshotRef) => ({ id: 'a', updatedAt: 'then', json: { screenshot } })
+
+  it('sets the pointer and marks the row changed', () => {
+    const ref = { path: 'u/new.jpg', savedAt: 200, url: URL_A }
+    const [next] = withScreenshotRef([row({ path: 'u/old.jpg', savedAt: 100, url: URL_A })], ['a'], ref)
+    expect(next.json.screenshot).toEqual(ref)
+    expect(next.updatedAt).not.toBe('then')
+  })
+
+  it('keeps a newer pointer, unless it is for a page the bookmark no longer shows', () => {
+    const newer = row({ path: 'u/newer.jpg', savedAt: 300, url: URL_A })
+    const ref = { path: 'u/late.jpg', savedAt: 200, url: URL_A }
+    expect(withScreenshotRef([newer], ['a'], ref)).toEqual([newer])
+    const moved = row({ path: 'u/moved.jpg', savedAt: 300, url: 'https://example.com/old' })
+    expect(withScreenshotRef([moved], ['a'], ref)[0].json.screenshot).toEqual(ref)
   })
 })
 
