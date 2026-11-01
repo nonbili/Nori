@@ -151,6 +151,16 @@ describe('syncScreenshots', () => {
     expect(previews.get(KEY_A)!.owner).toBe(USER)
   })
 
+  it('keeps a capture saved while an unowned one was uploading', async () => {
+    const { host, previews } = createHost({ [KEY_A]: preview(100) })
+    host.store.upload = async () => {
+      previews.set(KEY_A, preview(300, 'data:image/jpeg;base64,bmV3'))
+    }
+    await syncScreenshots(USER, [bookmark('a')], 'page-image', host)
+    expect(previews.get(KEY_A)).toMatchObject({ savedAt: 300, imageUri: 'data:image/jpeg;base64,bmV3' })
+    expect(previews.get(KEY_A)!.owner).toBeUndefined()
+  })
+
   it('keeps a capture saved while a download was in flight', async () => {
     const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
     const { host, previews, changed } = createHost({ [KEY_A]: preview(50) })

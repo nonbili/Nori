@@ -83,7 +83,11 @@ async function syncOne(userId: string, group: ScreenshotBookmark[], host: Screen
   if (localImage && (!ref || localImage.savedAt > ref.savedAt)) {
     const next = { path: `${userId}/${host.newId()}.jpg`, savedAt: localImage.savedAt, url }
     await host.store.upload(next.path, await host.shrink(localImage.imageUri))
-    if (!localImage.owner) await host.write(key, { ...localImage, owner: userId })
+    if (!localImage.owner) {
+      // Unless a newer capture was saved during the upload: the next pass uploads that one.
+      const latest = await host.read(key)
+      if (latest?.savedAt === localImage.savedAt) await host.write(key, { ...latest, owner: userId })
+    }
     await host.setRef(group.map((bookmark) => bookmark.id), next)
     return
   }

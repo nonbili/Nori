@@ -24,7 +24,8 @@ const syncOwner$ = observable({ ownerUserId: undefined as string | undefined, sw
 mock.module('@/states/sync-owner', () => ({ syncOwner$ }))
 mock.module('@/lib/supabase/client', () => ({ supabase: server }))
 const forgetScreenshots = mock(async (_urls: string[]) => {})
-mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots, setScreenshotCaptured: () => {}, setScreenshotOwner: () => {} }))
+const adoptScreenshots = mock(async (_urls: string[], _owner: string) => {})
+mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots, adoptScreenshots, setScreenshotCaptured: () => {}, setScreenshotOwner: () => {} }))
 const runScreenshotSync = mock(async () => {})
 const removeOrphans = mock(async () => {})
 mock.module('@/lib/supabase/screenshots', () => ({ runScreenshotSync, removeOrphans }))
@@ -194,6 +195,7 @@ describe('complete sync cycle', () => {
     await settle(resolveAccountChoice('mergeDevice'))
     // Only the pages the account has: the device's own captures go with its bookmarks.
     expect(forgetScreenshots.mock.lastCall![0]).toEqual([])
+    expect(adoptScreenshots.mock.lastCall).toEqual([expect.arrayContaining(['https://local.example/']), 'user-b'])
     expect(server.tables.bookmarks.find((row) => row.id === 'local')).toMatchObject({ user_id: 'user-b' })
     expect(server.tables.bookmarks.find((row) => row.id === 'theirs')).toMatchObject({ title: 'B' })
     expect(syncMeta$.pendingBookmarkIds.peek()).toEqual([])

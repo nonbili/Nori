@@ -9,6 +9,7 @@ import {
   setScreenshotCaptured,
   setScreenshotOwner,
   forgetScreenshots,
+  adoptScreenshots,
   onPreviewChange,
   updatePreviewBookmarks,
   retainEditorPreview,
@@ -205,6 +206,14 @@ describe('bookmark previews', () => {
     })
     expect((await loadBookmarkPreview(url, 'screenshot')).imageUri).toBe(arrived.imageUri)
     expect((await readPreview(key))!.imageUri).toBe(arrived.imageUri)
+  })
+  it('hands a saved screenshot to another account', async () => {
+    const url = 'https://adopted.example/'
+    const value = { description: '', imageUrl: '', imageUri: 'data:image/jpeg;base64,c2hvdA==', savedAt: 5, owner: 'old' }
+    await writePreview(previewKey(url, 'screenshot'), value)
+    await adoptScreenshots([url, 'https://none.example/'], 'new')
+    expect(await readPreview(previewKey(url, 'screenshot'))).toEqual({ ...value, owner: 'new' })
+    expect(await readPreview(previewKey('https://none.example/', 'screenshot'))).toBeUndefined()
   })
   it('forgets saved screenshots but keeps their text and other previews', async () => {
     const url = 'https://forget.example/'

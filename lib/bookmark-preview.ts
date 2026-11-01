@@ -370,6 +370,20 @@ export async function forgetScreenshots(urls: string[]) {
   }
 }
 
+/** Hands the screenshots saved here for these pages to an account, for a device merged into it. */
+export async function adoptScreenshots(urls: string[], owner: string) {
+  for (const url of new Set(urls)) {
+    let key: string
+    try {
+      key = previewKey(url, 'screenshot')
+    } catch {
+      continue
+    }
+    const saved = await readPreview(key)
+    if (saved?.imageUri) await writePreview(key, { ...saved, owner })
+  }
+}
+
 export async function getCachedBookmarkPreview(url: string, source: PreviewSource) {
   const saved = await readPreview(previewKey(url, source === 'none' ? 'page-image' : source))
   return source === 'none' && saved ? { ...saved, imageUrl: '', imageUri: '' } : saved

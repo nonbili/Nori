@@ -55,7 +55,9 @@ async function screenshotPass() {
   const profileId = state.activeProfileId
   const profile = state.profiles[profileId]
   if (!profile) return
+  const { userId } = auth
   await syncProfileScreenshots(profile, auth, state.preferences.previewImageSource, {
+    isCurrent: () => auth.userId === userId,
     setRef: (ids, ref) => saveScreenshotRef(profileId, ids, ref),
     changed: (key) => {
       const message: StateChangedMessage = { type: 'state-changed', previewKeys: [key] }
