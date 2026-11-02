@@ -274,7 +274,9 @@ jobs:
           # so package via the plugin directly to keep usr/lib empty.
           ./linuxdeploy-plugin-appimage --appdir AppDir
 
-          embedded=$("$LDAI_OUTPUT" --appimage-updateinformation)
+          # Extract-and-run takes precedence over runtime metadata flags and
+          # would launch the GUI on this headless runner. Unset it for this query.
+          embedded=$(env -u APPIMAGE_EXTRACT_AND_RUN "$LDAI_OUTPUT" --appimage-updateinformation)
           if [ "$embedded" != "$LDAI_UPDATE_INFORMATION" ]; then
             echo "AppImage update information is '$embedded', want '$LDAI_UPDATE_INFORMATION'."
             exit 1
