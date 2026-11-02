@@ -404,6 +404,9 @@ function reindexBySort<T extends { json: RowJsonState }>(items: T[]) {
     .map((item, index) => patchRowState(item, { sort_index: index }))
 }
 
+// Older than any server row, so a starter row never wins over the account's copy of its fixed id.
+const STARTER_UPDATED_AT = new Date(0).toISOString()
+
 export function createStarterLists() {
   const now = isoNow()
   return STARTER_LISTS.map((definition, index) => ({
@@ -411,7 +414,7 @@ export function createStarterLists() {
     name: definition.name,
     json: createRowJsonState({ visible: true, sort_index: index, deleted_at: null }),
     createdAt: now,
-    updatedAt: now,
+    updatedAt: STARTER_UPDATED_AT,
   }))
 }
 
@@ -440,7 +443,7 @@ export function createStarterBookmarks() {
     icon: definition.icon,
     json: createRowJsonState({ visible: true, sort_index: index, deleted_at: null }),
     createdAt: now,
-    updatedAt: now,
+    updatedAt: STARTER_UPDATED_AT,
   }))
 }
 

@@ -78,6 +78,39 @@ describe('complete sync cycle', () => {
     expect(syncMeta$.lastError.peek()).toBeUndefined()
   })
 
+  test('a new device signing in keeps the account\'s built-in rows, on the first pull and later full pulls', async () => {
+    const older = '2026-10-17T00:00:00.000Z'
+    const stamps = { user_id: 'user-a', created_at: older, updated_at: older }
+    server.tables.lists = createStarterLists().map((row) => ({
+      ...stamps, id: row.id, json: row.json, name: row.id === 'builtin-later' ? 'Read later' : row.name,
+    }))
+    const deleted = { visible: false, deleted_at: '2026-08-16T00:00:00.000Z' }
+    server.tables.bookmarks = [
+      ...createStarterBookmarks().map((row) => ({
+        ...stamps, id: row.id, list_id: row.listId, url: row.url, title: row.title, icon: row.icon,
+        json: row.id === 'builtin-sns-tiktok' ? { ...row.json, ...deleted } : row.json,
+      })),
+      { ...stamps, id: 'account-row', list_id: 'builtin-later', url: 'https://account.example/', title: 'Account', icon: '', json: {} },
+    ]
+    bookmarks$.bookmarks.set(createStarterBookmarks())
+    syncMeta$.assign({ pendingListIds: [], pendingBookmarkIds: [] })
+    const expectAccountKept = () => {
+      expect(lists$.lists.peek().find((row) => row.id === 'builtin-later')?.name).toBe('Read later')
+      expect(bookmarks$.bookmarks.peek().find((row) => row.id === 'builtin-sns-tiktok')?.json.deleted_at).toBe(deleted.deleted_at)
+      expect(syncMeta$.pendingListIds.peek()).toEqual([])
+      expect(syncMeta$.pendingBookmarkIds.peek()).toEqual([])
+      expect(writes()).toEqual([])
+    }
+
+    await settle(syncSupabase())
+    expectAccountKept()
+
+    // The device now holds more than the seed, so the full pull's repair pass runs too.
+    syncMeta$.lastFullPullAt.set(0)
+    await settle(syncSupabase())
+    expectAccountKept()
+  })
+
   test('a successful cycle syncs screenshots, and only a full pull looks for orphans', async () => {
     runScreenshotSync.mockClear()
     removeOrphans.mockClear()
