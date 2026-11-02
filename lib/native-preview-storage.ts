@@ -130,7 +130,10 @@ export function createNativePreviewStorage(fs: PreviewFileSystem, directory: str
     const previous = await readPreview(key)
     const base = fileName(key)
     let image = ''
-    if (value.imageUri) {
+    if (value.imageUri && value.imageUri === previous?.imageUri) {
+      // Only the record changes: the image is already this file.
+      image = value.imageUri.split('/').pop() ?? ''
+    } else if (value.imageUri) {
       const mime = value.imageUri.match(/^data:image\/([^;]+)/)?.[1]
       const extension = mime === 'svg+xml' ? 'svg' : ['png', 'webp', 'gif', 'avif'].includes(mime || '') ? mime : 'jpg'
       image = `${base}-${value.savedAt}.${extension}`

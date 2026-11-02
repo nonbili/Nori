@@ -67,28 +67,43 @@ function isShownAsScreenshot(bookmark: ScreenshotBookmark, fallback: PreviewSour
   return previewSource(bookmark.json?.previewSource, fallback) === 'screenshot'
 }
 
+/** A saved screenshot this account may use. One with no owner is taken by the first to upload it. */
+function ownImage(preview: BookmarkPreview | undefined, userId: string) {
+  return preview?.imageUri && (!preview.owner || preview.owner === userId) ? preview : undefined
+}
+
 async function syncOne(userId: string, group: ScreenshotBookmark[], host: ScreenshotSyncHost) {
   const { url } = group[0]
   const key = previewKey(url, 'screenshot')
   const refs = group.map(screenshotRef).filter((ref) => ref !== undefined)
   const ref = refs.reduce<ScreenshotRef | undefined>((a, b) => (a && a.savedAt >= b.savedAt ? a : b), undefined)
   const local = await host.read(key)
-  const localImage = local?.imageUri ? local : undefined
+  const localImage = ownImage(local, userId)
 
   if (localImage && (!ref || localImage.savedAt > ref.savedAt)) {
     const next = { path: `${userId}/${host.newId()}.jpg`, savedAt: localImage.savedAt, url }
     await host.store.upload(next.path, await host.shrink(localImage.imageUri))
+    if (!localImage.owner) {
+      // Unless a newer capture was saved during the upload: the next pass uploads that one.
+      const latest = await host.read(key)
+      if (latest?.savedAt === localImage.savedAt) await host.write(key, { ...latest, owner: userId })
+    }
     await host.setRef(group.map((bookmark) => bookmark.id), next)
     return
   }
   if (!ref) return
   if (!localImage || ref.savedAt > localImage.savedAt) {
     const imageUri = await host.store.download(ref.path)
+    // A capture saved while this was downloading is newer: the next pass uploads it.
+    const latest = await host.read(key)
+    const latestImage = ownImage(latest, userId)
+    if (latestImage && latestImage.savedAt >= ref.savedAt) return
     await host.write(key, {
-      description: local?.description || '',
-      imageUrl: local?.imageUrl || '',
+      description: latest?.description || '',
+      imageUrl: latest?.imageUrl || '',
       imageUri,
       savedAt: ref.savedAt,
+      owner: userId,
     })
     host.changed(key)
   }

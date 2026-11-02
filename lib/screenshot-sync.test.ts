@@ -9,6 +9,7 @@ import {
   type ScreenshotSyncHost,
 } from './screenshot-sync'
 import { previewKey, type BookmarkPreview } from './bookmark-preview-types'
+import { withScreenshotRef } from './nori-data'
 
 const URL_A = 'https://example.com/a'
 const KEY_A = previewKey(URL_A, 'screenshot')
@@ -131,6 +132,48 @@ describe('syncScreenshots', () => {
     expect(refs.map(({ ids }) => ids)).toEqual([['b']])
   })
 
+  it('never uploads another account\'s capture, and replaces it with this account\'s', async () => {
+    const foreign = { ...preview(500), owner: 'other-user' }
+    const alone = createHost({ [KEY_A]: foreign })
+    await syncScreenshots(USER, [bookmark('a')], 'page-image', alone.host)
+    expect(alone.uploads).toEqual([])
+    expect(alone.previews.get(KEY_A)!.owner).toBe('other-user')
+
+    const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
+    const pointed = createHost({ [KEY_A]: foreign })
+    await syncScreenshots(USER, [bookmark('a', { screenshot: ref })], 'page-image', pointed.host)
+    expect(pointed.uploads).toEqual([])
+    expect(pointed.previews.get(KEY_A)).toMatchObject({ owner: USER, savedAt: 100 })
+  })
+
+  it('gives an unowned capture to the account that uploads it', async () => {
+    const { host, previews } = createHost({ [KEY_A]: preview(100) })
+    await syncScreenshots(USER, [bookmark('a')], 'page-image', host)
+    expect(previews.get(KEY_A)!.owner).toBe(USER)
+  })
+
+  it('keeps a capture saved while an unowned one was uploading', async () => {
+    const { host, previews } = createHost({ [KEY_A]: preview(100) })
+    host.store.upload = async () => {
+      previews.set(KEY_A, preview(300, 'data:image/jpeg;base64,bmV3'))
+    }
+    await syncScreenshots(USER, [bookmark('a')], 'page-image', host)
+    expect(previews.get(KEY_A)).toMatchObject({ savedAt: 300, imageUri: 'data:image/jpeg;base64,bmV3' })
+    expect(previews.get(KEY_A)!.owner).toBeUndefined()
+  })
+
+  it('keeps a capture saved while a download was in flight', async () => {
+    const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
+    const { host, previews, changed } = createHost({ [KEY_A]: preview(50) })
+    host.store.download = async () => {
+      previews.set(KEY_A, preview(300, 'data:image/jpeg;base64,bmV3'))
+      return 'data:image/jpeg;base64,cmVtb3Rl'
+    }
+    await syncScreenshots(USER, [bookmark('a', { screenshot: ref })], 'page-image', host)
+    expect(previews.get(KEY_A)).toMatchObject({ savedAt: 300, imageUri: 'data:image/jpeg;base64,bmV3' })
+    expect(changed).toEqual([])
+  })
+
   it('keeps the local capture when a download fails', async () => {
     const ref = { path: 'user-1/x.jpg', savedAt: 100, url: URL_A }
     const { host, previews } = createHost({ [KEY_A]: preview(50) })
@@ -139,6 +182,25 @@ describe('syncScreenshots', () => {
     }
     await syncScreenshots(USER, [bookmark('a', { screenshot: ref })], 'page-image', host)
     expect(previews.get(KEY_A)!.savedAt).toBe(50)
+  })
+})
+
+describe('withScreenshotRef', () => {
+  const row = (screenshot?: ScreenshotRef) => ({ id: 'a', updatedAt: 'then', json: { screenshot } })
+
+  it('sets the pointer and marks the row changed', () => {
+    const ref = { path: 'u/new.jpg', savedAt: 200, url: URL_A }
+    const [next] = withScreenshotRef([row({ path: 'u/old.jpg', savedAt: 100, url: URL_A })], ['a'], ref)
+    expect(next.json.screenshot).toEqual(ref)
+    expect(next.updatedAt).not.toBe('then')
+  })
+
+  it('keeps a newer pointer, unless it is for a page the bookmark no longer shows', () => {
+    const newer = row({ path: 'u/newer.jpg', savedAt: 300, url: URL_A })
+    const ref = { path: 'u/late.jpg', savedAt: 200, url: URL_A }
+    expect(withScreenshotRef([newer], ['a'], ref)).toEqual([newer])
+    const moved = row({ path: 'u/moved.jpg', savedAt: 300, url: 'https://example.com/old' })
+    expect(withScreenshotRef([moved], ['a'], ref)[0].json.screenshot).toEqual(ref)
   })
 })
 

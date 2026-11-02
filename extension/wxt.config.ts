@@ -64,6 +64,7 @@ export default defineConfig({
       'desktop/frontend/package.json',
       'assets/images/**',
       'components/**',
+      'hooks/**',
       'lib/**',
       'locales/**',
       'modules/**',

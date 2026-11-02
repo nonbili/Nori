@@ -1,4 +1,5 @@
-import { setScreenshotCaptured } from '@/lib/bookmark-preview'
+import { setScreenshotCaptured, setScreenshotOwner } from '@/lib/bookmark-preview'
+import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { syncMeta$ } from '@/states/sync-meta'
@@ -326,6 +327,7 @@ export function startSupabaseSyncWatchers() {
   }
   watchersStarted = true
   setScreenshotCaptured(() => void runScreenshotSync())
+  setScreenshotOwner(() => auth$.userId.peek())
 
   lists$.lists.onChange(({ value, getPrevious }) => {
     if (applyingRemote) {

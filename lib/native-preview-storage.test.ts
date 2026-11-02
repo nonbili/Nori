@@ -166,4 +166,13 @@ describe('native preview storage', () => {
     expect([...files.keys()].filter((uri) => uri.endsWith('.json'))).toHaveLength(1)
     expect([...files.keys()].filter((uri) => uri.endsWith('.jpg'))).toHaveLength(1)
   })
+  it('rewrites only the record when the image is unchanged, keeping the file', async () => {
+    const { fs } = fileSystem()
+    const storage = createNativePreviewStorage(fs as never, 'file:///previews/')
+    const key = previewKey('https://same-image.example/', 'screenshot')
+    await storage.writePreview(key, { description: '', imageUrl: '', imageUri: 'data:image/jpeg;base64,c2hvdA==', savedAt: 1 })
+    const saved = (await storage.readPreview(key))!
+    await storage.writePreview(key, { ...saved, owner: 'user-1' })
+    expect(await storage.readPreview(key)).toEqual({ ...saved, owner: 'user-1' })
+  })
 })

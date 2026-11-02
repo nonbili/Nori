@@ -202,14 +202,21 @@ export function syncProfileScreenshots(
   profile: ProfileData,
   auth: AuthState,
   fallback: Preferences['previewImageSource'],
-  host: { setRef: (ids: string[], ref: ScreenshotRef) => Promise<void>; changed: (key: string) => void },
+  host: {
+    isCurrent: () => boolean
+    setRef: (ids: string[], ref: ScreenshotRef) => Promise<void>
+    changed: (key: string) => void
+  },
 ) {
   if (!auth.userId || auth.plan === 'free') return Promise.resolve()
   return syncScreenshots(auth.userId, profile.bookmarks, fallback, {
     ...host,
     store: screenshotStore,
     read: readPreview,
-    write: writePreview,
+    // The pass outlives a change of account, and what it fetched is not the next account's.
+    write: async (key, preview) => {
+      if (host.isCurrent()) await writePreview(key, preview)
+    },
     shrink: shrinkScreenshot,
     newId: () => crypto.randomUUID(),
   })

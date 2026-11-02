@@ -21,7 +21,8 @@ import { useSnapshot } from './useSnapshot'
 import { useSharedStateBridge } from './useSharedStateBridge'
 import { installPreviewCapture } from '../lib/preview-capture'
 import { request } from '../lib/client'
-import { setScreenshotCaptured } from 'nori-root/lib/bookmark-preview'
+import { setScreenshotCaptured, setScreenshotOwner } from 'nori-root/lib/bookmark-preview'
+import { auth$ } from 'nori-root/states/auth'
 import { systemLanguage } from '../lib/language'
 import './native-fonts.css'
 import './nativewind-interop'
@@ -29,6 +30,7 @@ import './nativewind-interop'
 setDynamicLoadingEnabled(false)
 installPreviewCapture()
 setScreenshotCaptured(() => void request({ type: 'sync-screenshots' }).catch(() => undefined))
+setScreenshotOwner(() => auth$.userId.peek())
 setUrlOpener((url) => browser.tabs.create({ url }))
 
 function ReadyApp({
