@@ -1,0 +1,7 @@
+- Sync bookmark screenshots across devices for paid accounts
+- Ask whether to merge or replace local bookmarks when switching sync accounts, and sync automatically when returning to the tab
+- Add optional notes to bookmarks, displayed on preview cards and searchable
+- Tag badges on preview cards and tag autocomplete in the editor, sorted by most used first
+- Collapsible preview image controls with "No image" default option, screenshot fallback when a cover image fails, and edge-to-edge wide previews
+- Shared Experience and Appearance settings with Material icons, and add new bookmarks at the top by default
+- Scroll the list at its edges while sorting and keep the held tile under the pointer
