@@ -5,5 +5,6 @@ export const PLAN_URL = 'https://nori.inks.page/app'
 export const DONATE_LINKS = [
   { label: 'GitHub Sponsors', detail: 'github.com/sponsors/rnons', url: 'https://github.com/sponsors/rnons' },
   { label: 'Liberapay', detail: 'liberapay.com/rnons', url: 'https://liberapay.com/rnons' },
-  { label: 'PayPal', detail: 'paypal.me/rnons', url: 'https://paypal.me/rnons' },
+  { label: 'PayPal', detail: 'paypal.me/nonbili', url: 'https://paypal.me/nonbili' },
+  { label: 'Stripe', detail: 'donate.stripe.com', url: 'https://donate.stripe.com/5kQ5kDeGz6WCb3xa9P48004' },
 ] as const

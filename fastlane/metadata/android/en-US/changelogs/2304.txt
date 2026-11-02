@@ -1,0 +1,4 @@
+- Sync bookmark screenshots across devices for paid accounts
+- Ask whether to merge or replace local bookmarks when switching sync accounts, and sync automatically when returning to the app
+- Improve tag menu placement and remember preview image options in the bookmark editor
+- Fix the all-bookmarks drawer failing to reopen after activity recreation
