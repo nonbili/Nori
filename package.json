@@ -8,7 +8,7 @@
   "main": "expo-router/entry",
   "version": "0.2.8",
   "versionCode": 23,
-  "buildNumber": "24",
+  "buildNumber": "25",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",

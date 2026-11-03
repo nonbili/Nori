@@ -22,6 +22,6 @@ Nori 是一款书签管理与稍后阅读应用，为你保存的链接安个家
 在 Nori 内或默认浏览器中打开已保存的链接。
 
 手机、电脑、浏览器全覆盖
-Nori 支持 Android、iPhone、iPad、Windows、macOS 和 Linux，并提供 Chrome 和 Firefox 扩展。书签保存在你的设备上；登录后，可选的付费方案 Nori Sync 会在所有设备间同步列表和书签。
+Nori 支持 iPhone、iPad、Windows、macOS 和 Linux，并提供 Chrome 和 Firefox 扩展。书签保存在你的设备上；登录后，可选的付费方案 Nori Sync 会在所有设备间同步列表和书签。
 
 使用条款（EULA）: https://www.apple.com/legal/macapps/stdeula/

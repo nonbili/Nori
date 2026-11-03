@@ -22,6 +22,6 @@ Nori は、保存したリンクの居場所をつくるブックマーク管理
 保存したリンクは Nori の中でも、既定のブラウザでも開けます。
 
 スマホでも、パソコンでも、ブラウザでも
-Nori は Android、iPhone、iPad、Windows、macOS、Linux に対応し、Chrome と Firefox の拡張機能もあります。ブックマークは端末内に保存され、任意の有料プラン Nori Sync に加入してサインインすると、すべてのデバイスでリストとブックマークを同期できます。
+Nori は iPhone、iPad、Windows、macOS、Linux に対応し、Chrome と Firefox の拡張機能もあります。ブックマークは端末内に保存され、任意の有料プラン Nori Sync に加入してサインインすると、すべてのデバイスでリストとブックマークを同期できます。
 
 利用規約（EULA）: https://www.apple.com/legal/macapps/stdeula/

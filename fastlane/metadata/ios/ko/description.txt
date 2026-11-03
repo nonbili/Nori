@@ -22,6 +22,6 @@ Nori는 저장한 링크에 집을 마련해 주는 북마크 관리 및 나중�
 저장한 링크를 Nori 안에서 열거나 기본 브라우저로 열 수 있습니다.
 
 휴대폰, 컴퓨터, 브라우저 어디서나
-Nori는 Android, iPhone, iPad, Windows, macOS, Linux에서 사용할 수 있으며 Chrome과 Firefox용 확장 프로그램도 제공합니다. 북마크는 기기에 저장되며, 선택형 유료 플랜 Nori Sync에 로그인하면 모든 기기에서 목록과 북마크가 동기화됩니다.
+Nori는 iPhone, iPad, Windows, macOS, Linux에서 사용할 수 있으며 Chrome과 Firefox용 확장 프로그램도 제공합니다. 북마크는 기기에 저장되며, 선택형 유료 플랜 Nori Sync에 로그인하면 모든 기기에서 목록과 북마크가 동기화됩니다.
 
 이용 약관(EULA): https://www.apple.com/legal/macapps/stdeula/

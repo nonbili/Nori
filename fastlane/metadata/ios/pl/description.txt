@@ -22,6 +22,6 @@ Czytaj po swojemu
 Otwieraj zapisane linki w Nori lub w domyślnej przeglądarce.
 
 Na telefonie, komputerze i w przeglądarce
-Nori jest dostępne na Androida, iPhone'a, iPada, Windows, macOS i Linuksa, a także jako rozszerzenie do Chrome i Firefoksa. Zakładki są przechowywane na Twoim urządzeniu, a opcjonalny płatny plan Nori Sync po zalogowaniu synchronizuje listy i zakładki na wszystkich urządzeniach.
+Nori jest dostępne na iPhone'a, iPada, Windows, macOS i Linuksa, a także jako rozszerzenie do Chrome i Firefoksa. Zakładki są przechowywane na Twoim urządzeniu, a opcjonalny płatny plan Nori Sync po zalogowaniu synchronizuje listy i zakładki na wszystkich urządzeniach.
 
 Warunki korzystania (EULA): https://www.apple.com/legal/macapps/stdeula/

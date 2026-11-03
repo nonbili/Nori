@@ -22,6 +22,6 @@ Leia à sua maneira
 Abra as ligações guardadas dentro do Nori ou no navegador predefinido.
 
 No telemóvel, no computador e no navegador
-O Nori está disponível para Android, iPhone, iPad, Windows, macOS e Linux, com extensões para Chrome e Firefox. Os seus marcadores ficam guardados no seu dispositivo, e o plano pago opcional Nori Sync mantém listas e marcadores sincronizados em todos eles após iniciar sessão.
+O Nori está disponível para iPhone, iPad, Windows, macOS e Linux, com extensões para Chrome e Firefox. Os seus marcadores ficam guardados no seu dispositivo, e o plano pago opcional Nori Sync mantém listas e marcadores sincronizados em todos eles após iniciar sessão.
 
 Termos de Utilização (EULA): https://www.apple.com/legal/macapps/stdeula/

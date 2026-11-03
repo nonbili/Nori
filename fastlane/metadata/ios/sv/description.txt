@@ -22,6 +22,6 @@ Läs på ditt sätt
 Öppna sparade länkar direkt i Nori eller i din standardwebbläsare.
 
 I mobilen, datorn och webbläsaren
-Nori finns för Android, iPhone, iPad, Windows, macOS och Linux, med tillägg för Chrome och Firefox. Dina bokmärken lagras på din enhet, och det valfria betalabonnemanget Nori Sync håller listor och bokmärken synkade på alla enheter efter inloggning.
+Nori finns för iPhone, iPad, Windows, macOS och Linux, med tillägg för Chrome och Firefox. Dina bokmärken lagras på din enhet, och det valfria betalabonnemanget Nori Sync håller listor och bokmärken synkade på alla enheter efter inloggning.
 
 Användarvillkor (EULA): https://www.apple.com/legal/macapps/stdeula/

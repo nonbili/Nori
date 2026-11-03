@@ -22,6 +22,6 @@ Nori 是一款書籤管理與稍後閱讀 App，為你儲存的連結打造一�
 在 Nori 內或預設瀏覽器中開啟已儲存的連結。
 
 手機、電腦、瀏覽器全支援
-Nori 支援 Android、iPhone、iPad、Windows、macOS 和 Linux，並提供 Chrome 和 Firefox 擴充功能。書籤儲存在你的裝置上；登入後，選用的付費方案 Nori Sync 會在所有裝置間同步清單和書籤。
+Nori 支援 iPhone、iPad、Windows、macOS 和 Linux，並提供 Chrome 和 Firefox 擴充功能。書籤儲存在你的裝置上；登入後，選用的付費方案 Nori Sync 會在所有裝置間同步清單和書籤。
 
 使用條款（EULA）: https://www.apple.com/legal/macapps/stdeula/

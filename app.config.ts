@@ -42,6 +42,8 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
           },
           ios: {
             deploymentTarget: '17.0',
+            // Keep Expo modules and core ABI-compatible instead of mixing prebuilt binaries.
+            usePrecompiledModules: false,
           },
         },
       ],

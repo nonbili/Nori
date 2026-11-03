@@ -22,6 +22,6 @@ Leia como preferir
 Abra os links salvos dentro do Nori ou no navegador padrão.
 
 No celular, no computador e no navegador
-O Nori está disponível para Android, iPhone, iPad, Windows, macOS e Linux, com extensões para Chrome e Firefox. Seus favoritos ficam armazenados no seu dispositivo, e o plano pago opcional Nori Sync mantém listas e favoritos sincronizados em todos eles após o login.
+O Nori está disponível para iPhone, iPad, Windows, macOS e Linux, com extensões para Chrome e Firefox. Seus favoritos ficam armazenados no seu dispositivo, e o plano pago opcional Nori Sync mantém listas e favoritos sincronizados em todos eles após o login.
 
 Termos de Uso (EULA): https://www.apple.com/legal/macapps/stdeula/

@@ -22,6 +22,6 @@ Olvass a saját módodon
 Nyisd meg a mentett linkeket a Noriban vagy az alapértelmezett böngésződben.
 
 Telefonon, számítógépen és böngészőben
-A Nori elérhető Androidra, iPhone-ra, iPadre, Windowsra, macOS-re és Linuxra, valamint bővítményként Chrome-hoz és Firefoxhoz. A könyvjelzőidet az eszközödön tároljuk, a választható, fizetős Nori Sync csomag pedig bejelentkezés után minden eszközöd között szinkronban tartja a listákat és könyvjelzőket.
+A Nori elérhető iPhone-ra, iPadre, Windowsra, macOS-re és Linuxra, valamint bővítményként Chrome-hoz és Firefoxhoz. A könyvjelzőidet az eszközödön tároljuk, a választható, fizetős Nori Sync csomag pedig bejelentkezés után minden eszközöd között szinkronban tartja a listákat és könyvjelzőket.
 
 Felhasználási feltételek (EULA): https://www.apple.com/legal/macapps/stdeula/

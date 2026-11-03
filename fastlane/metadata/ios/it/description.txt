@@ -22,6 +22,6 @@ Leggi a modo tuo
 Apri i link salvati dentro Nori o nel browser predefinito.
 
 Su telefono, computer e browser
-Nori è disponibile per Android, iPhone, iPad, Windows, macOS e Linux, con estensioni per Chrome e Firefox. I segnalibri sono salvati sul tuo dispositivo e il piano a pagamento facoltativo Nori Sync mantiene liste e segnalibri sincronizzati su tutti i dispositivi dopo l'accesso.
+Nori è disponibile per iPhone, iPad, Windows, macOS e Linux, con estensioni per Chrome e Firefox. I segnalibri sono salvati sul tuo dispositivo e il piano a pagamento facoltativo Nori Sync mantiene liste e segnalibri sincronizzati su tutti i dispositivi dopo l'accesso.
 
 Termini di utilizzo (EULA): https://www.apple.com/legal/macapps/stdeula/

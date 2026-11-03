@@ -22,6 +22,6 @@ Baca dengan cara Anda
 Buka tautan tersimpan di dalam Nori atau di browser default Anda.
 
 Di ponsel, komputer, dan browser
-Nori tersedia untuk Android, iPhone, iPad, Windows, macOS, dan Linux, dengan ekstensi untuk Chrome dan Firefox. Bookmark disimpan di perangkat Anda, dan paket berbayar opsional Nori Sync menjaga daftar dan bookmark tetap tersinkron di semua perangkat setelah masuk.
+Nori tersedia untuk iPhone, iPad, Windows, macOS, dan Linux, dengan ekstensi untuk Chrome dan Firefox. Bookmark disimpan di perangkat Anda, dan paket berbayar opsional Nori Sync menjaga daftar dan bookmark tetap tersinkron di semua perangkat setelah masuk.
 
 Ketentuan Penggunaan (EULA): https://www.apple.com/legal/macapps/stdeula/

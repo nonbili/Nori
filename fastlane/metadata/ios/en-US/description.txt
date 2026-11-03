@@ -22,6 +22,6 @@ Read your way
 Open saved links inside Nori or in your default browser.
 
 On your phone, computer, and browser
-Nori is available for Android, iPhone, iPad, Windows, macOS, and Linux, with extensions for Chrome and Firefox. Your bookmarks are stored on your device, and an optional paid Nori Sync plan keeps lists and bookmarks in sync across all of them after you sign in.
+Nori is available for iPhone, iPad, Windows, macOS, and Linux, with extensions for Chrome and Firefox. Your bookmarks are stored on your device, and an optional paid Nori Sync plan keeps lists and bookmarks in sync across all of them after you sign in.
 
 Terms of Use (EULA): https://www.apple.com/legal/macapps/stdeula/

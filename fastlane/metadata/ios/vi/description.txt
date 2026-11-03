@@ -22,6 +22,6 @@ Chọn giao diện sáng, tối hoặc đen tuyền AMOLED. Chọn màu nhấn h
 Mở liên kết đã lưu ngay trong Nori hoặc trong trình duyệt mặc định.
 
 Trên điện thoại, máy tính và trình duyệt
-Nori có trên Android, iPhone, iPad, Windows, macOS và Linux, cùng tiện ích mở rộng cho Chrome và Firefox. Dấu trang được lưu trên thiết bị của bạn, và gói trả phí tùy chọn Nori Sync giữ danh sách và dấu trang đồng bộ trên mọi thiết bị sau khi đăng nhập.
+Nori có trên iPhone, iPad, Windows, macOS và Linux, cùng tiện ích mở rộng cho Chrome và Firefox. Dấu trang được lưu trên thiết bị của bạn, và gói trả phí tùy chọn Nori Sync giữ danh sách và dấu trang đồng bộ trên mọi thiết bị sau khi đăng nhập.
 
 Điều khoản sử dụng (EULA): https://www.apple.com/legal/macapps/stdeula/

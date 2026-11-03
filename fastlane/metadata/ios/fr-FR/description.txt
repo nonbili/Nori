@@ -22,6 +22,6 @@ Lisez à votre façon
 Ouvrez vos liens dans Nori ou dans votre navigateur par défaut.
 
 Sur votre téléphone, votre ordinateur et votre navigateur
-Nori est disponible sur Android, iPhone, iPad, Windows, macOS et Linux, avec des extensions pour Chrome et Firefox. Vos favoris sont stockés sur votre appareil, et l’offre payante facultative Nori Sync synchronise listes et favoris sur tous vos appareils après connexion.
+Nori est disponible sur iPhone, iPad, Windows, macOS et Linux, avec des extensions pour Chrome et Firefox. Vos favoris sont stockés sur votre appareil, et l’offre payante facultative Nori Sync synchronise listes et favoris sur tous vos appareils après connexion.
 
 Conditions d’utilisation (EULA): https://www.apple.com/legal/macapps/stdeula/

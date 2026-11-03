@@ -22,6 +22,6 @@ Açık, koyu veya simsiyah AMOLED temalarından birini seçin. Bir vurgu rengi s
 Kayıtlı bağlantıları Nori içinde veya varsayılan tarayıcınızda açın.
 
 Telefonda, bilgisayarda ve tarayıcıda
-Nori; Android, iPhone, iPad, Windows, macOS ve Linux için, ayrıca Chrome ve Firefox eklentisi olarak kullanılabilir. Yer imleriniz cihazınızda saklanır; isteğe bağlı ücretli Nori Sync planı oturum açtıktan sonra listeleri ve yer imlerini tüm cihazlarınızda eşitler.
+Nori; iPhone, iPad, Windows, macOS ve Linux için, ayrıca Chrome ve Firefox eklentisi olarak kullanılabilir. Yer imleriniz cihazınızda saklanır; isteğe bağlı ücretli Nori Sync planı oturum açtıktan sonra listeleri ve yer imlerini tüm cihazlarınızda eşitler.
 
 Kullanım Koşulları (EULA): https://www.apple.com/legal/macapps/stdeula/

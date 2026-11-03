@@ -22,6 +22,6 @@ Lesen, wie du willst
 Öffne gespeicherte Links direkt in Nori oder in deinem Standardbrowser.
 
 Auf Smartphone, Computer und im Browser
-Nori gibt es für Android, iPhone, iPad, Windows, macOS und Linux sowie als Erweiterung für Chrome und Firefox. Deine Lesezeichen werden auf deinem Gerät gespeichert; mit dem optionalen kostenpflichtigen Nori Sync-Tarif bleiben Listen und Lesezeichen nach der Anmeldung auf allen Geräten synchron.
+Nori gibt es für iPhone, iPad, Windows, macOS und Linux sowie als Erweiterung für Chrome und Firefox. Deine Lesezeichen werden auf deinem Gerät gespeichert; mit dem optionalen kostenpflichtigen Nori Sync-Tarif bleiben Listen und Lesezeichen nach der Anmeldung auf allen Geräten synchron.
 
 Nutzungsbedingungen (EULA): https://www.apple.com/legal/macapps/stdeula/
