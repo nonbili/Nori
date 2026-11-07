@@ -1,0 +1,25 @@
+# Run from the home screen with the app in English and bookmarks loaded.
+appId: jp.nonbili.nori
+---
+- tapOn: Open bookmarks drawer
+- assertVisible: '.*Newest.*'
+- swipe:
+    start: 50%, 35%
+    end: 50%, 40%
+    duration: 1500
+- waitForAnimationToEnd
+- assertVisible: '.*Newest.*'
+- swipe:
+    start: 50%, 35%
+    end: 50%, 75%
+    duration: 1000
+- waitForAnimationToEnd
+- assertNotVisible: '.*Newest.*'
+- tapOn: Open bookmarks drawer
+- assertVisible: '.*Newest.*'
+- swipe:
+    start: 50%, 35%
+    end: 50%, 75%
+    duration: 300
+- waitForAnimationToEnd
+- assertNotVisible: '.*Newest.*'

@@ -1,10 +1,10 @@
-import { memo, useCallback, useEffect, useMemo, type RefObject } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Pressable, ScrollView as NativeScrollView, View } from 'react-native'
 import { NoriText, NoriTextInput } from '@/components/common/NoriText'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { FlashList } from '@shopify/flash-list'
-import { GestureDetector, ScrollView } from 'react-native-gesture-handler'
+import { GestureDetector } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useValue } from '@legendapp/state/react'
 import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
@@ -49,7 +49,7 @@ export interface DrawerPartsState {
   closeDrawerWithAnimation: () => void
   closeDrawerGesture: any
   closeDrawerPanGesture: any
-  scrollRef: RefObject<any>
+  scrollGesture: any
   onScroll: (event: any) => void
   onOpen: (bookmark: BookmarkRecord) => void
   onEdit: (bookmark: BookmarkRecord) => void
@@ -293,13 +293,15 @@ export const DrawerBookmarkResults: React.FC<{ drawer: DrawerPartsState }> = ({ 
     <BookmarkItem bookmark={bookmark} drawer={drawer} />
   ), [drawer])
   const renderScrollComponent = useCallback((props: any) => (
-    <ScrollView {...props} ref={drawer.scrollRef} />
-  ), [drawer.scrollRef])
+    <GestureDetector gesture={drawer.scrollGesture}>
+      <NativeScrollView {...props} />
+    </GestureDetector>
+  ), [drawer.scrollGesture])
 
   return (
     <GestureDetector gesture={drawer.closeDrawerPanGesture}>
       {filteredBookmarks.length > 0 ? (
-        <View className="flex-1">
+        <View collapsable={false} className="flex-1">
           <FlashList
             data={filteredBookmarks}
             renderItem={renderBookmarkRow}

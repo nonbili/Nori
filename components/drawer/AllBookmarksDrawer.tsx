@@ -1,5 +1,5 @@
 import { previewSourceOverride } from '@/lib/bookmark-preview-types'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Share, View, useWindowDimensions } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
@@ -37,7 +37,7 @@ export function AllBookmarksDrawer() {
   const scrollOffset = useSharedValue(0)
   const touchStartY = useSharedValue(0)
   const dragStartedAtTop = useSharedValue(false)
-  const scrollRef = useRef(null)
+  const scrollGesture = useMemo(() => Gesture.Native(), [])
   const { height: windowHeight } = useWindowDimensions()
   const closedTranslateY = windowHeight + 200
   // Mounted open when the activity was recreated while the app was away, in a browser, with the
@@ -88,18 +88,20 @@ export function AllBookmarksDrawer() {
     .direction(Directions.DOWN)
     .onStart(() => {
       'worklet'
-      if (scrollOffset.value <= 0) {
+      if (scrollOffset.value <= 1) {
         runOnJS(closeDrawerWithAnimation)()
       }
     })
 
   const closeDrawerPanGesture = Gesture.Pan()
     .manualActivation(true)
-    .simultaneousWithExternalGesture(scrollRef)
+    // Coordinate with the native scroll recognizer, not the ScrollView component ref.
+    .simultaneousWithExternalGesture(scrollGesture)
     .onTouchesDown((event) => {
       'worklet'
       touchStartY.value = event.allTouches[0]?.absoluteY ?? 0
-      dragStartedAtTop.value = scrollOffset.value <= 0
+      // iOS can settle a fractional point above zero after scrolling back to the top.
+      dragStartedAtTop.value = scrollOffset.value <= 1
     })
     .onTouchesMove((event, manager) => {
       'worklet'
@@ -201,7 +203,7 @@ export function AllBookmarksDrawer() {
     closeDrawerWithAnimation,
     closeDrawerGesture,
     closeDrawerPanGesture,
-    scrollRef,
+    scrollGesture,
     onScroll: handleScroll,
     onOpen: handleOpenBookmark,
     onEdit: editBookmark,
