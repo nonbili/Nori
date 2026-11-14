@@ -1,7 +1,10 @@
 import { getGoogleFavicon } from './favicon'
 import type { ScreenshotRef } from './screenshot-sync'
 
+export type BookmarkSortOrder = 'manual' | 'newest' | 'oldest' | 'az' | 'za'
+
 export interface RowJsonState {
+  bookmark_sort_order?: BookmarkSortOrder
   visible?: boolean
   sort_index?: number
   deleted_at?: string | null
@@ -318,6 +321,23 @@ export function getSortIndex(row: { json?: RowJsonState | null }) {
   return normalizeSortIndex(row.json?.sort_index, 0)
 }
 
+export function getBookmarkSortOrder(row?: { json?: RowJsonState | null }): BookmarkSortOrder {
+  const order = row?.json?.bookmark_sort_order
+  return order === 'newest' || order === 'oldest' || order === 'az' || order === 'za' ? order : 'manual'
+}
+
+export function compareBookmarks(a: BookmarkRecordData, b: BookmarkRecordData, order: BookmarkSortOrder) {
+  let result = 0
+  if (order === 'az' || order === 'za') {
+    result = a.title.toLowerCase().localeCompare(b.title.toLowerCase()) * (order === 'az' ? 1 : -1)
+  } else if (order === 'newest' || order === 'oldest') {
+    const aTime = Date.parse(toIsoString(a.createdAt) || '') || 0
+    const bTime = Date.parse(toIsoString(b.createdAt) || '') || 0
+    result = (aTime - bTime) * (order === 'oldest' ? 1 : -1)
+  }
+  return result || compareBySortIndex(a, b)
+}
+
 export function getDeletedAt(row: { json?: RowJsonState | null }) {
   return toIsoString(row.json?.deleted_at)
 }
@@ -547,10 +567,10 @@ export function getInactiveLists(lists: BookmarkListData[]) {
     .sort(compareBySortIndex)
 }
 
-export function getVisibleBookmarks(bookmarks: BookmarkRecordData[], listId: string) {
+export function getVisibleBookmarks(bookmarks: BookmarkRecordData[], listId: string, order: BookmarkSortOrder = 'manual') {
   return [...bookmarks]
     .filter((item) => item.listId === listId && !isDeleted(item) && isVisible(item))
-    .sort(compareBySortIndex)
+    .sort((a, b) => compareBookmarks(a, b, order))
 }
 
 export function getAvailableBookmarks(bookmarks: BookmarkRecordData[], listId: string) {

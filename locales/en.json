@@ -62,6 +62,9 @@
     "hiddenInListHint": "Tap a bookmark to bring it back."
   },
   "lists": {
+    "edit": "Edit list",
+    "sortOrder": "Bookmark order",
+    "manualOrder": "Manual (drag to reorder)",
     "new": "New list",
     "choose": "Choose a list",
     "rename": "Rename list",

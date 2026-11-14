@@ -1,7 +1,7 @@
 import { getFallbackTitle } from './bookmark-title'
 import { previewKey, previewSource, type PreviewSource } from './bookmark-preview-types'
 import { previewRecordFile } from './native-preview-storage'
-import { getVisibleBookmarks, getVisibleLists, type BookmarkListData, type BookmarkRecordData } from './nori-data'
+import { getBookmarkSortOrder, getVisibleBookmarks, getVisibleLists, type BookmarkListData, type BookmarkRecordData } from './nori-data'
 
 // A widget is a glance surface, and the snapshot is rewritten on every bookmark change.
 export const WIDGET_MAX_ITEMS_PER_LIST = 100
@@ -42,7 +42,7 @@ export function buildHomeWidgetSnapshot(
     lists: getVisibleLists(lists).map((list) => ({
       id: list.id,
       name: list.name,
-      items: getVisibleBookmarks(bookmarks, list.id)
+      items: getVisibleBookmarks(bookmarks, list.id, getBookmarkSortOrder(list))
         .slice(0, WIDGET_MAX_ITEMS_PER_LIST)
         .map((bookmark) => ({
           title: bookmark.title || getFallbackTitle(bookmark.url),

@@ -8,15 +8,27 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { showToast } from '@/lib/toast'
+import { getBookmarkSortOrder, type BookmarkSortOrder } from '@/lib/nori-data'
+import { NouMenu } from '@/components/menu/NouMenu'
 
 export const ListEditorSheet: React.FC = () => {
   const { t } = useTranslation()
   const themeColors = useThemeColors()
   const editor = useValue(ui$.listEditor)
+  const lists = useValue(lists$.lists)
 
   if (!editor) {
     return null
   }
+
+  const sortOrder = editor.sortOrder ?? getBookmarkSortOrder(lists.find((list) => list.id === editor.id))
+  const sortOptions: { order: BookmarkSortOrder; label: string }[] = [
+    { order: 'manual', label: t('lists.manualOrder') },
+    { order: 'newest', label: t('bookmarks.sorting.newestFirst') },
+    { order: 'oldest', label: t('bookmarks.sorting.oldestFirst') },
+    { order: 'az', label: t('bookmarks.sorting.nameAz') },
+    { order: 'za', label: t('bookmarks.sorting.nameZa') },
+  ]
 
   const saveList = () => {
     if (!editor.name.trim()) {
@@ -26,10 +38,12 @@ export const ListEditorSheet: React.FC = () => {
 
     if (editor.id) {
       lists$.renameList(editor.id, editor.name)
+      lists$.setBookmarkSortOrder(editor.id, sortOrder)
       showToast(t('lists.updated'))
     } else {
       const id = lists$.addList(editor.name)
       if (id) {
+        lists$.setBookmarkSortOrder(id, sortOrder)
         settings$.setLastSelectedListId(id)
         showToast(t('lists.created'))
       }
@@ -44,7 +58,7 @@ export const ListEditorSheet: React.FC = () => {
     <BaseCenterModal onClose={onClose}>
       <View className="p-6 gap-4">
         <NoriText className="text-xl font-semibold text-content">
-          {editor.id ? t('lists.rename') : t('lists.new')}
+          {editor.id ? t('lists.edit') : t('lists.new')}
         </NoriText>
         <NoriTextInput
           autoFocus={!editor.id}
@@ -55,6 +69,19 @@ export const ListEditorSheet: React.FC = () => {
           placeholderTextColor={themeColors.contentSubtle}
           className="rounded-2xl border border-line bg-surface px-4 py-4 text-content"
         />
+        <View className="gap-2">
+          <NoriText className="text-sm font-medium text-content">{t('lists.sortOrder')}</NoriText>
+          <NouMenu
+            accessibilityLabel={t('lists.sortOrder')}
+            items={sortOptions.map(({ order, label }) => ({
+              label,
+              selected: sortOrder === order,
+              handler: () => ui$.listEditor.set({ ...editor, sortOrder: order }),
+            }))}
+            triggerClassName="rounded-2xl border border-line bg-surface px-4 py-4"
+            trigger={<NoriText className="text-content">{sortOptions.find((option) => option.order === sortOrder)?.label}</NoriText>}
+          />
+        </View>
         <View className="flex-row justify-end gap-3">
           <Pressable onPress={onClose} className="rounded-full px-5 py-3 bg-muted active:bg-muted-strong">
             <NoriText className="text-content">{t('lists.cancel')}</NoriText>

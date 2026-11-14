@@ -13,9 +13,10 @@ import { BookmarkListPage, type BookmarkPagerActions } from '@/components/home/B
 import { SCREEN_TOP_OFFSET } from '@/lib/layout'
 import type { BookmarkRecord } from '@/states/bookmarks'
 import type { ThemeColors } from '@/lib/theme'
+import { getBookmarkSortOrder, type BookmarkListData } from '@/lib/nori-data'
 
 export interface BookmarkPagerViewModel {
-  lists: { id: string; name: string }[]
+  lists: BookmarkListData[]
   bookmarkEditMode: boolean
   chipScrollViewRef: React.RefObject<React.ComponentRef<typeof ScrollView> | null>
   pagerScrollX: any
@@ -115,7 +116,20 @@ export const BookmarkListChips: React.FC<{ pager: BookmarkPagerViewModel; extraM
         triggerClassName="h-[36px] w-[36px] items-center justify-center rounded-full bg-muted active:bg-muted-strong"
         trigger={<MaterialIcons name="list" size={18} color={pager.themeColors.content} />}
       />
-    ) : null}
+    ) : (
+      <Pressable
+        testID="edit_list_button"
+        accessibilityLabel={t('lists.edit')}
+        accessibilityRole="button"
+        onPress={() => {
+          const list = pager.lists.find((item) => item.id === pager.selectedListId)
+          if (list) ui$.listEditor.set({ id: list.id, name: list.name, sortOrder: getBookmarkSortOrder(list) })
+        }}
+        className="h-[36px] w-[36px] items-center justify-center rounded-full bg-muted active:bg-muted-strong"
+      >
+        <MaterialIcons name="edit" size={18} color={pager.themeColors.content} />
+      </Pressable>
+    )}
     </View>
   </View>
   )

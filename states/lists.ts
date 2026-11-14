@@ -12,6 +12,7 @@ import {
   normalizeLists,
   patchRowState,
   type BookmarkListData,
+  type BookmarkSortOrder,
 } from '@/lib/nori-data'
 
 export type BookmarkList = BookmarkListData
@@ -20,6 +21,7 @@ interface Store {
   lists: BookmarkList[]
   addList: (name: string) => string | null
   renameList: (id: string, name: string) => void
+  setBookmarkSortOrder: (id: string, order: BookmarkSortOrder) => void
   deleteList: (id: string) => boolean
   restoreList: (list: BookmarkList) => void
   setVisible: (id: string, visible: boolean) => void
@@ -71,6 +73,11 @@ export const lists$: Observable<Store> = observable<Store>({
       updatedAt: new Date().toISOString(),
     }
     lists$.lists.set(nextItems)
+  },
+  setBookmarkSortOrder: (id, order) => {
+    lists$.lists.set(lists$.lists.get().map((item) => item.id === id
+      ? { ...patchRowState(item, { bookmark_sort_order: order }), updatedAt: new Date().toISOString() }
+      : item))
   },
   deleteList: (id) => {
     const items = lists$.lists.get()

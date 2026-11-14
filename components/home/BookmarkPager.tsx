@@ -9,7 +9,7 @@ import { bookmarks$, type BookmarkRecord } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { showSnackbar, ui$ } from '@/states/ui'
-import { getNote, getSortIndex, getTags, getVisibleLists, isDeleted, isVisible } from '@/lib/nori-data'
+import { compareBookmarks, getBookmarkSortOrder, getNote, getTags, getVisibleLists, isDeleted, isVisible, type BookmarkListData } from '@/lib/nori-data'
 import { openBookmark as openBookmarkAction } from '@/lib/open-bookmark'
 import { useThemeColors } from '@/lib/theme'
 import { showToast } from '@/lib/toast'
@@ -24,11 +24,7 @@ type BookmarkGroups = Map<string, {
   available: BookmarkRecord[]
 }>
 
-function sortBookmarks(a: BookmarkRecord, b: BookmarkRecord) {
-  return getSortIndex(a) - getSortIndex(b)
-}
-
-function groupBookmarksByList(bookmarks: BookmarkRecord[]) {
+function groupBookmarksByList(bookmarks: BookmarkRecord[], lists: BookmarkListData[]) {
   const groups: BookmarkGroups = new Map()
 
   for (const bookmark of bookmarks) {
@@ -45,9 +41,11 @@ function groupBookmarksByList(bookmarks: BookmarkRecord[]) {
     groups.set(bookmark.listId, group)
   }
 
-  for (const group of groups.values()) {
-    group.visible.sort(sortBookmarks)
-    group.available.sort(sortBookmarks)
+  const orders = new Map(lists.map((list) => [list.id, getBookmarkSortOrder(list)]))
+  for (const [listId, group] of groups) {
+    const compare = (a: BookmarkRecord, b: BookmarkRecord) => compareBookmarks(a, b, orders.get(listId) || 'manual')
+    group.visible.sort(compare)
+    group.available.sort(compare)
   }
 
   return groups
@@ -86,7 +84,7 @@ export const BookmarkPager: React.FC<{
   const { width: windowWidth } = useWindowDimensions()
   const [pageWidth, setPageWidth] = useState(windowWidth)
   const visibleLists = useMemo(() => getVisibleLists(lists), [lists])
-  const bookmarksByList = useMemo(() => groupBookmarksByList(bookmarks), [bookmarks])
+  const bookmarksByList = useMemo(() => groupBookmarksByList(bookmarks, lists), [bookmarks, lists])
   const selectedList = useMemo(
     () => visibleLists.find((item) => item.id === selectedListId) || visibleLists[0] || null,
     [selectedListId, visibleLists],

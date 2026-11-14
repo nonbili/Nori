@@ -16,6 +16,7 @@ import { previewPageDriver } from '@/lib/preview-page'
 import { previewHeight } from '@/lib/bookmark-preview-types'
 import { normalizeFontScale } from '@/lib/typography'
 import type { ThemeColors } from '@/lib/theme'
+import { getBookmarkSortOrder, type BookmarkListData } from '@/lib/nori-data'
 
 const TILE_HEIGHT = 46
 const GRID_GAP = 16
@@ -102,7 +103,7 @@ export const BookmarkListPage = memo(({
   isActive,
   actions,
 }: {
-  list: { id: string; name: string }
+  list: BookmarkListData
   width: number
   listBookmarks: BookmarkRecord[]
   availableBookmarks: BookmarkRecord[]
@@ -232,7 +233,7 @@ export const BookmarkListPage = memo(({
     return { length: rowHeight, offset: index * rowHeight, index }
   }, [itemHeight])
 
-  if (!bookmarkEditMode || listBookmarks.length > LARGE_EDIT_LIST_THRESHOLD) {
+  if (!bookmarkEditMode || getBookmarkSortOrder(list) !== 'manual' || listBookmarks.length > LARGE_EDIT_LIST_THRESHOLD) {
     return (
       <View className="flex-1" style={{ width }}>
         <FlatList

@@ -5,6 +5,7 @@ import {
   createRowJsonState,
   createStarterLists,
   getAvailableBookmarks,
+  getBookmarkSortOrder,
   getDeletedAt,
   getNote,
   getTagsByUse,
@@ -15,6 +16,52 @@ import {
   normalizeLists,
   patchRowState,
 } from './nori-data'
+
+describe('per-list bookmark order', () => {
+  const bookmarks = ['Zulu', 'alpha', 'Bravo'].map((title, index) => ({
+    id: title,
+    listId: 'custom',
+    title,
+    url: `https://example.com/${index}`,
+    icon: '',
+    json: createRowJsonState({ sort_index: index }),
+    createdAt: `2026-01-0${index + 1}T00:00:00.000Z`,
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  }))
+
+  it('supports each order without changing the saved manual order', () => {
+    for (const [order, expected] of [
+      ['newest', ['Bravo', 'alpha', 'Zulu']],
+      ['oldest', ['Zulu', 'alpha', 'Bravo']],
+      ['az', ['alpha', 'Bravo', 'Zulu']],
+      ['za', ['Zulu', 'Bravo', 'alpha']],
+    ] as const) {
+      expect(getVisibleBookmarks(bookmarks, 'custom', order).map((item) => item.title)).toEqual([...expected])
+    }
+    expect(getVisibleBookmarks(bookmarks, 'custom').map((item) => item.title)).toEqual(['Zulu', 'alpha', 'Bravo'])
+  })
+
+  it('keeps orders independent and preserves them during normalization', () => {
+    const lists = normalizeLists([
+      { id: 'custom', name: 'Custom', json: { bookmark_sort_order: 'az' } },
+      { id: 'other', name: 'Other', json: { bookmark_sort_order: 'newest' } },
+    ])
+    expect(getBookmarkSortOrder(lists.find((list) => list.id === 'custom'))).toBe('az')
+    expect(getBookmarkSortOrder(lists.find((list) => list.id === 'other'))).toBe('newest')
+    expect(getBookmarkSortOrder()).toBe('manual')
+    expect(getBookmarkSortOrder({ json: { bookmark_sort_order: 'invalid' as any } })).toBe('manual')
+  })
+
+  it('still excludes other lists, hidden bookmarks, and deleted bookmarks', () => {
+    const rows = [
+      ...bookmarks,
+      { ...bookmarks[0], id: 'other', listId: 'other' },
+      patchRowState({ ...bookmarks[0], id: 'hidden' }, { visible: false }),
+      patchRowState({ ...bookmarks[0], id: 'deleted' }, { deleted_at: '2026-01-01T00:00:00.000Z' }),
+    ]
+    expect(getVisibleBookmarks(rows, 'custom', 'az').map((item) => item.id)).toEqual(['alpha', 'Bravo', 'Zulu'])
+  })
+})
 
 describe('starter rows', () => {
   it('creates starter rows once without special-case kind fields', () => {

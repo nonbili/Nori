@@ -1,5 +1,5 @@
 import { observable } from '@legendapp/state'
-import { getVisibleLists } from '@/lib/nori-data'
+import { getVisibleLists, type BookmarkSortOrder } from '@/lib/nori-data'
 import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 
@@ -17,6 +17,7 @@ export interface BookmarkEditorState {
 export interface ListEditorState {
   id?: string
   name: string
+  sortOrder?: BookmarkSortOrder
 }
 
 export interface PendingShareItem {
