@@ -16,7 +16,7 @@ import { PreviewResponseError } from 'nori/lib/bookmark-preview-types'
 
 const PAGE = 'main.PageService'
 
-type PageResponse = { url: string; status: number; contentType: string; body: string }
+type PageResponse = { url: string; status: number; contentType: string; body: string; bodyBase64?: string }
 
 export function installDesktopPageFetch() {
   setPreviewImageFetch(async (url) => {
@@ -48,7 +48,8 @@ export function installDesktopPageFetch() {
   })
   setPageFetch(async (url, init) => {
     const res: PageResponse = await Call.ByName(`${PAGE}.Fetch`, url, init.method, init.headers ?? {})
-    const response = new Response(init.method === 'HEAD' ? null : res.body, {
+    const body = res.bodyBase64 === undefined ? res.body : Uint8Array.from(atob(res.bodyBase64), (char) => char.charCodeAt(0))
+    const response = new Response(init.method === 'HEAD' ? null : body, {
       status: res.status,
       headers: res.contentType ? { 'content-type': res.contentType } : {},
     })

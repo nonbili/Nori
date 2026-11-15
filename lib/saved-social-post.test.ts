@@ -14,6 +14,25 @@ beforeEach(() => {
   setPreviewImageFetch(fetchPreviewImage)
 })
 afterEach(() => { globalThis.fetch = originalFetch })
+it('archives Facebook crawler assets through the host transport with image validation', async () => {
+  const url = 'https://www.facebook.com/alice/posts/12345/'
+  await updatePreviewBookmarks([url])
+  setPageFetch(async (endpoint, init) => {
+    expect(init.headers?.['User-Agent']).toContain('Googlebot')
+    if (endpoint.startsWith('https://lookaside.fbsbx.com/'))
+      return new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': 'image/jpeg' } })
+    return new Response(`<script type="application/json">${JSON.stringify({ __typename: 'Story', post_id: '12345',
+      permalink_url: url, creation_time: 1794514607, actors: [{ name: 'Alice' }], message: { text: 'Offline Facebook' },
+      attachments: [{ media: { __typename: 'Photo', id: '1', photo_image: {
+        uri: 'https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=1',
+      } } }],
+    })}</script>`)
+  })
+  setPreviewImageFetch(async () => { throw new Error('must use crawler transport') })
+  const saved = await saveSocialPost(url, 'alice', () => true)
+  expect((await readPreview(saved.post.media[0].cacheKey!))?.imageUri).toBe('data:image/jpeg;base64,AQID')
+  expect((await readSavedPost(url, 'alice'))?.post.text).toBe('Offline Facebook')
+})
 it('persists Unicode and image bytes locally, isolates accounts, and reads offline', async () => {
   globalThis.fetch = (async (url: string) => {
     if (url.includes('getPostThread')) return new Response(JSON.stringify({ thread: { post: {

@@ -51,7 +51,7 @@ export interface SavedPost {
   fetchedAt?: string
   postId?: string
 }
-export interface SocialTarget { site: 'bluesky' | 'mastodon' | 'reddit' | 'x' | 'instagram' | 'threads' | 'tiktok'; url: string; id: string; actor?: string }
+export interface SocialTarget { site: 'bluesky' | 'mastodon' | 'reddit' | 'x' | 'instagram' | 'threads' | 'tiktok' | 'facebook'; url: string; id: string; actor?: string }
 
 const MAX_MEDIA = 12
 const MAX_DEPTH = 2
@@ -67,6 +67,12 @@ export function socialTarget(value: string): SocialTarget | undefined {
     if (!/^https?:$/.test(url.protocol) || url.username || url.password) return
     const host = url.hostname.replace(/^www\./, '')
     let match: RegExpMatchArray | null
+    if (['facebook.com', 'm.facebook.com', 'web.facebook.com'].includes(host)) {
+      const id = url.pathname.match(/^\/(?:[^/]+\/posts|groups\/[^/]+\/posts|reel|[^/]+\/videos)\/([\w]+)\/?$/)?.[1] ||
+        (['/permalink.php', '/story.php'].includes(url.pathname) ? url.searchParams.get('story_fbid') :
+          /^\/watch\/?$/.test(url.pathname) ? url.searchParams.get('v') : undefined)
+      if (id && /^(?:\d+|pfbid[A-Za-z0-9]+)$/.test(id)) return { site: 'facebook', url: url.href, id }
+    }
     if (['x.com', 'twitter.com', 'mobile.twitter.com', 'mobile.x.com'].includes(host) &&
       (match = url.pathname.match(/^\/(?:[^/]+|i\/web)\/status\/(\d+)(?:\/(?:photo|video)\/\d+)?\/?$/)))
       return { site: 'x', url: url.href, id: match[1] }
@@ -181,6 +187,15 @@ export function parseRedditPost(value: any, depth = 0): SocialPost {
 // HTML providers use the same host transport as JSON APIs (including desktop's Go fetch).
 type JsonFetch = (url: string, signal?: AbortSignal, format?: 'html', headers?: Record<string, string>) => Promise<any>
 export async function fetchSocialPost(target: SocialTarget, get: JsonFetch, signal?: AbortSignal): Promise<SocialPost> {
+  if (target.site === 'facebook') {
+    const endpoint = new URL(target.url)
+    endpoint.protocol = 'https:'
+    endpoint.hostname = 'www.facebook.com'
+    endpoint.hash = ''
+    return parsePageSocialPost(await get(endpoint.href, signal, 'html', {
+      'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+    }), target)
+  }
   if (target.site === 'x') {
     const json = await get(`https://cdn.syndication.twimg.com/tweet-result?id=${target.id}&lang=en&token=${((Number(target.id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, '')}`, signal)
     if (String(json?.id_str) !== target.id) throw new Error('social_post_unavailable')

@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -34,6 +37,7 @@ type PageResponse struct {
 	Status      int    `json:"status"`
 	ContentType string `json:"contentType"`
 	Body        string `json:"body"`
+	BodyBase64  string `json:"bodyBase64,omitempty"`
 }
 
 func (s *PageService) Fetch(url string, method string, headers map[string]string) (PageResponse, error) {
@@ -55,15 +59,32 @@ func (s *PageService) Fetch(url string, method string, headers map[string]string
 	}
 	defer res.Body.Close()
 
-	body, err := io.ReadAll(io.LimitReader(res.Body, maxPageBytes))
+	image := strings.HasPrefix(strings.ToLower(res.Header.Get("Content-Type")), "image/")
+	limit := maxPageBytes
+	if image {
+		limit = maxPreviewBytes
+	}
+	body, err := io.ReadAll(io.LimitReader(res.Body, int64(limit+1)))
 	if err != nil {
 		return PageResponse{}, err
 	}
 
-	return PageResponse{
+	if len(body) > limit {
+		if image {
+			return PageResponse{}, fmt.Errorf("page response exceeds %d bytes", limit)
+		}
+		// Metadata readers intentionally consume only the HTML prefix.
+		body = body[:limit]
+	}
+	result := PageResponse{
 		URL:         res.Request.URL.String(),
 		Status:      res.StatusCode,
 		ContentType: res.Header.Get("Content-Type"),
 		Body:        string(body),
-	}, nil
+	}
+	if image {
+		result.Body = ""
+		result.BodyBase64 = base64.StdEncoding.EncodeToString(body)
+	}
+	return result, nil
 }

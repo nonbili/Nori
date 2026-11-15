@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio/slim'
 import type { SocialMedia, SocialPost, SocialTarget } from './social-post'
+import { parseFacebookPost } from './social-post-facebook'
 
 // These adapters require structured data for the exact permalink. OG tags are
 // deliberately not a fallback: they lose galleries, quotes and full captions.
@@ -135,6 +136,7 @@ export function parsePageSocialPost(html: string, target: SocialTarget): SocialP
     const context = body.match(/\bcontextJSON"?\s*:\s*("(?:[^"\\]|\\.)*")/)
     if (context) { try { documents.push(JSON.parse(JSON.parse(context[1]))) } catch {} }
   })
+  if (target.site === 'facebook') return parseFacebookPost(documents, target) || unavailable()
   for (const document of documents) {
     const value = find(document, (node) => {
       if (target.site === 'tiktok') return String(node.id) === target.id && node.author?.uniqueId && typeof node.desc === 'string'

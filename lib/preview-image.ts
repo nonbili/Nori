@@ -3,6 +3,11 @@ import { PreviewResponseError, persistentPreviewStatus } from './bookmark-previe
 
 export async function fetchPreviewImage(url: string, signal?: AbortSignal) {
   const response = await fetchWithTimeout(url, { signal })
+  return previewImageData(response)
+}
+
+/** Validate and encode bytes returned by either native/browser or host transport. */
+export async function previewImageData(response: Response) {
   const contentType = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase()
   if (!response.ok || !/^image\/[a-z0-9.+-]+$/.test(contentType))
     throw new PreviewResponseError('preview_image_failed', response.ok || persistentPreviewStatus(response.status))

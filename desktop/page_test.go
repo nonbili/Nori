@@ -1,11 +1,70 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
+
+func TestPageServiceBinaryImageRoundTrip(t *testing.T) {
+	// Invalid UTF-8 and more than the HTML bridge's 2 MiB limit.
+	image := bytes.Repeat([]byte{0xff, 0xd8, 0x00, 0x80}, 600000)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("User-Agent") != "crawler" {
+			t.Error("missing crawler header")
+		}
+		w.Header().Set("Content-Type", "image/jpeg")
+		w.Write(image)
+	}))
+	defer server.Close()
+	res, err := NewPageService().Fetch(server.URL, "GET", map[string]string{"User-Agent": "crawler"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	encoded, err := json.Marshal(res)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var decoded PageResponse
+	if err := json.Unmarshal(encoded, &decoded); err != nil {
+		t.Fatal(err)
+	}
+	data, err := base64.StdEncoding.DecodeString(decoded.BodyBase64)
+	if err != nil || decoded.Body != "" || !bytes.Equal(data, image) {
+		t.Fatal("binary image corrupted through JSON bridge")
+	}
+}
+
+func TestPageServiceRejectsOversizedImage(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/jpeg")
+		w.Write(bytes.Repeat([]byte{0xff}, maxPreviewBytes+1))
+	}))
+	defer server.Close()
+	if _, err := NewPageService().Fetch(server.URL, "GET", nil); err == nil {
+		t.Fatal("oversized image must not be silently truncated")
+	}
+}
+
+func TestPageServicePreservesLargeHTMLPrefix(t *testing.T) {
+	html := "<title>Large page</title>" + strings.Repeat("x", maxPageBytes)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		w.Write([]byte(html))
+	}))
+	defer server.Close()
+	res, err := NewPageService().Fetch(server.URL, "GET", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.Body != html[:maxPageBytes] || res.BodyBase64 != "" {
+		t.Fatal("large HTML must retain its metadata prefix")
+	}
+}
 
 func TestPageServiceFetch(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
