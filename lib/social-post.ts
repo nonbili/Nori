@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio/slim'
+import { parsePageSocialPost, parseXPost } from './social-post-providers'
 import { SNS_LIMITS, validRichText, type Identity, type PostResponse, type RelationType, type RichText } from './sns-schema'
 
 // Matches Nora Feed's provider vocabulary. Providers are added independently;
@@ -50,7 +51,7 @@ export interface SavedPost {
   fetchedAt?: string
   postId?: string
 }
-export interface SocialTarget { site: 'bluesky' | 'mastodon' | 'reddit'; url: string; id: string; actor?: string }
+export interface SocialTarget { site: 'bluesky' | 'mastodon' | 'reddit' | 'x' | 'instagram' | 'threads' | 'tiktok'; url: string; id: string; actor?: string }
 
 const MAX_MEDIA = 12
 const MAX_DEPTH = 2
@@ -66,6 +67,15 @@ export function socialTarget(value: string): SocialTarget | undefined {
     if (!/^https?:$/.test(url.protocol) || url.username || url.password) return
     const host = url.hostname.replace(/^www\./, '')
     let match: RegExpMatchArray | null
+    if (['x.com', 'twitter.com', 'mobile.twitter.com', 'mobile.x.com'].includes(host) &&
+      (match = url.pathname.match(/^\/(?:[^/]+|i\/web)\/status\/(\d+)(?:\/(?:photo|video)\/\d+)?\/?$/)))
+      return { site: 'x', url: url.href, id: match[1] }
+    if (host === 'instagram.com' && (match = url.pathname.match(/^\/(?:p|reel|tv)\/([\w-]+)\/?$/)))
+      return { site: 'instagram', url: url.href, id: match[1] }
+    if (['threads.com', 'threads.net'].includes(host) && (match = url.pathname.match(/^\/@([^/]+)\/post\/([\w-]+)\/?$/)))
+      return { site: 'threads', url: url.href, actor: match[1], id: match[2] }
+    if (host === 'tiktok.com' && (match = url.pathname.match(/^\/@([^/]+)\/(?:video|photo)\/(\d+)\/?$/)))
+      return { site: 'tiktok', url: url.href, actor: match[1], id: match[2] }
     if (host === 'bsky.app' && (match = url.pathname.match(/^\/profile\/([^/]+)\/post\/([^/]+)\/?$/)))
       return { site: 'bluesky', url: url.href, actor: decodeURIComponent(match[1]), id: match[2] }
     if (['reddit.com', 'old.reddit.com', 'new.reddit.com', 'm.reddit.com'].includes(host) &&
@@ -168,8 +178,32 @@ export function parseRedditPost(value: any, depth = 0): SocialPost {
   }
 }
 
-type JsonFetch = (url: string, signal?: AbortSignal) => Promise<any>
+// HTML providers use the same host transport as JSON APIs (including desktop's Go fetch).
+type JsonFetch = (url: string, signal?: AbortSignal, format?: 'html', headers?: Record<string, string>) => Promise<any>
 export async function fetchSocialPost(target: SocialTarget, get: JsonFetch, signal?: AbortSignal): Promise<SocialPost> {
+  if (target.site === 'x') {
+    const json = await get(`https://cdn.syndication.twimg.com/tweet-result?id=${target.id}&lang=en&token=${((Number(target.id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, '')}`, signal)
+    if (String(json?.id_str) !== target.id) throw new Error('social_post_unavailable')
+    return parseXPost(json)
+  }
+  if (target.site === 'instagram' || target.site === 'threads' || target.site === 'tiktok') {
+    if (target.site === 'tiktok' && new URL(target.url).pathname.includes('/photo/')) {
+      try {
+        return parsePageSocialPost(await get(`https://www.tiktok.com/@${target.actor}/photo/${target.id}`, signal, 'html'), target)
+      } catch (error) {
+        if (signal?.aborted) throw error
+        // Some public photo pages omit imagePost; Nora also uses the video
+        // representation to retrieve the complete gallery for these posts.
+      }
+    }
+    const endpoint = target.site === 'instagram' ? `https://www.instagram.com/p/${target.id}/embed/captioned/`
+      : target.site === 'threads' ? `https://www.threads.com/@${target.actor}/post/${target.id}`
+        : `https://www.tiktok.com/@${target.actor}/video/${target.id}`
+    // Threads sends only an app shell to ordinary HTTP clients; its public
+    // crawler representation includes the structured permalink data.
+    const headers = target.site === 'threads' ? { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' } : undefined
+    return parsePageSocialPost(await get(endpoint, signal, 'html', headers), target)
+  }
   if (target.site === 'bluesky') {
     let actor = target.actor || ''
     if (!actor.startsWith('did:')) {

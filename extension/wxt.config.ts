@@ -83,7 +83,7 @@ export default defineConfig({
     name: 'Nori',
     description: 'Bookmark manager and read-later list: save the current tab with a preview, tags and notes, then find it again on any device.',
     icons: { 16: 'icon.png', 32: 'icon.png', 48: 'icon.png', 128: 'icon.png' },
-    permissions: ['storage', 'activeTab', 'identity', 'alarms'],
+    permissions: ['storage', 'activeTab', 'identity', 'alarms', 'declarativeNetRequestWithHostAccess'],
     host_permissions: [
       'http://*/*',
       'https://*/*',

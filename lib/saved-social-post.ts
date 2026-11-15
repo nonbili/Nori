@@ -15,12 +15,13 @@ export function readSavedPost(url: string, owner: string) {
 export async function saveSocialPost(url: string, owner: string, current: () => boolean) {
   const target = socialTarget(url)
   if (!target) throw new Error('social_provider_not_supported')
-  const post = await fetchSocialPost(target, async (endpoint, signal) => {
-    const response = await fetchPage(endpoint, { method: 'GET', signal, headers: { Accept: 'application/json' } })
+  const post = await fetchSocialPost(target, async (endpoint, signal, format, headers) => {
+    const response = await fetchPage(endpoint, { method: 'GET', signal, headers: { Accept: format === 'html' ? 'text/html' : 'application/json', ...headers } })
     if (!response.ok) throw new Error(`social_post_http_${response.status}`)
     // Native's buffered Response.json() uses its byte-per-character text()
     // implementation. Decode UTF-8 ourselves, as the OG parser does.
-    return JSON.parse(new TextDecoder().decode(await response.arrayBuffer()))
+    const body = new TextDecoder().decode(await response.arrayBuffer())
+    return format === 'html' ? body : JSON.parse(body)
   })
   const savedAt = Date.now()
   // Stage all bytes first. A failed image must not replace an existing archive.

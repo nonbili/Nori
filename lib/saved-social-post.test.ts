@@ -42,3 +42,24 @@ it('does not save after an account change', async () => {
   await expect(saveSocialPost(url, 'alice', () => false)).rejects.toThrow('social_account_changed')
   expect(await readSavedPost(url, 'alice')).toBeUndefined()
 })
+it('archives an HTML-provider post and its gallery/avatar through host fetch hooks', async () => {
+  const url = 'https://threads.com/@alice/post/offline'
+  await updatePreviewBookmarks([url])
+  setPageFetch(async (endpoint, init) => {
+    expect(endpoint).toBe('https://www.threads.com/@alice/post/offline')
+    expect(init.headers?.Accept).toBe('text/html')
+    return new Response(`<script type="application/json">${JSON.stringify({
+      code: 'offline', user: { username: 'alice', full_name: '日本語 🎉', profile_pic_url: 'https://cdn.test/avatar.jpg' },
+      caption: { text: 'Offline caption' }, carousel_media: [
+        { image_versions2: { candidates: [{ url: 'https://cdn.test/1.jpg' }] } },
+        { media_type: 2, image_versions2: { candidates: [{ url: 'https://cdn.test/2.jpg' }] } },
+      ],
+    })}</script>`)
+  })
+  setPreviewImageFetch(async () => 'data:image/jpeg;base64,AQID')
+  const saved = await saveSocialPost(url, 'alice', () => true)
+  globalThis.fetch = (() => { throw new Error('offline') }) as unknown as typeof fetch
+  expect((await readSavedPost(url, 'alice'))?.post.author).toBe('日本語 🎉')
+  expect(saved.post.media.map((item) => item.type)).toEqual(['image', 'video'])
+  for (const asset of postAssets(saved.post)) expect((await readPreview(asset.cacheKey!))?.imageUri).toBe('data:image/jpeg;base64,AQID')
+})
