@@ -4,7 +4,7 @@ import { mergeRows, createProfile } from './domain'
 import { readPreview, writePreview } from 'nori/lib/bookmark-preview-storage'
 import { fetchNoriMe } from 'nori/lib/nori-api'
 import { normalizeBookmarks, normalizeLists } from 'nori/lib/nori-data'
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from 'nori/lib/supabase/config'
+import { NG_ORIGIN, SUPABASE_ANON_KEY, SUPABASE_URL } from 'nori/lib/supabase/config'
 import {
   collectUnsyncedRowIds,
   dropExpiredSyncTombstones,
@@ -30,6 +30,8 @@ import {
   syncScreenshots,
   type ScreenshotRef,
 } from 'nori/lib/screenshot-sync'
+import { createNgSocialClient } from 'nori/lib/ng-social-post'
+import { syncSocialPosts, type SocialPostRef } from 'nori/lib/social-post-sync'
 import { supabaseStorage } from './storage'
 import type { AuthState, NoriBookmark, NoriList, Preferences, ProfileData, StoredState } from './model'
 
@@ -219,6 +221,32 @@ export function syncProfileScreenshots(
     },
     shrink: shrinkScreenshot,
     newId: () => crypto.randomUUID(),
+  })
+}
+
+export function syncProfileSocialPosts(
+  profile: ProfileData,
+  auth: AuthState,
+  host: {
+    isCurrent: () => boolean
+    setRef: (ids: string[], ref: SocialPostRef) => Promise<void>
+    changed: (key: string) => void
+  },
+) {
+  if (!auth.userId || auth.plan === 'free' || !NG_ORIGIN) return Promise.resolve()
+  const ng = createNgSocialClient(NG_ORIGIN, async () => {
+    const { data, error } = await client.auth.getSession()
+    if (error || !data.session || data.session.user.id !== auth.userId || !host.isCurrent())
+      throw new Error('social_account_changed')
+    return data.session.access_token
+  })
+  return syncSocialPosts(auth.userId, profile.bookmarks, {
+    ...host,
+    ...ng,
+    read: readPreview,
+    write: async (key, preview) => {
+      if (host.isCurrent()) await writePreview(key, preview)
+    },
   })
 }
 

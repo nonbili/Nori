@@ -1,4 +1,4 @@
-import { defineConfig, normalizePath } from 'vite'
+import { defineConfig, loadEnv, normalizePath } from 'vite'
 import react from '@vitejs/plugin-react'
 import reactNativeWeb from 'vite-plugin-react-native-web'
 import { resolve } from 'node:path'
@@ -54,6 +54,9 @@ export default defineConfig({
   root: frontendDir,
   plugins: [rewriteRootAliases, injectDefineBackground, react({ jsxImportSource: 'nativewind' }), reactNativeWeb()],
   define: {
+    'process.env.EXPO_PUBLIC_NG_ORIGIN': JSON.stringify(
+      process.env.EXPO_PUBLIC_NG_ORIGIN || loadEnv('production', rootDir, 'EXPO_PUBLIC_').EXPO_PUBLIC_NG_ORIGIN || '',
+    ),
     // wxt build flags the shared extension code branches on.
     'import.meta.env.FIREFOX': 'false',
     'import.meta.env.CHROME': 'false',

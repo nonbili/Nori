@@ -1,8 +1,9 @@
+import type { SocialPostRef } from 'nori/lib/social-post-sync'
 import { browser } from 'wxt/browser'
-import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile, syncProfileScreenshots } from '../lib/api'
+import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile, syncProfileScreenshots, syncProfileSocialPosts } from '../lib/api'
 import { createProfile } from '../lib/domain'
 import { describeSyncError } from 'nori/lib/supabase/sync-error'
-import { withScreenshotRef } from 'nori/lib/nori-data'
+import { withScreenshotRef, withSocialPostRef } from 'nori/lib/nori-data'
 import { singlePass, type ScreenshotRef } from 'nori/lib/screenshot-sync'
 import { collectChangedRowIds } from 'nori/lib/supabase/sync-merge'
 import { loadState, saveState } from '../lib/storage'
@@ -37,12 +38,12 @@ function notifyStateChanged() {
   void browser.runtime.sendMessage(message).catch(() => undefined)
 }
 
-function saveScreenshotRef(profileId: string, ids: string[], ref: ScreenshotRef) {
+function saveObjectRef(profileId: string, ids: string[], ref: ScreenshotRef | SocialPostRef) {
   return enqueue(async () => {
     const state = await loadState()
     const profile = state.profiles[profileId]
     if (!profile) return
-    profile.bookmarks = withScreenshotRef(profile.bookmarks, ids, ref)
+    profile.bookmarks = 'postId' in ref ? withSocialPostRef(profile.bookmarks, ids, ref) : withScreenshotRef(profile.bookmarks, ids, ref)
     profile.pendingBookmarkIds = [...new Set([...profile.pendingBookmarkIds, ...ids])]
     await saveState(state)
     notifyStateChanged()
@@ -58,17 +59,33 @@ async function screenshotPass() {
   const { userId } = auth
   await syncProfileScreenshots(profile, auth, state.preferences.previewImageSource, {
     isCurrent: () => auth.userId === userId,
-    setRef: (ids, ref) => saveScreenshotRef(profileId, ids, ref),
-    changed: (key) => {
-      const message: StateChangedMessage = { type: 'state-changed', previewKeys: [key] }
-      void browser.runtime.sendMessage(message).catch(() => undefined)
-    },
+    setRef: (ids, ref) => saveObjectRef(profileId, ids, ref),
+    changed: broadcastPreviewChange,
+  })
+}
+
+function broadcastPreviewChange(key: string) {
+  const message: StateChangedMessage = { type: 'state-changed', previewKeys: [key] }
+  void browser.runtime.sendMessage(message).catch(() => undefined)
+}
+
+async function socialPostPass() {
+  const state = await loadState()
+  const profileId = state.activeProfileId
+  const profile = state.profiles[profileId]
+  if (!profile) return
+  const { userId } = auth
+  await syncProfileSocialPosts(profile, auth, {
+    isCurrent: () => auth.userId === userId,
+    setRef: (ids, ref) => saveObjectRef(profileId, ids, ref),
+    changed: broadcastPreviewChange,
   })
 }
 
 // Outside the operation queue: an upload must not hold up the UI's reads and edits. Set in main,
 // because WXT evaluates this file at build time and a top-level call keeps every import alive.
 let runScreenshotSync = async () => {}
+let runSocialPostSync = async () => {}
 
 async function runSync(broadcast = true) {
   if (syncing) return
@@ -81,7 +98,10 @@ async function runSync(broadcast = true) {
     const synced = await syncProfile(profile, auth)
     if (synced) finishPromotion(state, profile)
     await saveState(state)
-    if (synced) void runScreenshotSync()
+    if (synced) {
+      void runScreenshotSync()
+      void runSocialPostSync()
+    }
   } catch (error) {
     syncError = describeSyncError(error)
     throw error
@@ -142,6 +162,10 @@ async function handleMessage(message: RequestMessage): Promise<ResponseMessage> 
       void runScreenshotSync()
       return { ok: true }
     }
+    if (message.type === 'sync-social-posts') {
+      void runSocialPostSync()
+      return { ok: true }
+    }
     const data = await mutate(message)
     return { ok: true, data }
   } catch (error) {
@@ -176,6 +200,7 @@ async function handleSignIn(): Promise<ResponseMessage> {
 
 export default defineBackground(() => {
   runScreenshotSync = singlePass(screenshotPass)
+  runSocialPostSync = singlePass(socialPostPass)
   void enqueue(async () => {
     const next = await getAuthState()
     auth = next

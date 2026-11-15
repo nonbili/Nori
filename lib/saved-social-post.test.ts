@@ -1,0 +1,44 @@
+import 'fake-indexeddb/auto'
+import { afterEach, beforeEach, expect, it } from 'bun:test'
+import { readSavedPost, saveSocialPost } from './saved-social-post'
+import { readPreview } from './bookmark-preview-storage'
+import { postAssets, postMedia } from './social-post'
+import { setPreviewImageFetch, updatePreviewBookmarks } from './bookmark-preview'
+import { setPageFetch } from './bookmark'
+import { fetchPreviewImage } from './preview-image'
+
+const originalFetch = globalThis.fetch
+// Other suites swap these hooks out; saving goes through them.
+beforeEach(() => {
+  setPageFetch((url, init) => globalThis.fetch(url, init))
+  setPreviewImageFetch(fetchPreviewImage)
+})
+afterEach(() => { globalThis.fetch = originalFetch })
+it('persists Unicode and image bytes locally, isolates accounts, and reads offline', async () => {
+  globalThis.fetch = (async (url: string) => {
+    if (url.includes('getPostThread')) return new Response(JSON.stringify({ thread: { post: {
+      uri: 'at://did:plc:alice/app.bsky.feed.post/one', author: { displayName: '日本語 🎉', avatar: 'https://cdn.test/avatar.jpg' }, record: { text: 'Saved text', createdAt: '2026-11-15T08:00:00Z' },
+      embed: { $type: 'app.bsky.embed.images#view', images: [{ fullsize: 'https://cdn.test/a.jpg' }] },
+    } } }))
+    return new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': 'image/jpeg' } })
+  }) as unknown as typeof fetch
+  const url = 'https://bsky.app/profile/did:plc:alice/post/one'
+  await updatePreviewBookmarks([url])
+  const saved = await saveSocialPost(url, 'alice', () => true)
+  globalThis.fetch = (() => { throw new Error('offline') }) as unknown as typeof fetch
+  expect((await readSavedPost(url, 'alice'))?.post.author).toBe('日本語 🎉')
+  expect(await readSavedPost(url, 'bob')).toBeUndefined()
+  expect((await readPreview(postMedia(saved.post)[0].cacheKey!))?.imageUri).toBe('data:image/jpeg;base64,AQID')
+  expect(postAssets(saved.post)).toHaveLength(2)
+  expect((await readPreview(saved.post.avatar!.cacheKey!))?.imageUri).toBe('data:image/jpeg;base64,AQID')
+  expect((await readSavedPost(url, 'alice'))?.post.createdAt).toBe('2026-11-15T08:00:00.000Z')
+})
+it('does not save after an account change', async () => {
+  globalThis.fetch = (async () => new Response(JSON.stringify({ thread: { post: {
+    uri: 'at://did:plc:alice/app.bsky.feed.post/cancelled', record: { text: 'Not saved' },
+  } } }))) as unknown as typeof fetch
+  const url = 'https://bsky.app/profile/did:plc:alice/post/cancelled'
+  await updatePreviewBookmarks([url])
+  await expect(saveSocialPost(url, 'alice', () => false)).rejects.toThrow('social_account_changed')
+  expect(await readSavedPost(url, 'alice')).toBeUndefined()
+})

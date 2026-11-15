@@ -136,7 +136,9 @@ export function createNativePreviewStorage(fs: PreviewFileSystem, directory: str
     } else if (value.imageUri) {
       const mime = value.imageUri.match(/^data:image\/([^;]+)/)?.[1]
       const extension = mime === 'svg+xml' ? 'svg' : ['png', 'webp', 'gif', 'avif'].includes(mime || '') ? mime : 'jpg'
-      image = `${base}-${value.savedAt}.${extension}`
+      // A shared post can change images without changing this user's personal savedAt.
+      // Give new bytes a new URI so native image caches never reuse the previous rendering.
+      image = `${base}-${value.savedAt}-${Math.random().toString(36).slice(2)}.${extension}`
       if (value.imageUri.startsWith('data:')) {
         await fs.writeAsStringAsync(directory + image, value.imageUri.split(',')[1], {
           encoding: fs.EncodingType.Base64,

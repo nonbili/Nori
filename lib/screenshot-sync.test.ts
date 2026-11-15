@@ -186,7 +186,7 @@ describe('syncScreenshots', () => {
 })
 
 describe('withScreenshotRef', () => {
-  const row = (screenshot?: ScreenshotRef) => ({ id: 'a', updatedAt: 'then', json: { screenshot } })
+  const row = (screenshot?: ScreenshotRef, url = URL_A) => ({ id: 'a', url, updatedAt: 'then', json: { screenshot } })
 
   it('sets the pointer and marks the row changed', () => {
     const ref = { path: 'u/new.jpg', savedAt: 200, url: URL_A }
@@ -201,6 +201,11 @@ describe('withScreenshotRef', () => {
     expect(withScreenshotRef([newer], ['a'], ref)).toEqual([newer])
     const moved = row({ path: 'u/moved.jpg', savedAt: 300, url: 'https://example.com/old' })
     expect(withScreenshotRef([moved], ['a'], ref)[0].json.screenshot).toEqual(ref)
+  })
+
+  it('leaves a bookmark edited to another URL during the upload alone', () => {
+    const edited = row({ path: 'u/other.jpg', savedAt: 100, url: 'https://example.com/other' }, 'https://example.com/other')
+    expect(withScreenshotRef([edited], ['a'], { path: 'u/late.jpg', savedAt: 200, url: URL_A })).toEqual([edited])
   })
 })
 

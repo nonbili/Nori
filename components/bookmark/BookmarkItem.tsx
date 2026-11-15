@@ -10,6 +10,13 @@ import { type NouMenuItem } from '@/components/menu/NouMenu'
 import { Favicon } from './Favicon'
 import { BookmarkPreviewContent } from './BookmarkPreviewContent'
 import { getNote, getTags } from '@/lib/nori-data'
+import { useValue } from '@legendapp/state/react'
+import { auth$ } from '@/states/auth'
+import { socialTarget } from '@/lib/social-post'
+import { saveSocialPost } from '@/lib/saved-social-post'
+import { getSyncGeneration } from '@/lib/supabase/sync-session'
+import { showToast } from '@/lib/toast'
+import { SavedSocialPost, useSavedSocialPost } from './SavedSocialPost'
 
 const AnchorMenu: React.FC<{
   visible: boolean
@@ -140,6 +147,11 @@ export const BookmarkTile = memo(({
   const themeColors = useThemeColors()
   const note = getNote(bookmark)
   const tags = getTags(bookmark)
+  const owner = useValue(auth$.userId)
+  // Only preview cards grow to fit a post: compact rows have a fixed height the list relies on.
+  const savedPost = useSavedSocialPost(preview ? bookmark.url : '')
+  const showPost = Boolean(savedPost && !previewHeight)
+  const [savingPost, setSavingPost] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number; width: number; height: number } | null>(null)
   const tileRef = useRef< React.ComponentRef<typeof View> >(null)
@@ -191,6 +203,18 @@ export const BookmarkTile = memo(({
     onLoadPreview,
     onDelete,
   }, t)
+  if (owner && socialTarget(bookmark.url)) actions.splice(actions.length - 1, 0, {
+    label: t(savingPost ? 'socialPost.saving' : 'socialPost.save'), icon: 'download',
+    handler: () => {
+      if (savingPost) return
+      setSavingPost(true)
+      const generation = getSyncGeneration()
+      void saveSocialPost(bookmark.url, owner, () => auth$.userId.peek() === owner && getSyncGeneration() === generation)
+        .then(() => showToast(t('socialPost.saved')))
+        .catch(() => showToast(t('socialPost.failed')))
+        .finally(() => { if (isMounted.current) setSavingPost(false) })
+    },
+  })
 
   return (
     <View className="w-full">
@@ -224,7 +248,7 @@ export const BookmarkTile = memo(({
               : 'border-transparent bg-surface'
           } ${isDragging ? 'opacity-50' : ''}`}
         >
-          {preview ? <BookmarkPreviewContent reordering={!!previewHeight} bookmark={bookmark} titleClassName={titleClassName} /> : <>
+          {showPost && savedPost ? <SavedSocialPost key={`${savedPost.savedAt}:${savedPost.postId || ''}:${savedPost.fetchedAt || ''}`} post={savedPost.post} /> : preview ? <BookmarkPreviewContent reordering={!!previewHeight} bookmark={bookmark} titleClassName={titleClassName} /> : <>
             <Favicon iconUrl={bookmark.icon} pageUrl={bookmark.url} slotSize={24} iconSize={20} />
             <NoriText className={`flex-1 text-sm font-medium ${titleClassName}`} numberOfLines={1}>
               {bookmark.title}

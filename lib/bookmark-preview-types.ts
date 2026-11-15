@@ -1,3 +1,4 @@
+import type { SavedPost } from './social-post'
 import { parseHttpUrl } from './url'
 
 export type PreviewSource = 'page-image' | 'screenshot' | 'none'
@@ -19,6 +20,8 @@ export function blockedPreviewStatus(status?: number) {
   return status === 401 || status === 403 || status === 406 || status === 429 || status === 503
 }
 export interface BookmarkPreview {
+  /** Only on a `socialKey` record: the archived post, whose images are separate records. */
+  savedPost?: SavedPost
   description: string
   imageUrl: string
   imageUri: string

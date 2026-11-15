@@ -1,5 +1,6 @@
 import { fetchPreviewImage } from './preview-image'
 import { getPreviewMeta } from './bookmark'
+import { MAX_POST_ASSETS, socialAssetKey, socialKey, socialTarget } from './social-post'
 import { readPreview, peekPreview, writePreview, prunePreviews } from './bookmark-preview-storage'
 import {
   blockedPreviewStatus,
@@ -22,6 +23,10 @@ export function setPreviewCapture(handler: typeof capture) {
 }
 export function setPreviewImageFetch(handler: typeof imageFetch) {
   imageFetch = handler
+}
+/** An image as a data URL, through the host's image fetch: Go on desktop, where the webview has CORS. */
+export function fetchImage(url: string, signal?: AbortSignal) {
+  return imageFetch(url, signal)
 }
 let screenshotOwner: (() => string | undefined) | undefined
 /** Who a screenshot taken now belongs to: no one while signed out. */
@@ -71,6 +76,10 @@ function keysForUrls(urls: string[]) {
     try {
       next.add(previewKey(url, 'page-image'))
       next.add(previewKey(url, 'screenshot'))
+      if (socialTarget(url)) {
+        next.add(socialKey(url))
+        for (let i = 0; i < MAX_POST_ASSETS; i++) next.add(socialAssetKey(url, i))
+      }
     } catch {}
   }
   return next

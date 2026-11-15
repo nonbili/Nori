@@ -176,3 +176,17 @@ describe('native preview storage', () => {
     expect(await storage.readPreview(key)).toEqual({ ...saved, owner: 'user-1' })
   })
 })
+
+it('gives refreshed media a fresh URI even when the personal save timestamp stays the same', async () => {
+  const { fs, files } = fileSystem()
+  const storage = createNativePreviewStorage(fs, 'file:///previews/')
+  const key = 'social:https://example.com/post:0'
+  await storage.writePreview(key, { ...preview, imageUri: 'data:image/jpeg;base64,YQ==' })
+  const first = (await storage.readPreview(key))!
+  await storage.writePreview(key, { ...preview, imageUri: 'data:image/jpeg;base64,Yg==' })
+  const second = (await storage.readPreview(key))!
+  expect(second.savedAt).toBe(first.savedAt)
+  expect(second.imageUri).not.toBe(first.imageUri)
+  expect(files.has(first.imageUri)).toBe(false)
+  expect(files.get(second.imageUri)).toBe('Yg==')
+})

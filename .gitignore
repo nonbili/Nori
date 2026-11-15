@@ -26,7 +26,8 @@ expo-env.d.ts
 *.pem
 
 # local env files
-.env*.local
+.env*
+!.env.example
 
 # typescript
 *.tsbuildinfo

@@ -1,4 +1,17 @@
 {
+  "socialPost": {
+    "reveal": "Show content",
+    "audio": "Audio preview",
+    "unavailable": "Post unavailable",
+    "relation": { "reply": "Reply", "reply-root": "Thread", "quote": "Quoted post", "repost": "Repost", "crosspost": "Crosspost" },
+    "save": "Save post offline",
+    "saving": "Saving post…",
+    "saved": "Post saved offline",
+    "failed": "Could not save this post. The site may require sign-in or block access.",
+    "view": "View saved post",
+    "close": "Close saved post",
+    "video": "Video thumbnail"
+  },
   "bookmarks": {
     "add": "Add bookmark",
     "edit": "Edit bookmark",

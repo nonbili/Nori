@@ -1,3 +1,4 @@
+import type { SocialPostRef } from './social-post-sync'
 import { getGoogleFavicon } from './favicon'
 import type { ScreenshotRef } from './screenshot-sync'
 
@@ -396,18 +397,37 @@ export function patchRowState<T extends { json: RowJsonState }>(row: T, patch: P
   }
 }
 
-export function withScreenshotRef<T extends { id: string; updatedAt: string; json: RowJsonState }>(
+export function withScreenshotRef<T extends { id: string; url: string; updatedAt: string; json: RowJsonState }>(
   rows: T[],
   ids: string[],
   screenshot: ScreenshotRef,
 ) {
-  // An upload can finish after sync brought a newer capture's pointer from another device.
+  return withObjectRef(rows, ids, 'screenshot', screenshot)
+}
+
+/** Shared SNS post references use the same timestamp and URL rules as screenshots. */
+export function withSocialPostRef<T extends { id: string; url: string; updatedAt: string; json: RowJsonState }>(
+  rows: T[],
+  ids: string[],
+  ref: SocialPostRef,
+) {
+  return withObjectRef(rows, ids, 'socialPost', ref)
+}
+
+function withObjectRef<T extends { id: string; url: string; updatedAt: string; json: RowJsonState }>(
+  rows: T[],
+  ids: string[],
+  field: 'screenshot' | 'socialPost',
+  ref: { url: string; savedAt: number },
+) {
+  // An upload can finish after sync brought a newer pointer from another device.
   const isNewer = (row: T) => {
-    const current = row.json.screenshot as Partial<ScreenshotRef> | null | undefined
-    return current?.url === screenshot.url && (current.savedAt ?? 0) > screenshot.savedAt
+    const current = row.json[field] as Partial<ScreenshotRef> | null | undefined
+    return current?.url === ref.url && (current.savedAt ?? 0) > ref.savedAt
   }
+  // A bookmark edited to another URL during the upload keeps its own pointer.
   return rows.map((row) =>
-    ids.includes(row.id) && !isNewer(row) ? withUpdatedAt(patchRowState(row, { screenshot })) : row,
+    ids.includes(row.id) && row.url === ref.url && !isNewer(row) ? withUpdatedAt(patchRowState(row, { [field]: ref })) : row,
   )
 }
 
