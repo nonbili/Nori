@@ -29,6 +29,8 @@ mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots, adoptScreensho
 const runScreenshotSync = mock(async () => {})
 const removeOrphans = mock(async () => {})
 mock.module('@/lib/supabase/screenshots', () => ({ runScreenshotSync, removeOrphans }))
+mock.module('@/lib/supabase/social-posts', () => ({ runSocialPostSync: mock(async () => {}), removeOrphanedPosts: mock(async () => {}) }))
+mock.module('@/lib/saved-social-post', () => ({ setSocialPostSaved: () => {} }))
 const { startSupabaseSyncWatchers, syncSupabase } = await import('../lib/supabase/sync')
 startSupabaseSyncWatchers()
 

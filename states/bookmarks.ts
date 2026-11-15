@@ -20,6 +20,7 @@ import {
   normalizeBookmarks,
   patchRowState,
   withScreenshotRef,
+  withSocialPostRef,
   type BookmarkRecordData,
 } from '@/lib/nori-data'
 import type { ScreenshotRef } from '@/lib/screenshot-sync'
@@ -41,6 +42,7 @@ interface Store {
   add: (draft: BookmarkDraft) => string | null
   update: (id: string, draft: Partial<BookmarkDraft>) => void
   setScreenshot: (ids: string[], ref: ScreenshotRef) => void
+  setSocialPost: (ids: string[], ref: ScreenshotRef) => void
   remove: (id: string) => void
   removeMany: (ids: string[]) => void
   restoreMany: (bookmarks: BookmarkRecord[]) => void
@@ -95,6 +97,9 @@ export const bookmarks$: Observable<Store> = observable<Store>({
   },
   setScreenshot: (ids, ref) => {
     bookmarks$.bookmarks.set(withScreenshotRef(bookmarks$.bookmarks.peek(), ids, ref))
+  },
+  setSocialPost: (ids, ref) => {
+    bookmarks$.bookmarks.set(withSocialPostRef(bookmarks$.bookmarks.peek(), ids, ref))
   },
   update: (id, draft) => {
     const items = bookmarks$.bookmarks.get()

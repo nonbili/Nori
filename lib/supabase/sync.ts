@@ -1,4 +1,5 @@
 import { setScreenshotCaptured, setScreenshotOwner } from '@/lib/bookmark-preview'
+import { setSocialPostSaved } from '@/lib/saved-social-post'
 import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -25,6 +26,7 @@ import {
 } from '@/lib/supabase/sync-rows'
 import { runWithConflictRetry, type SyncAttemptOutcome } from '@/lib/supabase/sync-scheduler'
 import { removeOrphans, runScreenshotSync } from './screenshots'
+import { removeOrphanedPosts, runSocialPostSync } from './social-posts'
 import { supabase } from './client'
 import { beginSync, canSync, isCurrentSession } from './sync-session'
 
@@ -327,6 +329,7 @@ export function startSupabaseSyncWatchers() {
   }
   watchersStarted = true
   setScreenshotCaptured(() => void runScreenshotSync())
+  setSocialPostSaved(() => void runSocialPostSync())
   setScreenshotOwner(() => auth$.userId.peek())
 
   lists$.lists.onChange(({ value, getPrevious }) => {
@@ -472,7 +475,10 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
 
   advanceSyncCursor(userId, remote, isFullPull)
   // A full pull is when this device can tell which objects nothing points at any more.
-  if (isFullPull) void removeOrphans(userId).catch(() => {})
+  if (isFullPull) {
+    void removeOrphans(userId).catch(() => {})
+    void removeOrphanedPosts(userId).catch(() => {})
+  }
   return 'synced'
 }
 
@@ -494,6 +500,7 @@ async function runSyncCycle(): Promise<SyncAttemptOutcome> {
       // would permanently disable the first-run remote seeding below.
       syncMeta$.lastSyncAt.set(Date.now())
       void runScreenshotSync()
+      void runSocialPostSync()
     }
     return outcome
   } catch (error) {

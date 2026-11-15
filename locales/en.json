@@ -1,4 +1,13 @@
 {
+  "socialPost": {
+    "save": "Save post offline",
+    "saving": "Saving post…",
+    "saved": "Post saved offline",
+    "failed": "Could not save this post. The site may require sign-in or block access.",
+    "view": "View saved post",
+    "close": "Close saved post",
+    "video": "Video thumbnail"
+  },
   "bookmarks": {
     "add": "Add bookmark",
     "edit": "Edit bookmark",

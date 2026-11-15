@@ -396,18 +396,37 @@ export function patchRowState<T extends { json: RowJsonState }>(row: T, patch: P
   }
 }
 
-export function withScreenshotRef<T extends { id: string; updatedAt: string; json: RowJsonState }>(
+export function withScreenshotRef<T extends { id: string; url: string; updatedAt: string; json: RowJsonState }>(
   rows: T[],
   ids: string[],
   screenshot: ScreenshotRef,
 ) {
-  // An upload can finish after sync brought a newer capture's pointer from another device.
+  return withObjectRef(rows, ids, 'screenshot', screenshot)
+}
+
+/** A saved post's archive pointer has the same shape and rules as a screenshot's. */
+export function withSocialPostRef<T extends { id: string; url: string; updatedAt: string; json: RowJsonState }>(
+  rows: T[],
+  ids: string[],
+  ref: ScreenshotRef,
+) {
+  return withObjectRef(rows, ids, 'socialPost', ref)
+}
+
+function withObjectRef<T extends { id: string; url: string; updatedAt: string; json: RowJsonState }>(
+  rows: T[],
+  ids: string[],
+  field: 'screenshot' | 'socialPost',
+  ref: ScreenshotRef,
+) {
+  // An upload can finish after sync brought a newer pointer from another device.
   const isNewer = (row: T) => {
-    const current = row.json.screenshot as Partial<ScreenshotRef> | null | undefined
-    return current?.url === screenshot.url && (current.savedAt ?? 0) > screenshot.savedAt
+    const current = row.json[field] as Partial<ScreenshotRef> | null | undefined
+    return current?.url === ref.url && (current.savedAt ?? 0) > ref.savedAt
   }
+  // A bookmark edited to another URL during the upload keeps its own pointer.
   return rows.map((row) =>
-    ids.includes(row.id) && !isNewer(row) ? withUpdatedAt(patchRowState(row, { screenshot })) : row,
+    ids.includes(row.id) && row.url === ref.url && !isNewer(row) ? withUpdatedAt(patchRowState(row, { [field]: ref })) : row,
   )
 }
 

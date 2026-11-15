@@ -144,12 +144,14 @@ export async function syncScreenshots(
 export async function removeOrphanedScreenshots(
   userId: string,
   bookmarks: ScreenshotBookmark[],
-  store: ScreenshotStore,
+  store: Pick<ScreenshotStore, 'list' | 'remove'>,
   now = Date.now(),
+  /** The `json` field holding the pointer: saved posts keep theirs in another bucket. */
+  field: 'screenshot' | 'socialPost' = 'screenshot',
 ) {
   const referenced = new Set<string>()
   for (const bookmark of bookmarks) {
-    const value = bookmark.json?.screenshot as Partial<ScreenshotRef> | null | undefined
+    const value = bookmark.json?.[field] as Partial<ScreenshotRef> | null | undefined
     if (typeof value?.path === 'string') referenced.add(value.path)
   }
   const orphans = (await store.list(userId))
@@ -231,4 +233,12 @@ export function base64ToBytes(base64: string) {
   const bytes = new Uint8Array(binary.length)
   for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index)
   return bytes
+}
+
+export function bytesToBase64(bytes: Uint8Array) {
+  // In chunks small enough to stay under fromCharCode()'s argument limit.
+  const chunks: string[] = []
+  for (let offset = 0; offset < bytes.length; offset += 8192)
+    chunks.push(String.fromCharCode(...bytes.subarray(offset, offset + 8192)))
+  return btoa(chunks.join(''))
 }

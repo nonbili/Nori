@@ -24,6 +24,8 @@ let pageFetch: PageFetch = (url, init) => fetchWithTimeout(url, { ...init, redir
 export const setPageFetch = (fetcher: PageFetch) => {
   pageFetch = fetcher
 }
+/** A cross-origin GET through the host's page fetch: Go on desktop, where the webview has CORS. */
+export const fetchPage: PageFetch = (url, init) => pageFetch(url, init)
 
 const canLoadImageUrl = async (url: string) => {
   if (!url) {

@@ -30,6 +30,8 @@ import {
   syncScreenshots,
   type ScreenshotRef,
 } from 'nori/lib/screenshot-sync'
+import { SOCIAL_POST_BUCKET } from 'nori/lib/social-post'
+import { syncSocialPosts, type SocialPostRef } from 'nori/lib/social-post-sync'
 import { supabaseStorage } from './storage'
 import type { AuthState, NoriBookmark, NoriList, Preferences, ProfileData, StoredState } from './model'
 
@@ -40,6 +42,9 @@ const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 })
 const db = client.schema('nori')
 const screenshotStore = createScreenshotStore(client.storage.from(SCREENSHOT_BUCKET), (url) => fetchPreviewImage(url))
+const socialPostBucket = client.storage.from(SOCIAL_POST_BUCKET)
+// Only listing and removing: archives are JSON, uploaded by syncSocialPosts rather than the store.
+const socialPostStore = createScreenshotStore(socialPostBucket, () => Promise.reject(new Error('unsupported')))
 
 export async function getAuthState(): Promise<AuthState> {
   const { data } = await client.auth.getSession()
@@ -194,6 +199,7 @@ export async function syncProfile(profile: ProfileData, auth: AuthState) {
     profile.lastFullPullAt = Date.now()
     // A full pull is when this device can tell which objects nothing points at any more.
     void removeOrphanedScreenshots(auth.userId, profile.bookmarks, screenshotStore).catch(() => {})
+    void removeOrphanedScreenshots(auth.userId, profile.bookmarks, socialPostStore, Date.now(), 'socialPost').catch(() => {})
   }
   return true
 }
@@ -217,6 +223,26 @@ export function syncProfileScreenshots(
     write: async (key, preview) => {
       if (host.isCurrent()) await writePreview(key, preview)
     },
+    shrink: shrinkScreenshot,
+    newId: () => crypto.randomUUID(),
+  })
+}
+
+export function syncProfileSocialPosts(
+  profile: ProfileData,
+  auth: AuthState,
+  host: {
+    isCurrent: () => boolean
+    setRef: (ids: string[], ref: SocialPostRef) => Promise<void>
+    changed: (key: string) => void
+  },
+) {
+  if (!auth.userId || auth.plan === 'free') return Promise.resolve()
+  return syncSocialPosts(auth.userId, profile.bookmarks, {
+    ...host,
+    bucket: socialPostBucket,
+    read: readPreview,
+    write: writePreview,
     shrink: shrinkScreenshot,
     newId: () => crypto.randomUUID(),
   })

@@ -23,6 +23,7 @@ import { installPreviewCapture } from '../lib/preview-capture'
 import { request } from '../lib/client'
 import { setScreenshotCaptured, setScreenshotOwner } from 'nori-root/lib/bookmark-preview'
 import { auth$ } from 'nori-root/states/auth'
+import { setSocialPostSaved } from 'nori-root/lib/saved-social-post'
 import { systemLanguage } from '../lib/language'
 import './native-fonts.css'
 import './nativewind-interop'
@@ -31,6 +32,7 @@ setDynamicLoadingEnabled(false)
 installPreviewCapture()
 setScreenshotCaptured(() => void request({ type: 'sync-screenshots' }).catch(() => undefined))
 setScreenshotOwner(() => auth$.userId.peek())
+setSocialPostSaved(() => void request({ type: 'sync-social-posts' }).catch(() => undefined))
 setUrlOpener((url) => browser.tabs.create({ url }))
 
 function ReadyApp({
