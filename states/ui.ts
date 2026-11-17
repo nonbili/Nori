@@ -59,6 +59,8 @@ interface UIStore {
   // A bookmark whose page is open in view for the user to load its preview from. Opened from the
   // bookmark editor, the pick goes back to the editor rather than to a bookmark it may not have saved yet.
   previewPage: { id: string; url: string; previewSource?: unknown; fromEditor?: boolean } | null
+  // A post's page open to save the post from, after a plain fetch of it was refused.
+  socialCapture: { url: string } | null
   recentSheetOpen: boolean
   // A bookmark just saved from a share, for its list to scroll into view.
   revealBookmarkId: string | null
@@ -81,6 +83,7 @@ export const ui$ = observable<UIStore>({
   pendingBookmarkImport: null,
   pendingShare: null,
   previewPage: null,
+  socialCapture: null,
   recentSheetOpen: false,
   revealBookmarkId: null,
   selectedBookmarkIds: [],

@@ -4,7 +4,7 @@ import { previewImageData } from './preview-image'
 import { readPreview, writePreview } from './bookmark-preview-storage'
 import { fetchImage, notifyPreviewChange } from './bookmark-preview'
 import { adoptSavedPost, readSavedPostFrom, UNOWNED, withSavedPostLock } from './social-post-sync'
-import { fetchSocialPost, postAssets, socialAssetKey, socialKey, socialTarget, type SavedPost } from './social-post'
+import { fetchSocialPost, postAssets, socialAssetKey, socialKey, socialTarget, type SavedPost, type SocialPost } from './social-post'
 
 let onSaved: (() => void) | undefined
 /** Called once a post is saved, for the host to sync it to the other devices. */
@@ -27,6 +27,12 @@ export async function saveSocialPost(url: string, owner: string, current: () => 
     const body = new TextDecoder().decode(await response.arrayBuffer())
     return format === 'html' ? body : JSON.parse(body)
   })
+  return storeSocialPost(url, post, owner, current)
+}
+
+/** Saves a post read elsewhere, e.g. from its page in a WebView, the same way a fetched one is. */
+export async function storeSocialPost(url: string, post: SocialPost, owner: string, current: () => boolean) {
+  if (!current()) throw new Error('social_account_changed')
   const savedAt = Date.now()
   // Stage all bytes first. A failed image must not replace an existing archive.
   const images = await Promise.all(postAssets(post).map((item) => {

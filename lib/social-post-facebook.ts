@@ -63,14 +63,46 @@ function storyPost(story: any, depth = 0): SocialPost {
     createdAt: new Date(created * 1000).toISOString(), text: message?.text || '', media, ...(nested ? { nested } : {}) }
 }
 
+/**
+ * The ids the target story goes by. A pfbid is minted per share and per session, so the story on
+ * the page can carry another one than the link; the page's own route for the link names it.
+ */
+function storyAliases(document: any, id: string) {
+  const ids = new Set([id])
+  walkDocuments(document, (value) => {
+    if (typeof value.url === 'string' && value.params && typeof value.params === 'object') {
+      const path = value.url.split(/[?#]/)[0].replace(/\/$/, '')
+      if (path.endsWith(`/${id}`)) for (const key of ['story_token', 'story_fbid', 'post_id'])
+        if (typeof value.params[key] === 'string' && value.params[key]) ids.add(value.params[key])
+    }
+  })
+  return ids
+}
+
+/**
+ * Visits each object in `document`, or in each of a list of documents with a node budget of its
+ * own, so one large payload cannot use up the budget before the others are reached. Stops early
+ * once `visit` returns true. Comments, feedback and other stories' sections are never entered.
+ */
+function walkDocuments(document: any, visit: (value: any) => boolean | void) {
+  for (const root of Array.isArray(document) ? document : [document]) {
+    const stack = [{ value: root, depth: 0 }]
+    let count = 0
+    while (stack.length && count++ < 50_000) {
+      const { value, depth } = stack.pop()!
+      if (!value || typeof value !== 'object' || depth > 40) continue
+      if (visit(value)) return
+      for (const [key, child] of Object.entries(value)) if (!SKIP.has(key)) stack.push({ value: child, depth: depth + 1 })
+    }
+  }
+}
+
 /** Returns only an exact target story, not a suggested post on a login page. */
 export function parseFacebookPost(document: any, target: SocialTarget): SocialPost | undefined {
-  const stack = [{ value: document, depth: 0 }]
+  const ids = storyAliases(document, target.id)
   const videos: any[] = []
-  let count = 0
-  while (stack.length && count++ < 50_000) {
-    const { value, depth } = stack.pop()!
-    if (!value || typeof value !== 'object' || depth > 40) continue
+  let found: SocialPost | undefined
+  walkDocuments(document, (value) => {
     if (value.__typename === 'Video' && String(value.id) === target.id) videos.push(value)
     if (value.__typename === 'Story') {
       const permalink = find(value, 'permalink_url', string)
@@ -82,12 +114,15 @@ export function parseFacebookPost(document: any, target: SocialTarget): SocialPo
           pathId = url.pathname.match(/\/(?:posts|videos|reel)\/([A-Za-z0-9]+)(?:\/|$)/)?.[1] ||
             url.searchParams.get('story_fbid') || url.searchParams.get('v') || undefined
       } catch {}
-      if (String(value.post_id) === target.id || pathId === target.id) {
-        try { return storyPost(value) } catch { /* A later document may contain the complete section. */ }
+      if (ids.has(String(value.post_id)) || (pathId && ids.has(pathId))) {
+        try {
+          found = storyPost(value)
+          return true
+        } catch { /* A later document may contain the complete section. */ }
       }
     }
-    for (const [key, child] of Object.entries(value)) if (!SKIP.has(key)) stack.push({ value: child, depth: depth + 1 })
-  }
+  })
+  if (found) return found
   // Video permalink pages split playback and creation-story metadata into
   // separate records. Join only records for the exact requested video ID.
   if (/\/(?:reel|watch|[^/]+\/videos)(?:\/|\?)/.test(target.url)) {

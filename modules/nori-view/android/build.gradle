@@ -13,3 +13,8 @@ android {
     versionName '0.0.1'
   }
 }
+
+dependencies {
+  // Document start scripts, so a page's own scripts never run before ours.
+  implementation "androidx.webkit:webkit:1.13.0"
+}

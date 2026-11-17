@@ -11,8 +11,10 @@ import { Favicon } from './Favicon'
 import { BookmarkPreviewContent } from './BookmarkPreviewContent'
 import { getNote, getTags } from '@/lib/nori-data'
 import { socialTarget } from '@/lib/social-post'
+import { canCaptureFromPage } from '@/lib/social-post-capture'
 import { saveSocialPostHere } from '@/lib/social-post-autosave'
 import { showToast } from '@/lib/toast'
+import { ui$ } from '@/states/ui'
 import * as Clipboard from 'expo-clipboard'
 import { SavedSocialPost, useSavedSocialPost } from './SavedSocialPost'
 
@@ -217,7 +219,11 @@ export const BookmarkTile = memo(({
       setSavingPost(true)
       void saveSocialPostHere(bookmark.url)
         .then(() => showToast(t('socialPost.saved')))
-        .catch(() => showToast(t('socialPost.failed')))
+        .catch(() => {
+          // A site that refuses a plain fetch can still show the post on its own page, signed in if need be.
+          if (Platform.OS !== 'web' && canCaptureFromPage(socialTarget(bookmark.url))) ui$.socialCapture.set({ url: bookmark.url })
+          else showToast(t('socialPost.failed'))
+        })
         .finally(() => { if (isMounted.current) setSavingPost(false) })
     },
   })

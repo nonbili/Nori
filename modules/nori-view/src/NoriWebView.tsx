@@ -16,6 +16,8 @@ export interface NoriWebViewProps {
   source: string
   /** Leave unset for the engine's own user agent. */
   userAgent?: string
+  /** Run before any page script on each navigation, e.g. to wrap `fetch` before the page keeps a reference to it. */
+  injectedJavaScriptBeforeContentLoaded?: string
   /** Run in the page each time it finishes loading. */
   injectedJavaScript?: string
   style?: StyleProp<ViewStyle>

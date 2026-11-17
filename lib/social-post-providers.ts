@@ -125,8 +125,9 @@ function tiktokPost(value: any): SocialPost {
   }
 }
 
-export function parsePageSocialPost(html: string, target: SocialTarget): SocialPost {
-  if (typeof html !== 'string' || html.length > 20 * 1024 * 1024) return unavailable()
+/** The JSON documents a page embeds in its scripts. */
+export function pageDocuments(html: string): any[] {
+  if (typeof html !== 'string' || html.length > 20 * 1024 * 1024) return []
   const $ = cheerio.load(html)
   const documents: any[] = []
   $('script').each((_, element) => {
@@ -136,6 +137,15 @@ export function parsePageSocialPost(html: string, target: SocialTarget): SocialP
     const context = body.match(/\bcontextJSON"?\s*:\s*("(?:[^"\\]|\\.)*")/)
     if (context) { try { documents.push(JSON.parse(JSON.parse(context[1]))) } catch {} }
   })
+  return documents
+}
+
+export function parsePageSocialPost(html: string, target: SocialTarget): SocialPost {
+  return parseSocialDocuments(pageDocuments(html), target)
+}
+
+/** Finds the exact target post in JSON from a page or its API responses, whatever their wrapping. */
+export function parseSocialDocuments(documents: any[], target: SocialTarget): SocialPost {
   if (target.site === 'facebook') return parseFacebookPost(documents, target) || unavailable()
   for (const document of documents) {
     const value = find(document, (node) => {

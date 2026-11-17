@@ -13,7 +13,11 @@ import { useSavedImage } from './useSavedImage'
 const SWIPE_DISTANCE = 60
 
 function GalleryButton({ icon, label, onPress }: { icon: MaterialIconsIconName; label: string; onPress: () => void }) {
-  return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress}
+  // Stopped here: on the web the modal is a portal, and a press would reach the card under it, which opens the post.
+  return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={(event) => {
+    event.stopPropagation()
+    onPress()
+  }}
     className="h-11 w-11 items-center justify-center rounded-full bg-black/50 active:bg-black/70">
     <MaterialIcons name={icon} size={26} color="#fff" />
   </Pressable>
@@ -66,7 +70,8 @@ export function SocialMediaGallery({ media, index, onChange, onClose }: {
   const item = media[current]
   return <Modal visible transparent animationType="fade" statusBarTranslucent navigationBarTranslucent onRequestClose={onClose}>
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View className="flex-1 bg-black" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      <View className="flex-1 bg-black" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+        {...(Platform.OS === 'web' ? { onClick: (event: { stopPropagation: () => void }) => event.stopPropagation() } : {})}>
         <View className="flex-row items-center justify-between px-4 py-2">
           <NoriText className="text-sm text-white">{media.length > 1 ? `${current + 1} / ${media.length}` : ''}</NoriText>
           <GalleryButton icon="close" label={t('common.close')} onPress={onClose} />

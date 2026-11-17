@@ -44,6 +44,15 @@ describe('Facebook saved posts', () => {
       expect(parse({ ...story(), permalink_url: url }, url).text).toBe('Hello 🌍')
   })
 
+  it('matches a story whose pfbid differs from the link only through the page route for the link', () => {
+    const link = 'https://www.facebook.com/alice/posts/pfbidLINK/'
+    const own = { ...story(), permalink_url: 'https://www.facebook.com/alice/posts/pfbidPAGE' }
+    const route = { url: '/alice/posts/pfbidLINK', params: { story_token: 'pfbidPAGE' } }
+    expect(parse([route, own], link).text).toBe('Hello 🌍')
+    // A route for another link names no alias for this one.
+    expect(() => parse([{ ...route, url: '/alice/posts/pfbidOTHER' }, own], link)).toThrow()
+  })
+
   it('reads section-wrapped metadata and prefers an author copy with an avatar', () => {
     const value = { __typename: 'Story', post_id: '123', actors: [{ name: 'Alice' }], comet_sections: {
       content: { story: { message: { text: 'Wrapped' }, actors: [actor], attachments: [{ media: photo('1') }] } },

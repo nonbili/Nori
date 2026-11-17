@@ -31,6 +31,7 @@ import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { useBlocklistSync } from '@/hooks/useBlocklistSync'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
 import { PreviewPageSheet } from '@/components/sheet/PreviewPageSheet'
+import { SocialCaptureSheet } from '@/components/sheet/SocialCaptureSheet'
 import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 
 LogBox.ignoreAllLogs()
@@ -190,6 +191,7 @@ function LayoutContent() {
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <WebViewTitleResolver canvasColor={themeColors.canvas} />
       <PreviewPageSheet />
+      {Platform.OS === 'web' ? null : <SocialCaptureSheet />}
       {previewsReady ? <Slot /> : null}
       <ActionSnackbar />
     </View>

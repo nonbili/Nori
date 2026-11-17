@@ -25,6 +25,10 @@ public class NoriViewModule: Module {
         view.injectedJavaScript = script
       }
 
+      Prop("injectedJavaScriptBeforeContentLoaded") { (view: NoriWebView, script: String?) in
+        view.setDocumentStartScript(script)
+      }
+
       OnViewDidUpdateProps { (view: NoriWebView) in
         view.loadPending()
       }

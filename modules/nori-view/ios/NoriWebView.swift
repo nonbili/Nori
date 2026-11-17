@@ -20,6 +20,7 @@ class NoriWebView: ExpoView, WKNavigationDelegate, WKScriptMessageHandler {
   var pendingUrl: String?
   var injectedJavaScript: String?
   private var loadedUrl: String?
+  private var documentStartScript: String?
   private var appliedRuleList: WKContentRuleList?
   private let webView: WKWebView
 
@@ -65,6 +66,23 @@ class NoriWebView: ExpoView, WKNavigationDelegate, WKScriptMessageHandler {
     appliedRuleList = ruleList
     if let ruleList = ruleList {
       controller.add(ruleList)
+    }
+  }
+
+  /// Runs `script` in the main frame before any page script, from the next navigation on.
+  func setDocumentStartScript(_ script: String?) {
+    let next = (script?.isEmpty ?? true) ? nil : script
+    if next == documentStartScript {
+      return
+    }
+    documentStartScript = next
+    let controller = webView.configuration.userContentController
+    controller.removeAllUserScripts()
+    controller.addUserScript(
+      WKUserScript(source: bridgeScript, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+    )
+    if let next = next {
+      controller.addUserScript(WKUserScript(source: next, injectionTime: .atDocumentStart, forMainFrameOnly: true))
     }
   }
 

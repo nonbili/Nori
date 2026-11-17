@@ -8,6 +8,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.webkit.ScriptHandler
+import androidx.webkit.WebViewCompat
+import androidx.webkit.WebViewFeature
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
@@ -30,6 +33,8 @@ class NoriWebView(context: Context, appContext: AppContext) : ExpoView(context, 
   internal var pendingUrl: String? = null
   private var loadedUrl: String? = null
   internal var injectedJavaScript: String? = null
+  private var documentStartScript: String? = null
+  private var documentStartHandler: ScriptHandler? = null
 
   private inner class Bridge {
     @JavascriptInterface
@@ -54,6 +59,8 @@ class NoriWebView(context: Context, appContext: AppContext) : ExpoView(context, 
           }
 
           override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+            // Only a fallback: a page script may already have run by now.
+            if (documentStartHandler == null) documentStartScript?.let { view.evaluateJavascript(it, null) }
             onLoadStart(mapOf("url" to url))
           }
 
@@ -85,6 +92,22 @@ class NoriWebView(context: Context, appContext: AppContext) : ExpoView(context, 
     webView.settings.userAgentString = userAgent?.ifEmpty { null }
   }
 
+  /** Runs [script] in every frame before any page script, from the next navigation on. */
+  fun setDocumentStartScript(script: String?) {
+    val next = script?.ifEmpty { null }
+    if (next == documentStartScript) return
+    documentStartScript = next
+    documentStartHandler?.remove()
+    documentStartHandler = null
+    if (next != null && WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+      documentStartHandler = try {
+        WebViewCompat.addDocumentStartJavaScript(webView, next, setOf("*"))
+      } catch (e: Exception) {
+        null
+      }
+    }
+  }
+
   /** Called once every prop of an update has landed, so the user agent is always set before the load. */
   fun loadPending() {
     val url = pendingUrl
@@ -103,6 +126,8 @@ class NoriWebView(context: Context, appContext: AppContext) : ExpoView(context, 
   }
 
   fun destroyWebView() {
+    documentStartHandler?.remove()
+    documentStartHandler = null
     webView.stopLoading()
     removeView(webView)
     webView.destroy()

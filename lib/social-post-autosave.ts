@@ -4,8 +4,8 @@ import { bookmarks$ } from '@/states/bookmarks'
 import { settings$ } from '@/states/settings'
 import { readPreview } from './bookmark-preview-storage'
 import { isDeleted } from './nori-data'
-import { saveSocialPost } from './saved-social-post'
-import { socialKey, socialTarget } from './social-post'
+import { saveSocialPost, storeSocialPost } from './saved-social-post'
+import { socialKey, socialTarget, type SocialPost } from './social-post'
 import { postRef, UNOWNED } from './social-post-sync'
 import { getBookmarkUrlKey } from './bookmark-mutations'
 import { getSyncGeneration, getSyncOwner, needsAccountChoice } from './supabase/sync-session'
@@ -41,6 +41,12 @@ function captureContext() {
 export function saveSocialPostHere(url: string) {
   const { owner, current } = captureContext()
   return saveSocialPost(url, owner, current)
+}
+
+/** Saves a post captured from its page here, for this device's account. */
+export function storeSocialPostHere(url: string, post: SocialPost) {
+  const { owner, current } = captureContext()
+  return storeSocialPost(url, post, owner, current)
 }
 
 // One capture at a time: sharing many links at once must not fan out provider fetches.
