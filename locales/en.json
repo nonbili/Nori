@@ -228,6 +228,8 @@
       "checkingUpdates": "Checking for updates…",
       "closeToTrayHint": "Closing the window keeps Nori running behind its tray icon.",
       "newAtTop": "Add new bookmarks at the top",
+      "autoSaveSocialPosts": "Save social posts offline",
+      "autoSaveSocialPostsHint": "Keep a copy of each new post you bookmark from a supported site, in case it is deleted. Nori Sync also syncs these copies.",
       "theme": "Theme",
       "themeHint": "Switch between system, light, dark, and AMOLED appearance.",
       "system": "System",

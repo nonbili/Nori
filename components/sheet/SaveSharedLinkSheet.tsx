@@ -13,6 +13,7 @@ import { settings$ } from '@/states/settings'
 import { ui$ } from '@/states/ui'
 import { getFallbackIcon } from '@/lib/bookmark'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
+import { autoSaveSocialPost } from '@/lib/social-post-autosave'
 import { getVisibleLists } from '@/lib/nori-data'
 import { showToast } from '@/lib/toast'
 
@@ -64,7 +65,10 @@ export const SaveSharedLinkSheet: React.FC = () => {
         : t('sharing.savedToList', { name }),
     )
 
-    saved.forEach(({ id }) => void enrichSavedBookmark(id))
+    saved.forEach(({ id }) => {
+      void enrichSavedBookmark(id)
+      autoSaveSocialPost(id)
+    })
   }
 
   return (

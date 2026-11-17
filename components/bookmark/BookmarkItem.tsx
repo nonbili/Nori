@@ -10,11 +10,8 @@ import { type NouMenuItem } from '@/components/menu/NouMenu'
 import { Favicon } from './Favicon'
 import { BookmarkPreviewContent } from './BookmarkPreviewContent'
 import { getNote, getTags } from '@/lib/nori-data'
-import { useValue } from '@legendapp/state/react'
-import { auth$ } from '@/states/auth'
 import { socialTarget } from '@/lib/social-post'
-import { saveSocialPost } from '@/lib/saved-social-post'
-import { getSyncGeneration } from '@/lib/supabase/sync-session'
+import { saveSocialPostHere } from '@/lib/social-post-autosave'
 import { showToast } from '@/lib/toast'
 import { SavedSocialPost, useSavedSocialPost } from './SavedSocialPost'
 
@@ -147,8 +144,6 @@ export const BookmarkTile = memo(({
   const themeColors = useThemeColors()
   const note = getNote(bookmark)
   const tags = getTags(bookmark)
-  const owner = useValue(auth$.userId)
-  const plan = useValue(auth$.plan)
   // Only preview cards grow to fit a post: compact rows have a fixed height the list relies on.
   const savedPost = useSavedSocialPost(preview ? bookmark.url : '')
   const showPost = Boolean(savedPost && !previewHeight)
@@ -204,13 +199,12 @@ export const BookmarkTile = memo(({
     onLoadPreview,
     onDelete,
   }, t)
-  if (owner && plan && plan !== 'free' && socialTarget(bookmark.url)) actions.splice(actions.length - 1, 0, {
+  if (socialTarget(bookmark.url)) actions.splice(actions.length - 1, 0, {
     label: t(savingPost ? 'socialPost.saving' : 'socialPost.save'), icon: 'download',
     handler: () => {
-      if (savingPost || !auth$.plan.peek() || auth$.plan.peek() === 'free') return
+      if (savingPost) return
       setSavingPost(true)
-      const generation = getSyncGeneration()
-      void saveSocialPost(bookmark.url, owner, () => auth$.userId.peek() === owner && Boolean(auth$.plan.peek() && auth$.plan.peek() !== 'free') && getSyncGeneration() === generation)
+      void saveSocialPostHere(bookmark.url)
         .then(() => showToast(t('socialPost.saved')))
         .catch(() => showToast(t('socialPost.failed')))
         .finally(() => { if (isMounted.current) setSavingPost(false) })

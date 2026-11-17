@@ -17,7 +17,7 @@ mock.module('react-i18next', () => ({ useTranslation: () => ({ i18n: { language:
 mock.module('@/components/common/NoriText', () => ({ NoriText: ({ children, className, onPress }: {
   children: ReactNode; className?: string; onPress?: (event: unknown) => void
 }) => <span className={className} onClick={onPress}>{children}</span> }))
-mock.module('@/states/auth', () => ({ auth$: {} }))
+mock.module('@/lib/social-post-autosave', () => ({ localCaptureOwner$: { get: () => '', peek: () => '', onChange: () => () => {} } }))
 mock.module('@/lib/bookmark-preview-storage', () => ({ readPreview: async (key: string) => ({ imageUri: previews.get(key) }) }))
 mock.module('@/lib/bookmark-preview', () => ({ onPreviewChange: () => () => {} }))
 mock.module('@/lib/saved-social-post', () => ({ readSavedPost: async () => undefined }))

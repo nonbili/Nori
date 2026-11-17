@@ -52,6 +52,7 @@ export const ExperienceSection: React.FC<{
   const checkForUpdatesOnStartup = useValue(settings$.checkForUpdatesOnStartup)
   const closeToTray = useValue(settings$.closeToTray)
   const newBookmarksAtTop = useValue(settings$.newBookmarksAtTop)
+  const autoSaveSocialPosts = useValue(settings$.autoSaveSocialPosts)
   const quickSaveSharedLinks = useValue(settings$.quickSaveSharedLinks)
   const quickSaveShareListId = useValue(settings$.quickSaveShareListId)
   const selectedLanguage = useValue(settings$.language)
@@ -136,6 +137,26 @@ export const ExperienceSection: React.FC<{
             className={`h-8 w-14 rounded-full p-1 ${newBookmarksAtTop ? 'bg-accent-500' : 'bg-muted-strong'}`}
           >
             <View className={`h-6 w-6 rounded-full bg-white ${newBookmarksAtTop ? 'ml-auto' : ''}`} />
+          </Pressable>
+        </View>
+      </View>
+      <View className="border-b-2 border-well px-4 py-4">
+        <View className="flex-row items-center gap-3">
+          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-well">
+            <MaterialIcons name="download" color={themeColors.contentMuted} size={18} />
+          </View>
+          <View className="flex-1">
+            <NoriText className="font-medium text-content">{t('settings.experience.autoSaveSocialPosts')}</NoriText>
+            <NoriText className="mt-1 text-sm leading-5 text-content-muted">{t('settings.experience.autoSaveSocialPostsHint')}</NoriText>
+          </View>
+          <Pressable
+            accessibilityRole="switch"
+            accessibilityLabel={t('settings.experience.autoSaveSocialPosts')}
+            accessibilityState={{ checked: autoSaveSocialPosts }}
+            onPress={() => settings$.setAutoSaveSocialPosts(!autoSaveSocialPosts)}
+            className={`h-8 w-14 rounded-full p-1 ${autoSaveSocialPosts ? 'bg-accent-500' : 'bg-muted-strong'}`}
+          >
+            <View className={`h-6 w-6 rounded-full bg-white ${autoSaveSocialPosts ? 'ml-auto' : ''}`} />
           </Pressable>
         </View>
       </View>

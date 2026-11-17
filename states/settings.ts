@@ -28,6 +28,8 @@ export interface Settings {
   checkForUpdatesOnStartup: boolean
   quickSaveSharedLinks: boolean
   quickSaveShareListId: string
+  /** Save the post behind each new SNS bookmark on this device. Paid accounts also sync it. */
+  autoSaveSocialPosts: boolean
   /** Whether the editor's image options were left open, to open them that way next time. */
   editorPreviewOpen: boolean
 }
@@ -46,6 +48,7 @@ interface Store extends Settings {
   setCloseToTray: (enabled: boolean) => void
   setQuickSaveSharedLinks: (enabled: boolean) => void
   setQuickSaveShareListId: (id: string) => void
+  setAutoSaveSocialPosts: (enabled: boolean) => void
 }
 
 const themes: Settings['theme'][] = [null, 'light', 'dark', 'amoled']
@@ -71,6 +74,7 @@ export const settings$: Observable<Store> = observable<Store>({
   checkForUpdatesOnStartup: true,
   quickSaveSharedLinks: false,
   quickSaveShareListId: '',
+  autoSaveSocialPosts: true,
   editorPreviewOpen: false,
   cycleTheme: () => {
     const current = settings$.theme.get()
@@ -112,6 +116,9 @@ export const settings$: Observable<Store> = observable<Store>({
   },
   setQuickSaveShareListId: (id) => {
     settings$.quickSaveShareListId.set(id)
+  },
+  setAutoSaveSocialPosts: (enabled) => {
+    settings$.autoSaveSocialPosts.set(enabled)
   },
 })
 

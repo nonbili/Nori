@@ -21,6 +21,7 @@ import { Choice } from '@/components/bookmark/PreviewSettings'
 import { BookmarkPreviewContent } from '@/components/bookmark/BookmarkPreviewContent'
 import { loadBookmarkPreview, previewSource } from '@/lib/bookmark-preview'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
+import { autoSaveSocialPost } from '@/lib/social-post-autosave'
 import { previewPageDriver } from '@/lib/preview-page'
 import { TagSuggestionMenu } from '@/components/sheet/TagSuggestionMenu'
 
@@ -274,6 +275,7 @@ export const BookmarkEditorSheet: React.FC = () => {
     settings$.setLastSelectedListId(payload.listId)
     ui$.bookmarkEditor.set(null)
     if (resolveAfterSaving && savedId) void enrichSavedBookmark(savedId)
+    if (!editor.id && savedId) autoSaveSocialPost(savedId)
   }
 
   const refreshPreview = async () => {

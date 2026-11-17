@@ -4,12 +4,13 @@ import { Pressable, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
 import { NoriText } from '@/components/common/NoriText'
-import { auth$ } from '@/states/auth'
 import { readPreview } from '@/lib/bookmark-preview-storage'
 import { onPreviewChange } from '@/lib/bookmark-preview'
 import { openUrl } from '@/lib/open-url'
 import { SNS_LIMITS, richTextSegments, safeWebUrl, type RichText } from '@/lib/sns-schema'
 import { readSavedPost } from '@/lib/saved-social-post'
+import { UNOWNED } from '@/lib/social-post-sync'
+import { localCaptureOwner$ } from '@/lib/social-post-autosave'
 import { socialKey, socialTarget, type SavedPost, type SocialMedia, type SocialPost } from '@/lib/social-post'
 
 const providerLabels = new Map(Object.entries({ bluesky: 'Bluesky', mastodon: 'Mastodon', reddit: 'Reddit', x: 'X', instagram: 'Instagram', threads: 'Threads', facebook: 'Facebook', tiktok: 'TikTok', linkedin: 'LinkedIn' }))
@@ -111,12 +112,12 @@ export function SavedSocialPost({ post, depth = 0 }: { post: SocialPost; depth?:
 }
 
 export function useSavedSocialPost(url: string) {
-  const owner = useValue(auth$.userId)
+  const owner = useValue(localCaptureOwner$)
   // Every tile calls this: only a post permalink can have an archive, so skip the read otherwise.
   const supported = Boolean(socialTarget(url))
   const [loaded, setLoaded] = useState<{ url: string; saved?: SavedPost }>()
   useEffect(() => {
-    if (!owner || !supported) return
+    if (!supported) return
     let active = true
     const load = () => {
       void readSavedPost(url, owner).then((saved) => {
@@ -128,5 +129,5 @@ export function useSavedSocialPost(url: string) {
     const unsubscribe = onPreviewChange((changed) => { if (changed === key) load() })
     return () => { active = false; unsubscribe() }
   }, [url, owner, supported])
-  return loaded?.url === url && loaded.saved?.owner === owner ? loaded.saved : undefined
+  return loaded?.url === url && (loaded.saved?.owner === owner || loaded.saved?.owner === UNOWNED) ? loaded.saved : undefined
 }

@@ -56,7 +56,7 @@ mock.module('@/lib/supabase/client', () => ({ supabase: client.schema('nori') })
 mock.module('@/lib/bookmark-preview', () => ({ forgetScreenshots: async () => {}, adoptScreenshots: async () => {}, setScreenshotCaptured: () => {}, setScreenshotOwner: () => {} }))
 mock.module('@/lib/supabase/screenshots', () => ({ runScreenshotSync: async () => {}, removeOrphans: async () => {} }))
 mock.module('@/lib/supabase/social-posts', () => ({ runSocialPostSync: async () => {}, removeSocialPostOrphans: async () => {} }))
-mock.module('@/lib/saved-social-post', () => ({ setSocialPostSaved: () => {}, adoptSavedPosts: async () => {} }))
+mock.module('@/lib/saved-social-post', () => ({ setSocialPostSaved: () => {}, adoptSavedPosts: async () => {}, forgetSavedPosts: async () => {} }))
 
 const { startSupabaseSyncWatchers, syncSupabase } = await import('@/lib/supabase/sync')
 const { resolveAccountChoice } = await import('@/lib/supabase/sync-account')

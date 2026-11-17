@@ -3,7 +3,7 @@ import { fetchPage } from './bookmark'
 import { previewImageData } from './preview-image'
 import { readPreview, writePreview } from './bookmark-preview-storage'
 import { fetchImage, notifyPreviewChange } from './bookmark-preview'
-import { readSavedPostFrom, withSavedPostLock } from './social-post-sync'
+import { adoptSavedPost, readSavedPostFrom, UNOWNED, withSavedPostLock } from './social-post-sync'
 import { fetchSocialPost, postAssets, socialAssetKey, socialKey, socialTarget, type SavedPost } from './social-post'
 
 let onSaved: (() => void) | undefined
@@ -11,8 +11,9 @@ let onSaved: (() => void) | undefined
 export function setSocialPostSaved(handler: typeof onSaved) {
   onSaved = handler
 }
-export function readSavedPost(url: string, owner: string) {
-  return readSavedPostFrom(readPreview, url, owner)
+/** The capture shown here: the account's own, or one saved on this device while signed out. */
+export async function readSavedPost(url: string, owner: string) {
+  return (await readSavedPostFrom(readPreview, url, owner)) ?? (await readSavedPostFrom(readPreview, url, UNOWNED))
 }
 export async function saveSocialPost(url: string, owner: string, current: () => boolean) {
   if (!current()) throw new Error('social_account_changed')
@@ -40,7 +41,8 @@ export async function saveSocialPost(url: string, owner: string, current: () => 
   const replaced = await withSavedPostLock(url, async () => {
     if (!current()) throw new Error('social_account_changed')
     // Another save of this URL finished first with a later snapshot: keep it.
-    const latest = await readSavedPost(url, owner)
+    // Only this owner's own capture: one saved while signed out must not hold back a signed-in save.
+    const latest = await readSavedPostFrom(readPreview, url, owner)
     if (latest && latest.savedAt >= savedAt) return false
     for (const [index, item] of postAssets(post).entries()) {
       item.cacheKey = socialAssetKey(url, index)
@@ -50,33 +52,30 @@ export async function saveSocialPost(url: string, owner: string, current: () => 
     await writePreview(socialKey(url), { description: '', imageUrl: '', imageUri: '', savedAt, owner, savedPost: result })
     return true
   })
-  if (!replaced) return (await readSavedPost(url, owner)) ?? result
+  if (!replaced) return (await readSavedPostFrom(readPreview, url, owner)) ?? result
   notifyPreviewChange(socialKey(url))
   onSaved?.()
   return result
 }
 
+const localHost = { read: readPreview, write: writePreview, changed: notifyPreviewChange }
+
 /** Explicitly merging device data gives its complete local captures to the chosen account. */
 export async function adoptSavedPosts(urls: string[], owner: string, current: () => boolean) {
+  for (const url of new Set(urls)) await adoptSavedPost({ ...localHost, isCurrent: current }, url, owner)
+}
+
+/**
+ * Drops the captures here that are not `owner`'s, when the device's data hands over to that
+ * account: a merge would adopt them, and one saved while signed out would be claimed by sync.
+ */
+export async function forgetSavedPosts(urls: string[], owner: string, current: () => boolean) {
   for (const url of new Set(urls)) await withSavedPostLock(url, async () => {
-    if (!current()) return
-    const key = socialKey(url)
-    const preview = await readPreview(key)
-    const saved = preview?.savedPost
-    if (!saved || saved.owner === owner) return
-    const images = []
-    for (const index of postAssets(saved.post).keys()) {
-      const assetKey = socialAssetKey(url, index)
-      const image = await readPreview(assetKey)
-      if (!image?.imageUri || image.owner !== saved.owner || image.savedAt !== saved.savedAt) return
-      images.push({ key: assetKey, image })
-    }
-    // Account-owned row references cannot transfer. The next paid sync uploads a new capture.
-    const { postId: _postId, fetchedAt: _fetchedAt, ...capture } = saved
-    for (const image of images) {
-      if (!current()) return
-      await writePreview(image.key, { ...image.image, owner })
-    }
-    if (current()) await writePreview(key, { ...preview!, owner, savedPost: { ...capture, owner } })
+    const saved = (await readPreview(socialKey(url)))?.savedPost
+    if (!saved || saved.owner === owner || !current()) return
+    const blank = { description: '', imageUrl: '', imageUri: '', savedAt: 0 }
+    for (const index of postAssets(saved.post).keys()) await writePreview(socialAssetKey(url, index), blank)
+    await writePreview(socialKey(url), blank)
+    notifyPreviewChange(socialKey(url))
   })
 }

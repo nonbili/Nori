@@ -17,6 +17,7 @@ const add = mock((draft: BookmarkDraftData): string | null => {
   return next.id
 })
 const enrich = mock(async (_id: string) => {})
+const autoSave = mock((_id: string) => {})
 let inbox: PendingQuickShareLink[] = []
 let appInbox: PendingQuickShareLink[] = []
 const remove = mock(async (ids: string[]) => { inbox = inbox.filter((entry) => !ids.includes(entry.id)) })
@@ -28,6 +29,7 @@ mock.module('@/states/settings', () => ({ settings$ }))
 mock.module('@/states/ui', () => ({ ui$ }))
 mock.module('@/states/bookmarks', () => ({ bookmarks$: { add } }))
 mock.module('@/lib/saved-bookmark-metadata', () => ({ enrichSavedBookmark: enrich }))
+mock.module('@/lib/social-post-autosave', () => ({ autoSaveSocialPost: autoSave }))
 mock.module('@/modules/nori-quick-share', () => ({
   configureQuickShare: configure,
   getPendingQuickShareLinks: readInbox,
@@ -50,7 +52,7 @@ beforeEach(() => {
   settings$.assign({ quickSaveShareListId: 'target', quickSaveSharedLinks: true })
   ui$.assign({ revealBookmarkId: null, pendingShare: null, pendingBookmarkImport: null })
   inbox = []; appInbox = []
-  for (const fn of [add, enrich, remove, removeApp, configure, readInbox]) fn.mockClear()
+  for (const fn of [add, enrich, autoSave, remove, removeApp, configure, readInbox]) fn.mockClear()
 })
 
 describe('quick-share inbox', () => {
@@ -63,6 +65,7 @@ describe('quick-share inbox', () => {
     expect(rows.peek()).toHaveLength(1)
     expect(ui$.revealBookmarkId.peek()).toBe(rows.peek()[0].id)
     expect(enrich).toHaveBeenCalledWith(rows.peek()[0].id)
+    expect(autoSave).toHaveBeenCalledWith(rows.peek()[0].id)
   })
 
   test('a deleted destination falls back to an available list', async () => {
@@ -80,6 +83,7 @@ describe('quick-share inbox', () => {
     expect(inbox).toEqual([entry('one')])
     expect(add).not.toHaveBeenCalled()
     expect(enrich).not.toHaveBeenCalled()
+    expect(autoSave).not.toHaveBeenCalled()
   })
 
   test('a failed acknowledgement can be retried without duplicating the saved bookmark', async () => {

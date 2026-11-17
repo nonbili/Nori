@@ -2,6 +2,8 @@ import { batch } from '@legendapp/state'
 import { updatePreviewBookmarks } from 'nori-root/lib/bookmark-preview'
 import { useEffect, useRef } from 'react'
 import { auth$ } from 'nori-root/states/auth'
+import { setProfileCaptureOwner } from 'nori-root/lib/social-post-autosave'
+import { UNOWNED } from 'nori-root/lib/social-post-sync'
 import { bookmarks$ } from 'nori-root/states/bookmarks'
 import { history$ } from 'nori-root/states/history'
 import { lists$ } from 'nori-root/states/lists'
@@ -81,6 +83,11 @@ const preferenceBridge: PreferenceBridge = {
     setting$: settings$.newBookmarksAtTop,
     read: () => settings$.newBookmarksAtTop.peek(),
     write: (value) => settings$.newBookmarksAtTop.set(value !== false),
+  },
+  autoSaveSocialPosts: {
+    setting$: settings$.autoSaveSocialPosts,
+    read: () => settings$.autoSaveSocialPosts.peek(),
+    write: (value) => settings$.autoSaveSocialPosts.set(value !== false),
   },
   loadPagesForTitles: {
     setting$: settings$.loadPagesForTitles,
@@ -176,6 +183,7 @@ export function useSharedStateBridge(snapshot: AppSnapshot, refresh: () => Promi
         const write = preferenceBridge[key].write as (value: Preferences[typeof key]) => void
         write(snapshot.preferences[key])
       }
+      setProfileCaptureOwner(snapshot.profile.ownerId ?? UNOWNED)
       auth$.assign({
         loaded: snapshot.auth.loaded,
         userId: snapshot.auth.userId,

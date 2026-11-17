@@ -1,9 +1,23 @@
 # Private SNS captures
 
 Nori captures SNS posts on the user's device and syncs the captured content directly to
-Supabase. Saving requires the Nori Sync plan. The save action checks the current account
-and plan; database and storage policies enforce ownership and paid cloud writes even for
-a client calling the API directly. Local saves remain readable offline.
+Supabase. Every user can save posts locally; syncing them requires the Nori Sync plan.
+Database and storage policies enforce ownership and paid cloud writes even for a client
+calling the API directly. Local saves remain readable offline.
+
+New bookmarks of a supported post are captured automatically, one at a time, on the device
+that adds them; the "Save social posts offline" setting (on by default) turns this off, and
+the bookmark menu's save action re-captures at any time. Existing bookmarks are not backfilled,
+and a URL that already has a capture is not captured again automatically.
+
+A capture belongs to the account the device's data belongs to: the signed-in account, the
+previous one while an account choice is pending, or the active profile's account in the
+extension and desktop app. Saved while signed out (or in the anonymous profile), it belongs
+to no one (`owner: ''`). Auto-save waits for the session to load, and skips a URL whose
+bookmark already references a synced capture. Captures that belong to no one are shown to whoever uses the device, and the
+first paid sync of a bookmark with that URL claims them. Choosing to replace the device's
+data with an account's drops them; merging the device adopts them. Local captures are
+removed along with the last bookmark of their URL.
 
 Each capture has a new UUID v4. Its post JSON is stored in `nori.saved_posts` with `user_id`,
 `version`, and `captured_at`. Media bytes are stored in the private `nori-sns-media` bucket

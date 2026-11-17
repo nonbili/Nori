@@ -43,6 +43,7 @@ export interface Preferences {
   previewImageSource: 'page-image' | 'screenshot' | 'none'
   showFavicons: boolean
   newBookmarksAtTop: boolean
+  autoSaveSocialPosts: boolean
   /** Desktop only: the extension has no way to render a page. */
   loadPagesForTitles: boolean
   /** Desktop only, and read there by the Go side when the window is closed. */

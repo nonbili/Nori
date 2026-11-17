@@ -1,9 +1,10 @@
 import { getBookmarkUrlKey } from '@/lib/bookmark-mutations'
 import { adoptScreenshots, forgetScreenshots } from '@/lib/bookmark-preview'
 import { exportBookmarksToJson } from '@/lib/bookmark-transfer'
-import { createStarterBookmarks, createStarterLists } from '@/lib/nori-data'
+import { createStarterBookmarks, createStarterLists, isDeleted } from '@/lib/nori-data'
 import { screenshotRef } from '@/lib/screenshot-sync'
-import { adoptSavedPosts } from '@/lib/saved-social-post'
+import { adoptSavedPosts, forgetSavedPosts } from '@/lib/saved-social-post'
+import { postRef } from '@/lib/social-post-sync'
 import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -50,6 +51,10 @@ export async function resolveAccountChoice(choice: AccountChoice) {
     const urls = bookmarks.map((row) => row.url)
     await forgetScreenshots(urls.filter((url) => choice === 'useAccount' || accountShots.has(getBookmarkUrlKey(url))))
     if (choice === 'mergeDevice') await adoptScreenshots(urls, userId)
+    // Saved posts likewise: the account keeps its own, and a merge adopts the device's for other pages.
+    const accountPosts = new Set(remote.bookmarks.filter((row) => !isDeleted(row) && postRef(row)).map((row) => getBookmarkUrlKey(row.url)))
+    await forgetSavedPosts(urls.filter((url) => choice === 'useAccount' || accountPosts.has(getBookmarkUrlKey(url))), userId,
+      () => getSyncGeneration() === started && auth$.userId.peek() === userId)
     if (getSyncGeneration() !== started || auth$.userId.peek() !== userId) return
 
     // Taken right before the data changes hands, so it has what was changed here while reading.
@@ -62,8 +67,8 @@ export async function resolveAccountChoice(choice: AccountChoice) {
     if (choice === 'mergeDevice') {
       // Merged again here, as the waits above leave the device open to edits.
       let merged = mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)
-      const pendingIds = new Set(merged.pendingBookmarkIds)
-      await adoptSavedPosts(merged.bookmarks.filter((row) => pendingIds.has(row.id)).map((row) => row.url), userId,
+      // Every page the account has no capture of, merged as a new bookmark or not.
+      await adoptSavedPosts(urls.filter((url) => !accountPosts.has(getBookmarkUrlKey(url))), userId,
         () => getSyncGeneration() === started && auth$.userId.peek() === userId)
       if (getSyncGeneration() !== started || auth$.userId.peek() !== userId) return
       merged = mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)

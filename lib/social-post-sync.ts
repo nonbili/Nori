@@ -34,7 +34,41 @@ export async function readSavedPostFrom(read: SocialPostSyncHost['read'], url: s
   return saved?.owner === owner ? saved : undefined
 }
 
-function postRef(bookmark: ScreenshotBookmark): SocialPostRef | undefined {
+/** The owner of a capture saved while signed out. The first account to sync it claims it. */
+export const UNOWNED = ''
+
+/**
+ * Hands a complete local capture to `owner`, dropping its former private row reference: another
+ * account's rows never transfer. With `from`, only that owner's captures move.
+ */
+export function adoptSavedPost(host: Pick<SocialPostSyncHost, 'read' | 'write' | 'changed' | 'isCurrent'>, url: string, owner: string, from?: string) {
+  return withSavedPostLock(url, async () => {
+    if (!host.isCurrent()) return
+    const key = socialKey(url)
+    const preview = await host.read(key)
+    const saved = preview?.savedPost
+    if (!saved || saved.owner === owner || (from !== undefined && saved.owner !== from)) return
+    const images = []
+    for (const index of postAssets(saved.post).keys()) {
+      const assetKey = socialAssetKey(url, index)
+      const image = await host.read(assetKey)
+      // An adoption cut short has already handed over some of the media: finish it.
+      if (!image?.imageUri || (image.owner !== saved.owner && image.owner !== owner) || image.savedAt !== saved.savedAt) return
+      images.push({ key: assetKey, image })
+    }
+    const { postId: _postId, fetchedAt: _fetchedAt, ...capture } = saved
+    for (const image of images) {
+      if (!host.isCurrent()) return
+      await host.write(image.key, { ...image.image, owner })
+    }
+    // The capture itself last, so it never names an owner some of its media lacks.
+    if (!host.isCurrent()) return
+    await host.write(key, { ...preview!, owner, savedPost: { ...capture, owner } })
+    host.changed(key)
+  })
+}
+
+export function postRef(bookmark: ScreenshotBookmark): SocialPostRef | undefined {
   const ref = bookmark.json?.socialPost as Partial<SocialPostRef> | undefined
   return validSaveId(ref?.postId) && typeof ref.savedAt === 'number' && Number.isFinite(ref.savedAt) &&
     ref.savedAt >= 0 && ref.url === bookmark.url ? ref as SocialPostRef : undefined
@@ -133,6 +167,7 @@ export async function syncSocialPosts(userId: string, bookmarks: ScreenshotBookm
   for (const [url, group] of groups) {
     if (!host.isCurrent()) return
     try {
+      await adoptSavedPost(host, url, userId, UNOWNED)
       const local = await readSavedPostFrom(host.read, url, userId)
       const ref = group.map(postRef).reduce<SocialPostRef | undefined>((a, b) => a && (!b || a.savedAt >= b.savedAt) ? a : b, undefined)
       let nextRef = ref

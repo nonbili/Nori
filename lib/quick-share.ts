@@ -3,6 +3,7 @@ import { lists$ } from '@/states/lists'
 import { settings$ } from '@/states/settings'
 import { getFallbackIcon, getFallbackTitle } from '@/lib/bookmark'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
+import { autoSaveSocialPost } from '@/lib/social-post-autosave'
 import { isValidQuickShareHttpUrl, resolveQuickShareTargetListIdFromLists } from '@/lib/quick-share-utils'
 import {
   configureQuickShare,
@@ -36,6 +37,7 @@ export function saveQuickSharedLink(url: string, targetListId = resolveQuickShar
   }
 
   void enrichSavedBookmark(id)
+  autoSaveSocialPost(id)
 
   return id
 }

@@ -194,3 +194,28 @@ it('leaves a cleaned capture pending if its local media is incomplete', async ()
   expect(a.previews.get(socialKey(url))?.savedPost?.post.text).toBe(saved.post.text)
   expect(a.previews.get(socialKey(url))?.savedPost?.postId).toBeUndefined()
 })
+
+it('claims a capture saved while signed out, then uploads it', async () => {
+  const a = device(); a.seed({ ...saved, owner: '' })
+  await syncSocialPosts('alice', [{ id: '1', url }], a.host)
+  expect(a.uploads).toHaveLength(1)
+  expect(a.refs).toEqual([{ ids: ['1'], ref }])
+  expect(a.previews.get(socialKey(url))?.savedPost?.owner).toBe('alice')
+  expect(a.previews.get(socialAssetKey(url, 0))?.owner).toBe('alice')
+})
+
+it('does not claim another account’s capture during sync', async () => {
+  const a = device(); a.seed({ ...saved, owner: 'bob' })
+  await syncSocialPosts('alice', [{ id: '1', url }], a.host)
+  expect(a.uploads).toHaveLength(0)
+  expect(a.previews.get(socialKey(url))?.savedPost?.owner).toBe('bob')
+})
+
+it('finishes an adoption cut short after handing over some media, and reports the change', async () => {
+  const a = device(); a.seed({ ...saved, owner: '' })
+  a.previews.set(socialAssetKey(url, 0), { ...a.previews.get(socialAssetKey(url, 0))!, owner: 'alice' })
+  await syncSocialPosts('alice', [{ id: '1', url }], a.host)
+  expect(a.previews.get(socialKey(url))?.savedPost?.owner).toBe('alice')
+  expect(a.uploads).toHaveLength(1)
+  expect(a.changes).toContain(socialKey(url))
+})

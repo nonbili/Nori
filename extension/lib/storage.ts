@@ -23,6 +23,7 @@ export const defaultState = (): StoredState => ({
     previewImageSource: 'page-image',
     showFavicons: true,
     newBookmarksAtTop: true,
+    autoSaveSocialPosts: true,
     loadPagesForTitles: false,
     closeToTray: true,
     autoCheckUpdates: true,
@@ -47,6 +48,7 @@ export async function loadState(): Promise<StoredState> {
     stored.preferences.accent = normalizeAccent(stored.preferences.accent)
     // Likewise newer than v1, and on unless it was turned off.
     stored.preferences.newBookmarksAtTop = stored.preferences.newBookmarksAtTop !== false
+    stored.preferences.autoSaveSocialPosts = stored.preferences.autoSaveSocialPosts !== false
     stored.preferences.loadPagesForTitles = stored.preferences.loadPagesForTitles === true
     stored.preferences.autoCheckUpdates = stored.preferences.autoCheckUpdates !== false
     stored.preferences.closeToTray = stored.preferences.closeToTray !== false

@@ -11,7 +11,7 @@ Object.assign(globalThis, { window, document: window.document, navigator: window
 const preferences = (): Preferences => ({
   theme: 'system', fontScale: 1, fontFamily: 'system', accent: 'emerald', language: null,
   lastListId: 'builtin-later', bookmarkView: 'compact', previewImageSource: 'page-image', showFavicons: true,
-  newBookmarksAtTop: true, loadPagesForTitles: false, autoCheckUpdates: true, closeToTray: true,
+  newBookmarksAtTop: true, autoSaveSocialPosts: true, loadPagesForTitles: false, autoCheckUpdates: true, closeToTray: true,
 })
 const snapshot = (): AppSnapshot => ({
   profileId: 'user:alice', profile: createProfile('alice'), preferences: preferences(),
@@ -20,7 +20,7 @@ const snapshot = (): AppSnapshot => ({
 const settings$ = observable({
   theme: null as string | null, fontScale: 1, fontFamily: 'system', accent: 'emerald', language: null as string | null,
   lastSelectedListId: '', bookmarkView: 'compact', previewImageSource: 'page-image', showFavicon: true,
-  newBookmarksAtTop: true, loadPagesForTitles: false, autoCheckUpdates: true, closeToTray: true,
+  newBookmarksAtTop: true, autoSaveSocialPosts: true, loadPagesForTitles: false, autoCheckUpdates: true, closeToTray: true,
 })
 const lists$ = observable({ lists: createProfile().lists })
 const bookmarks$ = observable({ bookmarks: createProfile().bookmarks })
@@ -33,6 +33,7 @@ for (const [name, store] of Object.entries({ settings$, lists$, bookmarks$, hist
 }
 const prune = mock(async (_urls: string[]) => {})
 mock.module('nori-root/lib/bookmark-preview', () => ({ updatePreviewBookmarks: prune }))
+mock.module('nori-root/lib/social-post-autosave', () => ({ setProfileCaptureOwner: () => {} }))
 type Write = Extract<RequestMessage, { type: 'replace-data' }>
 let durable: AppSnapshot
 const persist = (message: Write) => {

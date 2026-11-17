@@ -120,3 +120,20 @@ it('normalizes JPEG aliases and rejects unsupported images before reporting a su
     }
   }
 })
+
+it('shows a capture saved while signed out to a signed-in user, and forgets it for a replaced device', async () => {
+  const { forgetSavedPosts } = await import('./saved-social-post')
+  const { writePreview } = await import('./bookmark-preview-storage')
+  const { socialKey, socialAssetKey } = await import('./social-post')
+  const url = 'https://reddit.com/comments/unowned'
+  await updatePreviewBookmarks([url])
+  await writePreview(socialKey(url), { description: '', imageUrl: '', imageUri: '', savedAt: 10, owner: '', savedPost: {
+    owner: '', savedAt: 10, post: { site: 'reddit', url, author: 'Alice', text: 'Signed out', media: [{ type: 'image', url: 'https://cdn.test/image' }] },
+  } })
+  await writePreview(socialAssetKey(url, 0), { description: '', imageUrl: 'https://cdn.test/image', imageUri: 'data:image/png;base64,AQID', savedAt: 10, owner: '' })
+  expect((await readSavedPost(url, ''))?.post.text).toBe('Signed out')
+  expect((await readSavedPost(url, 'alice'))?.post.text).toBe('Signed out')
+  await forgetSavedPosts([url], 'alice', () => true)
+  expect(await readSavedPost(url, 'alice')).toBeUndefined()
+  expect((await readPreview(socialAssetKey(url, 0)))?.imageUri).toBe('')
+})
