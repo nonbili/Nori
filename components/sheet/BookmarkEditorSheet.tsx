@@ -22,6 +22,7 @@ import { BookmarkPreviewContent } from '@/components/bookmark/BookmarkPreviewCon
 import { loadBookmarkPreview, previewSource } from '@/lib/bookmark-preview'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
 import { autoSaveSocialPost } from '@/lib/social-post-autosave'
+import { useSavedSocialPost } from '@/components/bookmark/SavedSocialPost'
 import { previewPageDriver } from '@/lib/preview-page'
 import { TagSuggestionMenu } from '@/components/sheet/TagSuggestionMenu'
 
@@ -55,7 +56,7 @@ const TAG_MENU_ROW_HEIGHT = 40
 const INPUT_CLASS = 'rounded-xl border border-line bg-surface px-4 py-3 text-content'
 
 export const BookmarkEditorSheet: React.FC = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { height } = useWindowDimensions()
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   useEffect(() => {
@@ -79,6 +80,8 @@ export const BookmarkEditorSheet: React.FC = () => {
   const [previewError, setPreviewError] = useState('')
   const defaultImageSource = useValue(settings$.previewImageSource)
   const previewMode = useValue(settings$.bookmarkView) === 'preview'
+  // A saved post takes the preview image's place on the card, so its image settings would change nothing.
+  const savedPost = useSavedSocialPost(previewMode ? editor?.url ?? '' : '')
   useEffect(() => {
     if (editor?.url) return retainEditorPreview(editor.url)
   }, [editor?.url])
@@ -354,7 +357,12 @@ export const BookmarkEditorSheet: React.FC = () => {
             className={INPUT_CLASS}
           />
         </View>
-        {previewMode ? <View className="gap-3">
+        {previewMode && savedPost ? <View className="min-h-[36px] flex-row items-center gap-2">
+          <NoriText className="flex-1 text-xs font-medium uppercase tracking-[0.12em] text-content-subtle">{t('socialPost.savedPost')}</NoriText>
+          <NoriText numberOfLines={1} className="shrink text-sm text-content-muted">
+            {t('socialPost.savedOn', { date: new Date(savedPost.savedAt).toLocaleDateString(i18n.language.replace('_', '-'), { year: 'numeric', month: 'short', day: 'numeric' }) })}
+          </NoriText>
+        </View> : previewMode ? <View className="gap-3">
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: previewOpen }}

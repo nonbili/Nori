@@ -3,8 +3,12 @@ import { Image } from 'expo-image'
 import { Pressable, View } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { useTranslation } from 'react-i18next'
+import MaterialIcons from '@react-native-vector-icons/material-icons'
+import { useThemeColors } from '@/lib/theme'
 import { NoriText } from '@/components/common/NoriText'
-import { readPreview } from '@/lib/bookmark-preview-storage'
+import { Favicon } from '@/components/bookmark/Favicon'
+import { SocialMediaGallery } from '@/components/bookmark/SocialMediaGallery'
+import { useSavedImage } from '@/components/bookmark/useSavedImage'
 import { onPreviewChange } from '@/lib/bookmark-preview'
 import { openUrl } from '@/lib/open-url'
 import { SNS_LIMITS, richTextSegments, safeWebUrl, type RichText } from '@/lib/sns-schema'
@@ -12,21 +16,6 @@ import { readSavedPost } from '@/lib/saved-social-post'
 import { UNOWNED } from '@/lib/social-post-sync'
 import { localCaptureOwner$ } from '@/lib/social-post-autosave'
 import { socialKey, socialTarget, type SavedPost, type SocialMedia, type SocialPost } from '@/lib/social-post'
-
-const providerLabels = new Map(Object.entries({ bluesky: 'Bluesky', mastodon: 'Mastodon', reddit: 'Reddit', x: 'X', instagram: 'Instagram', threads: 'Threads', facebook: 'Facebook', tiktok: 'TikTok', linkedin: 'LinkedIn' }))
-
-function useSavedImage(item?: SocialMedia) {
-  const [image, setImage] = useState<{ key: string; uri: string }>()
-  useEffect(() => {
-    let active = true
-    const key = item?.cacheKey
-    if (key) void readPreview(key).then((value) => {
-      if (active) setImage({ key, uri: value?.imageUri || '' })
-    }).catch(() => {})
-    return () => { active = false }
-  }, [item?.cacheKey])
-  return image?.key === item?.cacheKey ? image?.uri : undefined
-}
 
 function RichContent({ value }: { value: RichText }) {
   const [revealed, setRevealed] = useState(false)
@@ -46,44 +35,58 @@ function RichContent({ value }: { value: RichText }) {
   })}</NoriText>
 }
 
-function SavedImage({ item }: { item: SocialMedia }) {
+function SavedImage({ item, onOpen }: { item: SocialMedia; onOpen?: () => void }) {
   const { t } = useTranslation()
+  const contentColor = useThemeColors().content
   const uri = useSavedImage(item)
   const ratio = item.width && item.height && item.width > 0 && item.height > 0 ? item.width / item.height : 4 / 3
-  return <View className="overflow-hidden rounded-xl bg-muted">
+  return <Pressable disabled={!uri || !onOpen} accessibilityRole={onOpen ? 'imagebutton' : undefined} className="overflow-hidden rounded-xl bg-muted" onPress={(event) => {
+    event.stopPropagation()
+    onOpen?.()
+  }}>
     {uri ? <Image source={{ uri }} accessibilityLabel={item.alt} style={{ width: '100%', aspectRatio: Math.max(0.65, Math.min(2, ratio)) }} contentFit="contain" /> : null}
-    {item.type === 'video' || item.type === 'audio' ? <View className="absolute bottom-2 left-2 rounded-full bg-surface px-3 py-1">
-      <NoriText className="text-xs text-content">▶ {t(item.type === 'audio' ? 'socialPost.audio' : 'socialPost.video')}</NoriText>
+    {item.type === 'video' || item.type === 'audio' ? <View className="absolute bottom-2 left-2 flex-row items-center gap-1 rounded-full bg-surface py-1 pl-2 pr-3">
+      <MaterialIcons name={item.type === 'audio' ? 'graphic-eq' : 'play-arrow'} size={14} color={contentColor} />
+      <NoriText className="text-xs text-content">{t(item.type === 'audio' ? 'socialPost.audio' : 'socialPost.video')}</NoriText>
     </View> : null}
-  </View>
+  </Pressable>
 }
 
-function Author({ post }: { post: SocialPost }) {
+function Author({ post, date, compact }: { post: SocialPost; date: string; compact: boolean }) {
   const uri = useSavedImage(post.avatar)
+  const size = compact ? 32 : 40
+  const handle = post.handle ? (post.handle.startsWith('u/') ? post.handle : `@${post.handle}`) : ''
   return <View className="flex-row items-center gap-3">
-    {uri ? <Image source={{ uri }} style={{ width: 42, height: 42, borderRadius: 21 }} accessible={false} /> :
-      <View className="h-10 w-10 items-center justify-center rounded-full bg-muted">
-        <NoriText className="text-base font-medium text-content-muted">{post.author.slice(0, 1).toUpperCase()}</NoriText>
-      </View>}
-    <View className="min-w-0 flex-1 gap-1">
+    {/* The provider's favicon sits on the avatar as a badge, so it marks the source without taking a column. */}
+    <View style={{ width: size, height: size }}>
+      {uri ? <Image source={{ uri }} style={{ width: size, height: size, borderRadius: size / 2 }} accessible={false} /> :
+        <View className="items-center justify-center rounded-full bg-muted" style={{ width: size, height: size }}>
+          <NoriText className="text-base font-medium text-content-muted">{post.author.slice(0, 1).toUpperCase()}</NoriText>
+        </View>}
+      <View className="absolute" style={{ right: -4, bottom: -4 }}>
+        <Favicon pageUrl={post.url} slotSize={18} iconSize={14} fallbackIconSize={12}
+          wrapperClassName="items-center justify-center overflow-hidden rounded-full border-2 border-surface bg-surface" />
+      </View>
+    </View>
+    <View className="min-w-0 flex-1">
       <NoriText className="text-sm font-semibold text-content" numberOfLines={1}>{post.author}</NoriText>
-      {post.handle ? <NoriText className="text-xs text-content-muted" numberOfLines={1}>
-        {post.handle.startsWith('u/') ? post.handle : `@${post.handle}`}
+      {handle || date ? <NoriText className="text-xs text-content-muted" numberOfLines={1}>
+        {[handle, date].filter(Boolean).join(' · ')}
       </NoriText> : null}
     </View>
-    <NoriText className="text-xs text-content-muted">{providerLabels.get(post.site) || post.site}</NoriText>
   </View>
 }
 
 export function SavedSocialPost({ post, depth = 0 }: { post: SocialPost; depth?: number }) {
   const { i18n, t } = useTranslation()
   const [revealed, setRevealed] = useState(false)
+  const [galleryIndex, setGalleryIndex] = useState<number>()
   const hidden = Boolean(post.contentWarning || post.sensitive) && !revealed
-  const date = post.createdAt && Number.isFinite(Date.parse(post.createdAt)) ? new Date(post.createdAt).toLocaleString(i18n.language.replace('_', '-'), {
-    year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  const date = post.createdAt && Number.isFinite(Date.parse(post.createdAt)) ? new Date(post.createdAt).toLocaleDateString(i18n.language.replace('_', '-'), {
+    year: 'numeric', month: 'short', day: 'numeric',
   }) : ''
-  return <View className={`w-full gap-3 p-4 ${depth ? 'rounded-xl border border-line' : ''}`}>
-    <Author post={post} />
+  return <View className={`w-full gap-3 ${depth ? 'rounded-xl border border-line p-3' : 'p-4'}`}>
+    <Author post={post} date={date} compact={depth > 0} />
     {post.contentWarning ? <RichContent value={post.contentWarning} /> : null}
     {hidden ? <Pressable accessibilityRole="button" className="self-start rounded-xl bg-muted px-4 py-2" onPress={(event) => {
       event.stopPropagation()
@@ -91,7 +94,7 @@ export function SavedSocialPost({ post, depth = 0 }: { post: SocialPost; depth?:
     }}><NoriText className="text-sm font-medium text-content">{t('socialPost.reveal')}</NoriText></Pressable> : <>
     {post.title ? <RichContent value={post.title} /> : null}
     {post.richText ? <RichContent value={post.richText} /> : post.text ? <NoriText className="text-sm leading-relaxed text-content">{post.text}</NoriText> : null}
-    {post.media.map((item, index) => <SavedImage key={`${item.cacheKey}:${index}`} item={item} />)}
+    {post.media.map((item, index) => <SavedImage key={`${item.cacheKey}:${index}`} item={item} onOpen={() => setGalleryIndex(index)} />)}
     {post.links?.map((link, index) => <Pressable key={`${link.url}:${index}`} className="gap-2 rounded-xl border border-line p-3" onPress={(event) => {
       event.stopPropagation()
       if (safeWebUrl(link.url)) void openUrl(link.url)
@@ -107,7 +110,7 @@ export function SavedSocialPost({ post, depth = 0 }: { post: SocialPost; depth?:
     </View>)}
     {post.nested && depth < SNS_LIMITS.depth ? <SavedSocialPost post={post.nested} depth={depth + 1} /> : null}
     </>}
-    {date ? <NoriText className="text-xs text-content-muted">{date}</NoriText> : null}
+    <SocialMediaGallery media={post.media} index={galleryIndex} onChange={setGalleryIndex} onClose={() => setGalleryIndex(undefined)} />
   </View>
 }
 

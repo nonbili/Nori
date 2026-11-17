@@ -22,6 +22,11 @@ mock.module('@/lib/bookmark-preview-storage', () => ({ readPreview: async (key: 
 mock.module('@/lib/bookmark-preview', () => ({ onPreviewChange: () => () => {} }))
 mock.module('@/lib/saved-social-post', () => ({ readSavedPost: async () => undefined }))
 mock.module('@/lib/open-url', () => ({ openUrl }))
+mock.module('@/lib/theme', () => ({ useThemeColors: () => ({ content: '#000' }) }))
+mock.module('@react-native-vector-icons/material-icons', () => ({ default: () => null }))
+mock.module('@/components/bookmark/SocialMediaGallery', () => ({ SocialMediaGallery: ({ index, onChange }: { index?: number; onChange: (index: number) => void }) =>
+  index === undefined ? null : <section data-gallery={index}><b onClick={() => onChange(index + 1)} /></section> }))
+mock.module('@/components/bookmark/Favicon', () => ({ Favicon: ({ pageUrl }: { pageUrl?: string }) => <i data-favicon={pageUrl} /> }))
 const { createRoot } = await import('react-dom/client')
 const { SavedSocialPost } = await import('../components/bookmark/SavedSocialPost')
 let root: ReturnType<typeof createRoot>
@@ -88,11 +93,9 @@ test('shows link cards and related posts using only cached image URIs', async ()
   expect(openUrl).not.toHaveBeenCalled()
 })
 
-test('renders unknown provider slugs without consulting object prototype properties', async () => {
-  const value = post()
-  value.site = 'constructor'
-  await mount(value)
-  expect(container.textContent).toContain('constructor')
+test('shows the provider as the post URL favicon', async () => {
+  await mount(post())
+  expect(container.querySelector('[data-favicon]')?.getAttribute('data-favicon')).toBe('https://social.test/post/1')
 })
 
 test('sensitive content stays collapsed even without warning text', async () => {
@@ -108,4 +111,17 @@ test('sensitive content stays collapsed even without warning text', async () => 
   await act(async () => { await Promise.resolve() })
   expect(container.textContent).toContain('Sensitive body')
   expect(container.querySelector('img')?.getAttribute('src')).toBe('data:image/png;base64,AQID')
+})
+
+test('pressing a post image opens the gallery at that image without opening the post', async () => {
+  const value = post()
+  value.media = [{ type: 'image', url: 'https://remote.example/1', cacheKey: 'one' }, { type: 'image', url: 'https://remote.example/2', cacheKey: 'two' }]
+  previews.set('one', 'data:image/png;base64,AQ')
+  previews.set('two', 'data:image/png;base64,Ag')
+  const parentPress = mock()
+  await mount(value, parentPress)
+  expect(container.querySelector('[data-gallery]')).toBeNull()
+  await act(async () => { container.querySelectorAll('img')[1].click() })
+  expect(container.querySelector('[data-gallery]')?.getAttribute('data-gallery')).toBe('1')
+  expect(parentPress).not.toHaveBeenCalled()
 })

@@ -13,6 +13,7 @@ import { getNote, getTags } from '@/lib/nori-data'
 import { socialTarget } from '@/lib/social-post'
 import { saveSocialPostHere } from '@/lib/social-post-autosave'
 import { showToast } from '@/lib/toast'
+import * as Clipboard from 'expo-clipboard'
 import { SavedSocialPost, useSavedSocialPost } from './SavedSocialPost'
 
 const AnchorMenu: React.FC<{
@@ -196,10 +197,20 @@ export const BookmarkTile = memo(({
     onEdit,
     onCopyUrl,
     onShare,
-    onLoadPreview,
+    // A saved post replaces the screenshot, and saving it again would only repeat the capture.
+    onLoadPreview: savedPost ? undefined : onLoadPreview,
     onDelete,
   }, t)
-  if (socialTarget(bookmark.url)) actions.splice(actions.length - 1, 0, {
+  const postText = savedPost ? [savedPost.post.title?.text, savedPost.post.richText?.text || savedPost.post.text].filter(Boolean).join('\n\n') : ''
+  // Before "Copy URL" (after Edit), so the two copy actions sit together with the post's text first.
+  if (postText) actions.splice(1, 0, {
+    label: t('socialPost.copyText'), icon: 'content-copy',
+    handler: () => {
+      void Clipboard.setStringAsync(postText)
+      showToast(t('socialPost.textCopied'))
+    },
+  })
+  if (socialTarget(bookmark.url) && !savedPost) actions.splice(actions.length - 1, 0, {
     label: t(savingPost ? 'socialPost.saving' : 'socialPost.save'), icon: 'download',
     handler: () => {
       if (savingPost) return
