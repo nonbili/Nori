@@ -6,6 +6,7 @@ import { NoriText } from '@/components/common/NoriText'
 import { FullScreenModal } from '@/components/modal/BaseModal'
 import { capturedSocialPost, CAPTURE_SCRIPT, messageDocuments, parseCaptureMessage, READ_PAGE_SCRIPT } from '@/lib/social-post-capture'
 import { storeSocialPostHere } from '@/lib/social-post-autosave'
+import { isIncompleteSave } from '@/lib/social-post-save'
 import { socialTarget, type SocialPost } from '@/lib/social-post'
 import { showToast } from '@/lib/toast'
 import { getUserAgent } from '@/lib/useragent'
@@ -80,9 +81,9 @@ function Capture({ url }: { url: string }) {
       await storeSocialPostHere(url, post)
       showToast(t('socialPost.saved'))
       close()
-    } catch {
+    } catch (error) {
       setSaving(false)
-      showToast(t('socialPost.failed'))
+      showToast(t(isIncompleteSave(error) ? 'socialPost.keptSaved' : 'socialPost.failed'))
     }
   }
 

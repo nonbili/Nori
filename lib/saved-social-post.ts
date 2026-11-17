@@ -4,6 +4,7 @@ import { previewImageData } from './preview-image'
 import { readPreview, writePreview } from './bookmark-preview-storage'
 import { fetchImage, notifyPreviewChange } from './bookmark-preview'
 import { adoptSavedPost, readSavedPostFrom, UNOWNED, withSavedPostLock } from './social-post-sync'
+import { SNS_LIMITS } from './sns-schema'
 import { fetchSocialPost, postAssets, socialAssetKey, socialKey, socialTarget, type SavedPost, type SocialPost } from './social-post'
 
 let onSaved: (() => void) | undefined
@@ -30,6 +31,30 @@ export async function saveSocialPost(url: string, owner: string, current: () => 
   return storeSocialPost(url, post, owner, current)
 }
 
+const hasBody = (post: SocialPost) => Boolean(post.text.trim() || post.richText?.text.trim())
+const hasTitle = (post: SocialPost) => Boolean(post.title?.text.trim())
+
+/**
+ * Whether `next` shows less than `previous`, down through its quoted and related posts. No edit is
+ * told apart from a partial page, so a smaller post never replaces a saved one.
+ */
+export function losesContent(next: SocialPost, previous: SocialPost, depth = 0): boolean {
+  if (depth > SNS_LIMITS.depth) return false
+  if ((hasBody(previous) && !hasBody(next)) || (hasTitle(previous) && !hasTitle(next))) return true
+  if (next.media.length < previous.media.length || (next.links?.length ?? 0) < (previous.links?.length ?? 0)) return true
+  if (previous.avatar && !next.avatar) return true
+  if (previous.nested && (!next.nested || losesContent(next.nested, previous.nested, depth + 1))) return true
+  // Relations are matched by kind and order: a quote is only compared with a quote.
+  const related = (post: SocialPost, type: string) => (post.relations || []).filter((relation) => relation.type === type && relation.post)
+  for (const type of new Set((previous.relations || []).map((relation) => relation.type))) {
+    const before = related(previous, type)
+    const after = related(next, type)
+    if (after.length < before.length) return true
+    if (before.some((relation, index) => losesContent(after[index].post!, relation.post!, depth + 1))) return true
+  }
+  return false
+}
+
 /** Saves a post read elsewhere, e.g. from its page in a WebView, the same way a fetched one is. */
 export async function storeSocialPost(url: string, post: SocialPost, owner: string, current: () => boolean) {
   if (!current()) throw new Error('social_account_changed')
@@ -50,6 +75,10 @@ export async function storeSocialPost(url: string, post: SocialPost, owner: stri
     // Only this owner's own capture: one saved while signed out must not hold back a signed-in save.
     const latest = await readSavedPostFrom(readPreview, url, owner)
     if (latest && latest.savedAt >= savedAt) return false
+    // A refresh that came back with less, e.g. a sign-in wall's teaser, must not replace a good copy:
+    // the account's own, or else the one saved while signed out, which is what this device shows.
+    const shown = latest ?? (owner === UNOWNED ? undefined : await readSavedPostFrom(readPreview, url, UNOWNED))
+    if (shown && losesContent(post, shown.post)) throw new Error('social_post_incomplete')
     for (const [index, item] of postAssets(post).entries()) {
       item.cacheKey = socialAssetKey(url, index)
       await writePreview(item.cacheKey, { description: '', imageUrl: item.url, imageUri: images[index], savedAt, owner })

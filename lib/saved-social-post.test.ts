@@ -137,3 +137,62 @@ it('shows a capture saved while signed out to a signed-in user, and forgets it f
   expect(await readSavedPost(url, 'alice')).toBeUndefined()
   expect((await readPreview(socialAssetKey(url, 0)))?.imageUri).toBe('')
 })
+
+it('keeps a saved post when a refresh comes back with less, and when the refresh fails', async () => {
+  const url = 'https://bsky.app/profile/did:plc:alice/post/refresh'
+  await updatePreviewBookmarks([url])
+  let images = [{ fullsize: 'https://cdn.test/a.jpg' }, { fullsize: 'https://cdn.test/b.jpg' }]
+  let failing = false
+  globalThis.fetch = (async (endpoint: string) => {
+    if (failing) throw new Error('offline')
+    if (endpoint.includes('getPostThread')) return new Response(JSON.stringify({ thread: { post: {
+      uri: 'at://did:plc:alice/app.bsky.feed.post/refresh', author: { displayName: 'Alice' }, record: { text: 'Two pictures' },
+      embed: { $type: 'app.bsky.embed.images#view', images },
+    } } }))
+    return new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': 'image/jpeg' } })
+  }) as unknown as typeof fetch
+  await saveSocialPost(url, 'alice', () => true)
+  images = [images[0]]
+  // Later than the first save, so only the content check can keep it.
+  await new Promise((resolve) => setTimeout(resolve, 5))
+  await expect(saveSocialPost(url, 'alice', () => true)).rejects.toThrow('social_post_incomplete')
+  failing = true
+  await expect(saveSocialPost(url, 'alice', () => true)).rejects.toThrow()
+  const kept = await readSavedPost(url, 'alice')
+  expect(kept?.post.media).toHaveLength(2)
+  for (const item of kept!.post.media) expect((await readPreview(item.cacheKey!))?.imageUri).toBe('data:image/jpeg;base64,AQID')
+})
+
+it('compares titles and quoted posts when deciding whether a refresh shows less', async () => {
+  const { losesContent } = await import('./saved-social-post')
+  const base = { site: 'reddit', url: 'https://www.reddit.com/r/a/comments/1/', author: 'Alice', text: '', media: [] }
+  const title = { text: 'Title only', offsetEncoding: 'utf16' as const, entities: [] }
+  expect(losesContent(base, { ...base, title })).toBe(true)
+  expect(losesContent({ ...base, title }, { ...base, title })).toBe(false)
+  // Title and body are separate: keeping one does not make up for losing the other.
+  expect(losesContent({ ...base, title }, { ...base, title, text: 'Body' })).toBe(true)
+  expect(losesContent({ ...base, text: 'Body' }, { ...base, title, text: 'Body' })).toBe(true)
+  const quoted = { ...base, text: 'Quoted', media: [{ type: 'image' as const, url: 'https://cdn.test/q.jpg' }] }
+  expect(losesContent({ ...base, nested: { ...quoted, media: [] } }, { ...base, nested: quoted })).toBe(true)
+  expect(losesContent({ ...base, nested: quoted }, { ...base, nested: quoted })).toBe(false)
+  // More than before is always fine.
+  expect(losesContent({ ...base, text: 'Edited', nested: quoted }, base)).toBe(false)
+})
+
+it('guards the copy saved while signed out when a signed-in refresh comes back with less', async () => {
+  const { writePreview } = await import('./bookmark-preview-storage')
+  const { socialKey, socialAssetKey } = await import('./social-post')
+  const { UNOWNED } = await import('./social-post-sync')
+  const url = 'https://bsky.app/profile/did:plc:alice/post/unowned'
+  await updatePreviewBookmarks([url])
+  const savedAt = 10
+  await writePreview(socialKey(url), { description: '', imageUrl: '', imageUri: '', savedAt, owner: UNOWNED, savedPost: {
+    owner: UNOWNED, savedAt, post: { site: 'bluesky', url, author: 'Alice', text: 'Signed-out copy', media: [{ type: 'image', url: 'https://cdn.test/a.jpg' }] },
+  } })
+  await writePreview(socialAssetKey(url, 0), { description: '', imageUrl: 'https://cdn.test/a.jpg', imageUri: 'data:image/png;base64,AQID', savedAt, owner: UNOWNED })
+  globalThis.fetch = (async () => new Response(JSON.stringify({ thread: { post: {
+    uri: 'at://did:plc:alice/app.bsky.feed.post/unowned', author: { displayName: 'Alice' }, record: { text: 'Teaser' },
+  } } }))) as unknown as typeof fetch
+  await expect(saveSocialPost(url, 'alice', () => true)).rejects.toThrow('social_post_incomplete')
+  expect((await readSavedPost(url, 'alice'))?.post.text).toBe('Signed-out copy')
+})

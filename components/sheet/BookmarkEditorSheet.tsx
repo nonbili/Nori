@@ -23,6 +23,7 @@ import { loadBookmarkPreview, previewSource } from '@/lib/bookmark-preview'
 import { enrichSavedBookmark } from '@/lib/saved-bookmark-metadata'
 import { autoSaveSocialPost } from '@/lib/social-post-autosave'
 import { useSavedSocialPost } from '@/components/bookmark/SavedSocialPost'
+import { saveSocialPostOrCapture } from '@/lib/social-post-save'
 import { previewPageDriver } from '@/lib/preview-page'
 import { TagSuggestionMenu } from '@/components/sheet/TagSuggestionMenu'
 
@@ -72,7 +73,10 @@ export const BookmarkEditorSheet: React.FC = () => {
   // over this one is unreliable on Android and the web.
   // Observed directly rather than through a selector: the extension and desktop alias useValue to
   // extension/lib/legend-react.ts, which only takes observables.
-  const capturing = useValue(ui$.previewPage)?.fromEditor === true
+  const capturingPreview = useValue(ui$.previewPage)?.fromEditor === true
+  // Hidden the same way while a post's page is open to save it from.
+  const capturingPost = useValue(ui$.socialCapture) != null
+  const capturing = capturingPreview || capturingPost
   const visibleLists = getVisibleLists(lists)
   const [metadataLoading, setMetadataLoading] = useState(false)
   const [tagInput, setTagInput] = useState('')
@@ -82,6 +86,20 @@ export const BookmarkEditorSheet: React.FC = () => {
   const previewMode = useValue(settings$.bookmarkView) === 'preview'
   // A saved post takes the preview image's place on the card, so its image settings would change nothing.
   const savedPost = useSavedSocialPost(previewMode ? editor?.url ?? '' : '')
+  // Which bookmark's refresh is running: the sheet stays mounted, so another bookmark may be open by
+  // the time it ends.
+  const [refreshing, setRefreshing] = useState<string | null>(null)
+  const refreshKey = editor ? `${editor.id ?? ''}\n${editor.url}` : null
+  const activeKey = useRef(refreshKey)
+  activeKey.current = refreshKey
+  const refreshingPost = refreshing !== null && refreshing === refreshKey
+  const refreshPost = (url: string) => {
+    const key = refreshKey
+    if (key === null) return
+    setRefreshing(key)
+    void saveSocialPostOrCapture(url, t, { refresh: true, isCurrent: () => activeKey.current === key })
+      .finally(() => setRefreshing((value) => (value === key ? null : value)))
+  }
   useEffect(() => {
     if (editor?.url) return retainEditorPreview(editor.url)
   }, [editor?.url])
@@ -362,6 +380,17 @@ export const BookmarkEditorSheet: React.FC = () => {
           <NoriText numberOfLines={1} className="shrink text-sm text-content-muted">
             {t('socialPost.savedOn', { date: new Date(savedPost.savedAt).toLocaleDateString(i18n.language.replace('_', '-'), { year: 'numeric', month: 'short', day: 'numeric' }) })}
           </NoriText>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('socialPost.refresh')}
+            disabled={refreshingPost}
+            onPress={() => refreshPost(editor.url)}
+            className="min-h-[32px] flex-row items-center gap-1 rounded-full bg-muted px-3 active:bg-muted-strong"
+            style={{ opacity: refreshingPost ? 0.5 : 1 }}
+          >
+            {refreshingPost ? <ActivityIndicator size="small" color={themeColors.contentMuted} /> : <MaterialIcons name="refresh" size={16} color={themeColors.contentMuted} />}
+            <NoriText className="text-sm font-medium text-content-secondary">{t('socialPost.refresh')}</NoriText>
+          </Pressable>
         </View> : previewMode ? <View className="gap-3">
           <Pressable
             accessibilityRole="button"
