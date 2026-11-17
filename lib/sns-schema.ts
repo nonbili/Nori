@@ -1,4 +1,4 @@
-/** Public SNS post contract. NG vendors this file verbatim; run its schema:check before shipping. */
+/** Nori SNS rich-text and normalized post types. Version independently from retrieval services. */
 export const POST_SCHEMA_VERSION = 1 as const
 export const SNS_LIMITS = { depth: 5, posts: 16, assets: 64, media: 12, links: 8, relations: 8, text: 100_000, entities: 256 } as const
 export type Provider = string

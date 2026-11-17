@@ -190,3 +190,36 @@ it('gives refreshed media a fresh URI even when the personal save timestamp stay
   expect(files.has(first.imageUri)).toBe(false)
   expect(files.get(second.imageUri)).toBe('Yg==')
 })
+
+it('syncs file-backed native SNS media using byte detection even when the stored extension is a fallback', async () => {
+  const { syncSocialPosts } = await import('./social-post-sync')
+  const { socialKey, socialAssetKey } = await import('./social-post')
+  const { readSocialImageFile } = await import('./social-post-image-core')
+  const { fs } = fileSystem()
+  const storage = createNativePreviewStorage(fs, 'file:///Documents/bookmark-previews/')
+  const url = 'https://reddit.com/comments/native'
+  const imageKey = socialAssetKey(url, 0)
+  const base64 = btoa('\x89PNG\r\n\x1a\nbytes')
+  const post = { site: 'reddit', url, author: 'Alice', text: 'Native capture', media: [{ type: 'image' as const, url: 'https://cdn.test/image', cacheKey: imageKey }] }
+  await storage.writePreview(imageKey, { description: '', imageUrl: post.media[0].url, imageUri: `data:image/unknown;base64,${base64}`, savedAt: 10, owner: 'alice' })
+  await storage.writePreview(socialKey(url), { description: '', imageUrl: '', imageUri: '', savedAt: 10, owner: 'alice', savedPost: { post, savedAt: 10, owner: 'alice' } })
+  const cached = await storage.readPreview(imageKey)
+  expect(cached?.imageUri).toEndWith('.jpg')
+  let uploaded = false
+  await syncSocialPosts('alice', [{ id: 'bookmark', url }], {
+    ...storage,
+    newId: () => 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    read: storage.readPreview,
+    write: storage.writePreview,
+    readImage: (uri) => readSocialImageFile(uri, (path) => fs.readAsStringAsync(path, { encoding: fs.EncodingType.Base64 })),
+    store: {
+      save: async (_, images) => { expect(images).toEqual([`data:image/png;base64,${base64}`]); uploaded = true },
+      get: async () => { throw new Error('must_not_download') },
+      image: async () => { throw new Error('must_not_download') },
+    },
+    setRef: (_, ref) => { expect(uploaded).toBe(true); expect(ref.postId).toBe('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa') },
+    isCurrent: () => true,
+    changed: () => {},
+  })
+  expect(uploaded).toBe(true)
+})

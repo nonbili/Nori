@@ -405,7 +405,7 @@ export function withScreenshotRef<T extends { id: string; url: string; updatedAt
   return withObjectRef(rows, ids, 'screenshot', screenshot)
 }
 
-/** Shared SNS post references use the same timestamp and URL rules as screenshots. */
+/** Private SNS capture references use the same timestamp and URL rules as screenshots. */
 export function withSocialPostRef<T extends { id: string; url: string; updatedAt: string; json: RowJsonState }>(
   rows: T[],
   ids: string[],

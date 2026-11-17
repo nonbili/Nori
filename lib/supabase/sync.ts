@@ -26,7 +26,7 @@ import {
 } from '@/lib/supabase/sync-rows'
 import { runWithConflictRetry, type SyncAttemptOutcome } from '@/lib/supabase/sync-scheduler'
 import { removeOrphans, runScreenshotSync } from './screenshots'
-import { runSocialPostSync } from './social-posts'
+import { removeSocialPostOrphans, runSocialPostSync } from './social-posts'
 import { supabase } from './client'
 import { beginSync, canSync, isCurrentSession } from './sync-session'
 
@@ -477,6 +477,7 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   // A full pull is when this device can tell which objects nothing points at any more.
   if (isFullPull) {
     void removeOrphans(userId).catch(() => {})
+    void removeSocialPostOrphans().catch(() => {})
   }
   return 'synced'
 }

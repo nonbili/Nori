@@ -82,3 +82,41 @@ it('archives an HTML-provider post and its gallery/avatar through host fetch hoo
   expect(saved.post.media.map((item) => item.type)).toEqual(['image', 'video'])
   for (const asset of postAssets(saved.post)) expect((await readPreview(asset.cacheKey!))?.imageUri).toBe('data:image/jpeg;base64,AQID')
 })
+
+it('an explicit account merge adopts complete cached captures and drops the former private row reference', async () => {
+  const { adoptSavedPosts } = await import('./saved-social-post')
+  const { writePreview } = await import('./bookmark-preview-storage')
+  const { socialKey, socialAssetKey } = await import('./social-post')
+  const url = 'https://reddit.com/comments/adopt'
+  await updatePreviewBookmarks([url])
+  const savedAt = 10
+  await writePreview(socialKey(url), { description: '', imageUrl: '', imageUri: '', savedAt, owner: 'alice', savedPost: {
+    owner: 'alice', savedAt, postId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    post: { site: 'reddit', url, author: 'Alice', text: 'Local capture', media: [{ type: 'image', url: 'https://cdn.test/image' }] },
+  } })
+  await writePreview(socialAssetKey(url, 0), { description: '', imageUrl: 'https://cdn.test/image', imageUri: 'data:image/png;base64,AQID', savedAt, owner: 'alice' })
+  await adoptSavedPosts([url], 'bob', () => true)
+  expect((await readSavedPost(url, 'bob'))?.post.text).toBe('Local capture')
+  expect((await readSavedPost(url, 'bob'))?.postId).toBeUndefined()
+  expect((await readPreview(socialAssetKey(url, 0)))?.owner).toBe('bob')
+  expect(await readSavedPost(url, 'alice')).toBeUndefined()
+})
+
+it('normalizes JPEG aliases and rejects unsupported images before reporting a successful local save', async () => {
+  for (const contentType of ['image/jpg', 'image/svg+xml', 'image/x-icon', 'image/heic']) {
+    const id = contentType.replace(/[^a-z]/g, '')
+    const url = `https://bsky.app/profile/did:plc:alice/post/${id}`
+    await updatePreviewBookmarks([url])
+    globalThis.fetch = (async (endpoint: string) => endpoint.includes('getPostThread')
+      ? Response.json({ thread: { post: { uri: `at://did:plc:alice/app.bsky.feed.post/${id}`, record: { text: 'Formats' },
+        embed: { $type: 'app.bsky.embed.images#view', images: [{ fullsize: 'https://cdn.test/image' }] } } } })
+      : new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': contentType } })) as typeof fetch
+    if (contentType === 'image/jpg') {
+      const saved = await saveSocialPost(url, 'alice', () => true)
+      expect((await readPreview(saved.post.media[0].cacheKey!))?.imageUri).toBe('data:image/jpeg;base64,AQID')
+    } else {
+      await expect(saveSocialPost(url, 'alice', () => true)).rejects.toThrow('invalid_saved_post_media')
+      expect(await readSavedPost(url, 'alice')).toBeUndefined()
+    }
+  }
+})

@@ -3,6 +3,7 @@ import { adoptScreenshots, forgetScreenshots } from '@/lib/bookmark-preview'
 import { exportBookmarksToJson } from '@/lib/bookmark-transfer'
 import { createStarterBookmarks, createStarterLists } from '@/lib/nori-data'
 import { screenshotRef } from '@/lib/screenshot-sync'
+import { adoptSavedPosts } from '@/lib/saved-social-post'
 import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
@@ -60,7 +61,12 @@ export async function resolveAccountChoice(choice: AccountChoice) {
 
     if (choice === 'mergeDevice') {
       // Merged again here, as the waits above leave the device open to edits.
-      const merged = mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)
+      let merged = mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)
+      const pendingIds = new Set(merged.pendingBookmarkIds)
+      await adoptSavedPosts(merged.bookmarks.filter((row) => pendingIds.has(row.id)).map((row) => row.url), userId,
+        () => getSyncGeneration() === started && auth$.userId.peek() === userId)
+      if (getSyncGeneration() !== started || auth$.userId.peek() !== userId) return
+      merged = mergeDeviceIntoAccount(lists$.lists.peek(), bookmarks$.bookmarks.peek(), remote.lists, remote.bookmarks)
       applyAccountData(merged.lists, merged.bookmarks, merged.pendingListIds, merged.pendingBookmarkIds)
     } else {
       const empty = !remote.lists.length && !remote.bookmarks.length

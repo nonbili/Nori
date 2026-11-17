@@ -1,6 +1,6 @@
 import type { SocialPostRef } from 'nori/lib/social-post-sync'
 import { browser } from 'wxt/browser'
-import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, syncProfile, syncProfileScreenshots, syncProfileSocialPosts } from '../lib/api'
+import { activateAccount, finishPromotion, getAuthState, hostedSignIn, signOut, removeProfileSocialPostOrphans, syncProfile, syncProfileScreenshots, syncProfileSocialPosts } from '../lib/api'
 import { createProfile } from '../lib/domain'
 import { describeSyncError } from 'nori/lib/supabase/sync-error'
 import { withScreenshotRef, withSocialPostRef } from 'nori/lib/nori-data'
@@ -95,10 +95,19 @@ async function runSync(broadcast = true) {
   try {
     const state = await loadState()
     const profile = state.profiles[state.activeProfileId] || (state.profiles[state.activeProfileId] = createProfile())
-    const synced = await syncProfile(profile, auth)
+    const startedAuth = auth
+    const previousFullPullAt = profile.lastFullPullAt
+    const synced = await syncProfile(profile, startedAuth)
     if (synced) finishPromotion(state, profile)
     await saveState(state)
     if (synced) {
+      if (startedAuth.userId && profile.lastFullPullAt !== previousFullPullAt) {
+        const profileId = state.activeProfileId
+        void removeProfileSocialPostOrphans(startedAuth.userId, {
+          isCurrent: () => auth === startedAuth && auth.userId === startedAuth.userId,
+          bookmarks: async () => (await loadState()).profiles[profileId]?.bookmarks ?? [],
+        }).catch(() => {})
+      }
       void runScreenshotSync()
       void runSocialPostSync()
     }

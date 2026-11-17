@@ -196,9 +196,9 @@ describe('mergeDeviceIntoAccount', () => {
     expect(merged.bookmarks.find((row) => row.id === 'same-id')!.url).toBe('https://account.example/')
   })
 
-  it('drops a screenshot pointer into the old account so the capture uploads again', () => {
+  it('drops private screenshot and SNS pointers into the old account so captures upload again', () => {
     const ref = { path: 'old-user/x.jpg', savedAt: 1, url: 'https://new.example/' }
-    const merged = mergeDeviceIntoAccount([], [bookmark('new', 'https://new.example/', { screenshot: ref, note: 'kept' })], [], [])
+    const merged = mergeDeviceIntoAccount([], [bookmark('new', 'https://new.example/', { screenshot: ref, socialPost: { postId: 'old-private-id', savedAt: 1, url: ref.url }, note: 'kept' })], [], [])
     expect(merged.bookmarks[0].json).toEqual({ note: 'kept' })
   })
 })

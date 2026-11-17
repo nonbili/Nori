@@ -1,28 +1,36 @@
 import { notifyPreviewChange } from '@/lib/bookmark-preview'
 import { readPreview, writePreview } from '@/lib/bookmark-preview-storage'
+import { fetchPreviewImage } from '@/lib/preview-image'
 import { singlePass } from '@/lib/screenshot-sync'
+import { createSocialCleanupStore, removeOrphanedSocialPosts } from '@/lib/social-post-cleanup'
 import { syncSocialPosts } from '@/lib/social-post-sync'
-import { createNgSocialClient } from '@/lib/ng-social-post'
+import { createSocialPostStore } from '@/lib/social-post-store'
+import { readSocialImage } from '@/lib/social-post-image'
+import { newUuid } from '@/lib/utils'
 import { bookmarks$ } from '@/states/bookmarks'
-import { supabaseAuth } from './client'
+import { supabaseClient } from './client'
 import { beginSync, isCurrentSession } from './sync-session'
-import { NG_ORIGIN } from './config'
 
 export const runSocialPostSync = singlePass(async () => {
   const session = beginSync()
-  if (!session || !NG_ORIGIN) return
-  const client = createNgSocialClient(NG_ORIGIN, async () => {
-    const { data, error } = await supabaseAuth.getSession()
-    if (error || !data.session || data.session.user.id !== session.userId || !isCurrentSession(session))
-      throw new Error('social_account_changed')
-    return data.session.access_token
-  })
+  if (!session) return
+  const isCurrent = () => isCurrentSession(session)
   await syncSocialPosts(session.userId, bookmarks$.bookmarks.peek(), {
-    ...client,
+    store: createSocialPostStore(supabaseClient, session.userId, isCurrent, fetchPreviewImage),
+    newId: newUuid,
+    readImage: readSocialImage,
     read: readPreview,
-    write: writePreview,
-    setRef: (ids, ref) => bookmarks$.setSocialPost(ids, ref),
+    write: async (key, preview) => { if (isCurrent()) await writePreview(key, preview) },
+    setRef: (ids, ref) => { if (isCurrent()) bookmarks$.setSocialPost(ids, ref) },
     changed: notifyPreviewChange,
-    isCurrent: () => isCurrentSession(session),
+    isCurrent,
   })
 })
+
+export async function removeSocialPostOrphans() {
+  const session = beginSync()
+  if (!session) return
+  const isCurrent = () => isCurrentSession(session)
+  await removeOrphanedSocialPosts(createSocialCleanupStore(supabaseClient, session.userId, isCurrent),
+    () => bookmarks$.bookmarks.peek(), isCurrent)
+}

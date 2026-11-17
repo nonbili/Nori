@@ -4,7 +4,7 @@ import { mergeRows, createProfile } from './domain'
 import { readPreview, writePreview } from 'nori/lib/bookmark-preview-storage'
 import { fetchNoriMe } from 'nori/lib/nori-api'
 import { normalizeBookmarks, normalizeLists } from 'nori/lib/nori-data'
-import { NG_ORIGIN, SUPABASE_ANON_KEY, SUPABASE_URL } from 'nori/lib/supabase/config'
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from 'nori/lib/supabase/config'
 import {
   collectUnsyncedRowIds,
   dropExpiredSyncTombstones,
@@ -30,7 +30,9 @@ import {
   syncScreenshots,
   type ScreenshotRef,
 } from 'nori/lib/screenshot-sync'
-import { createNgSocialClient } from 'nori/lib/ng-social-post'
+import { readSocialImage } from 'nori/lib/social-post-image'
+import { createSocialPostStore } from 'nori/lib/social-post-store'
+import { createSocialCleanupStore, removeOrphanedSocialPosts } from 'nori/lib/social-post-cleanup'
 import { syncSocialPosts, type SocialPostRef } from 'nori/lib/social-post-sync'
 import { supabaseStorage } from './storage'
 import type { AuthState, NoriBookmark, NoriList, Preferences, ProfileData, StoredState } from './model'
@@ -224,6 +226,13 @@ export function syncProfileScreenshots(
   })
 }
 
+export function removeProfileSocialPostOrphans(userId: string, host: {
+  bookmarks: () => Promise<NoriBookmark[]>
+  isCurrent: () => boolean
+}) {
+  return removeOrphanedSocialPosts(createSocialCleanupStore(client, userId, host.isCurrent), host.bookmarks, host.isCurrent)
+}
+
 export function syncProfileSocialPosts(
   profile: ProfileData,
   auth: AuthState,
@@ -233,16 +242,12 @@ export function syncProfileSocialPosts(
     changed: (key: string) => void
   },
 ) {
-  if (!auth.userId || auth.plan === 'free' || !NG_ORIGIN) return Promise.resolve()
-  const ng = createNgSocialClient(NG_ORIGIN, async () => {
-    const { data, error } = await client.auth.getSession()
-    if (error || !data.session || data.session.user.id !== auth.userId || !host.isCurrent())
-      throw new Error('social_account_changed')
-    return data.session.access_token
-  })
+  if (!auth.userId || auth.plan === 'free') return Promise.resolve()
   return syncSocialPosts(auth.userId, profile.bookmarks, {
     ...host,
-    ...ng,
+    store: createSocialPostStore(client, auth.userId, host.isCurrent, fetchPreviewImage),
+    newId: () => crypto.randomUUID(),
+    readImage: readSocialImage,
     read: readPreview,
     write: async (key, preview) => {
       if (host.isCurrent()) await writePreview(key, preview)

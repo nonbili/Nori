@@ -128,8 +128,8 @@ export function mergeDeviceIntoAccount(
   const bookmarks = localBookmarks
     .filter((row) => !bookmarkIds.has(row.id) && !isDeleted(row) && !urls.has(urlKey(row)))
     // The object is in the old account's folder, out of this one's reach: the capture uploads again.
-    // Shared SNS refs retain save intent; sync independently saves the URL if NG denies the old grant.
-    .map(({ json: { screenshot: _screenshot, ...json }, ...row }) => ({ ...row, json }))
+    // Private SNS captures also upload again after the explicit account merge.
+    .map(({ json: { screenshot: _screenshot, socialPost: _socialPost, ...json }, ...row }) => ({ ...row, json }))
   return {
     lists: [...remoteLists, ...lists],
     bookmarks: [...remoteBookmarks, ...bookmarks],

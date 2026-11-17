@@ -2,7 +2,6 @@ import { defineConfig } from 'wxt'
 import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import reactNativeWeb from 'vite-plugin-react-native-web'
-import { loadEnv } from 'vite'
 
 const extensionDir = process.cwd()
 const rootDir = resolve(extensionDir, '..')
@@ -32,11 +31,6 @@ export default defineConfig({
   // i18next and Legend State also keep shared state in module scope, so their
   // core packages and adapters must resolve to the same physical instances.
   vite: () => ({
-    define: {
-      'process.env.EXPO_PUBLIC_NG_ORIGIN': JSON.stringify(
-        process.env.EXPO_PUBLIC_NG_ORIGIN || loadEnv('production', rootDir, 'EXPO_PUBLIC_').EXPO_PUBLIC_NG_ORIGIN || '',
-      ),
-    },
     resolve: {
       dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@legendapp/state'],
       alias: [

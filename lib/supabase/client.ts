@@ -16,6 +16,7 @@ const client = createClient(
   },
 )
 
+export const supabaseClient = client
 export const supabase = client.schema('nori')
 export const supabaseAuth = client.auth
 export const screenshotBucket = client.storage.from(SCREENSHOT_BUCKET)
