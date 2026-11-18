@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Mostrar conteúdo",
+    "sensitive": "Conteúdo sensível",
+    "audio": "Prévia de áudio",
+    "unavailable": "Post indisponível",
+    "relation": {
+      "reply": "Resposta",
+      "reply-root": "Tópico",
+      "quote": "Post citado",
+      "repost": "Repost",
+      "crosspost": "Crosspost"
+    },
+    "save": "Salvar post offline",
+    "copyText": "Copiar texto",
+    "textCopied": "Texto copiado",
+    "previousImage": "Imagem anterior",
+    "nextImage": "Próxima imagem",
+    "savedPost": "Post salvo",
+    "saveFromPage": "Salvar post da página",
+    "findingPost": "Procurando o post… Entre se o site pedir.",
+    "foundPost": "Post de {{author}} encontrado",
+    "savePost": "Salvar",
+    "refresh": "Atualizar",
+    "refreshed": "Post salvo atualizado",
+    "keptSaved": "Cópia salva mantida: o site retornou menos do que já existe.",
+    "savedOn": "Salvo em {{date}}",
+    "saving": "Salvando post…",
+    "saved": "Post salvo offline",
+    "failed": "Não foi possível salvar este post. O site pode exigir login ou bloquear o acesso.",
+    "view": "Ver post salvo",
+    "close": "Fechar post salvo",
+    "video": "Miniatura do vídeo"
+  },
   "bookmarks": {
     "add": "Adicionar favorito",
     "edit": "Editar favorito",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Toque em um favorito para trazê-lo de volta."
   },
   "lists": {
+    "edit": "Editar lista",
+    "sortOrder": "Ordem dos favoritos",
+    "manualOrder": "Manual (arraste para reordenar)",
     "new": "Nova lista",
     "choose": "Escolha uma lista",
     "rename": "Renomear lista",
@@ -214,6 +250,8 @@
       "checkingUpdates": "Verificando atualizações…",
       "closeToTrayHint": "Ao fechar a janela, o Nori continua aberto atrás do ícone na bandeja do sistema.",
       "newAtTop": "Adicionar novos favoritos no topo",
+      "autoSaveSocialPosts": "Salvar posts sociais offline",
+      "autoSaveSocialPostsHint": "Mantenha uma cópia de cada novo post que você favoritar de um site compatível, caso ele seja excluído. O Nori Sync também sincroniza essas cópias.",
       "theme": "Tema",
       "themeHint": "Escolha entre a aparência do sistema, clara, escura e AMOLED.",
       "system": "Sistema",

@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "コンテンツを表示",
+    "sensitive": "センシティブな内容",
+    "audio": "音声プレビュー",
+    "unavailable": "投稿を表示できません",
+    "relation": {
+      "reply": "返信",
+      "reply-root": "スレッド",
+      "quote": "引用投稿",
+      "repost": "リポスト",
+      "crosspost": "クロスポスト"
+    },
+    "save": "投稿をオフライン保存",
+    "copyText": "テキストをコピー",
+    "textCopied": "テキストをコピーしました",
+    "previousImage": "前の画像",
+    "nextImage": "次の画像",
+    "savedPost": "保存済みの投稿",
+    "saveFromPage": "ページから投稿を保存",
+    "findingPost": "投稿を探しています… サイトから求められた場合はログインしてください。",
+    "foundPost": "{{author}} の投稿が見つかりました",
+    "savePost": "保存",
+    "refresh": "更新",
+    "refreshed": "保存済みの投稿を更新しました",
+    "keptSaved": "保存済みのコピーを保持しました（サイトから返された情報が既存より少ないため）。",
+    "savedOn": "{{date}} に保存",
+    "saving": "投稿を保存中…",
+    "saved": "投稿をオフライン保存しました",
+    "failed": "この投稿を保存できませんでした。ログインが必要か、アクセスがブロックされている可能性があります。",
+    "view": "保存済みの投稿を表示",
+    "close": "保存済みの投稿を閉じる",
+    "video": "動画のサムネイル"
+  },
   "bookmarks": {
     "add": "ブックマークを追加",
     "edit": "ブックマークを編集",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "タップすると元に戻せます。"
   },
   "lists": {
+    "edit": "リストを編集",
+    "sortOrder": "ブックマークの並び順",
+    "manualOrder": "手動（ドラッグして並び替え）",
     "new": "新しいリスト",
     "choose": "リストを選択",
     "rename": "リスト名を変更",
@@ -215,6 +251,8 @@
       "checkingUpdates": "更新を確認中…",
       "closeToTrayHint": "ウィンドウを閉じても、Nori はトレイアイコンから開ける状態で動作を続けます。",
       "newAtTop": "新しいブックマークを先頭に追加",
+      "autoSaveSocialPosts": "SNS の投稿をオフライン保存",
+      "autoSaveSocialPostsHint": "対応サイトからブックマークした新しい投稿のコピーを、削除された場合に備えて保存します。Nori Sync でもこのコピーが同期されます。",
       "theme": "テーマ",
       "themeHint": "システム、ライト、ダーク、AMOLED の表示を切り替えます。",
       "system": "システム",

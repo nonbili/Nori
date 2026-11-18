@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "显示内容",
+    "sensitive": "敏感内容",
+    "audio": "音频预览",
+    "unavailable": "帖子不可用",
+    "relation": {
+      "reply": "回复",
+      "reply-root": "串文",
+      "quote": "引用帖子",
+      "repost": "转发",
+      "crosspost": "跨站转发"
+    },
+    "save": "离线保存帖子",
+    "copyText": "复制文本",
+    "textCopied": "文本已复制",
+    "previousImage": "上一张图片",
+    "nextImage": "下一张图片",
+    "savedPost": "已保存的帖子",
+    "saveFromPage": "从页面保存帖子",
+    "findingPost": "正在查找帖子… 如果网站提示，请登录。",
+    "foundPost": "已找到 {{author}} 的帖子",
+    "savePost": "保存",
+    "refresh": "刷新",
+    "refreshed": "已刷新保存的帖子",
+    "keptSaved": "已保留保存的副本：网站返回的内容少于现有内容。",
+    "savedOn": "保存于 {{date}}",
+    "saving": "正在保存帖子…",
+    "saved": "帖子已离线保存",
+    "failed": "无法保存此帖子。该网站可能需要登录或限制了访问。",
+    "view": "查看已保存的帖子",
+    "close": "关闭已保存的帖子",
+    "video": "视频缩略图"
+  },
   "bookmarks": {
     "add": "添加书签",
     "edit": "编辑书签",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "点按书签可将其恢复。"
   },
   "lists": {
+    "edit": "编辑列表",
+    "sortOrder": "书签顺序",
+    "manualOrder": "手动（拖动以重新排序）",
     "new": "新建列表",
     "choose": "选择列表",
     "rename": "重命名列表",
@@ -214,6 +250,8 @@
       "checkingUpdates": "正在检查更新…",
       "closeToTrayHint": "关闭窗口后，Nori 仍在托盘图标后继续运行。",
       "newAtTop": "新书签添加到顶部",
+      "autoSaveSocialPosts": "离线保存社交帖子",
+      "autoSaveSocialPostsHint": "为您从受支持网站收藏的每条新帖子保留副本，以防原帖被删除。Nori Sync 也会同步这些副本。",
       "theme": "主题",
       "themeHint": "在系统、浅色、深色和 AMOLED 外观之间切换。",
       "system": "系统",

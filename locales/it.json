@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Mostra contenuto",
+    "sensitive": "Contenuto sensibile",
+    "audio": "Anteprima audio",
+    "unavailable": "Post non disponibile",
+    "relation": {
+      "reply": "Risposta",
+      "reply-root": "Thread",
+      "quote": "Post citato",
+      "repost": "Repost",
+      "crosspost": "Crosspost"
+    },
+    "save": "Salva post offline",
+    "copyText": "Copia testo",
+    "textCopied": "Testo copiato",
+    "previousImage": "Immagine precedente",
+    "nextImage": "Immagine successiva",
+    "savedPost": "Post salvato",
+    "saveFromPage": "Salva post dalla pagina",
+    "findingPost": "Ricerca del post… Accedi se il sito lo richiede.",
+    "foundPost": "Trovato il post di {{author}}",
+    "savePost": "Salva",
+    "refresh": "Aggiorna",
+    "refreshed": "Post salvato aggiornato",
+    "keptSaved": "Copia salvata mantenuta: il sito ha restituito meno di quanto contiene.",
+    "savedOn": "Salvato il {{date}}",
+    "saving": "Salvataggio del post…",
+    "saved": "Post salvato offline",
+    "failed": "Impossibile salvare questo post. Il sito potrebbe richiedere l'accesso o bloccare la richiesta.",
+    "view": "Visualizza post salvato",
+    "close": "Chiudi post salvato",
+    "video": "Miniatura video"
+  },
   "bookmarks": {
     "add": "Aggiungi segnalibro",
     "edit": "Modifica segnalibro",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Tocca un segnalibro per ripristinarlo."
   },
   "lists": {
+    "edit": "Modifica lista",
+    "sortOrder": "Ordine segnalibri",
+    "manualOrder": "Manuale (trascina per riordinare)",
     "new": "Nuova lista",
     "choose": "Scegli un elenco",
     "rename": "Rinomina lista",
@@ -214,6 +250,8 @@
       "checkingUpdates": "Ricerca aggiornamenti…",
       "closeToTrayHint": "Chiudendo la finestra, Nori resta aperto dietro la sua icona nell’area di notifica.",
       "newAtTop": "Aggiungi i nuovi segnalibri in alto",
+      "autoSaveSocialPosts": "Salva i post social offline",
+      "autoSaveSocialPostsHint": "Conserva una copia di ogni nuovo post salvato nei segnalibri da un sito supportato, nel caso venga eliminato. Anche Nori Sync sincronizza queste copie.",
       "theme": "Tema",
       "themeHint": "Scegli tra l’aspetto di sistema, chiaro, scuro e AMOLED.",
       "system": "Sistema",

@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Kuva sisu",
+    "sensitive": "Tundlik sisu",
+    "audio": "Heli eelvaade",
+    "unavailable": "Postitus pole saadaval",
+    "relation": {
+      "reply": "Vastus",
+      "reply-root": "Lõim",
+      "quote": "Tsiteeritud postitus",
+      "repost": "Uuestipostitus",
+      "crosspost": "Ristpostitus"
+    },
+    "save": "Salvesta postitus võrguühenduseta",
+    "copyText": "Kopeeri tekst",
+    "textCopied": "Tekst kopeeritud",
+    "previousImage": "Eelmine pilt",
+    "nextImage": "Järgmine pilt",
+    "savedPost": "Salvestatud postitus",
+    "saveFromPage": "Salvesta postitus lehelt",
+    "findingPost": "Postituse otsimine… Logi sisse, kui sait seda küsib.",
+    "foundPost": "Leiti kasutaja {{author}} postitus",
+    "savePost": "Salvesta",
+    "refresh": "Värskenda",
+    "refreshed": "Salvestatud postitus värskendatud",
+    "keptSaved": "Salvestatud koopia jäeti alles: sait tagastas vähem kui olemasolev.",
+    "savedOn": "Salvestatud {{date}}",
+    "saving": "Postituse salvestamine…",
+    "saved": "Postitus salvestati võrguühenduseta",
+    "failed": "Seda postitust ei saanud salvestada. Sait võib nõuda sisselogimist või blokeerida juurdepääsu.",
+    "view": "Vaata salvestatud postitust",
+    "close": "Sulge salvestatud postitus",
+    "video": "Video pisipilt"
+  },
   "bookmarks": {
     "add": "Lisa järjehoidja",
     "edit": "Muuda järjehoidjat",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Puuduta järjehoidjat selle taastamiseks."
   },
   "lists": {
+    "edit": "Muuda nimekirja",
+    "sortOrder": "Järjehoidjate järjekord",
+    "manualOrder": "Käsitsi (järjestamiseks lohista)",
     "new": "Uus loend",
     "choose": "Vali loend",
     "rename": "Nimeta loend ümber",
@@ -215,6 +251,8 @@
       "checkingUpdates": "Uuenduste kontrollimine…",
       "closeToTrayHint": "Akna sulgemisel jääb Nori oma teavitusala ikooni taha tööle.",
       "newAtTop": "Lisa uued järjehoidjad üles",
+      "autoSaveSocialPosts": "Salvesta sotsiaalmeedia postitused võrguühenduseta",
+      "autoSaveSocialPostsHint": "Säilita koopia igast uuest toetatud saidilt järjehoidjasse lisatud postitusest juhuks, kui see kustutatakse. Nori Sync sünkroonib ka neid koopiaid.",
       "theme": "Teema",
       "themeHint": "Vali süsteemi, hele, tume või AMOLED-kujundus.",
       "system": "Süsteem",

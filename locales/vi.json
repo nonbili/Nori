@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Hiện nội dung",
+    "sensitive": "Nội dung nhạy cảm",
+    "audio": "Xem trước âm thanh",
+    "unavailable": "Bài viết không khả dụng",
+    "relation": {
+      "reply": "Trả lời",
+      "reply-root": "Chuỗi bài",
+      "quote": "Bài trích dẫn",
+      "repost": "Đăng lại",
+      "crosspost": "Đăng chéo"
+    },
+    "save": "Lưu bài viết ngoại tuyến",
+    "copyText": "Sao chép văn bản",
+    "textCopied": "Đã sao chép văn bản",
+    "previousImage": "Ảnh trước",
+    "nextImage": "Ảnh tiếp theo",
+    "savedPost": "Bài viết đã lưu",
+    "saveFromPage": "Lưu bài viết từ trang",
+    "findingPost": "Đang tìm bài viết… Hãy đăng nhập nếu trang web yêu cầu.",
+    "foundPost": "Đã tìm thấy bài viết của {{author}}",
+    "savePost": "Lưu",
+    "refresh": "Làm mới",
+    "refreshed": "Đã làm mới bài viết đã lưu",
+    "keptSaved": "Đã giữ bản lưu: trang web trả về ít dữ liệu hơn bản hiện có.",
+    "savedOn": "Đã lưu vào {{date}}",
+    "saving": "Đang lưu bài viết…",
+    "saved": "Đã lưu bài viết ngoại tuyến",
+    "failed": "Không thể lưu bài viết này. Trang web có thể yêu cầu đăng nhập hoặc chặn truy cập.",
+    "view": "Xem bài viết đã lưu",
+    "close": "Đóng bài viết đã lưu",
+    "video": "Ảnh thu nhỏ video"
+  },
   "bookmarks": {
     "add": "Thêm dấu trang",
     "edit": "Sửa dấu trang",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Nhấn vào dấu trang để hiển thị lại."
   },
   "lists": {
+    "edit": "Chỉnh sửa danh sách",
+    "sortOrder": "Thứ tự dấu trang",
+    "manualOrder": "Thủ công (kéo để sắp xếp lại)",
     "new": "Danh sách mới",
     "choose": "Chọn danh sách",
     "rename": "Đổi tên danh sách",
@@ -215,6 +251,8 @@
       "checkingUpdates": "Đang kiểm tra cập nhật…",
       "closeToTrayHint": "Khi đóng cửa sổ, Nori vẫn chạy phía sau biểu tượng trên khay hệ thống.",
       "newAtTop": "Thêm dấu trang mới lên đầu",
+      "autoSaveSocialPosts": "Lưu bài viết mạng xã hội ngoại tuyến",
+      "autoSaveSocialPostsHint": "Giữ lại bản sao của mỗi bài viết mới bạn đánh dấu từ trang web được hỗ trợ, phòng trường hợp bài bị xóa. Nori Sync cũng đồng bộ các bản sao này.",
       "theme": "Giao diện",
       "themeHint": "Chọn giao diện hệ thống, sáng, tối hoặc AMOLED.",
       "system": "Hệ thống",

@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "顯示內容",
+    "sensitive": "敏感內容",
+    "audio": "音訊預覽",
+    "unavailable": "貼文無法使用",
+    "relation": {
+      "reply": "回覆",
+      "reply-root": "串文",
+      "quote": "引用貼文",
+      "repost": "轉發",
+      "crosspost": "跨站轉發"
+    },
+    "save": "離線儲存貼文",
+    "copyText": "複製文字",
+    "textCopied": "已複製文字",
+    "previousImage": "上一張圖片",
+    "nextImage": "下一張圖片",
+    "savedPost": "已儲存的貼文",
+    "saveFromPage": "從頁面儲存貼文",
+    "findingPost": "正在尋找貼文… 若網站要求，請先登入。",
+    "foundPost": "已找到 {{author}} 的貼文",
+    "savePost": "儲存",
+    "refresh": "重新整理",
+    "refreshed": "已更新儲存的貼文",
+    "keptSaved": "已保留儲存的複本：網站回傳的內容少於現有內容。",
+    "savedOn": "儲存於 {{date}}",
+    "saving": "正在儲存貼文…",
+    "saved": "貼文已離線儲存",
+    "failed": "無法儲存此貼文。該網站可能需要登入或封鎖存取。",
+    "view": "檢視已儲存的貼文",
+    "close": "關閉已儲存的貼文",
+    "video": "影片縮圖"
+  },
   "bookmarks": {
     "add": "新增書籤",
     "edit": "編輯書籤",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "點一下書籤可將其恢復。"
   },
   "lists": {
+    "edit": "編輯清單",
+    "sortOrder": "書籤順序",
+    "manualOrder": "手動（拖曳以重新排序）",
     "new": "新增列表",
     "choose": "選擇清單",
     "rename": "重新命名列表",
@@ -214,6 +250,8 @@
       "checkingUpdates": "正在檢查更新…",
       "closeToTrayHint": "關閉視窗後，Nori 仍會在系統匣圖示後繼續執行。",
       "newAtTop": "新書籤加到頂端",
+      "autoSaveSocialPosts": "離線儲存社群貼文",
+      "autoSaveSocialPostsHint": "為您從支援的網站加入書籤的每則新貼文保留複本，以防原貼文遭到刪除。Nori Sync 也會同步這些複本。",
       "theme": "主題",
       "themeHint": "在系統、淺色、深色和 AMOLED 外觀之間切換。",
       "system": "系統",

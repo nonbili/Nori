@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Mostrar contenido",
+    "sensitive": "Contenido sensible",
+    "audio": "Vista previa de audio",
+    "unavailable": "Publicación no disponible",
+    "relation": {
+      "reply": "Respuesta",
+      "reply-root": "Hilo",
+      "quote": "Publicación citada",
+      "repost": "Republicación",
+      "crosspost": "Publicación cruzada"
+    },
+    "save": "Guardar publicación sin conexión",
+    "copyText": "Copiar texto",
+    "textCopied": "Texto copiado",
+    "previousImage": "Imagen anterior",
+    "nextImage": "Imagen siguiente",
+    "savedPost": "Publicación guardada",
+    "saveFromPage": "Guardar publicación desde la página",
+    "findingPost": "Buscando la publicación… Inicia sesión si el sitio lo pide.",
+    "foundPost": "Se encontró la publicación de {{author}}",
+    "savePost": "Guardar",
+    "refresh": "Actualizar",
+    "refreshed": "Publicación guardada actualizada",
+    "keptSaved": "Se conservó la copia guardada: el sitio devolvió menos de lo que tiene.",
+    "savedOn": "Guardada el {{date}}",
+    "saving": "Guardando publicación…",
+    "saved": "Publicación guardada sin conexión",
+    "failed": "No se pudo guardar esta publicación. Es posible que el sitio requiera iniciar sesión o bloquee el acceso.",
+    "view": "Ver publicación guardada",
+    "close": "Cerrar publicación guardada",
+    "video": "Miniatura de video"
+  },
   "bookmarks": {
     "add": "Añadir marcador",
     "edit": "Editar marcador",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Toca un marcador para recuperarlo."
   },
   "lists": {
+    "edit": "Editar lista",
+    "sortOrder": "Orden de marcadores",
+    "manualOrder": "Manual (arrastra para reordenar)",
     "new": "Nueva lista",
     "choose": "Elige una lista",
     "rename": "Renombrar lista",
@@ -214,6 +250,8 @@
       "checkingUpdates": "Buscando actualizaciones…",
       "closeToTrayHint": "Al cerrar la ventana, Nori sigue abierto tras su icono en la bandeja del sistema.",
       "newAtTop": "Añadir los marcadores nuevos arriba",
+      "autoSaveSocialPosts": "Guardar publicaciones sociales sin conexión",
+      "autoSaveSocialPostsHint": "Guarda una copia de cada publicación nueva que marques desde un sitio compatible, por si se elimina. Nori Sync también sincroniza estas copias.",
       "theme": "Tema",
       "themeHint": "Alterna entre la apariencia del sistema, clara, oscura y AMOLED.",
       "system": "Sistema",

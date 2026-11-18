@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "İçeriği göster",
+    "sensitive": "Hassas içerik",
+    "audio": "Ses önizlemesi",
+    "unavailable": "Gönderi kullanılamıyor",
+    "relation": {
+      "reply": "Yanıt",
+      "reply-root": "Dizi",
+      "quote": "Alıntılanan gönderi",
+      "repost": "Yeniden gönderi",
+      "crosspost": "Çapraz gönderi"
+    },
+    "save": "Gönderiyi çevrimdışı kaydet",
+    "copyText": "Metni kopyala",
+    "textCopied": "Metin kopyalandı",
+    "previousImage": "Önceki görsel",
+    "nextImage": "Sonraki görsel",
+    "savedPost": "Kaydedilen gönderi",
+    "saveFromPage": "Sayfadan gönderiyi kaydet",
+    "findingPost": "Gönderi aranıyor… Site isterse giriş yapın.",
+    "foundPost": "{{author}} kullanıcısının gönderisi bulundu",
+    "savePost": "Kaydet",
+    "refresh": "Yenile",
+    "refreshed": "Kaydedilen gönderi yenilendi",
+    "keptSaved": "Kaydedilen kopya korundu: site mevcut olandan daha azını döndürdü.",
+    "savedOn": "{{date}} tarihinde kaydedildi",
+    "saving": "Gönderi kaydediliyor…",
+    "saved": "Gönderi çevrimdışı kaydedildi",
+    "failed": "Bu gönderi kaydedilemedi. Site giriş gerektirebilir veya erişimi engelleyebilir.",
+    "view": "Kaydedilen gönderiyi görüntüle",
+    "close": "Kaydedilen gönderiyi kapat",
+    "video": "Video küçük resmi"
+  },
   "bookmarks": {
     "add": "Yer imi ekle",
     "edit": "Yer imini düzenle",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Geri getirmek için bir yer imine dokunun."
   },
   "lists": {
+    "edit": "Listeyi düzenle",
+    "sortOrder": "Yer imi sırası",
+    "manualOrder": "Manuel (sıralamak için sürükleyin)",
     "new": "Yeni liste",
     "choose": "Bir liste seçin",
     "rename": "Listeyi yeniden adlandır",
@@ -214,6 +250,8 @@
       "checkingUpdates": "Güncellemeler denetleniyor…",
       "closeToTrayHint": "Pencere kapatıldığında Nori, sistem tepsisindeki simgesinin ardında çalışmayı sürdürür.",
       "newAtTop": "Yeni yer imlerini üste ekle",
+      "autoSaveSocialPosts": "Sosyal gönderileri çevrimdışı kaydet",
+      "autoSaveSocialPostsHint": "Silinmesi ihtimaline karşı desteklenen bir siteden yer imlerine eklediğiniz her yeni gönderinin bir kopyasını saklayın. Nori Sync bu kopyaları da eşitler.",
       "theme": "Tema",
       "themeHint": "Sistem, açık, koyu ve AMOLED görünümleri arasında geçiş yapın.",
       "system": "Sistem",

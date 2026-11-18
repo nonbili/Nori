@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Tampilkan konten",
+    "sensitive": "Konten sensitif",
+    "audio": "Pratinjau audio",
+    "unavailable": "Postingan tidak tersedia",
+    "relation": {
+      "reply": "Balasan",
+      "reply-root": "Utas",
+      "quote": "Postingan kutipan",
+      "repost": "Posting ulang",
+      "crosspost": "Lintas postingan"
+    },
+    "save": "Simpan postingan secara offline",
+    "copyText": "Salin teks",
+    "textCopied": "Teks disalin",
+    "previousImage": "Gambar sebelumnya",
+    "nextImage": "Gambar berikutnya",
+    "savedPost": "Postingan tersimpan",
+    "saveFromPage": "Simpan postingan dari halaman",
+    "findingPost": "Mencari postingan… Masuk jika situs meminta.",
+    "foundPost": "Postingan oleh {{author}} ditemukan",
+    "savePost": "Simpan",
+    "refresh": "Segarkan",
+    "refreshed": "Postingan tersimpan disegarkan",
+    "keptSaved": "Salinan tersimpan dipertahankan: situs mengembalikan lebih sedikit dari yang ada.",
+    "savedOn": "Disimpan {{date}}",
+    "saving": "Menyimpan postingan…",
+    "saved": "Postingan disimpan secara offline",
+    "failed": "Tidak dapat menyimpan postingan ini. Situs mungkin memerlukan login atau memblokir akses.",
+    "view": "Lihat postingan tersimpan",
+    "close": "Tutup postingan tersimpan",
+    "video": "Thumbnail video"
+  },
   "bookmarks": {
     "add": "Tambah markah",
     "edit": "Edit markah",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Ketuk markah untuk memulihkannya."
   },
   "lists": {
+    "edit": "Edit daftar",
+    "sortOrder": "Urutan markah",
+    "manualOrder": "Manual (seret untuk mengurutkan)",
     "new": "Daftar baru",
     "choose": "Pilih daftar",
     "rename": "Ubah nama daftar",
@@ -215,6 +251,8 @@
       "checkingUpdates": "Memeriksa pembaruan…",
       "closeToTrayHint": "Saat jendela ditutup, Nori tetap berjalan di balik ikonnya di baki sistem.",
       "newAtTop": "Tambahkan markah baru di atas",
+      "autoSaveSocialPosts": "Simpan postingan sosial secara offline",
+      "autoSaveSocialPostsHint": "Simpan salinan setiap postingan baru yang Anda markahi dari situs yang didukung, jika sewaktu-waktu dihapus. Nori Sync juga menyinkronkan salinan ini.",
       "theme": "Tema",
       "themeHint": "Pilih tampilan sistem, terang, gelap, atau AMOLED.",
       "system": "Sistem",

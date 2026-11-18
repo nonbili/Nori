@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Visa innehåll",
+    "sensitive": "Känsligt innehåll",
+    "audio": "Ljudförhandsvisning",
+    "unavailable": "Inlägget är inte tillgängligt",
+    "relation": {
+      "reply": "Svar",
+      "reply-root": "Tråd",
+      "quote": "Citerat inlägg",
+      "repost": "Delning",
+      "crosspost": "Korspost"
+    },
+    "save": "Spara inlägg offline",
+    "copyText": "Kopiera text",
+    "textCopied": "Text kopierad",
+    "previousImage": "Föregående bild",
+    "nextImage": "Nästa bild",
+    "savedPost": "Sparat inlägg",
+    "saveFromPage": "Spara inlägg från sidan",
+    "findingPost": "Letar efter inlägget… Logga in om webbplatsen ber om det.",
+    "foundPost": "Hittade inlägget av {{author}}",
+    "savePost": "Spara",
+    "refresh": "Uppdatera",
+    "refreshed": "Sparat inlägg uppdaterat",
+    "keptSaved": "Behöll den sparade kopian: webbplatsen returnerade mindre än den har.",
+    "savedOn": "Sparad {{date}}",
+    "saving": "Sparar inlägg…",
+    "saved": "Inlägg sparat offline",
+    "failed": "Det gick inte att spara det här inlägget. Webbplatsen kan kräva inloggning eller blockera åtkomst.",
+    "view": "Visa sparat inlägg",
+    "close": "Stäng sparat inlägg",
+    "video": "Videominiatyr"
+  },
   "bookmarks": {
     "add": "Lägg till bokmärke",
     "edit": "Redigera bokmärke",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Tryck på ett bokmärke för att ta tillbaka det."
   },
   "lists": {
+    "edit": "Redigera lista",
+    "sortOrder": "Bokmärkesordning",
+    "manualOrder": "Manuell (dra för att ändra ordning)",
     "new": "Ny lista",
     "choose": "Välj en lista",
     "rename": "Byt namn på lista",
@@ -214,6 +250,8 @@
       "checkingUpdates": "Söker efter uppdateringar…",
       "closeToTrayHint": "När fönstret stängs fortsätter Nori att köras bakom sin ikon i systemfältet.",
       "newAtTop": "Lägg till nya bokmärken överst",
+      "autoSaveSocialPosts": "Spara sociala inlägg offline",
+      "autoSaveSocialPostsHint": "Behåll en kopia av varje nytt inlägg du bokmärker från en webbplats som stöds, ifall det raderas. Nori Sync synkroniserar också dessa kopior.",
       "theme": "Tema",
       "themeHint": "Välj mellan systemets utseende, ljust, mörkt och AMOLED.",
       "system": "System",

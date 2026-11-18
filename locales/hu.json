@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Tartalom megjelenítése",
+    "sensitive": "Érzékeny tartalom",
+    "audio": "Hang előnézet",
+    "unavailable": "A bejegyzés nem érhető el",
+    "relation": {
+      "reply": "Válasz",
+      "reply-root": "Szál",
+      "quote": "Idézett bejegyzés",
+      "repost": "Újraküldés",
+      "crosspost": "Keresztbejegyzés"
+    },
+    "save": "Bejegyzés mentése offline",
+    "copyText": "Szöveg másolása",
+    "textCopied": "Szöveg másolva",
+    "previousImage": "Előző kép",
+    "nextImage": "Következő kép",
+    "savedPost": "Mentett bejegyzés",
+    "saveFromPage": "Bejegyzés mentése az oldalról",
+    "findingPost": "Bejegyzés keresése… Jelentkezzen be, ha az oldal kéri.",
+    "foundPost": "Megtalálva {{author}} bejegyzése",
+    "savePost": "Mentés",
+    "refresh": "Frissítés",
+    "refreshed": "Mentett bejegyzés frissítve",
+    "keptSaved": "A mentett másolat megmaradt: az oldal kevesebbet adott vissza, mint amennyi megvan.",
+    "savedOn": "Mentve: {{date}}",
+    "saving": "Bejegyzés mentése…",
+    "saved": "Bejegyzés mentve offline",
+    "failed": "Nem sikerült menteni ezt a bejegyzést. Az oldal bejelentkezést kérhet, vagy blokkolhatja a hozzáférést.",
+    "view": "Mentett bejegyzés megtekintése",
+    "close": "Mentett bejegyzés bezárása",
+    "video": "Videó bélyegkép"
+  },
   "bookmarks": {
     "add": "Könyvjelző hozzáadása",
     "edit": "Könyvjelző szerkesztése",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Érintsen meg egy könyvjelzőt a visszahozásához."
   },
   "lists": {
+    "edit": "Lista szerkesztése",
+    "sortOrder": "Könyvjelzők sorrendje",
+    "manualOrder": "Kézi (húzza az átrendezéshez)",
     "new": "Új lista",
     "choose": "Válassz listát",
     "rename": "Lista átnevezése",
@@ -215,6 +251,8 @@
       "checkingUpdates": "Frissítések keresése…",
       "closeToTrayHint": "Az ablak bezárásakor a Nori tovább fut az értesítési területen lévő ikonja mögött.",
       "newAtTop": "Új könyvjelzők hozzáadása felülre",
+      "autoSaveSocialPosts": "Közösségi bejegyzések mentése offline",
+      "autoSaveSocialPostsHint": "Őrizzen meg egy másolatot minden új, támogatott oldalról mentett bejegyzésről arra az esetre, ha törölnék. A Nori Sync ezeket a másolatokat is szinkronizálja.",
       "theme": "Téma",
       "themeHint": "Válassz a rendszer, a világos, a sötét és az AMOLED megjelenés közül.",
       "system": "Rendszer",

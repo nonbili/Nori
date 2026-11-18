@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Inhalt anzeigen",
+    "sensitive": "Sensibler Inhalt",
+    "audio": "Audiovorschau",
+    "unavailable": "Beitrag nicht verfügbar",
+    "relation": {
+      "reply": "Antwort",
+      "reply-root": "Thread",
+      "quote": "Zitierter Beitrag",
+      "repost": "Repost",
+      "crosspost": "Crosspost"
+    },
+    "save": "Beitrag offline speichern",
+    "copyText": "Text kopieren",
+    "textCopied": "Text kopiert",
+    "previousImage": "Vorheriges Bild",
+    "nextImage": "Nächstes Bild",
+    "savedPost": "Gespeicherter Beitrag",
+    "saveFromPage": "Beitrag von Seite speichern",
+    "findingPost": "Beitrag wird gesucht… Melden Sie sich an, falls die Website danach fragt.",
+    "foundPost": "Beitrag von {{author}} gefunden",
+    "savePost": "Speichern",
+    "refresh": "Aktualisieren",
+    "refreshed": "Gespeicherter Beitrag aktualisiert",
+    "keptSaved": "Gespeicherte Kopie behalten: Die Website hat weniger zurückgegeben als vorhanden.",
+    "savedOn": "Gespeichert am {{date}}",
+    "saving": "Beitrag wird gespeichert…",
+    "saved": "Beitrag offline gespeichert",
+    "failed": "Dieser Beitrag konnte nicht gespeichert werden. Die Website erfordert möglicherweise eine Anmeldung oder blockiert den Zugriff.",
+    "view": "Gespeicherten Beitrag ansehen",
+    "close": "Gespeicherten Beitrag schließen",
+    "video": "Video-Vorschaubild"
+  },
   "bookmarks": {
     "add": "Lesezeichen hinzufügen",
     "edit": "Lesezeichen bearbeiten",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Auf ein Lesezeichen tippen, um es wieder einzublenden."
   },
   "lists": {
+    "edit": "Liste bearbeiten",
+    "sortOrder": "Lesezeichen-Reihenfolge",
+    "manualOrder": "Manuell (zum Sortieren ziehen)",
     "new": "Neue Liste",
     "choose": "Liste auswählen",
     "rename": "Liste umbenennen",
@@ -215,6 +251,8 @@
       "checkingUpdates": "Updates werden gesucht…",
       "closeToTrayHint": "Beim Schließen des Fensters läuft Nori hinter seinem Symbol im Infobereich weiter.",
       "newAtTop": "Neue Lesezeichen oben hinzufügen",
+      "autoSaveSocialPosts": "Social-Media-Beiträge offline speichern",
+      "autoSaveSocialPostsHint": "Speichert eine Kopie jedes neuen Beitrags, den Sie von einer unterstützten Website als Lesezeichen speichern, falls er gelöscht wird. Nori Sync synchronisiert diese Kopien ebenfalls.",
       "theme": "Design",
       "themeHint": "Zwischen System, Hell, Dunkel und AMOLED wechseln.",
       "system": "System",

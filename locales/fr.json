@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Afficher le contenu",
+    "sensitive": "Contenu sensible",
+    "audio": "Aperçu audio",
+    "unavailable": "Publication indisponible",
+    "relation": {
+      "reply": "Réponse",
+      "reply-root": "Fil",
+      "quote": "Publication citée",
+      "repost": "Republication",
+      "crosspost": "Publication croisée"
+    },
+    "save": "Enregistrer la publication hors ligne",
+    "copyText": "Copier le texte",
+    "textCopied": "Texte copié",
+    "previousImage": "Image précédente",
+    "nextImage": "Image suivante",
+    "savedPost": "Publication enregistrée",
+    "saveFromPage": "Enregistrer la publication depuis la page",
+    "findingPost": "Recherche de la publication… Connectez-vous si le site le demande.",
+    "foundPost": "Publication de {{author}} trouvée",
+    "savePost": "Enregistrer",
+    "refresh": "Actualiser",
+    "refreshed": "Publication enregistrée actualisée",
+    "keptSaved": "Copie enregistrée conservée : le site a renvoyé moins que ce qu'elle contient.",
+    "savedOn": "Enregistrée le {{date}}",
+    "saving": "Enregistrement de la publication…",
+    "saved": "Publication enregistrée hors ligne",
+    "failed": "Impossible d'enregistrer cette publication. Le site exige peut-être une connexion ou bloque l'accès.",
+    "view": "Voir la publication enregistrée",
+    "close": "Fermer la publication enregistrée",
+    "video": "Miniature vidéo"
+  },
   "bookmarks": {
     "add": "Ajouter un favori",
     "edit": "Modifier le favori",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Touchez un favori pour le rétablir."
   },
   "lists": {
+    "edit": "Modifier la liste",
+    "sortOrder": "Ordre des favoris",
+    "manualOrder": "Manuel (glisser pour réorganiser)",
     "new": "Nouvelle liste",
     "choose": "Choisir une liste",
     "rename": "Renommer la liste",
@@ -214,6 +250,8 @@
       "checkingUpdates": "Recherche de mises à jour…",
       "closeToTrayHint": "À la fermeture de la fenêtre, Nori reste ouvert derrière son icône dans la zone de notification.",
       "newAtTop": "Ajouter les nouveaux favoris en haut",
+      "autoSaveSocialPosts": "Enregistrer les publications sociales hors ligne",
+      "autoSaveSocialPostsHint": "Conserve une copie de chaque nouvelle publication ajoutée aux favoris depuis un site pris en charge, au cas où elle serait supprimée. Nori Sync synchronise également ces copies.",
       "theme": "Thème",
       "themeHint": "Choisissez entre le thème système, clair, sombre et AMOLED.",
       "system": "Système",

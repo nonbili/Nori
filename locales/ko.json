@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "콘텐츠 보기",
+    "sensitive": "민감한 콘텐츠",
+    "audio": "오디오 미리듣기",
+    "unavailable": "게시물을 사용할 수 없습니다",
+    "relation": {
+      "reply": "답글",
+      "reply-root": "스레드",
+      "quote": "인용 게시물",
+      "repost": "리포스트",
+      "crosspost": "크로스포스트"
+    },
+    "save": "게시물 오프라인 저장",
+    "copyText": "텍스트 복사",
+    "textCopied": "텍스트가 복사되었습니다",
+    "previousImage": "이전 이미지",
+    "nextImage": "다음 이미지",
+    "savedPost": "저장된 게시물",
+    "saveFromPage": "페이지에서 게시물 저장",
+    "findingPost": "게시물을 찾는 중… 사이트에서 요청하면 로그인하세요.",
+    "foundPost": "{{author}}님의 게시물을 찾았습니다",
+    "savePost": "저장",
+    "refresh": "새로고침",
+    "refreshed": "저장된 게시물을 새로고침했습니다",
+    "keptSaved": "저장된 사본을 유지했습니다: 사이트가 기존보다 적은 내용을 반환했습니다.",
+    "savedOn": "{{date}}에 저장됨",
+    "saving": "게시물 저장 중…",
+    "saved": "게시물이 오프라인으로 저장되었습니다",
+    "failed": "이 게시물을 저장할 수 없습니다. 사이트에서 로그인을 요구하거나 접근을 차단했을 수 있습니다.",
+    "view": "저장된 게시물 보기",
+    "close": "저장된 게시물 닫기",
+    "video": "동영상 썸네일"
+  },
   "bookmarks": {
     "add": "북마크 추가",
     "edit": "북마크 편집",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "북마크를 탭하여 다시 표시하세요."
   },
   "lists": {
+    "edit": "목록 편집",
+    "sortOrder": "북마크 순서",
+    "manualOrder": "수동 (드래그하여 순서 변경)",
     "new": "새 목록",
     "choose": "목록 선택",
     "rename": "목록 이름 바꾸기",
@@ -215,6 +251,8 @@
       "checkingUpdates": "업데이트 확인 중…",
       "closeToTrayHint": "창을 닫아도 Nori가 트레이 아이콘 뒤에서 계속 실행됩니다.",
       "newAtTop": "새 북마크를 맨 위에 추가",
+      "autoSaveSocialPosts": "소셜 게시물 오프라인 저장",
+      "autoSaveSocialPostsHint": "지원되는 사이트에서 북마크한 새 게시물이 삭제될 경우를 대비해 사본을 보관합니다. Nori Sync도 이 사본을 동기화합니다.",
       "theme": "테마",
       "themeHint": "시스템, 밝게, 어둡게, AMOLED 테마 중에서 선택하세요.",
       "system": "시스템",

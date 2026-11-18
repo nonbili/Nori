@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Pokaż treść",
+    "sensitive": "Wrażliwa treść",
+    "audio": "Podgląd audio",
+    "unavailable": "Wpis niedostępny",
+    "relation": {
+      "reply": "Odpowiedź",
+      "reply-root": "Wątek",
+      "quote": "Cytuj wpis",
+      "repost": "Udostępnienie",
+      "crosspost": "Wpis krzyżowy"
+    },
+    "save": "Zapisz wpis offline",
+    "copyText": "Kopiuj tekst",
+    "textCopied": "Skopiowano tekst",
+    "previousImage": "Poprzedni obraz",
+    "nextImage": "Następny obraz",
+    "savedPost": "Zapisany wpis",
+    "saveFromPage": "Zapisz wpis ze strony",
+    "findingPost": "Szukanie wpisu… Zaloguj się, jeśli strona o to poprosi.",
+    "foundPost": "Znaleziono wpis użytkownika {{author}}",
+    "savePost": "Zapisz",
+    "refresh": "Odśwież",
+    "refreshed": "Zapisany wpis odświeżony",
+    "keptSaved": "Zachowano zapisaną kopię: strona zwróciła mniej danych niż już jest zapisane.",
+    "savedOn": "Zapisano {{date}}",
+    "saving": "Zapisywanie wpisu…",
+    "saved": "Wpis zapisany offline",
+    "failed": "Nie udało się zapisać tego wpisu. Strona może wymagać logowania lub blokować dostęp.",
+    "view": "Zobacz zapisany wpis",
+    "close": "Zamknij zapisany wpis",
+    "video": "Miniatura wideo"
+  },
   "bookmarks": {
     "add": "Dodaj zakładkę",
     "edit": "Edytuj zakładkę",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Dotknij zakładki, aby ją przywrócić."
   },
   "lists": {
+    "edit": "Edytuj listę",
+    "sortOrder": "Kolejność zakładek",
+    "manualOrder": "Ręcznie (przeciągnij, aby zmienić kolejność)",
     "new": "Nowa lista",
     "choose": "Wybierz listę",
     "rename": "Zmień nazwę listy",
@@ -214,6 +250,8 @@
       "checkingUpdates": "Sprawdzanie aktualizacji…",
       "closeToTrayHint": "Po zamknięciu okna Nori działa dalej za ikoną w zasobniku systemowym.",
       "newAtTop": "Dodawaj nowe zakładki na górze",
+      "autoSaveSocialPosts": "Zapisuj wpisy społecznościowe offline",
+      "autoSaveSocialPostsHint": "Zachowuj kopię każdego nowego wpisu dodanego do zakładek z obsługiwanej strony na wypadek jego usunięcia. Nori Sync synchronizuje także te kopie.",
       "theme": "Motyw",
       "themeHint": "Wybierz wygląd systemowy, jasny, ciemny lub AMOLED.",
       "system": "Systemowy",

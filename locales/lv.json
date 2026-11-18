@@ -1,4 +1,37 @@
 {
+  "socialPost": {
+    "reveal": "Rādīt saturu",
+    "sensitive": "Jutīgs saturs",
+    "audio": "Audio priekšskatījums",
+    "unavailable": "Ziņa nav pieejama",
+    "relation": {
+      "reply": "Atbilde",
+      "reply-root": "Pavediens",
+      "quote": "Citēta ziņa",
+      "repost": "Pārpublicējums",
+      "crosspost": "Šķērspublicējums"
+    },
+    "save": "Saglabāt ziņu bezsaistē",
+    "copyText": "Kopēt tekstu",
+    "textCopied": "Teksts nokopēts",
+    "previousImage": "Iepriekšējais attēls",
+    "nextImage": "Nākamais attēls",
+    "savedPost": "Saglabātā ziņa",
+    "saveFromPage": "Saglabāt ziņu no lapas",
+    "findingPost": "Meklē ziņu… Pierakstieties, ja vietne to pieprasa.",
+    "foundPost": "Atrasta autora {{author}} ziņa",
+    "savePost": "Saglabāt",
+    "refresh": "Atjaunināt",
+    "refreshed": "Saglabātā ziņa atjaunināta",
+    "keptSaved": "Saglabātā kopija paturēta: vietne atgrieza mazāk nekā tajā jau ir.",
+    "savedOn": "Saglabāts {{date}}",
+    "saving": "Saglabā ziņu…",
+    "saved": "Ziņa saglabāta bezsaistē",
+    "failed": "Nevarēja saglabāt šo ziņu. Vietne var pieprasīt pierakstīšanos vai bloķēt piekļuvi.",
+    "view": "Skatīt saglabāto ziņu",
+    "close": "Aizvērt saglabāto ziņu",
+    "video": "Video sīktēls"
+  },
   "bookmarks": {
     "add": "Pievienot grāmatzīmi",
     "edit": "Rediģēt grāmatzīmi",
@@ -65,6 +98,9 @@
     "hiddenInListHint": "Pieskarieties grāmatzīmei, lai to atjaunotu."
   },
   "lists": {
+    "edit": "Rediģēt sarakstu",
+    "sortOrder": "Grāmatzīmju secība",
+    "manualOrder": "Manuāli (velciet, lai pārkārtotu)",
     "new": "Jauns saraksts",
     "choose": "Izvēlieties sarakstu",
     "rename": "Pārdēvēt sarakstu",
@@ -215,6 +251,8 @@
       "checkingUpdates": "Pārbauda atjauninājumus…",
       "closeToTrayHint": "Aizverot logu, Nori turpina darboties aiz savas ikonas paziņojumu joslā.",
       "newAtTop": "Pievienot jaunās grāmatzīmes augšā",
+      "autoSaveSocialPosts": "Saglabāt sociālās ziņas bezsaistē",
+      "autoSaveSocialPostsHint": "Saglabājiet katras jaunās atbalstītā vietnē pievienotās ziņas kopiju gadījumam, ja tā tiktu dzēsta. Nori Sync sinhronizē arī šīs kopijas.",
       "theme": "Motīvs",
       "themeHint": "Izvēlies sistēmas, gaišo, tumšo vai AMOLED izskatu.",
       "system": "Sistēmas",
