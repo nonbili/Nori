@@ -34,6 +34,7 @@ import { useBlocklistSync } from '@/hooks/useBlocklistSync'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
 import { PreviewPageSheet } from '@/components/sheet/PreviewPageSheet'
 import { SocialCaptureSheet } from '@/components/sheet/SocialCaptureSheet'
+import { ShareImageSheet } from '@/components/sheet/ShareImageSheet'
 import { ActionSnackbar } from '@/components/common/ActionSnackbar'
 
 LogBox.ignoreAllLogs()
@@ -212,6 +213,7 @@ function LayoutContent() {
       <WebViewTitleResolver canvasColor={themeColors.canvas} />
       <PreviewPageSheet />
       {Platform.OS === 'web' ? null : <SocialCaptureSheet />}
+      {Platform.OS === 'web' ? null : <ShareImageSheet />}
       {previewsReady ? <Slot /> : null}
       <ActionSnackbar />
     </View>

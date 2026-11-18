@@ -13,7 +13,7 @@ import { getNote, getTags } from '@/lib/nori-data'
 import { socialTarget } from '@/lib/social-post'
 import { saveSocialPostOrCapture } from '@/lib/social-post-save'
 import { showToast } from '@/lib/toast'
-import { ui$ } from '@/states/ui'
+import { shareBookmarkImage } from '@/states/ui'
 import * as Clipboard from 'expo-clipboard'
 import { SavedSocialPost, useSavedSocialPost } from './SavedSocialPost'
 
@@ -198,6 +198,7 @@ export const BookmarkTile = memo(({
     onEdit,
     onCopyUrl,
     onShare,
+    onShareImage: shareBookmarkImage(bookmark),
     // A saved post replaces the screenshot, and saving it again would only repeat the capture.
     onLoadPreview: savedPost ? undefined : onLoadPreview,
     onDelete,

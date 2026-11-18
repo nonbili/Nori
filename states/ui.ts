@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import { observable } from '@legendapp/state'
 import { getVisibleLists, type BookmarkSortOrder } from '@/lib/nori-data'
 import { lists$ } from '@/states/lists'
@@ -38,6 +39,14 @@ export interface PendingBookmarkImportState {
   isParsing?: boolean
 }
 
+/** A bookmark being shared as a picture of its card. */
+export interface ShareImageState {
+  url: string
+  title: string
+  icon?: string
+  json?: Record<string, unknown>
+}
+
 export interface SnackbarState {
   id: number
   message: string
@@ -66,6 +75,7 @@ interface UIStore {
   revealBookmarkId: string | null
   selectedBookmarkIds: string[]
   settingsSheetOpen: boolean
+  shareImage: ShareImageState | null
   snackbars: SnackbarState[]
   snackbarHosts: number[]
   openBookmarksDrawer: () => void
@@ -88,6 +98,7 @@ export const ui$ = observable<UIStore>({
   revealBookmarkId: null,
   selectedBookmarkIds: [],
   settingsSheetOpen: false,
+  shareImage: null,
   snackbars: [],
   snackbarHosts: [],
   openBookmarksDrawer: () => {
@@ -97,6 +108,15 @@ export const ui$ = observable<UIStore>({
     ui$.drawerOpen.set(true)
   },
 })
+
+// View capture needs a native view tree, so the web, the extension and the desktop app offer none.
+export function shareBookmarkImage(bookmark: ShareImageState) {
+  if (Platform.OS === 'web') return undefined
+  return () => {
+    ui$.drawerOpen.set(false)
+    ui$.shareImage.set({ url: bookmark.url, title: bookmark.title, icon: bookmark.icon, json: bookmark.json })
+  }
+}
 
 let snackbarId = 0
 

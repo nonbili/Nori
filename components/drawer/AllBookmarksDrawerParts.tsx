@@ -13,6 +13,7 @@ import { BookmarkTile } from '@/components/bookmark/BookmarkItem'
 import { lists$ } from '@/states/lists'
 import { type NouMenuItem, NouMenu } from '@/components/menu/NouMenu'
 import { ManageRow } from '@/components/common/Common'
+import { shareBookmarkImage } from '@/states/ui'
 import { BookmarkActionsMenu } from '@/components/bookmark/BookmarkActionsMenu'
 import { Favicon } from '@/components/bookmark/Favicon'
 import { ListChip } from '@/components/list/ListChip'
@@ -90,6 +91,7 @@ const BookmarkItem = memo(({ bookmark, drawer }: { bookmark: BookmarkRecord; dra
         onEdit={() => drawer.onEdit(bookmark)}
         onCopyUrl={() => drawer.onCopyUrl(bookmark)}
         onShare={() => drawer.onShare(bookmark)}
+        onShareImage={shareBookmarkImage(bookmark)}
         onDelete={() => drawer.onDelete(bookmark)}
         trigger={
           <View className="h-8 w-8 items-center justify-center rounded-full bg-muted">

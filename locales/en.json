@@ -1,6 +1,7 @@
 {
   "socialPost": {
     "reveal": "Show content",
+    "sensitive": "Sensitive content",
     "audio": "Audio preview",
     "unavailable": "Post unavailable",
     "relation": { "reply": "Reply", "reply-root": "Thread", "quote": "Quoted post", "repost": "Repost", "crosspost": "Crosspost" },
@@ -45,6 +46,9 @@
     "editAction": "Edit",
     "copyUrl": "Copy URL",
     "share": "Share",
+    "shareImage": "Share as image",
+    "shareImageFailed": "Couldn't share the image",
+    "shareImageNote": "Note",
     "delete": "Delete",
     "searchPlaceholder": "Search...",
     "openDrawer": "Open bookmarks drawer",

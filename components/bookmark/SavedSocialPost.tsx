@@ -9,6 +9,7 @@ import { NoriText } from '@/components/common/NoriText'
 import { Favicon } from '@/components/bookmark/Favicon'
 import { SocialMediaGallery } from '@/components/bookmark/SocialMediaGallery'
 import { useSavedImage } from '@/components/bookmark/useSavedImage'
+import { useTrackedImage } from '@/components/bookmark/imageLoadTracker'
 import { onPreviewChange } from '@/lib/bookmark-preview'
 import { openUrl } from '@/lib/open-url'
 import { SNS_LIMITS, richTextSegments, safeWebUrl, type RichText } from '@/lib/sns-schema'
@@ -40,6 +41,7 @@ function SavedImage({ item, onOpen }: { item: SocialMedia; onOpen?: () => void }
   const { t } = useTranslation()
   const contentColor = useThemeColors().content
   const uri = useSavedImage(item)
+  const loaded = useTrackedImage(uri)
   const ratio = item.width && item.height && item.width > 0 && item.height > 0 ? item.width / item.height : 4 / 3
   // The slot keeps the image's shape while its file is read, so the post does not grow when it lands.
   return <Pressable disabled={!uri || !onOpen} accessibilityRole={onOpen ? 'imagebutton' : undefined} className="overflow-hidden rounded-xl bg-muted"
@@ -47,7 +49,7 @@ function SavedImage({ item, onOpen }: { item: SocialMedia; onOpen?: () => void }
     event.stopPropagation()
     onOpen?.()
   }}>
-    {uri ? <Image source={{ uri }} accessibilityLabel={item.alt} style={{ width: '100%', height: '100%' }} contentFit="contain" /> : null}
+    {uri ? <Image source={{ uri }} accessibilityLabel={item.alt} style={{ width: '100%', height: '100%' }} contentFit="contain" onLoad={loaded} onError={loaded} /> : null}
     {item.type === 'video' || item.type === 'audio' ? <View className="absolute bottom-2 left-2 flex-row items-center gap-1 rounded-full bg-surface py-1 pl-2 pr-3">
       <MaterialIcons name={item.type === 'audio' ? 'graphic-eq' : 'play-arrow'} size={14} color={contentColor} />
       <NoriText className="text-xs text-content">{t(item.type === 'audio' ? 'socialPost.audio' : 'socialPost.video')}</NoriText>
@@ -57,12 +59,13 @@ function SavedImage({ item, onOpen }: { item: SocialMedia; onOpen?: () => void }
 
 function Author({ post, date, compact }: { post: SocialPost; date: string; compact: boolean }) {
   const uri = useSavedImage(post.avatar)
+  const loaded = useTrackedImage(post.avatar ? uri : '')
   const size = compact ? 32 : 40
   const handle = post.handle ? (post.handle.startsWith('u/') ? post.handle : `@${post.handle}`) : ''
   return <View className="flex-row items-center gap-3">
     {/* The provider's favicon sits on the avatar as a badge, so it marks the source without taking a column. */}
     <View style={{ width: size, height: size }}>
-      {uri ? <Image source={{ uri }} style={{ width: size, height: size, borderRadius: size / 2 }} accessible={false} /> :
+      {uri ? <Image source={{ uri }} style={{ width: size, height: size, borderRadius: size / 2 }} accessible={false} onLoad={loaded} onError={loaded} /> :
         <View className="items-center justify-center rounded-full bg-muted" style={{ width: size, height: size }}>
           <NoriText className="text-base font-medium text-content-muted">{post.author.slice(0, 1).toUpperCase()}</NoriText>
         </View>}
@@ -80,7 +83,8 @@ function Author({ post, date, compact }: { post: SocialPost; date: string; compa
   </View>
 }
 
-export function SavedSocialPost({ post, depth = 0 }: { post: SocialPost; depth?: number }) {
+/** `still` draws it for a picture: what would be a button to tap shows as a plain label instead. */
+export function SavedSocialPost({ post, depth = 0, still = false }: { post: SocialPost; depth?: number; still?: boolean }) {
   const { i18n, t } = useTranslation()
   const [revealed, setRevealed] = useState(false)
   const [galleryIndex, setGalleryIndex] = useState<number>()
@@ -91,7 +95,9 @@ export function SavedSocialPost({ post, depth = 0 }: { post: SocialPost; depth?:
   return <View className={`w-full gap-3 ${depth ? 'rounded-xl border border-line p-3' : 'p-4'}`}>
     <Author post={post} date={date} compact={depth > 0} />
     {post.contentWarning ? <RichContent value={post.contentWarning} /> : null}
-    {hidden ? <Pressable accessibilityRole="button" className="self-start rounded-xl bg-muted px-4 py-2" onPress={(event) => {
+    {hidden ? still ? <View className="self-start rounded-xl bg-muted px-4 py-2">
+      <NoriText className="text-sm font-medium text-content-muted">{t('socialPost.sensitive')}</NoriText>
+    </View> : <Pressable accessibilityRole="button" className="self-start rounded-xl bg-muted px-4 py-2" onPress={(event) => {
       event.stopPropagation()
       setRevealed(true)
     }}><NoriText className="text-sm font-medium text-content">{t('socialPost.reveal')}</NoriText></Pressable> : <>
@@ -108,16 +114,21 @@ export function SavedSocialPost({ post, depth = 0 }: { post: SocialPost; depth?:
     </Pressable>)}
     {post.relations?.map((relation, index) => <View key={`${relation.type}:${index}`} className="gap-2">
       <NoriText className="text-xs text-content-muted">{t(`socialPost.relation.${relation.type}`)}</NoriText>
-      {relation.state === 'available' && relation.post && depth < SNS_LIMITS.depth ? <SavedSocialPost post={relation.post} depth={depth + 1} /> :
+      {relation.state === 'available' && relation.post && depth < SNS_LIMITS.depth ? <SavedSocialPost post={relation.post} depth={depth + 1} still={still} /> :
         relation.state === 'unavailable' ? <NoriText className="text-xs text-content-muted">{t('socialPost.unavailable')}</NoriText> : null}
     </View>)}
-    {post.nested && depth < SNS_LIMITS.depth ? <SavedSocialPost post={post.nested} depth={depth + 1} /> : null}
+    {post.nested && depth < SNS_LIMITS.depth ? <SavedSocialPost post={post.nested} depth={depth + 1} still={still} /> : null}
     </>}
     <SocialMediaGallery media={post.media} index={galleryIndex} onChange={setGalleryIndex} onClose={() => setGalleryIndex(undefined)} />
   </View>
 }
 
 export function useSavedSocialPost(url: string) {
+  return useSavedSocialPostState(url).saved
+}
+
+/** The saved post, and whether it has been read yet: until then, an undefined post says nothing. */
+export function useSavedSocialPostState(url: string) {
   const owner = useValue(localCaptureOwner$)
   // Every tile calls this: only a post permalink can have an archive, so skip the read otherwise.
   const supported = Boolean(socialTarget(url))
@@ -131,13 +142,17 @@ export function useSavedSocialPost(url: string) {
       void readSavedPost(url, owner).then((saved) => {
         rememberSavedPost(url, saved)
         if (active) setLoaded((current) => current?.url === url && current.saved === saved ? current : { url, saved })
-      }).catch(() => {})
+      }, () => {
+        // A failed read still settles it, on whatever was shown before.
+        if (active) setLoaded((current) => current?.url === url ? current : { url, saved: shownSavedPost(url) })
+      })
     }
     load()
     const key = socialKey(url)
     const unsubscribe = onPreviewChange((changed) => { if (changed === key) load() })
     return () => { active = false; unsubscribe() }
   }, [url, owner, supported])
+  const settled = !supported || loaded?.url === url
   const saved = loaded?.url === url ? loaded.saved : supported ? shownSavedPost(url) : undefined
-  return saved?.owner === owner || saved?.owner === UNOWNED ? saved : undefined
+  return { saved: saved?.owner === owner || saved?.owner === UNOWNED ? saved : undefined, settled }
 }
