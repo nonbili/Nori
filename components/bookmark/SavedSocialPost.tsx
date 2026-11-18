@@ -15,6 +15,7 @@ import { SNS_LIMITS, richTextSegments, safeWebUrl, type RichText } from '@/lib/s
 import { readSavedPost } from '@/lib/saved-social-post'
 import { UNOWNED } from '@/lib/social-post-sync'
 import { localCaptureOwner$ } from '@/lib/social-post-autosave'
+import { hasShownSavedPost, rememberSavedPost, shownSavedPost } from '@/lib/shown-saved-posts'
 import { socialKey, socialTarget, type SavedPost, type SocialMedia, type SocialPost } from '@/lib/social-post'
 
 function RichContent({ value }: { value: RichText }) {
@@ -40,11 +41,13 @@ function SavedImage({ item, onOpen }: { item: SocialMedia; onOpen?: () => void }
   const contentColor = useThemeColors().content
   const uri = useSavedImage(item)
   const ratio = item.width && item.height && item.width > 0 && item.height > 0 ? item.width / item.height : 4 / 3
-  return <Pressable disabled={!uri || !onOpen} accessibilityRole={onOpen ? 'imagebutton' : undefined} className="overflow-hidden rounded-xl bg-muted" onPress={(event) => {
+  // The slot keeps the image's shape while its file is read, so the post does not grow when it lands.
+  return <Pressable disabled={!uri || !onOpen} accessibilityRole={onOpen ? 'imagebutton' : undefined} className="overflow-hidden rounded-xl bg-muted"
+    style={{ width: '100%', aspectRatio: Math.max(0.65, Math.min(2, ratio)) }} onPress={(event) => {
     event.stopPropagation()
     onOpen?.()
   }}>
-    {uri ? <Image source={{ uri }} accessibilityLabel={item.alt} style={{ width: '100%', aspectRatio: Math.max(0.65, Math.min(2, ratio)) }} contentFit="contain" /> : null}
+    {uri ? <Image source={{ uri }} accessibilityLabel={item.alt} style={{ width: '100%', height: '100%' }} contentFit="contain" /> : null}
     {item.type === 'video' || item.type === 'audio' ? <View className="absolute bottom-2 left-2 flex-row items-center gap-1 rounded-full bg-surface py-1 pl-2 pr-3">
       <MaterialIcons name={item.type === 'audio' ? 'graphic-eq' : 'play-arrow'} size={14} color={contentColor} />
       <NoriText className="text-xs text-content">{t(item.type === 'audio' ? 'socialPost.audio' : 'socialPost.video')}</NoriText>
@@ -118,13 +121,16 @@ export function useSavedSocialPost(url: string) {
   const owner = useValue(localCaptureOwner$)
   // Every tile calls this: only a post permalink can have an archive, so skip the read otherwise.
   const supported = Boolean(socialTarget(url))
-  const [loaded, setLoaded] = useState<{ url: string; saved?: SavedPost }>()
+  // Starts from what was last shown (or read during the splash), so the tile mounts as the post.
+  const [loaded, setLoaded] = useState<{ url: string; saved?: SavedPost } | undefined>(() =>
+    supported && hasShownSavedPost(url) ? { url, saved: shownSavedPost(url) } : undefined)
   useEffect(() => {
     if (!supported) return
     let active = true
     const load = () => {
       void readSavedPost(url, owner).then((saved) => {
-        if (active) setLoaded({ url, saved })
+        rememberSavedPost(url, saved)
+        if (active) setLoaded((current) => current?.url === url && current.saved === saved ? current : { url, saved })
       }).catch(() => {})
     }
     load()
@@ -132,5 +138,6 @@ export function useSavedSocialPost(url: string) {
     const unsubscribe = onPreviewChange((changed) => { if (changed === key) load() })
     return () => { active = false; unsubscribe() }
   }, [url, owner, supported])
-  return loaded?.url === url && (loaded.saved?.owner === owner || loaded.saved?.owner === UNOWNED) ? loaded.saved : undefined
+  const saved = loaded?.url === url ? loaded.saved : supported ? shownSavedPost(url) : undefined
+  return saved?.owner === owner || saved?.owner === UNOWNED ? saved : undefined
 }

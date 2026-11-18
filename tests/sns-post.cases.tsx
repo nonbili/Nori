@@ -18,7 +18,10 @@ mock.module('@/components/common/NoriText', () => ({ NoriText: ({ children, clas
   children: ReactNode; className?: string; onPress?: (event: unknown) => void
 }) => <span className={className} onClick={onPress}>{children}</span> }))
 mock.module('@/lib/social-post-autosave', () => ({ localCaptureOwner$: { get: () => '', peek: () => '', onChange: () => () => {} } }))
-mock.module('@/lib/bookmark-preview-storage', () => ({ readPreview: async (key: string) => ({ imageUri: previews.get(key) }) }))
+mock.module('@/lib/bookmark-preview-storage', () => ({
+  readPreview: async (key: string) => ({ imageUri: previews.get(key) }),
+  peekPreview: async (key: string) => ({ imageUri: previews.get(key) }),
+}))
 mock.module('@/lib/bookmark-preview', () => ({ onPreviewChange: () => () => {} }))
 mock.module('@/lib/saved-social-post', () => ({ readSavedPost: async () => undefined }))
 mock.module('@/lib/open-url', () => ({ openUrl }))

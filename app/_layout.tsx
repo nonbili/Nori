@@ -20,13 +20,15 @@ import { useAppColorScheme, useThemeColors } from '@/lib/theme'
 import { accentVariables, applyAccentToDocument, normalizeAccent } from '@/lib/accent'
 import { readSystemPalette } from '@/lib/dynamic-palette'
 import { systemPalette$ } from '@/lib/system-palette'
-import { auth$, bootstrapAuth } from '@/states/auth'
+import { auth$, bootstrapAuth, restoreSession } from '@/states/auth'
 import { listenIosTransactions, reconcileIosTransactions } from '@/lib/ios-billing'
 import { normalizeFontScale } from '@/lib/typography'
 import { settings$ } from '@/states/settings'
 import { bookmarks$ } from '@/states/bookmarks'
 import { isDeleted } from '@/lib/nori-data'
 import { previewSource, warmShownPreviews } from '@/lib/bookmark-preview'
+import { warmSavedPosts } from '@/lib/shown-saved-posts'
+import { localCaptureOwner } from '@/lib/social-post-autosave'
 import { resolveI18nLanguageFromExpoLocale } from '@/lib/i18n'
 import { useBlocklistSync } from '@/hooks/useBlocklistSync'
 import { WebViewTitleResolver } from '@/components/WebViewTitleResolver'
@@ -45,13 +47,31 @@ if (holdSplash) void SplashScreen.preventAutoHideAsync().catch(() => {})
 // Coming back to the app syncs at most this often.
 const RETURN_SYNC_THROTTLE_MS = 30 * 1000
 
+const WARM_TIMEOUT_MS = 1000
+
 function warmPreviews() {
   const fallback = settings$.previewImageSource.peek()
-  const items = bookmarks$.bookmarks
-    .peek()
-    .filter((row) => !isDeleted(row))
-    .map((row) => ({ url: row.url, source: previewSource(row.json?.previewSource, fallback) }))
-  return warmShownPreviews(items)
+  const live = bookmarks$.bookmarks.peek().filter((row) => !isDeleted(row))
+  // The list the app opens on is what shows under the splash, so it goes first and the rest of the
+  // library only takes what is left of the second.
+  const selectedListId = settings$.lastSelectedListId.peek()
+  const opening = live.filter((row) => row.listId === selectedListId)
+  const rest = live.filter((row) => row.listId !== selectedListId)
+  const items = [...opening, ...rest].map((row) => ({ url: row.url, source: previewSource(row.json?.previewSource, fallback) }))
+  // A saved post shows only for its owner, so the session is read before the posts: without it, a
+  // signed-in account's posts would mount as page previews and turn into posts once auth caught up.
+  const posts = restoreSession()
+    .catch(() => undefined)
+    .then(async () => {
+      const owner = localCaptureOwner()
+      await warmSavedPosts(opening.map((row) => row.url), owner)
+      await warmSavedPosts(rest.map((row) => row.url), owner)
+    })
+  let timer: ReturnType<typeof setTimeout> | undefined
+  return Promise.race([
+    Promise.all([warmShownPreviews(items, WARM_TIMEOUT_MS), posts]),
+    new Promise<void>((resolve) => (timer = setTimeout(resolve, WARM_TIMEOUT_MS))),
+  ]).finally(() => clearTimeout(timer))
 }
 
 function LayoutContent() {

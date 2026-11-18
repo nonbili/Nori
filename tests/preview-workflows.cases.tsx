@@ -53,6 +53,7 @@ mock.module('@react-native-vector-icons/material-icons', () => ({ default: () =>
 mock.module('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }))
 mock.module('@/components/common/NoriText', () => ({ NoriText: Text, NoriTextInput: TextInput }))
 mock.module('@/components/bookmark/Favicon', () => ({ Favicon: () => null }))
+mock.module('@/components/bookmark/SavedSocialPost', () => ({ SavedSocialPost: () => null, useSavedSocialPost: () => undefined }))
 mock.module('@/components/sheet/TagSuggestionMenu', () => ({ TagSuggestionMenu: () => null }))
 mock.module('@/lib/theme', () => ({ useThemeColors: () => ({}) }))
 mock.module('@/lib/toast', () => ({ showToast: mock() }))

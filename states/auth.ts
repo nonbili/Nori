@@ -71,9 +71,14 @@ export async function refreshEntitlement() {
   }
 }
 
+let restoringSession: Promise<void> | undefined
+/** Reads the stored session once. The startup warm-up waits on it so tiles mount as the signed-in account's. */
+export function restoreSession() {
+  return (restoringSession ??= supabaseAuth.getSession().then(({ data }) => applySession(data.session)))
+}
+
 export async function bootstrapAuth() {
-  const { data } = await supabaseAuth.getSession()
-  applySession(data.session)
+  await restoreSession()
   await refreshEntitlement().catch(() => undefined)
 }
 
