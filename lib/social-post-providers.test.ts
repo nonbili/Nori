@@ -69,6 +69,26 @@ describe('additional social providers', () => {
     expect(post.text).toBe('🎉 https://example.com/first 🦈 https://example.com/second')
   })
 
+  it('annotates X links, mentions and tags as X shows them, dropping trailing media links', () => {
+    const post = parseXPost({ id_str: '123', user: { screen_name: 'alice' },
+      text: '🎉 @bob read https://t.co/abc #nori $AAPL &amp; more https://t.co/pic', entities: {
+        user_mentions: [{ indices: [2, 6], screen_name: 'bob' }],
+        urls: [{ indices: [12, 28], expanded_url: 'https://example.com/a?b=1&c=2', display_url: 'example.com/a?b=1…' }],
+        hashtags: [{ indices: [29, 34], text: 'nori' }], symbols: [{ indices: [35, 40], text: 'AAPL' }],
+        media: [{ indices: [52, 68], expanded_url: 'https://x.com/alice/status/123/photo/1' }],
+      } })
+    expect(post.text).toBe('🎉 @bob read https://example.com/a?b=1&c=2 #nori $AAPL & more')
+    const rich = post.richText!
+    expect(rich.text).toBe('🎉 @bob read example.com/a?b=1… #nori $AAPL & more')
+    expect(rich.entities.map((entity) => [entity.type, rich.text.slice(entity.start, entity.end), 'url' in entity ? entity.url : ''])).toEqual([
+      ['mention', '@bob', 'https://x.com/bob'],
+      ['link', 'example.com/a?b=1…', 'https://example.com/a?b=1&c=2'],
+      ['hashtag', '#nori', 'https://x.com/hashtag/nori'],
+      ['cashtag', '$AAPL', 'https://x.com/search?q=%24AAPL'],
+    ])
+    expect(validSocialPost(post)).toBe(true)
+  })
+
   it('reads Instagram embed contextJSON, full caption and ordered carousel/video thumbnails', () => {
     const value = { gql_data: { shortcode_media: { shortcode: 'target', owner: author, taken_at_timestamp: 1794700000,
       edge_media_to_caption: { edges: [{ node: { text: 'Caption 日本語' } }] },

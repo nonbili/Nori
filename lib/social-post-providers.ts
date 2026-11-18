@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio/slim'
 import type { SocialMedia, SocialPost, SocialTarget } from './social-post'
+import { normalizeRichText, type Entity, type EntityFeature, type RichText } from './sns-schema'
 import { parseFacebookPost } from './social-post-facebook'
 
 // These adapters require structured data for the exact permalink. OG tags are
@@ -20,22 +21,62 @@ const date = (value: unknown, seconds = false) => {
 const avatar = (value: unknown): Pick<SocialPost, 'avatar'> => url(value) ? { avatar: { type: 'image', url: url(value) } } : {}
 const images = (items: SocialMedia[]) => items.filter((item) => item.url).slice(0, 12)
 
+// Syndication text is HTML-escaped; decode it like markup text without parsing tags.
+const decodeHtml = (value: string) => value ? cheerio.load(value.replace(/</g, '&lt;')).root().text() : ''
+interface XSpan { indices: unknown; plain?: string; shown?: string; feature?: EntityFeature }
+
+/** Expands t.co links in the plain text and annotates links, mentions and tags the way X shows them. */
+function xText(value: any): { plain: string; richText?: RichText } {
+  const entities = value.entities || {}
+  const list = (key: string): any[] => Array.isArray(entities[key]) ? entities[key] : []
+  const spans: XSpan[] = [
+    ...list('urls').map((item): XSpan => {
+      const href = url(item.expanded_url)
+      return { indices: item.indices, plain: text(item.expanded_url), shown: text(item.display_url) || text(item.expanded_url),
+        feature: href ? { type: 'link', url: href } : undefined }
+    }),
+    // X hides the trailing t.co of attached media; the media itself is shown separately.
+    ...list('media').map((item): XSpan => ({ indices: item.indices, plain: '', shown: '' })),
+    ...list('user_mentions').filter((item) => text(item.screen_name)).map((item): XSpan => ({ indices: item.indices,
+      feature: { type: 'mention', handle: text(item.screen_name), url: `https://x.com/${encodeURIComponent(text(item.screen_name))}` } })),
+    ...list('hashtags').filter((item) => text(item.text)).map((item): XSpan => ({ indices: item.indices,
+      feature: { type: 'hashtag', tag: text(item.text), url: `https://x.com/hashtag/${encodeURIComponent(text(item.text))}` } })),
+    ...list('symbols').filter((item) => text(item.text)).map((item): XSpan => ({ indices: item.indices,
+      feature: { type: 'cashtag', tag: text(item.text), url: `https://x.com/search?q=${encodeURIComponent(`$${text(item.text)}`)}` } })),
+  ]
+  // Syndication entity offsets count Unicode code points, not UTF-16 units.
+  const body = Array.from(value.text as string)
+  const ranged = spans.flatMap((span) => {
+    const [start, end] = Array.isArray(span.indices) ? span.indices : []
+    return Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end <= body.length && end > start ? [{ ...span, start, end }] : []
+  }).sort((a, b) => a.start - b.start)
+  let cursor = 0
+  let plain = ''
+  let shown = ''
+  const annotations: Entity[] = []
+  for (const span of ranged) {
+    if (span.start < cursor) continue
+    const gap = decodeHtml(body.slice(cursor, span.start).join(''))
+    const original = decodeHtml(body.slice(span.start, span.end).join(''))
+    const display = span.shown ?? original
+    plain += gap + (span.plain ?? original)
+    shown += gap
+    if (span.feature && display) annotations.push({ ...span.feature, start: shown.length, end: shown.length + display.length })
+    shown += display
+    cursor = span.end
+  }
+  const tail = decodeHtml(body.slice(cursor).join(''))
+  plain = (plain + tail).trimEnd()
+  shown = (shown + tail).trimEnd()
+  const kept = annotations.filter((entity) => entity.end <= shown.length)
+  return { plain, ...(kept.length ? { richText: normalizeRichText(shown, kept, 'utf16', 'drop') } : {}) }
+}
+
 export function parseXPost(value: any, depth = 0): SocialPost {
   const id = text(value?.id_str)
   const user = value?.user
   if (!/^\d+$/.test(id) || !user?.screen_name || typeof value.text !== 'string') return unavailable()
-  const body = Array.from(value.text as string)
-  // Syndication entity offsets count Unicode code points, not UTF-16 units.
-  // Replace backwards so earlier offsets still refer to the original text.
-  const replacements = [...(value.entities?.urls || []), ...(value.entities?.media || [])]
-    .filter((entity: any) => Array.isArray(entity.indices) && entity.indices.length === 2)
-    .sort((a: any, b: any) => b.indices[0] - a.indices[0])
-  for (const entity of replacements) {
-    const [start, end] = entity.indices
-    if (Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end <= body.length && end > start)
-      body.splice(start, end - start, ...Array.from(text(entity.expanded_url)))
-  }
-  const $ = cheerio.load(body.join('').replace(/</g, '&lt;'))
+  const { plain, richText } = xText(value)
   const media = value.mediaDetails || value.extended_entities?.media || value.entities?.media || value.photos || []
   const nested = value.quoted_tweet || value.retweeted_status
   let quote: SocialPost | undefined
@@ -45,7 +86,7 @@ export function parseXPost(value: any, depth = 0): SocialPost {
     author: text(user.name || user.screen_name), handle: text(user.screen_name),
     ...avatar(user.profile_image_url_https || user.profile_image_url),
     createdAt: date(value.created_at) || date(Number(BigInt(id) >> 22n) + 1288834974657),
-    text: $.root().text(),
+    text: plain, ...(richText ? { richText } : {}),
     media: images(media.map((item: any): SocialMedia => ({
       type: item.type === 'video' || item.type === 'animated_gif' ? 'video' : 'image',
       url: url(item.media_url_https || item.url), alt: text(item.ext_alt_text),

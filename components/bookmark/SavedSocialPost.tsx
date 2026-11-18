@@ -28,7 +28,7 @@ function RichContent({ value }: { value: RichText }) {
     const hidden = types.has('spoiler') && !revealed
     const classes = [types.has('bold') ? 'font-bold' : '', types.has('italic') ? 'italic' : '',
       types.has('underline') ? 'underline' : '', types.has('strikethrough') ? 'line-through' : '',
-      types.has('code') || types.has('pre') ? 'font-mono bg-muted' : '', url ? 'text-accent-600 underline' : ''].join(' ')
+      types.has('code') || types.has('pre') ? 'font-mono bg-muted' : '', url ? 'text-accent-600' : ''].join(' ')
     return <NoriText key={index} className={classes} onPress={hidden || url ? (event) => {
       event.stopPropagation()
       if (hidden) setRevealed(true)

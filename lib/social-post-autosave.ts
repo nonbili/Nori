@@ -2,10 +2,9 @@ import { observable, when } from '@legendapp/state'
 import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { settings$ } from '@/states/settings'
-import { readPreview } from './bookmark-preview-storage'
 import { isDeleted } from './nori-data'
 import { saveSocialPost, storeSocialPost } from './saved-social-post'
-import { socialKey, socialTarget, type SocialPost } from './social-post'
+import { socialTarget, type SocialPost } from './social-post'
 import { postRef, UNOWNED } from './social-post-sync'
 import { getBookmarkUrlKey } from './bookmark-mutations'
 import { getSyncGeneration, getSyncOwner, needsAccountChoice } from './supabase/sync-session'
@@ -69,8 +68,8 @@ export function autoSaveSocialPost(id: string) {
     // A capture synced from another device and not downloaded yet: a new one would replace it.
     const key = getBookmarkUrlKey(url)
     if (bookmarks$.bookmarks.peek().some((item) => !isDeleted(item) && getBookmarkUrlKey(item.url) === key && postRef(item))) return
-    // Any capture here already, whoever it belongs to, is kept: the manual action re-captures.
-    if ((await readPreview(socialKey(url)))?.savedPost) return
+    // Re-adding a deleted bookmark fetches again, so its post picks up parser changes and edits. A copy
+    // already here is replaced only by a fetch that shows as much; a failed one leaves it as it was.
     await saveSocialPost(url, owner, current)
   }).catch(() => {})
 }
