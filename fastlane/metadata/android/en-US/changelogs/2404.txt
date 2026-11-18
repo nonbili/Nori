@@ -1,0 +1,4 @@
+- Save social posts offline (X, Instagram, Threads, TikTok, Facebook)
+- Share bookmarks as image cards
+- Per-list bookmark sorting and list editing
+- Sync and scrolling fixes
