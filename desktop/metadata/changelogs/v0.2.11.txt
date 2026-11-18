@@ -1,0 +1,3 @@
+- Save social posts offline (X, Instagram, Threads, TikTok, Facebook) and sync captured posts across devices
+- Per-list bookmark sorting and edit-list action
+- Fix sync cursor serialization and social post rendering
