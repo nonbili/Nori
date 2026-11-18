@@ -28,6 +28,14 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       },
       predictiveBackGestureEnabled: false,
       package: 'jp.nonbili.nori',
+      // expo-media-library only saves shared images to the gallery, which needs no read access.
+      blockedPermissions: [
+        'android.permission.READ_EXTERNAL_STORAGE',
+        'android.permission.READ_MEDIA_IMAGES',
+        'android.permission.READ_MEDIA_VIDEO',
+        'android.permission.READ_MEDIA_AUDIO',
+        'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
+      ],
     },
     plugins: [
       [
@@ -92,6 +100,14 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
       'expo-web-browser',
       'expo-font',
       'expo-status-bar',
+      [
+        'expo-media-library',
+        {
+          photosPermission: false,
+          savePhotosPermission: 'Allow $(PRODUCT_NAME) to save shared images to your photos.',
+          granularPermissions: [],
+        },
+      ],
       [
         'expo-sharing',
         {

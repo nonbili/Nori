@@ -1,4 +1,5 @@
 import { useColorScheme } from 'nativewind'
+import { createContext, useContext } from 'react'
 import { Appearance, useColorScheme as useRNColorScheme } from 'react-native'
 import { useValue } from '@legendapp/state/react'
 import { DANGER_RAMP, RAMP_STEPS, type RampStep, type StructuralTokenName } from '@/lib/design-tokens'
@@ -60,10 +61,20 @@ export interface ThemeColors {
   danger: string
 }
 
+/**
+ * Pins a subtree to one scheme, for a picture drawn light or dark whatever the
+ * app is in. It only reaches the hooks below: the subtree also needs the tokens
+ * for that scheme set with `vars(accentVariables(...))`, and `dark:` classes in
+ * it still follow the app.
+ */
+export const ColorSchemeOverride = createContext<ColorScheme | null>(null)
+
 export const useAppColorScheme = (): ColorScheme => {
+  const override = useContext(ColorSchemeOverride)
   const { colorScheme: nativeWindScheme } = useColorScheme()
   const rnScheme = useRNColorScheme()
   const theme = useValue(settings$.theme)
+  if (override) return override
   const scheme = theme === 'amoled' ? 'dark' : theme ?? nativeWindScheme ?? rnScheme
   return scheme === 'dark' ? 'dark' : 'light'
 }
@@ -102,7 +113,8 @@ export const getThemeColors = (
 export const useThemeColors = (): ThemeColors => {
   const colorScheme = useAppColorScheme()
   const accent = useValue(settings$.accent)
-  const amoled = useValue(settings$.theme) === 'amoled'
+  const override = useContext(ColorSchemeOverride)
+  const amoled = useValue(settings$.theme) === 'amoled' && !override
   // The System accent reads the wallpaper palette, which can arrive or change
   // without the setting moving.
   useValue(systemPalette$)

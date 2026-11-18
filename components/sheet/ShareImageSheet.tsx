@@ -5,9 +5,12 @@ import { useSharedValue } from 'react-native-reanimated'
 import { Image } from 'expo-image'
 import * as FileSystem from 'expo-file-system/legacy'
 import * as Sharing from 'expo-sharing'
+import * as MediaLibrary from 'expo-media-library/legacy'
+import { Album } from 'expo-media-library'
 import { captureRef } from 'react-native-view-shot'
 import MaterialIcons from '@react-native-vector-icons/material-icons'
 import { useValue } from '@legendapp/state/react'
+import { vars } from 'nativewind'
 import { useTranslation } from 'react-i18next'
 import { Sheet } from '@/components/modal/BaseModal'
 import { NoriText } from '@/components/common/NoriText'
@@ -19,7 +22,11 @@ import { previewKey } from '@/lib/bookmark-preview-types'
 import { getImageRatio } from '@/lib/preview-layout'
 import { hasPlaceholderTitle } from '@/lib/bookmark-title'
 import { getNote, getTags } from '@/lib/nori-data'
-import { useThemeColors } from '@/lib/theme'
+import { ColorSchemeOverride, useAppColorScheme, useThemeColors } from '@/lib/theme'
+import { accentVariables, normalizeAccent } from '@/lib/accent'
+import { systemPalette$ } from '@/lib/system-palette'
+import appIcon from '@/assets/images/icon.png'
+import splashIcon from '@/assets/images/splash-icon.png'
 import { showToast } from '@/lib/toast'
 import { settings$ } from '@/states/settings'
 import { ui$, type ShareImageState } from '@/states/ui'
@@ -38,6 +45,17 @@ const ANDROID_RELEASE_DELAY_MS = 60_000
 const releaseFile = (uri: string) => void FileSystem.deleteAsync(uri, { idempotent: true }).catch(() => {})
 
 const noop = () => {}
+
+// The gallery shows the file under its own name, so it gets one: Nori-20261118-124601.png.
+const savedImageName = () => {
+  const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const date = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`
+  const time = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`
+  return `Nori-${date}-${time}.png`
+}
+
+type CardScheme = 'light' | 'dark'
 
 const hostname = (url: string) => {
   try {
@@ -111,12 +129,14 @@ function PageCard({ bookmark, onReady }: { bookmark: ShareImageState; onReady: (
   )
 }
 
-/** What gets captured: the bookmark as a card, with its note and tags, and where it links to. */
-function ShareCard({ bookmark, onReady, includeNote, includeTags, still }: {
+/** What gets captured: the bookmark as a card, with its note and tags, signed with Nori's mark. */
+function ShareCard({ bookmark, onReady, includeNote, includeTags, scheme, still }: {
   bookmark: ShareImageState
   onReady: () => void
   includeNote: boolean
   includeTags: boolean
+  // Set by ThemedCard; `dark:` classes would follow the app instead, so the card picks by this.
+  scheme: CardScheme
   // While capturing: what is a button on screen is drawn as a label in the picture.
   still: boolean
 }) {
@@ -149,9 +169,9 @@ function ShareCard({ bookmark, onReady, includeNote, includeTags, still }: {
         )}
       </View>
       {note ? (
-        <View className="flex-row gap-2 rounded-2xl bg-accent-100 px-4 py-3 dark:bg-accent-950/40">
+        <View className={`flex-row gap-2 rounded-2xl px-4 py-3 ${scheme === 'dark' ? 'bg-accent-950/40' : 'bg-accent-100'}`}>
           <MaterialIcons name="edit-note" size={18} color={themeColors.contentSecondary} />
-          <NoriText className="flex-1 text-sm text-accent-900 dark:text-accent-100">{note}</NoriText>
+          <NoriText className={`flex-1 text-sm ${scheme === 'dark' ? 'text-accent-100' : 'text-accent-900'}`}>{note}</NoriText>
         </View>
       ) : null}
       {tags.length ? (
@@ -163,11 +183,57 @@ function ShareCard({ bookmark, onReady, includeNote, includeTags, still }: {
           ))}
         </View>
       ) : null}
-      <View className="flex-row items-center gap-2 px-1">
-        <MaterialIcons name="link" size={16} color={themeColors.contentMuted} />
-        <NoriText className="flex-1 text-xs text-content-muted" numberOfLines={2}>{bookmark.url}</NoriText>
+      <View className="items-end px-1">
+        {scheme === 'dark' ? (
+          // The splash's mark on the splash's ground; its glyph sits in more padding than the app icon's.
+          <View className="items-center justify-center overflow-hidden" style={{ width: 28, height: 28, borderRadius: 7, backgroundColor: '#0c0a09' }}>
+            <Image source={splashIcon} style={{ width: 36, height: 36 }} contentFit="contain" />
+          </View>
+        ) : (
+          <Image source={appIcon} style={{ width: 28, height: 28, borderRadius: 7 }} contentFit="contain" />
+        )}
       </View>
     </View>
+  )
+}
+
+/** Draws its children in the given scheme, tokens and theme hooks alike, whatever the app is in. */
+function ThemedCard({ scheme, children }: { scheme: CardScheme; children: React.ReactNode }) {
+  const accent = useValue(settings$.accent)
+  // The System accent reads the wallpaper palette.
+  const palette = useValue(systemPalette$)
+  const style = useMemo(
+    () => vars(accentVariables(normalizeAccent(accent), scheme, false)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [accent, scheme, palette],
+  )
+  return (
+    <ColorSchemeOverride.Provider value={scheme}>
+      <View style={style}>{children}</View>
+    </ColorSchemeOverride.Provider>
+  )
+}
+
+function SchemeSwatch({ scheme, label, selected, onPress }: {
+  scheme: CardScheme
+  label: string
+  selected: boolean
+  onPress: () => void
+}) {
+  return (
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityLabel={label}
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      hitSlop={6}
+      className={`h-9 w-9 items-center justify-center rounded-full border-2 ${selected ? 'border-accent-500' : 'border-transparent'}`}
+    >
+      <View
+        className="h-7 w-7 rounded-full border border-line-strong"
+        style={{ backgroundColor: scheme === 'dark' ? '#111' : '#fff' }}
+      />
+    </Pressable>
   )
 }
 
@@ -201,6 +267,8 @@ export function ShareImageSheet() {
   const [ready, setReady] = useState(false)
   const [sharing, setSharing] = useState(false)
   const [capturing, setCapturing] = useState(false)
+  const appScheme = useAppColorScheme()
+  const [scheme, setScheme] = useState<CardScheme>(appScheme)
   // A note is often written for oneself, so it goes in only when asked for; tags are less personal.
   const [includeNote, setIncludeNote] = useState(false)
   const [includeTags, setIncludeTags] = useState(true)
@@ -211,26 +279,63 @@ export function ShareImageSheet() {
     setReady(false)
     setIncludeNote(false)
     setIncludeTags(true)
+    setScheme(appScheme)
     scrollOffset.value = 0
     if (!bookmark) return
     const timer = setTimeout(markReady, IMAGE_WAIT_MS)
     return () => clearTimeout(timer)
+    // Only a new bookmark resets the picks, not the app changing scheme under an open sheet.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookmark, markReady, scrollOffset])
 
   const close = () => ui$.shareImage.set(null)
   const hasNote = bookmark ? Boolean(getNote(bookmark)) : false
   const hasTags = bookmark ? getTags(bookmark).length > 0 : false
 
+  // Draws the card still, captures it, and puts the live card back.
+  const capture = async <R extends 'tmpfile' | 'base64'>(result: R) => {
+    setCapturing(true)
+    try {
+      // Two frames, so the still card has been drawn before it is captured.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      return await captureRef(cardRef, { format: 'png', result })
+    } finally {
+      setCapturing(false)
+    }
+  }
+
+  const save = async () => {
+    if (!bookmark || sharing) return
+    setSharing(true)
+    let uri = ''
+    try {
+      // Write-only: nothing here reads the library, and on Android 13+ this asks for nothing.
+      const { granted } = await MediaLibrary.requestPermissionsAsync(true)
+      if (!granted) throw new Error('permission_denied')
+      const path = await capture('tmpfile')
+      const captured = path.startsWith('/') ? `file://${path}` : path
+      uri = `${FileSystem.cacheDirectory}${savedImageName()}`
+      await FileSystem.moveAsync({ from: captured, to: uri })
+      // Android puts a plain save loose in DCIM/; an album keeps them together in Pictures/Nori/.
+      // iOS has no such folder to find: a plain save lands in Recents.
+      if (Platform.OS === 'android') await Album.create('Nori', [uri])
+      else await MediaLibrary.saveToLibraryAsync(uri)
+      showToast(t('bookmarks.imageSaved'))
+    } catch {
+      showToast(t('bookmarks.saveImageFailed'))
+    } finally {
+      setSharing(false)
+      // The library keeps its own copy.
+      if (uri) releaseFile(uri)
+    }
+  }
+
   const share = async () => {
     if (!bookmark || sharing) return
     setSharing(true)
     let uri = ''
     try {
-      setCapturing(true)
-      // Two frames, so the still card has been drawn before it is captured.
-      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
-      const path = await captureRef(cardRef, { format: 'png', result: 'tmpfile' })
-      setCapturing(false)
+      const path = await capture('tmpfile')
       uri = path.startsWith('/') ? `file://${path}` : path
       if (Platform.OS === 'ios') {
         // iOS shares the link with the picture, so the page is a tap away for whoever gets it.
@@ -242,7 +347,6 @@ export function ShareImageSheet() {
     } catch {
       showToast(t('bookmarks.shareImageFailed'))
     } finally {
-      setCapturing(false)
       setSharing(false)
       if (uri) {
         const captured = uri
@@ -265,29 +369,46 @@ export function ShareImageSheet() {
             scrollEventThrottle={16}
           >
             <View className="overflow-hidden rounded-2xl border border-line">
-              <View ref={cardRef} collapsable={false}>
-                <ShareCard bookmark={bookmark} onReady={markReady} includeNote={includeNote} includeTags={includeTags} still={capturing} />
-              </View>
+              <ThemedCard scheme={scheme}>
+                <View ref={cardRef} collapsable={false}>
+                  <ShareCard bookmark={bookmark} onReady={markReady} includeNote={includeNote} includeTags={includeTags} scheme={scheme} still={capturing} />
+                </View>
+              </ThemedCard>
             </View>
           </ScrollView>
-          {hasNote || hasTags ? (
-            <View className="flex-row flex-wrap gap-2">
-              {hasNote ? <OptionChip icon="edit-note" label={t('bookmarks.shareImageNote')} selected={includeNote} onPress={() => setIncludeNote(!includeNote)} /> : null}
-              {hasTags ? <OptionChip icon="sell" label={t('bookmarks.tags')} selected={includeTags} onPress={() => setIncludeTags(!includeTags)} /> : null}
+          <View className="flex-row flex-wrap items-center gap-2">
+            <View accessibilityRole="radiogroup" className="flex-row gap-1">
+              <SchemeSwatch scheme="light" label={t('settings.experience.light')} selected={scheme === 'light'} onPress={() => setScheme('light')} />
+              <SchemeSwatch scheme="dark" label={t('settings.experience.dark')} selected={scheme === 'dark'} onPress={() => setScheme('dark')} />
             </View>
-          ) : null}
-          <Pressable
-            accessibilityRole="button"
-            disabled={!ready || sharing}
-            onPress={() => void share()}
-            className="flex-row items-center justify-center gap-2 rounded-2xl bg-accent-fill px-4 py-3"
-            style={{ opacity: ready && !sharing ? 1 : 0.6 }}
-          >
-            {ready && !sharing
-              ? <MaterialIcons name="share" size={18} color={themeColors.onAccent} />
-              : <ActivityIndicator size="small" color={themeColors.onAccent} />}
-            <NoriText className="text-sm font-medium text-accent-on">{t('bookmarks.share')}</NoriText>
-          </Pressable>
+            {hasNote || hasTags ? <View className="mx-1 h-6 w-px bg-line" /> : null}
+            {hasNote ? <OptionChip icon="edit-note" label={t('bookmarks.shareImageNote')} selected={includeNote} onPress={() => setIncludeNote(!includeNote)} /> : null}
+            {hasTags ? <OptionChip icon="sell" label={t('bookmarks.tags')} selected={includeTags} onPress={() => setIncludeTags(!includeTags)} /> : null}
+          </View>
+          <View className="flex-row gap-2">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('bookmarks.saveImage')}
+              disabled={!ready || sharing}
+              onPress={() => void save()}
+              className="items-center justify-center rounded-2xl border border-line-strong px-4 py-3"
+              style={{ opacity: ready && !sharing ? 1 : 0.6 }}
+            >
+              <MaterialIcons name="file-download" size={20} color={themeColors.content} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              disabled={!ready || sharing}
+              onPress={() => void share()}
+              className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl bg-accent-fill px-4 py-3"
+              style={{ opacity: ready && !sharing ? 1 : 0.6 }}
+            >
+              {ready && !sharing
+                ? <MaterialIcons name="share" size={18} color={themeColors.onAccent} />
+                : <ActivityIndicator size="small" color={themeColors.onAccent} />}
+              <NoriText className="text-sm font-medium text-accent-on">{t('bookmarks.share')}</NoriText>
+            </Pressable>
+          </View>
         </View>
       ) : null}
     </Sheet>
