@@ -4,7 +4,7 @@ import { auth$ } from '@/states/auth'
 import { bookmarks$ } from '@/states/bookmarks'
 import { lists$ } from '@/states/lists'
 import { syncMeta$ } from '@/states/sync-meta'
-import { normalizeBookmarks, normalizeLists, type BookmarkListData, type BookmarkRecordData } from '@/lib/nori-data'
+import { normalizeBookmarks, normalizeLists, toIsoString, type BookmarkListData, type BookmarkRecordData } from '@/lib/nori-data'
 import {
   collectChangedRowIds,
   dropExpiredSyncTombstones,
@@ -92,6 +92,12 @@ function snapshotBookmarks(lists = snapshotLists()) {
   return normalizeBookmarks(lists, bookmarks$.bookmarks.peek())
 }
 
+// The persist layer revives ISO strings as Dates on load, and a Date in a filter
+// is sent as `String(date)` ("... GMT+0900"), which Postgres rejects.
+function readCursor(value: unknown) {
+  return toIsoString(value) ?? undefined
+}
+
 async function fetchAllRows<T extends { id: string; updated_at: string }>(
   table: 'lists' | 'bookmarks',
   columns: string,
@@ -151,8 +157,8 @@ function advanceSyncCursor(
   wasFullPull: boolean,
 ) {
   const sameAccount = syncMeta$.syncUserId.peek() === userId
-  const listCursor = sameAccount ? syncMeta$.syncListsCursor.peek() : undefined
-  const bookmarkCursor = sameAccount ? syncMeta$.syncBookmarksCursor.peek() : undefined
+  const listCursor = sameAccount ? readCursor(syncMeta$.syncListsCursor.peek()) : undefined
+  const bookmarkCursor = sameAccount ? readCursor(syncMeta$.syncBookmarksCursor.peek()) : undefined
   syncMeta$.syncUserId.set(userId)
   syncMeta$.syncListsCursor.set(nextSyncCursor(pulled.lists, listCursor))
   syncMeta$.syncBookmarksCursor.set(nextSyncCursor(pulled.bookmarks, bookmarkCursor))
@@ -389,8 +395,8 @@ async function runSupabaseSync(): Promise<SyncAttemptOutcome> {
   // never skipped a row, so a full pull is what actually makes the two sides
   // converge again.
   const isSameAccount = syncMeta$.syncUserId.peek() === userId
-  const listCursor = isSameAccount ? syncMeta$.syncListsCursor.peek() : undefined
-  const bookmarkCursor = isSameAccount ? syncMeta$.syncBookmarksCursor.peek() : undefined
+  const listCursor = isSameAccount ? readCursor(syncMeta$.syncListsCursor.peek()) : undefined
+  const bookmarkCursor = isSameAccount ? readCursor(syncMeta$.syncBookmarksCursor.peek()) : undefined
   const lastFullPullAt = syncMeta$.lastFullPullAt.peek() || 0
   const isFullPull = !listCursor || !bookmarkCursor || Date.now() - lastFullPullAt >= FULL_PULL_INTERVAL_MS
   const remote = isFullPull ? await fetchRemoteRows(assertCurrent) : await fetchRemoteRows(assertCurrent, listCursor, bookmarkCursor)
