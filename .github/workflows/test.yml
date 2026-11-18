@@ -19,7 +19,8 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run tests
-        run: bun test
+        # Suites replace shared hooks and preview-cache filters; keep their module state separate.
+        run: bun test --isolate
 
   desktop:
     runs-on: ubuntu-22.04
